@@ -69,15 +69,15 @@ You’ll get this output:
     
 That’s the Sparkle feed (SU = Sparkle Update). Then it’s just a matter of checking that URL. I start with this:
 
-	curl -sfL https://imageoptim.com/appcast-test.xml 
+		curl -sfL "https://get.180g.co/updates/vellum/"
 
 and I look for a line line this: 
 
-            <enclosure url="https:/180g.s3.amazonaws.com/downloads/Vellum-13101.zip" 
-            sparkle:version="13101" 
-            sparkle:shortVersionString="1.3.1" 
-            length="25709021" 
-            type="application/octet-stream"/>
+		<enclosure url="https:/180g.s3.amazonaws.com/downloads/Vellum-13101.zip" 
+		sparkle:version="13101" 
+		sparkle:shortVersionString="1.3.1" 
+		length="25709021" 
+		type="application/octet-stream"/>
 
 There’s usually a lot more in the feed, but this is the important part. If there are multiple updates in the feed, check for the most recent one. (Most of the time it will just be the most recent version; sometimes there are a lot of versions, with the newest on top; sometimes there are a lot of versions with the newest on the bottom. Occasionally there’s one or two entries, which includes (1) the newest version and (2) an older version which only works on older versions of Mac OS X.
 
