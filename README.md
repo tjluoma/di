@@ -166,6 +166,10 @@ The only trick is if the DMG is prevented from loading because there is a EULA w
 
 One of my personal favorite parts of this system is that when the script is finished, you are left with the original download which has been named in such a way that the app name and the version number are clear in the filename. No more looking into ~/Downloads/ and seeing "download.dmg" or “pf.zip" and having to try to guess or remember what apps those are, or if they are apps at all.
 
+## Advanced Options
+
+If you combine these scripts with [Keyboard Maestro](http://www.keyboardmaestro.com/main/), you could create a macro which will check for the update of an app after that app quits, which will minimize disruptions. (My biggest complaint about Sparkle updates is that they almost always interrupt you right after you just started to use an app, which is possibly the worst time to be interrupted.)
+
 ## Disclaimers and “Ones To Watch”
 
 While it’s not particularly _likely_, it is _possible_ that any of these scripts could stop working for any number of reasons. 
@@ -189,3 +193,4 @@ Here are some apps that I want to be able to update automatically, but can’t f
 4. [Google Chrome](https://dl-ssl.google.com/chrome/mac/stable/CHFA/googlechrome.dmg) - will update itself via `launchd`, so not a high priority item.
 
 5. More TK?
+
