@@ -180,8 +180,12 @@ However, a few of them are more likely than others.
 
 Here are some apps that I want to be able to update automatically, but can’t figure out how to (yet?):
 
-1. [MakeMKV](http://www.makemkv.com)
-2. [Charles](https://www.charlesproxy.com/)
-3. 
+1. [MakeMKV](http://www.makemkv.com) - Cannot find XML/Sparkle feed, although it has some method of checking for updates. [Forum Post](http://www.makemkv.com/forum2/viewtopic.php?f=4&t=9955&sid=d6856f9d8122781dd1bf1e629908f49b)
 
+2. [Charles](https://www.charlesproxy.com/) - Ironically this is what I use for checking most apps that don’t have an easy to find Sparkle feed, but I’m not sure where _its_ feed is.
 
+3. [Kindle for Mac](http://www.amazon.com/kindlemacdownload) - The non-Mac App Store version has a way to check for updates, but can’t figure out what it is.
+
+4. [Google Chrome](https://dl-ssl.google.com/chrome/mac/stable/CHFA/googlechrome.dmg) - will update itself via `launchd`, so not a high priority item.
+
+5. More TK?
