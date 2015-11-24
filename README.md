@@ -1,10 +1,12 @@
 # di - [D]ownload and [I]nstall Mac apps
 
-For apps from the Mac App Store, updates are easy.
+If you buy apps from the Mac App Store, then getting updates is fairly easy. (For all of its problems, the Mac App Store does updates pretty well.)
 
-But there are a lot of good apps -- maybe even the majority of good apps -- that aren’t available in the Mac App Store. Installing them means:
+However, there are ***a lot*** of good apps -- maybe even the majority of good apps -- which aren’t available in the Mac App Store. 
 
-1.	going to Google to find their website
+Installing those apps means:
+
+1.	going to Google to find the appropriate website (not always easy because, especially if app has a common name, or if the search results have a lot of other download sites before the official site.)
 
 2.	finding the download link (not always easy)
 
@@ -18,11 +20,13 @@ Wouldn’t it be better if you could check for updates right after an app _quits
 
 That’s what these scripts allow you to do.
 
+(Note: _Technically_ these scripts do three things: Download, Install, and _Update_; but I didn’t want to prefix them with [dui](https://en.wikipedia.org/wiki/Driving_under_the_influence) and `diu` seemed awkward to type, so I went with a `di` prefix.)
+
 ## “But what about…?”
 
 There are lots of other ways to do this.
 
-[MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem.
+[MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem. Also: although I have been working on these scripts for a long time, and I still use MacUpdate, there was a very troubling “experiment” which seemed to happen recently where MacUpdate was bundling additional software with downloads *and claiming it was a feature.* (See [Has MacUpdate fallen to the adware plague?](https://blog.malwarebytes.org/news/2015/11/has-macupdate-fallen-to-the-adware-plague/).) Every one of my scripts so far (and for the foreseeable future) downloads directly from the official website.
 
 [Homebrew Cask](http://caskroom.io/) does the same thing that [Homebrew](http://mxcl.github.com/homebrew/) does, except for regular apps. Cask solves the automation problem, in that you can schedule it to run whenever you want, but the whole system is built around the idea that someone else (other than you) will notice when an update to an app is available, and then submit it to the maintainers. That might make sense if an app doesn’t have its own update system, but for those that do, why not use them directly?
 
@@ -37,7 +41,6 @@ _Most_ third-party Mac apps use [Sparkle](http://sparkle-project.org/) to check 
 Sparkle uses a standardized XML-based RSS feed that includes all of the information that I need to check to see if I have the latest version of an app, or a quick way to install the latest version of an app if it isn’t installed.
 
 I can check the Sparkle feed for the latest version of the app and compare it to the locally installed version using Unix tools which come standard with every Mac. In almost all cases, you should be able to take one of these `di` scripts and run it on a freshly-installed Mac and it will download & install the latest version for you.
-
 
 ## Multiple Macs?
 
