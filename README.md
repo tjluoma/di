@@ -162,3 +162,26 @@ The only trick is if the DMG is prevented from loading because there is a EULA w
 	| tail -1 \  
 	| sed 's#</string>.*##g ; s#.*<string>##g'
 
+## What’s Left
+
+One of my personal favorite parts of this system is that when the script is finished, you are left with the original download which has been named in such a way that the app name and the version number are clear in the filename. No more looking into ~/Downloads/ and seeing "download.dmg" or “pf.zip" and having to try to guess or remember what apps those are, or if they are apps at all.
+
+## Disclaimers and “Ones To Watch”
+
+While it’s not particularly _likely_, it is _possible_ that any of these scripts could stop working for any number of reasons. 
+
+However, a few of them are more likely than others.
+
+* [Dropbox](https://www.dropbox.com/) - has a silent self-updater, so it’s not a huge concern, but my method for checking the latest version of Dropbox is very fragile.
+* [BusyCal](http://www.busymac.com/busycal/) and [BusyContacts](http://www.busymac.com/busycontacts/) - updating them causes an “Open” dialog to appear, for reasons which are unclear to me. I assume it has something to do with sandboxing, but I’m not sure. I’m also not sure what to do about it, so I just hit `ESC` whenever that happens.
+
+
+## To-Do List
+
+Here are some apps that I want to be able to update automatically, but can’t figure out how to (yet?):
+
+1. [MakeMKV](http://www.makemkv.com)
+2. [Charles](https://www.charlesproxy.com/)
+3. 
+
+
