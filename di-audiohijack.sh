@@ -26,19 +26,6 @@ function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
-
-#DOWNLOAD_PAGE='http://rogueamoeba.com/audiohijack/download.php'
-
-# http://neutral.rogueamoeba.com/mirror/files/AudioHijack.zip
-
-# DL_URL=`curl -sfL "$DOWNLOAD_PAGE" | tr '"' '\012' | egrep -i "^http.*\.zip$"`
-
-# http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.AudioHijackPro2&system=1092&platform=osx&arch=x86_64&version=21098000
-
-# Everything should be pretty self-explanatory except the version numbering, which is based on Mac OS 9 (BCD) but has four digits tacked on for the "release type" -- 8000 are our publicly available releases, so you'll likely want to stick with that. If you're feeling particularly freaky, switch out the format from "sparkle" to "isis" and you'll have a plist to play with instead.
-
-# 			<enclosure sparkle:version="3.2.1" url="http://rogueamoeba.com/audiohijack/download.php" type="application/octet-stream"/>
-
 URL="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
 
 LATEST_VERSION=`curl -sfL "$URL" | awk -F'"' '/sparkle:version=/{print $2}'`
@@ -49,7 +36,6 @@ then
 else
 	INSTALLED_VERSION='0'
 fi
-
 
 autoload is-at-least
 
