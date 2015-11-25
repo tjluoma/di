@@ -58,9 +58,15 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
-	exit 1
+	exit 0
 fi
 
+
+	# The installer requires user interaction, so we can't automate that part.
+	# ¯\_(ツ)_/¯
+	# Fortunately it will handle moving the existing installation, etc
+	# so that's handy 
+	
 open "$MNTPNT/Little Snitch Installer.app"
 
 exit 0
