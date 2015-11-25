@@ -75,7 +75,6 @@ echo "$NAME: Downloading $DL_URL\nto\n$FILENAME:"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$DL_URL"
 
-
 function get-pid { export PID=`pgrep -x 'Audio Hijack' || echo ` }
 
 get-pid
@@ -93,8 +92,6 @@ then
 fi
 
 ditto -xk -v --rsrc --extattr --noqtn "$FILENAME" "$INSTALL_TO:h"
-
-
 
 exit 0
 #
