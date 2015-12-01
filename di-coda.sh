@@ -86,14 +86,10 @@ else
 fi
 
 
+# defaults write com.panic.Coda2 SerialNumber XXX
 
 exit 0
-# curl -sfl --head "https://download.panic.com/coda/Coda-Latest.zip" \
-# | awk -F' ' '/^Location: /{print $2}' \
-# | tail -1 \
-# | tr -d '\r'
-# 
-# http://download.panic.com/coda/Coda%202.5.4.zip
+
 
 #
 #EOF
