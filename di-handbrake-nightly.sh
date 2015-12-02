@@ -62,7 +62,7 @@ cd '/Volumes/Data/Websites/iusethis.luo.ma/handbrake/nightly/' 2>/dev/null \
 	|| cd "$HOME/Desktop/" \
 	|| cd "$HOME/"
 
-FILENAME="$URL:t"
+FILENAME="$HOME/Downloads/$URL:t"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

@@ -70,7 +70,7 @@ then
 	mv *.tar.bz2 old/
 fi
 
-FILENAME="$DOWNLOAD_URL:t"
+FILENAME="$HOME/Downloads/LaunchControl-$LATEST_VERSION.tar.bz2"
 
 zmodload zsh/stat
 

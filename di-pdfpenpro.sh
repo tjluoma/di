@@ -41,7 +41,7 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 
 ## Download it
-FILENAME="$HOME/Downloads/$URL:t"
+FILENAME="$HOME/Downloads/PDFpenPro-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

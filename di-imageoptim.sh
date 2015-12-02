@@ -48,7 +48,7 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
+FILENAME="$HOME/Downloads/ImageOptim-${LATEST_VERSION}.tar.bz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

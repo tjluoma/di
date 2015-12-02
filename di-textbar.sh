@@ -74,7 +74,7 @@ echo "$NAME: Downloading $DOWNLOAD_ACTUAL to $PWD"
 curl -fL --remote-name --progress-bar "$DOWNLOAD_ACTUAL"
 
 	# Make sure the file size that we have matches what we should have
-FILENAME="$DOWNLOAD_ACTUAL:t"
+FILENAME="$HOME/Downloads/TextBar-$LATEST_VERSION.zip"
 
 zmodload zsh/stat
 

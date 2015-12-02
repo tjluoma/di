@@ -44,7 +44,7 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 DL_URL=`curl -sfL "$XML_URL" | awk -F'"' '/url=/{print $2}' | head -1`
 
-FILENAME="$DL_URL:t"
+FILENAME="$HOME/Downloads/Evernote-$LATEST_VERSION.zip"
 
 if [ "$HOST" = "mini.luo.ma" ]
 then

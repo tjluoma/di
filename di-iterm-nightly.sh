@@ -38,21 +38,9 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-
-
-
-	# Get to a temp directory
-cd "${TMPDIR-/tmp/}"
-
-DIR="$NAME.$RANDOM"
-
-mkdir -p "$DIR"
-
-cd "$DIR"
-
 curl --continue-at - --max-time 3600 --fail --location --referer ";auto" --progress-bar --remote-name "$DOWNLOAD_ACTUAL"
 
-FILENAME="$DOWNLOAD_ACTUAL:t"
+FILENAME="$HOME/Downloads/iTerm-$LATEST_VERSION.zip"
 
 	# Unzip download to the current directory
 ditto --noqtn -xkv "$FILENAME" .

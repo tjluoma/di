@@ -40,7 +40,7 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/$URL:t"
+FILENAME="$HOME/Downloads/OmniFocus-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

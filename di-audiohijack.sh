@@ -69,7 +69,7 @@ do
 	fi
 done
 
-FILENAME="$DIR/audiohijack-${LATEST_VERSION}.zip"
+FILENAME="$DIR/AudioHijack-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $DL_URL\nto\n$FILENAME:"
 

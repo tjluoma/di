@@ -62,7 +62,7 @@ cd '/Volumes/Data/Websites/iusethis.luo.ma/calibre/' 2>/dev/null \
 	|| cd "$HOME/Desktop/" 2>/dev/null \
 	|| cd "$HOME/"
 
-FILENAME="$PWD/$DOWNLOAD_ACTUAL:t"
+FILENAME="$PWD/calibre-${CURRENT_VERSION}.dmg"
 
 ########################################################################################################################
 

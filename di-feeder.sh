@@ -36,7 +36,7 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/$URL:t"
+FILENAME="$HOME/Downloads/Feeder-${LATEST_VERSION}.dmg"
 
 	# Download it
 curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL" 2>/dev/null

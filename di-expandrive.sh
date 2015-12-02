@@ -49,7 +49,7 @@ fi
 
 cd "$DIR"
 
-FILENAME="$DIR/expandrive-$LATEST_VERSION.dmg"
+FILENAME="$DIR/ExpanDrive-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $DL_URL to $FILENAME"
 

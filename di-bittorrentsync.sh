@@ -132,7 +132,7 @@ done
 #
 
 
-FILENAME="$DIR/bittorrentsync-${LATEST_VERSION}.dmg"
+FILENAME="$DIR/BitTorrentSync-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL\nto\n$FILENAME:"
 
