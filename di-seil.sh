@@ -63,7 +63,7 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| tail -1 \
 		| sed 's#</string>.*##g ; s#.*<string>##g')
 
-PKG=`find "$MNTPNT" -iname *.pkg -maxdepth 1 -print | head -1`
+PKG=`find "$MNTPNT" -iname \*.pkg -maxdepth 1 -print | head -1`
 
 if (( $+commands[pkginstall.sh] ))
 then
