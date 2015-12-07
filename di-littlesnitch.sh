@@ -16,10 +16,10 @@ fi
 
 INSTALL_TO='/Applications/Little Snitch Configuration.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '3'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '3'`
 
 INFO=($(curl -sfL https://sw-update.obdev.at/update-feeds/littlesnitch3.plist \
-| egrep -A1 'BundleShortVersionString|DownloadURL' \
+| egrep -A1 'BundleVersion|DownloadURL' \
 | fgrep '<string>' \
 | tail -2 \
 | sed 's#.*<string>##g; s#</string>##g'))
