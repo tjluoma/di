@@ -14,14 +14,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-
 INSTALL_TO='/Applications/Cloak.app'
-
-# https://www.getcloak.com/updates/osx/public/
-
-# version = 2.0.14
-# UA = Cloak/2.0.14 Sparkle/1.11.0
-
 
 INFO=($(curl -sfL 'https://www.getcloak.com/updates/osx/public/' \
 | tr ' ' '\012' \
@@ -80,13 +73,9 @@ echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 ditto --noqtn "$MNTPNT/Cloak.app" "$INSTALL_TO"
 
-
 diskutil eject "$MNTPNT"
 
-
 [[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
-
 
 exit 0
 #EOF
