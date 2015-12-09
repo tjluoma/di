@@ -20,16 +20,19 @@ LAUNCH='no'
 
 XML_FEED='http://www.macbartender.com/B2/updates/updates.php'
 
-INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
+	# This will work even if there is a space in the enclosure URL
+IFS=$'\n' INFO=($(
+curl -sfL "$XML_FEED" \
 | egrep 'sparkle:shortVersionString=|url=' \
-| tail -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+| tail -1 \
+| sed 's#" #"\
+#g' \
+| egrep 'sparkle:shortVersionString=|url=' \
+| sed 's#<enclosure url="##g; s#"$##g; s#sparkle:shortVersionString="##g'))
 
-URL="$INFO[2]"
+URL="$INFO[1]"
 
-LATEST_VERSION="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
 
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
