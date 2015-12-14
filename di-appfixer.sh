@@ -18,7 +18,7 @@ LATEST_VERSION=`curl -sfL https://s3.amazonaws.com/sqwarq.com/AppFixerDownload/u
 
 INSTALL_TO='/Applications/App Fixer.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString \
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null \
 || echo 1`
 
 autoload is-at-least
@@ -33,7 +33,9 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-URL='https://s3.amazonaws.com/sqwarq.com/AppFixerDownload/App+Fixer.app.zip'
+# URL='https://s3.amazonaws.com/sqwarq.com/AppFixerDownload/App+Fixer.app.zip'
+
+URL='https://s3.amazonaws.com/sqwarq.com/PublicZips/AppFixer.app.zip'
 
 FILENAME="$HOME/Downloads/AppFixer-$LATEST_VERSION.zip"
 
