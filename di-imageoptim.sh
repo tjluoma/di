@@ -10,7 +10,7 @@ NAME="$0:t:r"
 # wget -c http://dl.macupdate.com/prod/ImageOptim.zip
 # https://imageoptim.com/ImageOptim1.6.1a1.tar.bz2
 
-# XML_FEED='https://imageoptim.com/appcast-test.xml'
+#XML_FEED='https://imageoptim.com/appcast-test.xml'
 
 XML_FEED='https://imageoptim.com/appcast.xml'
 
@@ -36,11 +36,7 @@ then
 	exit 0
 fi
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
 	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 	exit 0
@@ -48,7 +44,7 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/ImageOptim-${LATEST_VERSION}.tar.bz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
