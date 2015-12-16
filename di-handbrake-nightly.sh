@@ -7,7 +7,7 @@
 # Date:	2014-08-18
 
 
-## HandBrake has a Sparkle feed, but it seems vastly out of date 
+## HandBrake has a Sparkle feed, but it seems vastly out of date
 # XML_FEED='https://handbrake.fr/appcast_unstable.x86_64.xml'
 
 
@@ -23,7 +23,7 @@ INSTALL_TO="/Applications/HandBrake.app"
 
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | awk '{print $1}' || echo '1.0.0'`
- 
+
 UA='curl/7.21.7 (x86_64-apple-darwin10.8.0) libcurl/7.21.7 OpenSSL/1.0.0d zlib/1.2.5 libidn/1.22'
 
 
@@ -42,7 +42,7 @@ URL=`lynx -listonly -dump -nomargins -nonumbers 'http://handbrake.fr/nightly.php
 
 LATEST_VERSION=`echo "$URL:t:r" | sed 's#HandBrake-##g; s#-osx##g'`
 
-##### This does not work for some reason 
+##### This does not work for some reason
 ## function version { echo "$@" | awk -F. '{ printf("28%03d%03d%03d\n", $1,$2,$3,$4); }'; }
 ## if [ $(version ${LATEST_VERSION}) -le $(version ${INSTALLED_VERSION}) ]
 
@@ -54,13 +54,6 @@ then
 fi
 
 echo "$NAME: Out of Date: $INSTALLED_VERSION vs $LATEST_VERSION"
-
-cd '/Volumes/Data/Websites/iusethis.luo.ma/handbrake/nightly/' 2>/dev/null \
-	|| cd '/Volumes/Drobo2TB/BitTorrent Sync/iusethis.luo.ma/handbrake/nightly/' 2>/dev/null \
-	|| cd "$HOME/BitTorrent Sync/iusethis.luo.ma/handbrake/nightly/" 2>/dev/null \
-	|| cd "$HOME/Downloads/" \
-	|| cd "$HOME/Desktop/" \
-	|| cd "$HOME/"
 
 FILENAME="$HOME/Downloads/$URL:t"
 
@@ -77,7 +70,7 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 if [ -e "$INSTALL_TO" ]
 then
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/HandBrake.$INSTALLED_VERSION.app"
 fi
 
@@ -90,7 +83,7 @@ then
 
 	unmount.sh "$MNTPNT"
 else
-	diskutil eject "$MNTPNT"	
+	diskutil eject "$MNTPNT"
 
 fi
 
