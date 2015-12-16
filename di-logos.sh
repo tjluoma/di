@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install (or update) the latest version of Logos.com for Mac
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -60,9 +60,9 @@ EXIT="$?"
 
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
@@ -78,7 +78,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Logos" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Logos.$INSTALLED_VERSION.app"
 fi
 
