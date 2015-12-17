@@ -37,7 +37,7 @@ URL="$INFO[2]"
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-		echo 
+		echo
 
 	URL=`curl -sfL --head 'http://subtitlesapp.com/download/' | awk -F' ' '/^Location:/{print $2}' | tail -1 | tr -d '\r'`
 
@@ -58,39 +58,17 @@ fi
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-STATUS=`curl -sfL --head "$URL" | awk -F' ' '/^HTTP/{print $2}'`
+FILENAME="$HOME/Downloads/Subtitles-$LATEST_VERSION.zip"
 
-if [[ "$STATUS" != "200" ]]
-then
-	echo "$NAME: Bad HTTP Status for $URL ($STATUS != 200)"
-	exit 0
-fi 
+echo "$NAME: Downloading $URL to $FILENAME"
 
-cd '/Volumes/Data/Websites/iusethis.luo.ma/subtitles/' 2>/dev/null \
-	|| cd "$HOME/BitTorrent Sync/iusethis.luo.ma/subtitles/" 2>/dev/null \
-	|| cd "$HOME/Downloads/" 2>/dev/null \
-	|| cd "$HOME/Desktop/" 2>/dev/null \
-	|| cd "$HOME/"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-FILENAME="$PWD/Subtitles-$LATEST_VERSION.zip"
+EXIT="$?"
 
-if [[ -e "$FILENAME" ]]
-then
-	echo "$URL"
-	curl --continue-at - --fail --location --progress-bar --output "$FILENAME" "$URL"
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-else
-	# if filename does not exist in CWD
-
-	if [[ -d "old" ]]
-	then
-			# move files to 'old' dir, if exists
-		mv -vf *.zip old/ 2>/dev/null || true
-	fi
-
-	echo "$URL"
-	curl -fL --progress-bar --output "$FILENAME" "$URL"
-fi
 
 
 # if running, quit
