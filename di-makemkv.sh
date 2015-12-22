@@ -22,7 +22,7 @@ URL=`curl -sfL 'http://www.makemkv.com/download/' \
 	| egrep 'http.*\.dmg' \
 	| head -1`
 
-if [ "$URL" = "" ]
+if [[ "$URL" == "" ]]
 then
 	echo "$NAME: Error: URL is empty"
 	exit 0
@@ -31,7 +31,7 @@ fi
 LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 
 	# If any of these are blank, we should not continue
-if [ "$LATEST_VERSION" = "" ]
+if [[ "$LATEST_VERSION" == "" ]]
 then
 	echo "$NAME: LATEST_VERSION is empty"
 	exit 0
@@ -73,7 +73,10 @@ EXIT="$?"
 ########################################################################################################################
 
 	# This will accept the DMG's EULA without reading it, just like you would have!
-MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
+MNTPNT=`echo -n "Y" \
+	| hdid -plist "$FILENAME" 2>/dev/null \
+	| fgrep '/Volumes/' \
+	| sed 's#</string>##g ; s#.*<string>##g'`
 
 if [[ "$MNTPNT" == "" ]]
 then
