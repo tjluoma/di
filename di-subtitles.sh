@@ -80,7 +80,7 @@ then
 	mv -f "$INSTALL_TO" "$HOME/.Trash/Subtitles.$INSTALLED_VERSION.app"
 fi
 
-ditto --noqtn -xk "$FILENAME:t" "$INSTALL_TO:h"
+ditto -v --noqtn -xk "$FILENAME" "$INSTALL_TO:h"
 
 exit 0
 #
