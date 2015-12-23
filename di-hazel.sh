@@ -8,6 +8,9 @@
 
 NAME="$0:t:r"
 
+DIR="$HOME/Downloads"
+
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -59,7 +62,7 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 URL="$INFO[2]"
 
-FILENAME="$HOME/Downloads/Hazel-$LATEST_VERSION.dmg"
+FILENAME="$DIR/Hazel-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 curl --continue-at - -fL --progress-bar --output "$FILENAME" "$URL"
