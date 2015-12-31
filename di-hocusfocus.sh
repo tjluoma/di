@@ -52,6 +52,16 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 FILENAME="$HOME/Downloads/HocusFocus-${LATEST_VERSION}.zip"
 
+echo "$NAME: Downloading $URL to $FILENAME"
+
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+
 
 if [ -e "$INSTALL_TO" ]
 then
