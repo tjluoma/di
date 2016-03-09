@@ -257,7 +257,10 @@ EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
+
 	log "Installation successful"
+
+	echo "$NAME [$HOST]: Updated to $LATEST_VERSION" | slackcat -tee --channel "$HOST"
 
 	diskutil eject "${MNTPNT}"
 
