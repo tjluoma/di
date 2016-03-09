@@ -34,6 +34,12 @@ LATEST_VERSION="$INFO[1]"
 
 URL="$INFO[2]"
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
 is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"

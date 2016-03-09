@@ -21,15 +21,21 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 	# This returns just the version number 
 LATEST_VERSION=`curl -sfL http://www.charlesproxy.com/latest.do`
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 

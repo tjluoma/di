@@ -18,24 +18,30 @@ LATEST_VERSION=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/s
 
 INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBundleVersion`
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
 DL_URL=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/url=/{print $2}' | head -1`
 
-if [ -d '/Volumes/Data/Websites/iusethis.luo.ma/expandrive' ]
+if [ -d "$HOME/Sites/iusethis.luo.ma/expandrive" ]
 then
-	DIR='/Volumes/Data/Websites/iusethis.luo.ma/expandrive'
+	DIR="$HOME/Sites/iusethis.luo.ma/expandrive"
 
 	cd "$DIR"
 

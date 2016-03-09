@@ -96,15 +96,21 @@ else
 	INSTALLED_VERSION='0'
 fi
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
@@ -115,7 +121,7 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 
 for TEST_DIR in \
-	"/Volumes/Data/Websites/iusethis.luo.ma/bittorrentsync" \
+	"$HOME/Sites/iusethis.luo.ma/bittorrentsync" \
 	"/Volumes/Drobo2TB/MacMiniColo/Data/Websites/iusethis.luo.ma/bittorrentsync" \
 	"$HOME/Downloads"
 do

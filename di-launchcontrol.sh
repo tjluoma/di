@@ -44,22 +44,28 @@ LATEST_VERSION=`curl -sfL "$XML_URL" \
 
 INSTALLED_VERSION=`defaults read /Applications/LaunchControl.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '0'`
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
 log "Update needed $LATEST_VERSION vs $INSTALLED_VERSION"
 
-cd '/Volumes/Data/Websites/iusethis.luo.ma/launchcontrol' 2>/dev/null \
+cd "$HOME/Sites/iusethis.luo.ma/launchcontrol" 2>/dev/null \
 	|| cd '/Volumes/Drobo2TB/BitTorrent Sync/iusethis.luo.ma/launchcontrol' 2>/dev/null \
 	|| cd "$HOME/BitTorrent Sync/iusethis.luo.ma/launchcontrol" 2>/dev/null \
 	|| cd "$HOME/Downloads/" 2>/dev/null \
@@ -81,7 +87,7 @@ then
 	curl -fL --progress-bar --output "$FILENAME" "$DOWNLOAD_URL"
 fi
 
-SIZE=$(zstat -L +size "$FILENAME" || echo '0')
+SIZE=$(zstat -L +size "$FILENAME" 2>/dev/null || echo '0')
 
 if [ "$SIZE" -lt "$DL_SIZE" ]
 then

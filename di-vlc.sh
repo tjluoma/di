@@ -41,21 +41,27 @@ LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
 for TEST_DIR in \
-	"/Volumes/Data/Websites/iusethis.luo.ma/vlc" \
+	"$HOME/Sites/iusethis.luo.ma/vlc" \
 	"/Volumes/Drobo2TB/MacMiniColo/Data/Websites/iusethis.luo.ma/vlc" \
 	"$HOME/Downloads"
 do
@@ -67,6 +73,17 @@ do
 done
 
 FILENAME="$DIR/vlc-$LATEST_VERSION.dmg"
+
+cd "$DIR"
+
+echo "$NAME: Downloading $URL to $FILENAME"
+
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 			| fgrep -A 1 '<key>mount-point</key>' \
@@ -86,7 +103,7 @@ then
 fi
 
 
-ditto --noqtn -v "$MOUNTED" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/VLC.app" "$INSTALL_TO"
 
 
 MAX_ATTEMPTS="10"

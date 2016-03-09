@@ -43,22 +43,28 @@ INSTALL_TO="/Applications/TextBar.app"
 	# if none, set to 0
 INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo 0`
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+ 
+ if [ "$?" = "0" ]
+ then
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	exit 0
+ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 	# where do we want to keep the .zip file we are downloading
-if [ -d /Volumes/Data/Websites/iusethis.luo.ma/textbar ]
+if [ -d "$HOME/Sites/iusethis.luo.ma/textbar" ]
 then
-	DIR='/Volumes/Data/Websites/iusethis.luo.ma/textbar'
+	DIR="$HOME/Sites/iusethis.luo.ma/textbar"
 elif [ -d "$HOME/BitTorrent Sync/iusethis.luo.ma/textbar" ]
 then
 	DIR="$HOME/BitTorrent Sync/iusethis.luo.ma/textbar"

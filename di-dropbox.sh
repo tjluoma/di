@@ -54,6 +54,12 @@ INSTALLED_VERSION=`defaults read /Applications/Dropbox.app/Contents/Info CFBundl
 # fi
 
 
+ if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+ then
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+ 	exit 0
+ fi
+
 autoload is-at-least
 
 is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
