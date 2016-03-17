@@ -61,36 +61,21 @@ autoload is-at-least
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-	# where do we want to keep the .zip file we are downloading
-if [ -d "$HOME/Sites/iusethis.luo.ma/textbar" ]
-then
-	DIR="$HOME/Sites/iusethis.luo.ma/textbar"
-elif [ -d "$HOME/BitTorrent Sync/iusethis.luo.ma/textbar" ]
-then
-	DIR="$HOME/BitTorrent Sync/iusethis.luo.ma/textbar"
-else
-	DIR="$HOME/Downloads"
-fi
+
+DIR="$HOME/Downloads"
 
 	# chdir to the appropriate dir
 cd "$DIR"
 
-	# Download the latest zip
-echo "$NAME: Downloading $DOWNLOAD_ACTUAL to $PWD"
-curl -fL --remote-name --progress-bar "$DOWNLOAD_ACTUAL"
-
 	# Make sure the file size that we have matches what we should have
 FILENAME="$HOME/Downloads/TextBar-$LATEST_VERSION.zip"
 
-zmodload zsh/stat
+	# Download the latest zip
+echo "$NAME: Downloading $DOWNLOAD_ACTUAL to $PWD"
 
-SIZE=$(zstat -L +size "$FILENAME")
 
-if [ "$SIZE" != "$REMOTE_SIZE" ]
-then
-	echo "$NAME: size mismatch Local: $SIZE vs Remote: $REMOTE_SIZE"
-	exit 0
-fi
+curl -fL --output "$FILENAME" --progress-bar "$DOWNLOAD_ACTUAL"
+
 
 	# Quit the app, if running, otherwise harmless
 pkill -x TextBar
