@@ -30,7 +30,7 @@ function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 HOST=`hostname -s`
 HOST="$HOST:l"
 
-LOG="$HOME/Library/Logs/metalog/$NAME/$HOST/$TIME.log"
+LOG="$HOME/Library/Logs/$NAME.log"
 
 [[ -d "$LOG:h" ]] || mkdir -p "$LOG:h"
 [[ -e "$LOG" ]]   || touch "$LOG"
