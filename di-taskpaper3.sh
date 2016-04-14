@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose:
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/TaskPaper.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '150'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='https://taskpaper.s3.amazonaws.com/TaskPaper.rss'
 
@@ -47,7 +47,7 @@ fi
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -56,7 +56,7 @@ autoload is-at-least
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/TaskPaper3-Preview-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/TaskPaper3-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -80,7 +80,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "TaskPaper" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/TaskPaper.$INSTALLED_VERSION.app"
 fi
 
