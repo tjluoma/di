@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose:
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -13,6 +13,57 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+if [ "`hostname`" = "air.luo.ma" ]
+then
+	echo "$NAME: Knock is not supported on this Mac"
+	exit 0
+fi
+
+
+####################################################################################################
+##
+##	Knock requires a Mac which has Bluetooth 4.0 or later, the so-called Low Power BT
+##		I have at least 2 Macs which don't support this
+##
+
+
+	# This should be '4' or greater
+BLUETOOTH_VERSION=`system_profiler -detailLevel full SPBluetoothDataType | awk -F' ' '/LMP Version/{print $3}' | cut -d. -f 1`
+
+if [ "$BLUETOOTH_VERSION" -ge "4" ]
+then
+	SUPPORTED='yes'
+
+	echo "$NAME: SUCCESS: This Mac support Bluetooth version 4 or greater"
+
+	INSTALL='yes'
+
+elif [ "$BLUETOOTH_VERSION" -lt "4" ]
+then
+	SUPPORTED='no'
+
+	echo "$NAME: FAILURE: This Mac does not support Bluetooth version 4 or greater (Version = $BLUETOOTH_VERSION)"
+
+	INSTALL='no'
+
+	exit 0
+
+else
+	SUPPORTED='unknown'
+
+	echo "$NAME: It is not known whether this Mac supports Bluetooth version 4 or later, as required by Knock"
+
+	INSTALL='no'
+
+	exit 0
+
+fi
+
+
+
+####################################################################################################
+
 
 XML_FEED='https://knock-updates.s3.amazonaws.com/Knock.xml'
 
@@ -45,7 +96,7 @@ fi
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -72,7 +123,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Knock" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Knock.$INSTALLED_VERSION.app"
 fi
 
@@ -86,9 +137,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
