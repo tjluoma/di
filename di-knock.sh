@@ -14,6 +14,28 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+FORCE='no'
+
+for ARGS in "$@"
+do
+	case "$ARGS" in
+		-f|--force)
+				FORCE='yes'
+				shift
+		;;
+
+
+		-*|--*)
+				echo "	$NAME [warning]: Don't know what to do with arg: $1"
+				shift
+		;;
+
+	esac
+
+done # for args
+
+
+
 
 
 ####################################################################################################
@@ -32,27 +54,30 @@ then
 
 	echo "$NAME: SUCCESS: This Mac support Bluetooth version 4 or greater"
 
-	INSTALL='yes'
-
 elif [ "$BLUETOOTH_VERSION" -lt "4" ]
 then
 	SUPPORTED='no'
 
 	echo "$NAME: FAILURE: This Mac does not support Bluetooth version 4 or greater (Version = $BLUETOOTH_VERSION)"
 
-	INSTALL='no'
+	if [ "$FORCE" = "no" ]
+	then
 
-	exit 0
+		echo "$NAME: You can use '--force' to bypass this check"
+
+		exit 0
+	fi
 
 else
 	SUPPORTED='unknown'
 
 	echo "$NAME: It is not known whether this Mac supports Bluetooth version 4 or later, as required by Knock"
 
-	INSTALL='no'
-
-	exit 0
-
+	if [ "$FORCE" = "no" ]
+	then
+		echo "$NAME: You can use '--force' to bypass this check"
+		exit 0
+	fi
 fi
 
 
@@ -110,6 +135,7 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
+
 
 if [ -e "$INSTALL_TO" ]
 then
