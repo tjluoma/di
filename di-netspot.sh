@@ -58,6 +58,8 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 FILENAME="$HOME/Downloads/NetSpot-${LATEST_VERSION}.dmg"
 
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
 		| tail -1 \
