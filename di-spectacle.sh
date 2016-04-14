@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Spectacle.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED="https://spectacleapp.com/updates/appcast.xml"
 
