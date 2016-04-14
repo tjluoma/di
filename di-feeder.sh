@@ -6,46 +6,58 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-26
 
-INSTALL_TO='/Applications/Feeder 3.app'
+
+# @todo - check both version numbers because build # has changed even when friendly number has not
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Feeder 3.app'
+
 
 INFO=($(curl -sfL "https://reinventedsoftware.com/feeder/downloads/Feeder3.xml" \
 | tr ' ' '\012' \
 |sed 's#>#>\
 #g' \
-| egrep '^url="|^sparkle:shortVersionString' \
-| head -2 \
+| egrep '^url="|^sparkle:version|^sparkle:shortVersionString' \
+| head -3 \
 | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
 
-LATEST_VERSION="$INFO[2]"
+REMOTE_BUNDLE_VERSION="$INFO[2]"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null`
+REMOTE_READABLE_VERSION="$INFO[3]"
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null || echo '0'`
+
+INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleVersion 2>/dev/null || echo '0'`
+
+
+
+ if [ "$REMOTE_BUNDLE_VERSION" = "$INSTALLED_BUNDLE_VERSION" -a "$REMOTE_READABLE_VERSION" = "$INSTALLED_VERSION" ]
  then
  	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
  	exit 0
  fi
+ 
+ 
 
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+is-at-least "$REMOTE_BUNDLE_VERSION" "$INSTALLED_BUNDLE_VERSION"
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Installed version ($INSTALLED_BUNDLE_VERSION) is ahead of official version $REMOTE_BUNDLE_VERSION"
+	exit 0
+fi
 
-FILENAME="$HOME/Downloads/Feeder-${LATEST_VERSION}.dmg"
+echo "$NAME: Outdated (Installed = $INSTALLED_BUNDLE_VERSION vs Latest = $REMOTE_BUNDLE_VERSION)"
+
+FILENAME="$HOME/Downloads/Feeder-${REMOTE_READABLE_VERSION}-${REMOTE_BUNDLE_VERSION}.dmg"
 
 	# Download it
-curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL" 2>/dev/null
+curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL"
 
 	# Mount the DMG
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
