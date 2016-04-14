@@ -132,7 +132,12 @@ fi
 # 2015-01-13: If we get here, an update is available.
 # Send a push notification so I can see check to see if it works
 
-po.sh "$NAME: $LOCAL_VERSION outdated vs $LATEST_VERSION"
+if (( $+commands[po.sh] ))
+then
+	po.sh "$NAME: $LOCAL_VERSION outdated vs $LATEST_VERSION"
+fi
+
+
 
 ##################################################################################################################################
 #
@@ -268,12 +273,7 @@ then
 
 	if [ -e "$DIR" ]
 	then
-		if (( $+commands[unmount.sh] ))
-		then
-				unmount.sh "$DIR"
-		else
-				diskutil eject "$DIR"
-		fi
+		diskutil eject "$DIR"
 	fi
 
 else
