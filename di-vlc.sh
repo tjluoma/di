@@ -25,6 +25,8 @@ LOG="$HOME/Library/Logs/metalog/$NAME/$HOST/$TIME.log"
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
+
+
 die ()
 {
 	echo "$NAME: $@"
@@ -35,7 +37,9 @@ URL='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
 
 INSTALL_TO="/Applications/VLC.app"
 
-URL=`curl -sfL "$URL" | tr -s ' |\012' '\012' | fgrep 'url=' | tr '"' ' ' | awk '{print $NF}' | gsort --version-sort | tail -1`
+#URL=`curl -sfL "$URL" | tr -s ' |\012' '\012' | fgrep 'url=' | tr '"' ' ' | awk '{print $NF}' | gsort --version-sort | tail -1`
+
+URL=`curl -sfL "$URL" | tr -s ' |\012' '\012' | fgrep 'url=' | tr '"' ' ' | awk '{print $NF}' | tail -1`
 
 LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 
@@ -50,7 +54,7 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -84,6 +88,11 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && exit 0
+
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 			| fgrep -A 1 '<key>mount-point</key>' \
