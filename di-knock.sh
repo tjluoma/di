@@ -14,11 +14,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-if [ "`hostname`" = "air.luo.ma" ]
-then
-	echo "$NAME: Knock is not supported on this Mac"
-	exit 0
-fi
 
 
 ####################################################################################################
