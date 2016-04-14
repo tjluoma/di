@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose:
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -18,7 +18,9 @@ INSTALL_TO='/Applications/Marked 2.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0'`
 
-XML_FEED="http://abyss.designheresy.com/marked/marked.xml"
+# XML_FEED="http://abyss.designheresy.com/marked/marked.xml"
+
+XML_FEED="https://updates.marked2app.com/marked.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -49,7 +51,7 @@ FILENAME="$HOME/Downloads/Marked-${LATEST_VERSION}.zip"
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -69,7 +71,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Marked 2" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Marked 2.$INSTALLED_VERSION.app"
 fi
 
