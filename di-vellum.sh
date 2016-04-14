@@ -40,7 +40,7 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -59,18 +59,24 @@ DL_URL=`curl -sfL "https://get.180g.co/updates/vellum/" | tr -s ' ' '\012' | awk
 
 DL_URL=`echo $DL_URL | sed 's#https:/180g#https://180g#g'`
 
-FILE="$DIR/Vellum-$LATEST_VERSION.zip"
+FILENAME="$DIR/Vellum-$LATEST_VERSION.zip"
 
-echo "$NAME: Saving $DL_URL to $FILE"
+echo "$NAME: Saving $DL_URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILE" "$DL_URL" 2>/dev/null
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$DL_URL" 2>/dev/null
+
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && exit 0
+
 
 if [ -e "$INSTALL_TO" ]
 then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Vellum.$INSTALLED_VERSION.app"
 fi
 
-ditto --noqtn -v -xk "$FILE" "$INSTALL_TO:h"
+ditto --noqtn -v -xk "$FILENAME" "$INSTALL_TO:h"
 
 exit
 #
