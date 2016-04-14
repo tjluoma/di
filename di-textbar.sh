@@ -91,9 +91,6 @@ pkill -x TextBar
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h"
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
-	# Launch the app without stealing focus
-echo "$NAME: Launching TextBar"
-open -g -a TextBar
 
 exit 0
 #
