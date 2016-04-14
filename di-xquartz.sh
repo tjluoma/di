@@ -17,7 +17,7 @@ function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
 APP_PATH='/Applications/Utilities/XQuartz.app'
 
-INSTALLED_VERSION=`defaults read "${APP_PATH}/Contents/Info.plist" "CFBundleVersion" 2>/dev/null`
+INSTALLED_VERSION=`defaults read "${APP_PATH}/Contents/Info.plist" "CFBundleVersion" 2>/dev/null || echo '0'`
 
 CACHE='/usr/local/install/xquartz.txt'
 
@@ -135,7 +135,7 @@ function msgs {
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -158,27 +158,40 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 cd "$HOME/Downloads" || cd "$HOME/Desktop" || cd "$HOME" || cd /tmp
 
-REMOTE_SIZE=`curl -sL --head "${DOWNLOAD_ACTUAL}" | awk -F' ' '/Content-Length/{print $NF}'| tr -dc '[0-9]'`
+##
+## 2016-03-19 - the size checking code seems to causing an infinite loop
+##
+# REMOTE_SIZE=`curl -sL --head "${DOWNLOAD_ACTUAL}" | awk -F' ' '/Content-Length/{print $NF}'| tr -dc '[0-9]'`
+#
+#zmodload zsh/stat
+##
+# function get_local_size
+# {
+#
+# 	LOCAL_SIZE=$(zstat -L +size "$FILENAME" 2>/dev/null)
+#
+# }
+#
+# get_local_size
+#
+# while [ "$LOCAL_SIZE" -lt "$REMOTE_SIZE" ]
+# do
+#
+# 	curl -C - --max-time 3600 --fail --location --referer ";auto" --progress-bar --remote-name "${DOWNLOAD_ACTUAL}"
+#
+# 	get_local_size
+#
+# done
 
-zmodload zsh/stat
+echo "$NAME: Saving $DOWNLOAD_ACTUAL to $PWD/$FILENAME"
+curl -C - --max-time 3600 --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "${DOWNLOAD_ACTUAL}"
 
-function get_local_size
-{
 
-	LOCAL_SIZE=$(zstat -L +size "$FILENAME" 2>/dev/null)
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-}
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && exit 0
 
-get_local_size
 
-while [ "$LOCAL_SIZE" -lt "$REMOTE_SIZE" ]
-do
-
-	curl -C - --max-time 3600 --fail --location --referer ";auto" --progress-bar --remote-name "${DOWNLOAD_ACTUAL}"
-
-	get_local_size
-
-done
 
 MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep -A 1 '<key>mount-point</key>' | tail -1 | sed 's#</string>.*##g ; s#.*<string>##g')
 
