@@ -28,7 +28,7 @@ XML_URL='https://update.evernote.com/public/ENMacSMD/EvernoteMacUpdate.xml'
 
 LATEST_VERSION=`curl -sfL "$XML_URL" | awk -F'=' '/sparkle:shortVersionString/{print $NF}' | head -1 | tr -dc '[0-9].'`
 
-INSTALLED_VERSION=`defaults read /Applications/Evernote.app/Contents/Info CFBundleShortVersionString 2>/dev/null`
+INSTALLED_VERSION=`defaults read /Applications/Evernote.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '0'`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
