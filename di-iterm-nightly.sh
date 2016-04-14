@@ -14,7 +14,7 @@ INSTALL_TO='/Applications/iTerm.app'
 
 if [ -e "$INSTALL_TO" ]
 then
-		# if the app is installed, check to see what version we are running 
+		# if the app is installed, check to see what version we are running
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | tr -dc '[0-9].'`
 else
 		# if it isn't installed, just use a default old version number to force an 'update'
@@ -45,7 +45,7 @@ then
 	exit 0
 fi
 
-	# Remote '-nightly' from version string from XML feed 
+	# Remote '-nightly' from version string from XML feed
 	# because it is not used in CFBundleShortVersionString
 LATEST_VERSION=`echo "$LATEST_VERSION" | sed 's#-nightly##g'`
 
@@ -54,11 +54,11 @@ LATEST_VERSION=`echo "$LATEST_VERSION" | sed 's#-nightly##g'`
  	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
  	exit 0
  fi
-	
+
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -78,14 +78,18 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+	# 2016-03-24 - for some reason the file is zero bytes
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 if [ -e "$INSTALL_TO" ]
 then
-		# DON'T QUIT if running, or we might terminate ourselves! 
-		# Just move to the trash. The app will still work. Next time it's launched 
-		# it will launch new version 
-		
-		# move installed version to trash 
+		# DON'T QUIT if running, or we might terminate ourselves!
+		# Just move to the trash. The app will still work. Next time it's launched
+		# it will launch new version
+
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/iTerm.$INSTALLED_VERSION.app"
 fi
 
@@ -99,11 +103,11 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	(( $+commands[growlnotify] )) \
 	&& pgrep -xq Growl \
 	&& growlnotify --sticky --appIcon "iTerm" --identifier "$NAME" --message "Updated iTerm to $LATEST_VERSION" --title "$NAME"
-		
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
