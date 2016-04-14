@@ -16,7 +16,7 @@ XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
 LATEST_VERSION=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/sparkle:version/{print $2}' | head -1`
 
-INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBundleVersion`
+INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBundleVersion 2>/dev/null || echo '0'`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
@@ -27,7 +27,7 @@ INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBu
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -60,6 +60,10 @@ FILENAME="$DIR/ExpanDrive-$LATEST_VERSION.dmg"
 echo "$NAME: Downloading $DL_URL to $FILENAME"
 
 curl --progress-bar --continue-at - --fail --location --output  "$FILENAME" "$DL_URL"
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 while [ "`pgrep ExpanDrive`" != "" ]
 do
