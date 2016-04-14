@@ -40,26 +40,6 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM"
 
 
-function launch_app
-{
-
-	PID=`pgrep 'BitTorrent Sync'`
-
-	if [ "$PID" = "" ]
-	then
-		open -b 'com.bittorrent.Sync'
-
-		sleep 5
-
-		osascript -e 'tell application "System Events" to set visible of process "BitTorrent Sync" to false'
-	fi
-
-}
-
-
-
-
-
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
 #		Check to see what the latest version is
@@ -227,13 +207,6 @@ do
 	diskutil eject "$MNTPNT"
 done
 
-
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
-#
-#		Launch the app, and then hide it
-#
-
-launch_app
 
 exit 0
 #
