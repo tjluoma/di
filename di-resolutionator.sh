@@ -89,8 +89,7 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Resolutionator.$INSTALLED_VERSION.app"
 fi
 
-ditto -v "$MNTPNT/Resolutionator.app" "$INSTALL_TO" \
-&& open "$INSTALL_TO"
+ditto -v "$MNTPNT/Resolutionator.app" "$INSTALL_TO" 
 
 if (( $+commands[unmount.sh] ))
 then
