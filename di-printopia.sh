@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO="$HOME/Library/PreferencePanes/Printopia.prefPane"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='https://www.decisivetactics.com/products/printopia/appcast'
 
