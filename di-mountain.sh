@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Mountain.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='http://appgineers.de/mountain/files/mountaincast.xml'
 
