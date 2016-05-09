@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/ForeverSave 2.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='http://updates.tool-forcesw.com/foreversave2.xml'
 
