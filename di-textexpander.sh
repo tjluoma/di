@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-04
 
+
+#@TODO - Update for version 6
+
 NAME="$0:t:r"
 
 if [ -e "$HOME/.path" ]
@@ -26,7 +29,7 @@ LATEST_VERSION="$INFO[2]"
 
 INSTALL_TO='/Applications/TextExpander.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '5.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
