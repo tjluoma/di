@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Fantastical 2.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='https://flexibits.com/fantastical/appcast2.php'
 
