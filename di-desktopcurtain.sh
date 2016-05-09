@@ -18,7 +18,7 @@ XML_FEED='https://manytricks.com/desktopcurtain/appcast.xml'
 
 INSTALL_TO='/Applications/Desktop Curtain.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '3.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 INFO=($(curl -A Safari -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
