@@ -17,7 +17,7 @@ fi
 
 INSTALL_TO='/Applications/Subtitles.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 3`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
 	# XML file is... unusual.
 INFO=($(curl -sfL 'http://subtitlesapp.com/updates.xml' \
