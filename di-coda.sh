@@ -12,7 +12,7 @@ INSTALL_TO='/Applications/Coda 2.app'
 
 OS_VER=`sw_vers -productVersion`
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED="https://www.panic.com/updates/update.php?osVersion=${OS_VER}&lang=en&appName=Coda%202&appVersion=$INSTALLED_VERSION"
 
