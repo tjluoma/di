@@ -25,7 +25,7 @@ LAUNCH='no'
 INSTALL_TO='/Applications/MarsEdit.app'
 
 	# If MarsEdit is already installed, check to see if it is up to date
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '3'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 	# This is the Sparkle feed for MarsEdit updates
 XML_FEED='http://www.red-sweater.com/marsedit/appcast3.php'
