@@ -18,7 +18,7 @@ then
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | tr -dc '[0-9].'`
 else
 		# if it isn't installed, just use a default old version number to force an 'update'
-	 INSTALLED_VERSION='2.0.0'
+	 INSTALLED_VERSION='0'
 fi
 
 #    SUFeedURLForFinal = "https://iterm2.com/appcasts/final.xml";
