@@ -7,6 +7,10 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: This needs to be reworked. XML_FEED is no longer valid 2016-04-27"
+
+exit 0
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -80,12 +84,8 @@ then
 	exit 1
 fi
 
-
 ditto --noqtn -v "$MNTPNT/CocoaPacketAnalyzer.app" "$INSTALL_TO" \
 && diskutil eject "$MNTPNT"
-
-
-
 
 
 exit 0
