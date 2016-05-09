@@ -18,7 +18,7 @@ INSTALL_TO='/Applications/SSH Tunnel Manager.app'
 
 XML_FEED='https://ssl.tynsoe.org/stm/stm.xml'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '22'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
