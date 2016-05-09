@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/SuperDuper!.app'
  
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '90'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 OS_VER=`sw_vers -productVersion`
 
