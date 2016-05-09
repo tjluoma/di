@@ -28,7 +28,7 @@ and I look for a line line this:
 		length="25709021" 
 		type="application/octet-stream"/>
 
-There’s usually a lot more in the feed, but this is the important part. If there are multiple updates in the feed, check for the most recent one. (Most of the time it will just be the most recent version; sometimes there are a lot of versions, with the newest on top; sometimes there are a lot of versions with the newest on the bottom. Occasionally there’s one or two entries, which includes (1) the newest version and (2) an older version which only works on older versions of Mac OS X.
+There’s usually a lot more in the feed, but this is the important part. If there are multiple updates in the feed, check for the most recent one. (Most of the time it will just be the most recent version; sometimes there are a lot of versions, with the newest on top; sometimes there are a lot of versions with the newest on the bottom). Occasionally there’s one or two entries, which includes (1) the newest version and (2) an older version which only works on older versions of Mac OS X.
 
 `enclosure url` will tell you where the actual download is.
 
