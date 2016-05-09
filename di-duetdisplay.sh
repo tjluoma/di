@@ -18,7 +18,7 @@ XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
 
 INSTALL_TO='/Applications/Duet.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
