@@ -157,11 +157,11 @@ function do_download
 	then
 		log "Continuing download of $PKG_URL to $FILENAME"
 			# if the file is already there, continue download
-		curl -sfL --progress-bar --continue-at - --output "$FILENAME" "$PKG_URL"
+		curl -fL --progress-bar --continue-at - --output "$FILENAME" "$PKG_URL"
 	else
 		log "Downloading $PKG_URL to $FILENAME"
 			# if the file is NOT there, don't try to continue
-		curl -sfL --progress-bar --output "$FILENAME" "$PKG_URL"
+		curl -fL --progress-bar --output "$FILENAME" "$PKG_URL"
 	fi
 
 	SIZE=$(zstat -L +size "$FILENAME")
@@ -265,7 +265,7 @@ then
 
 	log "Installation successful"
 
-	echo "$NAME [$HOST]: Updated to $LATEST_VERSION" | slackcat -tee --channel "$HOST"
+#	echo "$NAME [$HOST]: Updated to $LATEST_VERSION" | slackcat -tee --channel "$HOST"
 
 	diskutil eject "${MNTPNT}"
 
