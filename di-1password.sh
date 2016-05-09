@@ -20,7 +20,7 @@ INSTALL_TO='/Applications/1Password 6.app'
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
 # where '600008' = CFBundleVersion
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '6.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 
 FEED_URL="https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/$BUILD_NUMBER"
