@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/itsycal.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0.10.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='https://s3.amazonaws.com/itsycal/itsycal.xml'
 
