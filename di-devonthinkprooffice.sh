@@ -12,7 +12,7 @@ XML_FEED='http://www.devon-technologies.com/Sparkle/DEVONthinkProOffice2.xml'
 
 INSTALL_TO='/Applications/DEVONthink Pro.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
