@@ -10,7 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Jettison.app'
 
-INSTALLED_VERSION=`defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion 2>/dev/null || echo '2000'`
+INSTALLED_VERSION=`defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 XML_FEED='http://www.stclairsoft.com/updates/Jettison.xml'
 
@@ -97,7 +97,7 @@ then
 
 	REG_FILE="$HOME/dotfiles/licenses/jettison/com.stclairsoft.Jettison.plist"
 
-	PREF_FILE"$HOME/Library/Preferences/com.stclairsoft.Jettison.plist"
+	PREF_FILE="$HOME/Library/Preferences/com.stclairsoft.Jettison.plist"
 
 	if [ -e "$REG_FILE" ]
 	then
