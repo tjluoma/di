@@ -84,7 +84,7 @@ Here are some apps that I want to be able to update automatically, but can’t f
 
 4. [Google Chrome](https://dl-ssl.google.com/chrome/mac/stable/CHFA/googlechrome.dmg) - will update itself via `launchd`, so not a high priority item.
 
-5. Microsoft Office 2011
+5. <del>Microsoft Office 2011</del> - Recently added. (Office 2016 to come.)
 
 6. More TK?
 
