@@ -18,7 +18,7 @@ XML_FEED='http://abyss.designheresy.com/nvalt2/nvalt2main.xml'
 
 INSTALL_TO='/Applications/nvALT.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '110'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
