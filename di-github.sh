@@ -10,7 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/GitHub Desktop.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '200'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 OS_VER=`sw_vers -productVersion || echo '10.11'`
 
