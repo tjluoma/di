@@ -18,7 +18,7 @@ XML_FEED='http://www.bluemangolearning.com/download/clarify/2_0/auto_update/rele
 
 INSTALL_TO='/Applications/Clarify.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
