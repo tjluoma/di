@@ -17,7 +17,7 @@ fi
 
 INSTALL_TO='/Applications/Mailplane 3.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '2000'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 OS_VER=`sw_vers -productVersion`
 
