@@ -18,7 +18,7 @@ fi
 INSTALL_TO='/Applications/Audiobook Builder.app'
 
 	## if installed, get current version. If not, put in 1.0.0 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1.0.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 	## Use installed version in User Agent when requesting Sparkle feed 
 UA="Audiobook Builder/$INSTALLED_VERSION Sparkle/1.5"
