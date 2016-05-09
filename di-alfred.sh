@@ -20,7 +20,7 @@ INSTALL_TO='/Applications/Alfred 2.app'
 
 	# Note that we are using the Build Number/CFBundleVersion for Alfred,
 	# because that changes more often than the CFBundleShortVersionString
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 
 # XML_FEED='https://cachefly.alfredapp.com/updater/info.plist'
@@ -91,7 +91,7 @@ ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-[[ "$LAUNCH_PREFS" = "yes" ]] && open -a "$INSTALL_TO/Contents/Preferences/Alfred Preferences.app"
+# [[ "$LAUNCH_PREFS" = "yes" ]] && open -a "$INSTALL_TO/Contents/Preferences/Alfred Preferences.app"
 
 
 
