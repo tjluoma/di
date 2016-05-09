@@ -10,7 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Scrivener.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo ' 2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 XML_FEED='http://www.literatureandlatte.com/downloads/scrivener-2.xml'
 
