@@ -9,7 +9,7 @@ NAME="$0:t:r"
 
 INSTALL_TO="$HOME/Library/PreferencePanes/Choosy.prefPane"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 1.0.0`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
 INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' | tr -s ' ' '\012' | egrep "sparkle:version=|url=" | head -2 | awk -F'"' '/^/{print $2}'))
 
