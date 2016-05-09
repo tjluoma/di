@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Revisions.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED="http://www.revisionsapp.com/checkforupdate/web/$INSTALLED_VERSION"
 
