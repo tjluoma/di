@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Transmission.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED='http://update.transmissionbt.com/appcast.xml'
 
