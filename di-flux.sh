@@ -24,7 +24,7 @@ URL="$INFO[1]"
 
 LATEST_VERSION="$INFO[2]"
 
-INSTALLED_VERSION=`defaults read /Applications/Flux.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '36.0'`
+INSTALLED_VERSION=`defaults read /Applications/Flux.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '0'`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
