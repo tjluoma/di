@@ -6,6 +6,9 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-23
 
+## 2016-04-22 - changed from .dmg to .zip
+
+
 NAME="$0:t:r"
 
 DIR="$HOME/Downloads"
@@ -37,8 +40,8 @@ else
 fi
 
 	# If there's no installed version, output 3.0.0 so the Sparkle feed will give us the proper download URL
-INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '3.0.0'`
-
+	## DO NOT SET TO ZERO 
+INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '3'`
 
 INFO=($(curl -sfL "http://update.noodlesoft.com/Products/Hazel/appcast.php?version=$INSTALLED_VERSION" \
 			| tr -s ' ' '\012' \
@@ -68,22 +71,14 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 URL="$INFO[2]"
 
-FILENAME="$DIR/Hazel-$LATEST_VERSION.dmg"
+FILENAME="$DIR/Hazel-$LATEST_VERSION.zip"
+
+	# Server does not support continued downloads, so assume that this is incomplete and try again
+[[ -f "$FILENAME" ]] && rm -f "$FILENAME" 
 
 echo "$NAME: Downloading $URL to $FILENAME"
-curl --continue-at - -fL --progress-bar --output "$FILENAME" "$URL"
+curl -fL --progress-bar --output "$FILENAME" "$URL"
 
-
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
-
-if [[ "$MNTPNT" == "" ]]
-then
-		msg --die "Failed to mount $FILENAME. (MNTPNT is empty)"
-		exit 1
-fi
 
 # If we get here we are ready to install
 
@@ -95,25 +90,25 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Hazel.$INSTALLED_VERSION.prefPane"
 fi
 
-echo "$NAME: Installing $MNTPNT/Hazel.prefPane to $INSTALL_TO.."
-ditto --noqtn -v "$MNTPNT/Hazel.prefPane" "$INSTALL_TO"
 
+
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+
+	# Extract from the .zip file and install (this will leave the .zip file in place)
+ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
-	unmount.sh "$MNTPNT" &|
-
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+	
 else
-	MSG="Hazel installation failed (\$EXIT = $EXIT)"
-
-	po.sh "$MSG"
-
-	echo "$NAME: $MSG"
-
-	exit 0
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
+
 
 
 echo "$NAME: Launching HazelHelper..."
