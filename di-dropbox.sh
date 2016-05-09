@@ -35,7 +35,7 @@ fi
 #		Get the version number for the installed version of Dropbox
 #
 
-INSTALLED_VERSION=`defaults read /Applications/Dropbox.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo 3.0.0`
+INSTALLED_VERSION=`defaults read /Applications/Dropbox.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo 0`
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
