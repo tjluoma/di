@@ -18,8 +18,7 @@ LATEST_VERSION=`curl -sfL https://s3.amazonaws.com/sqwarq.com/AppFixerDownload/u
 
 INSTALL_TO='/Applications/App Fixer.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null \
-|| echo 1`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
