@@ -10,7 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MacPilot.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 8.0.0`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
 OS_VER=`sw_vers -productVersion`
 
