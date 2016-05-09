@@ -25,7 +25,7 @@ URL="$INFO[2]"
 
 INSTALL_TO='/Applications/PDFpenPro.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
