@@ -14,7 +14,7 @@ XML_FEED='https://imageoptim.com/appcast-test.xml'
 
 # XML_FEED='https://imageoptim.com/appcast.xml'
 
-INSTALL_TO='/Applications/ImageOptim.app'
+INSTALL_TO='/Applications/ImageOptimBeta.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
  
@@ -64,15 +64,17 @@ then
 	&& osascript -e 'tell application "ImageOptim" to quit'
 
 		# move installed version to trash 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/ImageOptim.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/ImageOptim.$INSTALLED_VERSION.$$.app"
 fi
 
 
-tar -x -C "$INSTALL_TO:h" -j -f "$FILENAME"
+TEMPDIR=`mktemp -d "${TMPDIR-/tmp/}XXXXXXXX"`
 
+tar -x -C "${TEMPDIR}" -j -f "$FILENAME"
 
+mv -vf "$TEMPDIR/ImageOptim.app" "$INSTALL_TO"
 
-
+rmdir "$TEMPDIR"	# Cleanup 
 
 
 exit
