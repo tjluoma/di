@@ -158,7 +158,7 @@ fi
 ## "$MSWORD:h" = the "head" aka parent directory of MSWord
 ## which is presumably where all other related apps are stored
 
-RUNNING_COUNT=`ps auxwwww | fgrep -v 'fgrep' | fgrep  "$MSWORD:h" | wc -l | tr -dc '[0-9]'
+RUNNING_COUNT=`ps auxwwww | fgrep -v 'fgrep' | fgrep  "$MSWORD:h" | wc -l | tr -dc '[0-9]'`
 
 while [ "$RUNNING_COUNT" != "0" ]
 do
