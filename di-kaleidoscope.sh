@@ -85,12 +85,6 @@ else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
 
-
-
-
-
-# @TODO - FINISH
-
 exit 0
 #
 #EOF
