@@ -5,8 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-02
 
-# @TODO - examine with Charles proxy to see if you can get a better update URL?
-
 NAME="$0:t:r"
 
 if [ -e "$HOME/.path" ]
