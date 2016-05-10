@@ -5,9 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-04
 
-
-#@TODO - Update for version 6
-
 NAME="$0:t:r"
 
 if [ -e "$HOME/.path" ]
