@@ -6,12 +6,13 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-26
 
-
-# @todo - check both version numbers because build # has changed even when friendly number has not
-
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Feeder 3.app'
+
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null || echo '0'`
+
+INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleVersion 2>/dev/null || echo '0'`
 
 
 INFO=($(curl -sfL "https://reinventedsoftware.com/feeder/downloads/Feeder3.xml" \
@@ -28,17 +29,12 @@ REMOTE_BUNDLE_VERSION="$INFO[2]"
 
 REMOTE_READABLE_VERSION="$INFO[3]"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null || echo '0'`
 
-INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleVersion 2>/dev/null || echo '0'`
-
-
-
- if [ "$REMOTE_BUNDLE_VERSION" = "$INSTALLED_BUNDLE_VERSION" -a "$REMOTE_READABLE_VERSION" = "$INSTALLED_VERSION" ]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+if [ "$REMOTE_BUNDLE_VERSION" = "$INSTALLED_BUNDLE_VERSION" -a "$REMOTE_READABLE_VERSION" = "$INSTALLED_VERSION" ]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	exit 0
+fi
  
  
 
