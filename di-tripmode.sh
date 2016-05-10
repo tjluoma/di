@@ -17,6 +17,8 @@ fi
 
 # @TODO - finish
 
+# https://tripmode.ch/TripMode.pkg
+
 
 exit 0
 #EOF
