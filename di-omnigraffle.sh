@@ -14,7 +14,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-
 LAUNCH='no'
 
 ## Note: Downloads are available in tbz2 and dmg but dmg has EULA so I use tbz2
