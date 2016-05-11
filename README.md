@@ -92,3 +92,12 @@ Here are some apps that I want to be able to update automatically, but can’t f
 ## How does this work? Give me the nerdy details.
 
 See [the Advanced](https://github.com/tjluoma/di/blob/master/Advanced.md) notes.
+
+
+## Milestone - 100 apps!
+
+On 2016-05-11, this project hit a significant (to me, at least) milestone, as it now supports 100 apps.
+
+(There are actually 103 scripts, but at least a couple of them are not fully functional.)
+
+
