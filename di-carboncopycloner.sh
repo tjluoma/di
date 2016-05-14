@@ -18,10 +18,9 @@ fi
 INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | tr -d 'ƒ' || echo '0'`
 
-
-
+# This feed seems to stop with version 3.4.7 but there is a version 4. Need new feed URL?
 
 XML_FEED='https://bombich.com/software/updates/ccc.php'
 
@@ -63,7 +62,37 @@ fi
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}.dmg"
+
+echo "$NAME: Downloading $URL to $FILENAME"
+
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+fi
+
+ditto --noqtn -v "$MNTPNT/Carbon Copy Cloner.app" "$INSTALL_TO" \
+&& diskutil eject "$MNTPNT"
+
+
 
 
 exit 0
