@@ -38,10 +38,11 @@ fi
 
 cd $HOME/Downloads
 	
-curl --location --fail https://tripmode.ch/TripMode.pkg
+curl --location --fail --remote-name https://tripmode.ch/TripMode.pkg
 
-sudo installer -pkg "TripMode.pkg" -target / -lang en 2>&1 | tee -a "$LOG"
+sudo installer -pkg "TripMode.pkg" -target / 2>&1 | tee -a "$LOG"
 
+# installer: The install failed (The Installer encountered an error that caused the installation to fail. Contact the software manufacturer for assistance.)
 
 exit 0
 
