@@ -41,7 +41,7 @@ fi
 
 	# If there's no installed version, output 3.0.0 so the Sparkle feed will give us the proper download URL
 	## DO NOT SET TO ZERO 
-INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '3'`
+INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
 INFO=($(curl -sfL "http://update.noodlesoft.com/Products/Hazel/appcast.php?version=$INSTALLED_VERSION" \
 			| tr -s ' ' '\012' \
@@ -63,7 +63,7 @@ autoload is-at-least
  
  if [ "$?" = "0" ]
  then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version >$LATEST_VERSION<"
  	exit 0
  fi
 
