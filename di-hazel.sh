@@ -79,7 +79,6 @@ FILENAME="$DIR/Hazel-$LATEST_VERSION.zip"
 echo "$NAME: Downloading $URL to $FILENAME"
 curl -fL --progress-bar --output "$FILENAME" "$URL"
 
-
 # If we get here we are ready to install
 
 # Quit HazelHelper
@@ -89,8 +88,6 @@ if [ -e "$INSTALL_TO" ]
 then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Hazel.$INSTALLED_VERSION.prefPane"
 fi
-
-
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
@@ -108,8 +105,6 @@ then
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
-
-
 
 echo "$NAME: Launching HazelHelper..."
 
