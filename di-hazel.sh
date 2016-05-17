@@ -43,7 +43,7 @@ fi
 	## DO NOT SET TO ZERO 
 INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
-INFO=($(curl -sfL "http://update.noodlesoft.com/Products/Hazel/appcast.php?version=$INSTALLED_VERSION" \
+INFO=($(curl -sfL "https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION" \
 			| tr -s ' ' '\012' \
 			| egrep '^(sparkle:version|url)=' \
 			| head -2 \
