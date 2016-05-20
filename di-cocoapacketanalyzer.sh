@@ -7,10 +7,6 @@
 
 NAME="$0:t:r"
 
-echo "$NAME: This needs to be reworked. XML_FEED is no longer valid 2016-04-27"
-
-exit 0
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -22,7 +18,9 @@ INSTALL_TO='/Applications/CocoaPacketAnalyzer.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
-XML_FEED="http://www.tastycocoabytes.com/cpa/updates/appcasting.php"
+# XML_FEED="http://www.tastycocoabytes.com/cpa/updates/appcasting.php"
+
+XML_FEED="http://www.tastycocoabytes.com/cpa/updates/appcast.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -45,7 +43,7 @@ fi
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
-	echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 	exit 0
 fi
 
