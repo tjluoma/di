@@ -120,11 +120,9 @@ The easiest way to use these scripts is to download the ones that you want and p
 	
 3) Once you have done that, simply browse the list of apps and see which ones you want to install, then download them and save them to `/usr/local/bin/`. 
 
-	(Tip: Look for the “Raw” button, shown here: 
-
-	<img src='img/github-raw.jpg' alt='Raw button'> 
-
-	to get the “raw” script without any HTML around it.)
+(Tip: Look for the “Raw” button, shown here: 
+<img src='img/github-raw.jpg' alt='Raw button'> 
+to get the “raw” script without any HTML around it.)
 
 4) **Here’s a crucial step:** Make sure you choose [di-all.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-all.sh) as one of the scripts you want to install. It will run all of the other scripts that start with `di-` when you run it.
 
