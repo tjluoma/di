@@ -30,20 +30,22 @@ COUNT='0'
 
 log "---------- STARTING AT `timestamp` ---------- "
 
-for i in di-*sh
+# If di-auto.sh hasn't created a list, run it now.
+[[ -e ./di-scripts/di.lst ]] || ./di-auto.sh
+while read INSTALLED
 do
 
 		# If the name of the script being run is not the same as the name of this script
 		# then...
-	if [ "$i" != "$0:t" ]
+	if [ "$INSTALLED" != "$0:t" ]
 	then
-		log "Running $i"
+		log "Running $INSTALLED"
 
 		((COUNT++))
 
-		$i  2>&1 | tee -a "$LOG"
+		$INSTALLED  2>&1 | tee -a "$LOG"
 	fi 
-done
+done < di-scripts/di.lst
 
 
 echo "Last run at `timestamp` when $COUNT apps were checked." >| "$HOME/.$NAME.lastrun.log"
