@@ -23,6 +23,9 @@ LOG="$HOME/Library/Logs/$NAME.log"
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
+# chdir to the directory where this script is found
+cd "$0:h"
+
 log "------------- STARTING AT `timestamp` -------------"
 
 [[  -e "./di-scripts/di.lst" ]] || touch "./di-scripts/di.lst"  # Create the list of installed software
@@ -37,8 +40,17 @@ do
     LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
 
     # If the app exists, put the script name in the list of installed apps
-    #  Actually we test for the app not existing, and then add the name if it fails.
-    [[ ! -e "$LOCATION" ]] || echo $i >> ./di-scripts/di.lst
+    if [ -e "$LOCATION" ]
+    then
+      #  Check whether the App is already in the list
+      if (grep $LOCATION ./di-scripts/di.lst)
+      then
+        log "  $LOCATION already stored"
+      else
+        echo $i >> ./di-scripts/di.lst
+        log "  $LOCATION added"
+      fi
+    fi
 done
 
 log "------------- FINISHED AT `timestamp` -------------"

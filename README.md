@@ -102,7 +102,23 @@ On 2016-05-11, this project hit a significant (to me, at least) milestone, as it
 (There are actually 103 scripts, but at least a couple of them are not fully functional.)
 
 
-## Installation and Use 
+## Installation and Use ##
+
+
+##Optional Instructions
+First step is to find the directory you want to run these scripts in, It's  perfectly fine to download them all into your home directory, and thats what we're going to work with.  
+We'll simply clone the whole repo (give you a copy of everything)  
+
+`git clone https://github.com/superbimble/di.git`  
+
+Now, when there are any new updates, you just cd into the `~/di` directory, and run the command `git pull`
+
+To start running your updates, you start terminal, and run `~/di/di-all.sh`  
+The first time you run this, it will build a list of your installed apps, and store them in  a file inside the `di` directory, and then check for the updates.  
+
+If you install new apps, then run the command `~/di/di-auto.sh` and it will look for any new files, and add them to the list.
+
+##End of Optional
 
 Right now there isn’t a super-easy way to do this, so you’ll have to follow the steps below.
 
