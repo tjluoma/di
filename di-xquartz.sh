@@ -15,9 +15,9 @@ zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
-APP_PATH='/Applications/Utilities/XQuartz.app'
+INSATLL_TO='/Applications/Utilities/XQuartz.app'
 
-INSTALLED_VERSION=`defaults read "${APP_PATH}/Contents/Info.plist" "CFBundleVersion" 2>/dev/null || echo '0'`
+INSTALLED_VERSION=`defaults read "${INSATLL_TO}/Contents/Info.plist" "CFBundleVersion" 2>/dev/null || echo '0'`
 
 CACHE='/usr/local/install/xquartz.txt'
 
@@ -149,11 +149,11 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 # if [ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]
 # then
-# 		log "$APP_PATH:t is up-to-date ($INSTALLED_VERSION ~ $LATEST_VERSION)"
+# 		log "$INSATLL_TO:t is up-to-date ($INSTALLED_VERSION ~ $LATEST_VERSION)"
 # 		exit 0
 # else
 # 			# Update Needed
-# 		msgs "$APP_PATH:t is outdated ($INSTALLED_VERSION vs $LATEST_VERSION)"
+# 		msgs "$INSATLL_TO:t is outdated ($INSTALLED_VERSION vs $LATEST_VERSION)"
 # fi
 
 cd "$HOME/Downloads" || cd "$HOME/Desktop" || cd "$HOME" || cd /tmp
