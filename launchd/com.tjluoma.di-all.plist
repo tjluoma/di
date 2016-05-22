@@ -5,7 +5,7 @@
 	<key>Label</key>
 	<string>com.tjluoma.di-all</string>
 	<key>Program</key>
-	<string>/usr/local/local/di-all.sh</string>
+	<string>/usr/local/bin/di-all.sh</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StartInterval</key>
