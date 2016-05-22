@@ -109,7 +109,7 @@ On 2016-05-11, this project hit a significant (to me, at least) milestone, as it
 First step is to find the directory you want to run these scripts in, It's  perfectly fine to download them all into your home directory, and thats what we're going to work with.  
 We'll simply clone the whole repo (give you a copy of everything)  
 
-`git clone https://github.com/superbimble/di.git`  
+`git clone https://github.com/tjluoma/di.git`  
 
 Now, when there are any new updates, you just cd into the `~/di` directory, and run the command `git pull`
 
