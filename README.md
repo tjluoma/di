@@ -72,135 +72,17 @@ However, a few of them are more likely than others.
 * [BusyCal](http://www.busymac.com/busycal/) and [BusyContacts](http://www.busymac.com/busycontacts/) - updating them causes an “Open” dialog to appear, for reasons which are unclear to me. I assume it has something to do with sandboxing, but I’m not sure. I’m also not sure what to do about it, so I just hit `ESC` whenever that happens.
 
 
-## To-Do List
-
-Here are some apps that I want to be able to update automatically, but can’t figure out how to (yet?):
-
-1. [MakeMKV](http://www.makemkv.com) - Cannot find XML/Sparkle feed, although it has some method of checking for updates. [Forum Post](http://www.makemkv.com/forum2/viewtopic.php?f=4&t=9955&sid=d6856f9d8122781dd1bf1e629908f49b)
-
-2. [Charles](https://www.charlesproxy.com/) - Ironically this is what I use for checking most apps that don’t have an easy to find Sparkle feed, but I’m not sure where _its_ feed is.
-
-3. [Kindle for Mac](http://www.amazon.com/kindlemacdownload) - The non-Mac App Store version has a way to check for updates, but can’t figure out what it is.
-
-4. [Google Chrome](https://dl-ssl.google.com/chrome/mac/stable/CHFA/googlechrome.dmg) - will update itself via `launchd`, so not a high priority item.
-
-5. <del>Microsoft Office 2011</del> - Recently added. (Office 2016 to come.)
-
-6. More TK?
-
 
 ## How does this work? Give me the nerdy details.
 
-See [the Advanced](https://github.com/tjluoma/di/blob/master/docs/Advanced.md) notes.
+See [the Advanced Nerdy Details](https://github.com/tjluoma/di/wiki/Advanced-Nerdy-Details) in the wiki.
 
+Some documentation has been moved to the wiki, including:
 
-## Milestone - 100 apps!
+* [Installation and Usage Guide](https://github.com/tjluoma/di/wiki/Installation-and-Usage)
+* [A wishlist](https://github.com/tjluoma/di/wiki/Wishlist)
+* [Developer information](https://github.com/tjluoma/di/wiki/Dear-Mac-Developers)
 
-On 2016-05-11, this project hit a significant (to me, at least) milestone, as it now supports 100 apps.
-
-(There are actually 103 scripts, but at least a couple of them are not fully functional.)
-
-
-## Installation and Use ##
-
-
-##Optional Instructions
-First step is to find the directory you want to run these scripts in, It's  perfectly fine to download them all into your home directory, and thats what we're going to work with.  
-We'll simply clone the whole repo (give you a copy of everything)  
-
-`git clone https://github.com/tjluoma/di.git`  
-
-Now, when there are any new updates, you just cd into the `~/di` directory, and run the command `git pull`
-
-To start running your updates, you start terminal, and run `~/di/di-all.sh`  
-The first time you run this, it will build a list of your installed apps, and store them in  a file inside the `di` directory, and then check for the updates.  
-
-If you install new apps, then run the command `~/di/di-auto.sh` and it will look for any new files, and add them to the list.
-
-##End of Optional
-
-Right now there isn’t a super-easy way to do this, so you’ll have to follow the steps below.
-
-(Steps #1 and #2 only need to be done the first time.)
-
-The easiest way to use these scripts is to download the ones that you want and put them in `/usr/local/bin/`
-
-1) If you have not used /usr/local/bin/ before you will need to create it:
-
-	sudo mkdir -p /usr/local/bin/
-	
-2) Then, for most people who are the only users of their Macs, I recommend changing the ownership of `/usr/local/bin/`	to match your username, so you can easily add/edit files:
-
-	sudo chown $LOGNAME /usr/local/bin/
-	
-3) Once you have done that, simply browse the list of apps and see which ones you want to install, then download them and save them to `/usr/local/bin/`. 
-
-(Tip: Look for the “Raw” button, shown here: 
-
-<img src='img/github-raw.jpg' alt='Raw button'> 
-
-to get the “raw” script without any HTML around it.)
-
-4) **Here’s a crucial step:** Make sure you choose [di-all.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-all.sh) as one of the scripts you want to install. It will run all of the other scripts that start with `di-` when you run it.
-
-5) When you have saved all the ones that you want, make sure they are _executable_ by running this command:
-
-	chmod a+x /usr/local/bin/di-*.sh
-	
-6) If you want these scripts to run automatically, you will need to install the `launchd` plist as well. **This only needs to be done once.**
-
-The easiest way to install it is to run these commands, which you can copy/paste into Terminal:
-
-
-Created the directory where the file needs to go:
-
-	mkdir -p "$HOME/Library/LaunchAgents/"
-	
-Note: you won’t see any response after that command, it will just show you a new command prompt. That is OK.
-	
-
-Change directory into that new directory that you have created:
-
-	cd "$HOME/Library/LaunchAgents/"
-
-(Again, no response will be given)
-
-
-Download the plist:
-
-	curl --remote-name https://raw.githubusercontent.com/tjluoma/di/master/launchd/com.tjluoma.di-all.plist
-	
-You will see a brief progress bar that looks something like this:
-
-	  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-	                                 Dload  Upload   Total   Spent    Left  Speed
-	100   391  100   391    0     0    445      0 --:--:-- --:--:-- --:--:--   444
-
-Last, you need to tell `launchd` to load the plist:
-
-	launchctl load $PWD/com.tjluoma.di-all.plist
-
-I know that is an awkward series of steps, but it only needs to be done once. You can do it!
-
-If you decide that you want more scripts, just download them to /usr/local/bin/.
-
-If you decide that you no longer want a particular script, just delete the file.
-
-## Here is an example for VLC and Bartender
-
-Imagine that you wanted to install VLC and Bartender, and keep them up to date. 
-
-1. Download [di-bartender.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-bartender.sh) and [di-vlc.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-vlc.sh) and save them to /usr/local/bin/
-
-2. Download [di-all.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-all.sh) and save it to /usr/local/bin/
-
-	**Note: the ‘all’ in ‘di-all’ refers to ‘all that you have installed’ not ‘all available on Github’
-	
-3. Install `com.tjluoma.di-all.plist` as described above.
-
-Now they will be automatically kept up-to-date. That's all you need to do!
-
-If you decide that you want to add another app, for example: Evernote, simply download [di-evernote.sh](https://raw.githubusercontent.com/tjluoma/di/master/di-evernote.sh) and save it to /usr/local/bin/. Since you already have `di-all` and `launchd` configured, you don’t need to do anything else other than grab the new “di” file for the new app.
 
 
 
