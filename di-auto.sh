@@ -28,27 +28,31 @@ cd "$0:h"
 
 log "------------- STARTING AT `timestamp` -------------"
 
-[[  -e "./di-scripts/di.lst" ]] || touch "./di-scripts/di.lst"  # Create the list of installed software
-for i in di-scripts/di-*sh
+[[  -e "./di.lst" ]] || touch "./di.lst"  # Create the list of installed software
+for i in di-*sh
 do
-    #Check if the INSTALL_TO exists.  If it does, add it to the list
-    # This FAILS for Evernote and hazel
-
-    LOC=`grep -m1 INSTALL_TO $i`
-    
-    # There must be a better way to do this.  We split on the = and then use rev to flip the string
-    LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
-
-    # If the app exists, put the script name in the list of installed apps
-    if [ -e "$LOCATION" ]
+    #check to ignote di-all.sh and di-auto.sh
+    if ! [[ "$i:t" =~  "di-(all|auto)\.sh" ]]
     then
-      #  Check whether the App is already in the list
-      if (grep $LOCATION ./di-scripts/di.lst)
+      #Check if the INSTALL_TO exists.  If it does, add it to the list
+      # This FAILS for Evernote and hazel
+
+      LOC=`grep -m1 INSTALL_TO $i`
+    
+      # There must be a better way to do this.  We split on the = and then use rev to flip the string
+      LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
+
+      # If the app exists, put the script name in the list of installed apps
+      if [ -e "$LOCATION" ]
       then
-        log "  $LOCATION already stored"
-      else
-        echo $i >> ./di-scripts/di.lst
-        log "  $LOCATION added"
+        #  Check whether the App is already in the list
+        if (grep "$i" ./di.lst)
+        then
+          log "  $LOCATION already stored"
+        else
+          echo $i >> ./di.lst
+          log "  $LOCATION added"
+        fi
       fi
     fi
 done
