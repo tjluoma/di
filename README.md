@@ -91,7 +91,7 @@ Here are some apps that I want to be able to update automatically, but can’t f
 
 ## How does this work? Give me the nerdy details.
 
-See [the Advanced](https://github.com/tjluoma/di/blob/master/Advanced.md) notes.
+See [the Advanced](https://github.com/tjluoma/di/blob/master/docs/Advanced.md) notes.
 
 
 ## Milestone - 100 apps!
