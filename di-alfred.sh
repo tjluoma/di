@@ -20,11 +20,20 @@ INSTALL_TO='/Applications/Alfred 3.app'
 	# because that changes more often than the CFBundleShortVersionString
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
-## UNcomment this if you just want official, non-beta releases
-#XML_FEED='https://www.alfredapp.com/app/update/general.xml'
 
-## this is for betas 
-XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
+if [ -e "$HOME/.di-alfred-prefer-betas" ]
+then
+		## this is for betas 
+	XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
+	CHANNEL='Beta'
+
+else
+		## THis is for official, non-beta versions
+	XML_FEED='https://www.alfredapp.com/app/update/general.xml'
+	CHANNEL='Official'
+fi
+
+echo "$NAME: Checking for $CHANNEL updates..."
 
 INFO=($(curl -sfL $XML_FEED \
 	| egrep -A1 '<key>version</key>|<key>build</key>|<key>location</key>' \
