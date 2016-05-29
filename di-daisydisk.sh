@@ -20,7 +20,11 @@ OS_VER=`sw_vers -productVersion`
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4'`
 
-XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=${INSTALLED_VERSION}&appEdition=Standard"
+# XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=${INSTALLED_VERSION}&appEdition=Standard"
+
+## 2016-05-22 - we intentionally tell it we are using 4.0 so that the feed will show us the most recent version
+##				because that is what we need to compare against what we have. Otherwise we get an empty feed back.
+XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=4.0&appEdition=Standard"
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -46,7 +50,7 @@ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 if [ "$?" = "0" ]
 then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Up-To-Date ($LATEST_VERSION)"
 	exit 0
 fi
 

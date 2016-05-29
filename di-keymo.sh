@@ -1,9 +1,9 @@
 #!/bin/zsh -f
-# Purpose: Download and install latest version of http://www.clarify-it.com/
+# Purpose: 
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-12-04
+# Date:	2016-05-22
 
 NAME="$0:t:r"
 
@@ -14,11 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='http://www.bluemangolearning.com/download/clarify/2_0/auto_update/release/clarify_appcast.xml'
-
-INSTALL_TO='/Applications/Clarify.app'
+INSTALL_TO='/Applications/Keymo.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+
+XML_FEED='https://manytricks.com/keymo/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -38,25 +38,26 @@ then
 	exit 0
 fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	exit 0
+fi
 
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Up-To-Date ($LATEST_VERSION)"
+	exit 0
+fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/Clarify-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/Keymo-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -67,34 +68,35 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
 
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "Clarify" \
+	pgrep -xq "Keymo" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Clarify" to quit'
+	&& osascript -e 'tell application "Keymo" to quit'
 
 		# move installed version to trash 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Clarify.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keymo.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
-else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: MNTPNT is empty"
+	exit 1
 fi
+
+ditto --noqtn -v "$MNTPNT/Keymo.app" "$INSTALL_TO" \
+&& diskutil eject "$MNTPNT"
 
 
 exit 0

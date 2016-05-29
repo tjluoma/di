@@ -14,15 +14,24 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-
 INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 
+	## NOTE: If nothing is installed, we need to pretend we have at least version 4
+	## 			or else we will get version 3 
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | tr -d 'ƒ' || echo '0'`
+	## NOTE: If nothing is installed, we need to pretend we have at least version 4000
+	## 			or else we will get version 3 	
+INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '4000'`
 
-# This feed seems to stop with version 3.4.7 but there is a version 4. Need new feed URL?
+OS_MINOR=`sw_vers -productVersion | cut -d. -f 2`
 
-XML_FEED='https://bombich.com/software/updates/ccc.php'
+OS_BUGFIX=`sw_vers -productVersion | cut -d. -f 3`
+
+XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
+
+## If you want betas, use this line  
+# XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=1&locale=en"
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -45,7 +54,7 @@ fi
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
-	echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 	exit 0
 fi
 
@@ -62,7 +71,7 @@ fi
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -77,20 +86,22 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	# Extract from the .zip file and install (this will leave the .zip file in place)
+ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
-if [[ "$MNTPNT" == "" ]]
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: MNTPNT is empty"
-	exit 1
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+	
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
-
-ditto --noqtn -v "$MNTPNT/Carbon Copy Cloner.app" "$INSTALL_TO" \
-&& diskutil eject "$MNTPNT"
 
 
 

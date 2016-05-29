@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-05-11
+# Date:	2016-05-22
 
 NAME="$0:t:r"
 
@@ -14,12 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Dash.app'
-APPNAME="$INSTALL_TO:t:r"
+INSTALL_TO="$HOME/Library/PreferencePanes/Witch.PrefPane"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
-XML_FEED='https://kapeli.com/Dash3.xml'
+XML_FEED='https://manytricks.com/witch/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -39,9 +38,10 @@ then
 	exit 0
 fi
 
+
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
-	echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 	exit 0
 fi
 
@@ -51,13 +51,13 @@ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 if [ "$?" = "0" ]
 then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Up-To-Date ($LATEST_VERSION)"
 	exit 0
 fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/$APPNAME-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/Witch-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -72,22 +72,31 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
+if [ -e "$INSTALL_TO" ]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
-else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# Quit app, if running
+	pgrep -xq "witchdaemon" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "witchdaemon" to quit'
+
+		# move installed version to trash 
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Witch.$INSTALLED_VERSION.prefPane"
 fi
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+fi
+
+ditto --noqtn -v "$MNTPNT/Witch.prefPane" "$INSTALL_TO" \
+&& diskutil eject "$MNTPNT"
 
 
 exit 0

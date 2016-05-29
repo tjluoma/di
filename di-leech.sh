@@ -1,9 +1,9 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: 
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-18
+# Date:	2016-05-22
 
 NAME="$0:t:r"
 
@@ -14,11 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/TaskPaper.app'
+INSTALL_TO='/Applications/Leech.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
-XML_FEED='https://taskpaper.s3.amazonaws.com/TaskPaper.rss'
+XML_FEED='https://manytricks.com/leech/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
@@ -38,29 +38,51 @@ then
 	exit 0
 fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	exit 0
+fi
 
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Up-To-Date ($LATEST_VERSION)"
+	exit 0
+fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/TaskPaper3-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/Leech-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+
+if [ -e "$INSTALL_TO" ]
+then
+		# Quit app, if running
+	pgrep -xq "Leech" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "Leech" to quit'
+
+		# move installed version to trash 
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Leech.$INSTALLED_VERSION.app"
+fi
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
@@ -73,23 +95,8 @@ then
 	exit 1
 fi
 
-if [ -e "$INSTALL_TO" ]
-then
-		# Quit app, if running
-	pgrep -xq "TaskPaper" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "TaskPaper" to quit'
-
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/TaskPaper.$INSTALLED_VERSION.app"
-fi
-
-echo "$NAME: Installing $MNTPNT/TaskPaper.app to $INSTALL_TO"
-
-ditto -v "$MNTPNT/TaskPaper.app" "$INSTALL_TO" \
-&& diskutil eject "$MNTPNT" \
-&& rm -f "$FILENAME"
-## These are betas and they are coming out very often, so there's no need to keep them
+ditto --noqtn -v "$MNTPNT/Leech.app" "$INSTALL_TO" \
+&& diskutil eject "$MNTPNT"
 
 
 exit 0
