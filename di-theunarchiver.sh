@@ -59,7 +59,7 @@ if [ "$?" = "0" ]
  echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}.zip"
 
 
 echo "$NAME: Downloading $URL to $FILENAME"
