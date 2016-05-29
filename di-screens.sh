@@ -33,7 +33,6 @@ INFO=($(curl -sfL $FEED_URL \
 
 URL="$INFO[1] $INFO[2].zip"
 URL="$( echo "$URL" | sed 's/ /%20/g' )"
-echo $URL
 
 LATEST_VERSION="$INFO[2]"
 
