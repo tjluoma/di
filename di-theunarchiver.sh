@@ -6,6 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
+APPNAME="The Unarchiver"
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,7 +15,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/The Unarchiver.app'
+INSTALL_TO="/Applications/$APPNAME.app"
 
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
@@ -59,7 +60,7 @@ if [ "$?" = "0" ]
  echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
 
 
 echo "$NAME: Downloading $URL to $FILENAME"

@@ -6,6 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
+$APPNAME="Screens"
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,7 +15,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Screens.app'
+INSTALL_TO="/Applications/$APPNAME.app"
 
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/600008
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
@@ -55,7 +56,7 @@ if [ "$?" = "0" ]
  echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
 
 
 echo "$NAME: Downloading $URL to $FILENAME"
