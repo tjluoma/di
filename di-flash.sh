@@ -123,7 +123,10 @@ then
 	if [ "$LOCAL_VERSION" = "$LATEST_VERSION" ]
 	then
 		log "Flash is up to date $LATEST_VERSION = $LOCAL_VERSION"
-		mv -f "$LOG" "$HOME/.Trash/"
+		# mv -f "$LOG" "$HOME/.Trash/"
+		
+		rm -f "$LOG"
+		
 		exit 0
 	fi
 fi
