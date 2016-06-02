@@ -16,7 +16,6 @@ else
 fi
 
 INSTALL_TO="/Applications/$APPNAME.app"
-echo $INSTALL_TO
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
