@@ -6,7 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-$APPNAME="Screens"
+APPNAME="Screens"
 
 if [ -e "$HOME/.path" ]
 then
