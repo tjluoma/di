@@ -3,10 +3,10 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# Date:	2016-06-02
 
 NAME="$0:t:r"
-APPNAME="Screens"
+APPNAME="Transporter Desktop"
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,24 +16,24 @@ else
 fi
 
 INSTALL_TO="/Applications/$APPNAME.app"
-
+# echo $INSTALL_TO
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/600008
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
 # where '600008' = CFBundleVersion
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-
-FEED_URL="https://updates.edovia.com/com.edovia.screens.mac/appcast.xml"
+# echo $INSTALLED_VERSION
+# echo $BUILD_NUMBER
+FEED_URL="http://appsoftware.connecteddata.com/mac/2.5/Appcast.xml"
 
 INFO=($(curl -sfL $FEED_URL \
 | tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
-| head -2 \
+| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+| tail -2 \
 | awk -F'"' '//{print $2}'))
 
-URL="$INFO[1] $INFO[2].zip"
-URL="$( echo "$URL" | sed 's/ /%20/g' )"
+URL="$INFO[1]"
 
 LATEST_VERSION="$INFO[2]"
 

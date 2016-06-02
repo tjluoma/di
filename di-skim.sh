@@ -3,10 +3,10 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-14
+# Date:	2016-06-02
 
 NAME="$0:t:r"
-APPNAME="Sequel Pro"
+APPNAME="Skim"
 
 if [ -e "$HOME/.path" ]
 then
@@ -19,8 +19,7 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-
-FEED_URL="https://www.sequelpro.com/appcast/app-releases.xml"
+FEED_URL="http://skim-app.sourceforge.net/skim.xml"
 
 INFO=($(curl -sfL "$FEED_URL" \
 | tr -s ' ' '\012' \
@@ -28,8 +27,8 @@ INFO=($(curl -sfL "$FEED_URL" \
 | head -2 \
 | awk -F'"' '/^/{print $2}'))
 
-URL="$INFO[1]"
-LATEST_VERSION="$INFO[2]"
+URL="$INFO[2]"
+LATEST_VERSION="$INFO[1]"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
