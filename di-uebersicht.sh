@@ -23,6 +23,9 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
+INSTALLED_VERSION="$INSTALLED_VERSION.$BUILD_NUMBER"
+# echo $INSTALLED_VERSION
+# echo $BUILD_NUMBER
 
 FEED_URL="https://raw.githubusercontent.com/felixhageloh/uebersicht/gh-pages/updates.xml.rss"
 
@@ -33,8 +36,9 @@ INFO=($(curl -sfL $FEED_URL \
 | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
-
+# echo $URL
 LATEST_VERSION="$INFO[2]"
+# echo $LATEST_VERSION
 
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
