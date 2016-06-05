@@ -10,8 +10,7 @@ function msg {
 die ()
 {
 	msg "[die] $@"
-	po.sh "[die] $@"
-	exit 1
+	exit 0
 }
 
 
@@ -27,7 +26,7 @@ LATEST_VERSION=`curl -A "$UA" -sL 'https://www.dropbox.com/install' |\
 if [[ "$LATEST_VERSION" == "" ]]
 then
  	die "$NAME: LATEST_VERSION is empty. Cannot continue."
-    exit 1
+    exit 0
 fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
@@ -110,7 +109,7 @@ then
     open "$MNTPNT/Dropbox.app"
 else
 	die "Did not find anything at $MNTPNT/Dropbox.app"
-	exit 1
+	exit 0
 
 fi
 
