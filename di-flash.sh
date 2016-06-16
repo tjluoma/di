@@ -86,7 +86,7 @@ fi
 	## Now trying 'head -1'
 # LATEST_VERSION=`curl -sL "$URL"  | egrep 'Flash Player.* Mac' | sed 's# Mac.*##g' | head -1 |  tr -dc '[0-9].'`
 
-LATEST_VERSION=`curl --silent --fail --location \
+LATEST_VERSION=`curl --connect-timeout 30 --silent --fail --location \
 	'http://fpdownload2.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml' \
 | awk -F'"' '/version=/{print $2}' \
 | tr ',' '.'`
