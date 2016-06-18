@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+LAUNCH='no'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -93,6 +95,13 @@ echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/" \
 && echo "$NAME: Successfully installed"
 
+ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+
+if [ "$LAUNCH" = "yes" ]
+then
+	echo "$NAME: Launching Alfred 3"
+	open -a "Alfred 3"
+fi
 
 exit 0
 #EOF
