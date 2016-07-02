@@ -68,6 +68,11 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+if [ -e "$INSTALL_TO" ]
+then
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
