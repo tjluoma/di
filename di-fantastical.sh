@@ -6,6 +6,7 @@
 # Date:	2015-12-30
 
 NAME="$0:t:r"
+APPNAME="Fantastical 2"
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,7 +15,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Fantastical 2.app'
+INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
@@ -56,7 +57,7 @@ autoload is-at-least
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/Fantastical-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$APPNAME-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -66,6 +67,12 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+if [ -e "$INSTALL_TO" ]
+then
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 

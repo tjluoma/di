@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 APPNAME="Übersicht"
+CONVERTED_APPNAME="$(iconv -t UTF8-MAC <<< $APPNAME)"
+LAUNCH='no'
 
 if [ -e "$HOME/.path" ]
 then
@@ -23,6 +25,9 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
+INSTALLED_VERSION="$INSTALLED_VERSION.$BUILD_NUMBER"
+# echo $INSTALLED_VERSION
+# echo $BUILD_NUMBER
 
 FEED_URL="https://raw.githubusercontent.com/felixhageloh/uebersicht/gh-pages/updates.xml.rss"
 
@@ -33,8 +38,9 @@ INFO=($(curl -sfL $FEED_URL \
 | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
-
+# echo $URL
 LATEST_VERSION="$INFO[2]"
+# echo $LATEST_VERSION
 
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
@@ -68,6 +74,11 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+if [ -e "$INSTALL_TO" ]
+then
+	pgrep -qx "$CONVERTED_APPNAME" && LAUNCH='yes' && killall "$CONVERTED_APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 

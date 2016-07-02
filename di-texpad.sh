@@ -6,7 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-APPNAME="Monodraw"
+APPNAME="Texpad"
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,48 +16,49 @@ else
 fi
 
 INSTALL_TO="/Applications/$APPNAME.app"
-# echo $INSTALL_TO
+
+# https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/600008
+# https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
+# where '600008' = CFBundleVersion
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 # echo $INSTALLED_VERSION
+BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 # echo $BUILD_NUMBER
-FEED_URL="http://updates.helftone.com/monodraw/appcast-beta.xml"
+
+FEED_URL="https://www.texpadapp.com/static-collected/upgrades/texpadappcast.xml"
 
 INFO=($(curl -sfL $FEED_URL \
 | tr ' ' '\012' \
 | egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
-| head -3 \
+| head -2 \
 | awk -F'"' '//{print $2}'))
 # echo $INFO
-
 URL="$INFO[1]"
 # echo $URL
-LATEST_BUILD="$INFO[2]"
-# echo $LATEST_BUILD
-LATEST_VERSION="$INFO[3]"
+LATEST_VERSION="$INFO[2]"
 # echo $LATEST_VERSION
 
-if [[ "$LATEST_BUILD" == "$BUILD_NUMBER" ]]
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
- 	echo "$NAME: Up-To-Date ($BUILD_NUMBER)"
+ 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
  	exit 0
 fi
 
 autoload is-at-least
 
-is-at-least "$LATEST_BUILD" "$BUILD_NUMBER"
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 if [ "$?" = "0" ]
  then
- 	echo "$NAME: Installed version ($BUILD_NUMBER) is ahead of official version $LATEST_BUILD"
+ 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
  	exit 0
  fi
  
- echo "$NAME: Outdated (Installed = $BUILD_NUMBER vs Latest = $LATEST_BUILD)"
+ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-b${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
 
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -69,11 +70,6 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
-fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 

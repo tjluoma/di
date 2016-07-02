@@ -19,8 +19,12 @@ INSTALL_TO='/Applications/Little Snitch Configuration.app'
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 INFO=($(curl -sfL https://sw-update.obdev.at/update-feeds/littlesnitch3.plist \
-| egrep -A1 'BundleVersion|DownloadURL' \
+| egrep -A1 'ReleaseLifecycle|BundleVersion|DownloadURL' \
 | fgrep '<string>' \
+| awk '{if (NR % 3) {printf("%s ", $0)} else printf("%s\n", $0) }' \
+| fgrep 'final' \
+| tr ' ' '\n' \
+| grep -v 'final' \
 | tail -2 \
 | sed 's#.*<string>##g; s#</string>##g'))
 
