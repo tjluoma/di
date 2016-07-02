@@ -6,6 +6,7 @@
 # Date:	2015-10-28
 
 NAME="$0:t:r"
+APPNAME="Flux"
 
 INSTALL_TO='/Applications/Flux.app'
 
@@ -24,7 +25,7 @@ URL="$INFO[1]"
 
 LATEST_VERSION="$INFO[2]"
 
-INSTALLED_VERSION=`defaults read /Applications/Flux.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
  if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
@@ -44,19 +45,35 @@ autoload is-at-least
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/Flux-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$APPNAME-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-pgrep Flux && LAUNCH='yes' && pkill Flux
+if [ -e "$INSTALL_TO" ]
+then
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall -9 "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
-[[ "$LAUNCH" = "yes" ]] && echo "$NAME: relaunching Flux" && open --background "$INSTALL_TO"
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+	
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+fi
+
+[[ "$LAUNCH" = "yes" ]] && echo "$NAME: relaunching $APPNAME" && open --background "$INSTALL_TO"
 
 
 exit 0
