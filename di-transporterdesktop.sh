@@ -40,7 +40,7 @@ LATEST_VERSION="$INFO[2]"
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
  	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
+#  	exit 0
 fi
 
 autoload is-at-least
@@ -50,7 +50,7 @@ is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
+#  	exit 0
  fi
  
  echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
@@ -70,7 +70,7 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall -9 "$APPNAME"
 # 	pgrep -qx "$APPNAME" && LAUNCH='yes' && osascript -e 'tell application "Alfred 3" to quit'
 	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
