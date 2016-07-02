@@ -69,11 +69,8 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 
 if [ -e "$INSTALL_TO" ]
 then
-		# Quit app, if running
-	pgrep -xq "$APPNAME" && pkill "$APPNAME"
-
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
@@ -82,8 +79,19 @@ echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 ditto "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
-diskutil eject "$MNTPNT"
+EXIT="$?"
 
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+	
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+fi
+
+diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
