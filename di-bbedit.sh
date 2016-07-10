@@ -6,6 +6,7 @@
 # Date:	2015-10-28
 
 NAME="$0:t:r"
+APPNAME="BBEdit"
 
 if [ -e "/Users/luomat/.path" ]
 then
@@ -37,11 +38,11 @@ LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 ##
 ################################################################################################################
 
-INSTALL_TO='/Applications/BBEdit.app'
+INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
  	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
  	exit 0
@@ -59,7 +60,7 @@ autoload is-at-least
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/BBEdit-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -67,11 +68,8 @@ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL
 
 if [ -e "$INSTALL_TO" ]
 then
-		# Quit app, if running
-	pgrep -xq "BBEdit" && pkill "BBEdit"
-
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/BBEdit.$INSTALLED_VERSION.app"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
@@ -84,6 +82,18 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| sed 's#</string>.*##g ; s#.*<string>##g')
 
 ditto "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+	
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+fi
 
 diskutil eject "$MNTPNT"
 
