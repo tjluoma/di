@@ -25,6 +25,7 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 # echo $INSTALLED_VERSION
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 # echo $BUILD_NUMBER
+INSTALLED_VERSION=$BUILD_NUMBER
 
 FEED_URL="https://www.texpadapp.com/static-collected/upgrades/texpadappcast.xml"
 
@@ -33,7 +34,7 @@ INFO=($(curl -sfL $FEED_URL \
 | egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
 | head -2 \
 | awk -F'"' '//{print $2}'))
-# echo $INFO
+echo $INFO
 URL="$INFO[1]"
 # echo $URL
 LATEST_VERSION="$INFO[2]"
