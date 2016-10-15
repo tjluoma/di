@@ -34,7 +34,7 @@ INFO=($(curl -sfL $FEED_URL \
 | egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
 | head -2 \
 | awk -F'"' '//{print $2}'))
-echo $INFO
+# echo $INFO
 URL="$INFO[1]"
 # echo $URL
 LATEST_VERSION="$INFO[2]"
