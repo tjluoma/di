@@ -8,7 +8,7 @@
 
 
 
-INSTALL_TO="/Applications/BitTorrent Sync.app"
+INSTALL_TO="/Applications/Resilio Sync.app"
 
 
 
