@@ -33,7 +33,7 @@ INFO=($(curl -sfL $FEED_URL \
 | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1] $INFO[2].zip"
-URL="$( echo "$URL" | sed 's/ /%20/g' )"
+# URL="$( echo "$URL" | sed 's/ /%20/g' )"
 
 LATEST_VERSION="$INFO[2]"
 
