@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 APPNAME="Übersicht"
-CONVERTED_APPNAME="$(iconv -t UTF8-MAC <<< $APPNAME)"
+CONVERTED_APPNAME="$(iconv -t MAC <<< $APPNAME)"
 LAUNCH='no'
 
 if [ -e "$HOME/.path" ]
