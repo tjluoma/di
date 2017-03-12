@@ -5,6 +5,17 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-04-26
 
+
+## 2017-03-09 - this is not downloading a usable file
+
+exit 0
+
+
+
+
+
+
+
 NAME="$0:t:r"
 
 # wget -c http://dl.macupdate.com/prod/ImageOptim.zip
