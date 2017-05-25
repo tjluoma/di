@@ -24,6 +24,9 @@ INSTALL_TO="/Applications/$APPNAME.app"
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 
+# echo $INSTALLED_VERSION
+# echo $BUILD_NUMBER
+
 FEED_URL="https://updates.edovia.com/com.edovia.screens.mac/appcast.xml"
 
 INFO=($(curl -sfL $FEED_URL \
@@ -34,8 +37,10 @@ INFO=($(curl -sfL $FEED_URL \
 
 URL="$INFO[1] $INFO[2].zip"
 # URL="$( echo "$URL" | sed 's/ /%20/g' )"
+# echo $URL
 
 LATEST_VERSION="$INFO[2]"
+# echo $LATEST_VERSION
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
