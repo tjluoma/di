@@ -5,6 +5,10 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-06
 
+exit 0
+
+## 2017-08-30 - looks like they are maybe going to rename Cloak?
+
 NAME="$0:t:r"
 
 if [ -e "$HOME/.path" ]
