@@ -30,21 +30,25 @@ OS_BUGFIX=`sw_vers -productVersion | cut -d. -f 3`
 
 XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
 
+# XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
+
 ## If you want betas, use this line  
 # XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=1&locale=en"
 
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version=|url=' \
+| egrep 'version|downloadURL' \
 | head -2 \
 | sort \
-| awk -F'"' '/^/{print $2}'))
+| awk -F': ' '/^/{print $2}' \
+| sed 's/,//' \
+| sed 's/"//g'))
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+# "Sparkle" will always come before "url" because of "sort"
+LATEST_VERSION="$INFO[2]"
+URL="$INFO[1]"
 
-	# If any of these are blank, we should not continue
+
+# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:\nINFO: $INFO"
