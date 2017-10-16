@@ -25,6 +25,7 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 # echo $INSTALLED_VERSION
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
 # echo $BUILD_NUMBER
+INSTALLED_VERSION=$BUILD_NUMBER
 
 FEED_URL="https://www.texpadapp.com/static-collected/upgrades/texpadappcast.xml"
 
@@ -58,7 +59,8 @@ if [ "$?" = "0" ]
  echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
+# FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.dmg"
 
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -70,11 +72,36 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+if [ -e "$INSTALL_TO" ]
+then
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+fi
+
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+# ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+# 
+# EXIT="$?"
+# 
+# if [ "$EXIT" = "0" ]
+# then
+# 	echo "$NAME: Installation of $INSTALL_TO was successful."
+# 	
+# 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+# 	
+# else
+# 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+# fi
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
+
+ditto "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
@@ -88,8 +115,7 @@ else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
 
-
-
+diskutil eject "$MNTPNT"
 
 exit 0
 EOF

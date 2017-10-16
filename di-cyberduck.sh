@@ -6,9 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-APPNAME="Übersicht"
-CONVERTED_APPNAME="$(iconv -t MAC <<< $APPNAME)"
-LAUNCH='no'
+APPNAME="Cyberduck"
 
 if [ -e "$HOME/.path" ]
 then
@@ -25,23 +23,34 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-INSTALLED_VERSION="$INSTALLED_VERSION.$BUILD_NUMBER"
-# echo $INSTALLED_VERSION
-# echo $BUILD_NUMBER
 
-FEED_URL="https://raw.githubusercontent.com/felixhageloh/uebersicht/gh-pages/updates.xml.rss"
+# stable
+FEED_URL="https://version.cyberduck.io/changelog.rss"
+# beta
+# FEED_URL="https://version.cyberduck.io/beta/changelog.rss"
+# nightly
+# FEED_URL="https://version.cyberduck.io/nightly/changelog.rss"
 
 INFO=($(curl -sfL $FEED_URL \
 | tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
-| head -2 \
+| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+| head -3 \
 | awk -F'"' '//{print $2}'))
 
-URL="$INFO[1]"
-# echo $URL
+URL="$INFO[3]"
 LATEST_VERSION="$INFO[2]"
+LATEST_VERSION_SHORT="$INFO[1]"
+# echo $URL
 # echo $LATEST_VERSION
+# echo $LATEST_VERSION_SHORT
 
+if [[ $FEED_URL =~ "beta" || $FEED_URL =~ "nightly" ]]
+ then
+  INSTALLED_VERSION="$INSTALLED_VERSION-$BUILD_NUMBER"
+  LATEST_VERSION="$LATEST_VERSION-$LATEST_VERSION_SHORT"
+fi
+# echo $INSTALLED_VERSION
+# echo $LATEST_VERSION
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
@@ -76,7 +85,7 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$CONVERTED_APPNAME" && LAUNCH='yes' && killall "$CONVERTED_APPNAME"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
 	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 

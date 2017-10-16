@@ -6,9 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-APPNAME="Übersicht"
-CONVERTED_APPNAME="$(iconv -t MAC <<< $APPNAME)"
-LAUNCH='no'
+APPNAME="TeXShop"
 
 if [ -e "$HOME/.path" ]
 then
@@ -17,7 +15,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/$APPNAME.app"
+INSTALL_TO="/Applications/TeX/$APPNAME.app"
 
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/600008
 # https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
@@ -25,24 +23,18 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-INSTALLED_VERSION="$INSTALLED_VERSION.$BUILD_NUMBER"
-# echo $INSTALLED_VERSION
-# echo $BUILD_NUMBER
 
-FEED_URL="https://raw.githubusercontent.com/felixhageloh/uebersicht/gh-pages/updates.xml.rss"
+FEED_URL="http://pages.uoregon.edu/koch/texshop/texshop-64/texshopappcast.xml"
 
 INFO=($(curl -sfL $FEED_URL \
 | tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
+| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
 | head -2 \
 | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
-# echo $URL
 LATEST_VERSION="$INFO[2]"
-# echo $LATEST_VERSION
-
-
+ 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
  	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
@@ -76,7 +68,7 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$CONVERTED_APPNAME" && LAUNCH='yes' && killall "$CONVERTED_APPNAME"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
 	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 

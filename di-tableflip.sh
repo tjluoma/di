@@ -6,9 +6,7 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-APPNAME="Übersicht"
-CONVERTED_APPNAME="$(iconv -t MAC <<< $APPNAME)"
-LAUNCH='no'
+APPNAME="TableFlip"
 
 if [ -e "$HOME/.path" ]
 then
@@ -25,11 +23,10 @@ INSTALL_TO="/Applications/$APPNAME.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-INSTALLED_VERSION="$INSTALLED_VERSION.$BUILD_NUMBER"
 # echo $INSTALLED_VERSION
 # echo $BUILD_NUMBER
 
-FEED_URL="https://raw.githubusercontent.com/felixhageloh/uebersicht/gh-pages/updates.xml.rss"
+FEED_URL="https://update.christiantietze.de/tableflip/v1/release.xml"
 
 INFO=($(curl -sfL $FEED_URL \
 | tr ' ' '\012' \
@@ -37,11 +34,15 @@ INFO=($(curl -sfL $FEED_URL \
 | head -2 \
 | awk -F'"' '//{print $2}'))
 
-URL="$INFO[1]"
-# echo $URL
-LATEST_VERSION="$INFO[2]"
-# echo $LATEST_VERSION
+# echo $INFO
 
+URL="$INFO[1]"
+URL="$( echo "$URL" | sed 's/ /%20/g' )"
+
+LATEST_VERSION="$INFO[2]"
+
+# echo $URL 
+# echo $LATEST_VERSION
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
  then
@@ -76,7 +77,7 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$CONVERTED_APPNAME" && LAUNCH='yes' && killall "$CONVERTED_APPNAME"
+	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
 	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 
