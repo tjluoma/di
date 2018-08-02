@@ -82,7 +82,7 @@ FILENAME="$HOME/Downloads/MarsEdit-${LATEST_VERSION}.zip"
 echo "$NAME: Downloading $URL to $FILENAME"
 
 	# Here is where we do the actual downloading
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 2>/dev/null
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 2>/dev/null
 
 EXIT="$?"
 

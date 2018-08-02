@@ -82,7 +82,7 @@ FILENAME="$HOME/Downloads/TripMode-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
 	# Download the latest version
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
