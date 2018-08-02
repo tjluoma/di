@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -f
 # Purpose: download and install (or update, if needed) Flash for OS X
 #
 # From:	Tj Luo.ma
@@ -18,6 +18,13 @@
 ##################################################################################################################################
 
 NAME="$0:t:r"
+
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
 
 zmodload zsh/datetime	# needed for EPOCHSECONDS
 
@@ -86,7 +93,7 @@ fi
 	## Now trying 'head -1'
 # LATEST_VERSION=`curl -sL "$URL"  | egrep 'Flash Player.* Mac' | sed 's# Mac.*##g' | head -1 |  tr -dc '[0-9].'`
 
-LATEST_VERSION=`curl --connect-timeout 30 --silent --fail --location \
+LATEST_VERSION=`curl --silent --fail --location \
 	'http://fpdownload2.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml' \
 | awk -F'"' '/version=/{print $2}' \
 | tr ',' '.'`
@@ -123,10 +130,7 @@ then
 	if [ "$LOCAL_VERSION" = "$LATEST_VERSION" ]
 	then
 		log "Flash is up to date $LATEST_VERSION = $LOCAL_VERSION"
-		# mv -f "$LOG" "$HOME/.Trash/"
-		
-		rm -f "$LOG"
-		
+		mv -f "$LOG" "$HOME/.Trash/"
 		exit 0
 	fi
 fi
@@ -259,7 +263,7 @@ then
 	exit 1
 fi
 
-sudo installer -pkg "$PKG" -target / -lang en 2>&1 | tee -a "$LOG"
+sudo /usr/sbin/installer -pkg "$PKG" -target / -lang en 2>&1 | tee -a "$LOG"
 
 EXIT="$?"
 
