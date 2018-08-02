@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/MakeMKV.app'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -16,16 +18,27 @@ fi
 
 ########################################################################################################################
 	## I can't seem to find an RSS feed for the updates, although it does have some sort of update checking
-	## So, instead, I make an ugly-hack-ish check for an URL with 'dmg' in it 
-URL=`curl -sfL 'http://www.makemkv.com/download/' \
-	| tr '\047|"' '\012' \
-	| egrep 'http.*\.dmg' \
-	| head -1`
+	## So, instead, I make an ugly-hack-ish check for an URL with 'dmg' in it
+
+if (( $+commands[lynx] ))
+then
+
+		# if lynx is installed, use it, since it is better at parsing HTML than a shell script ever will be
+	URL=$(lynx -dump -listonly -nonumbers 'http://www.makemkv.com/download/' | egrep '^http.*\.dmg' | head -1)
+
+else
+		# if lynx is not installed, parse the output of 'curl'
+
+	URL=$(curl -sfL 'http://www.makemkv.com/download/' \
+			| fgrep .dmg \
+			| sed 's#.dmg.*#.dmg#g ; s#.*/download/#http://www.makemkv.com/download/#g' \
+			| head -1)
+fi
 
 if [[ "$URL" == "" ]]
 then
 	echo "$NAME: Error: URL is empty"
-	exit 0
+	exit 1
 fi
 
 LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
@@ -34,34 +47,36 @@ LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 if [[ "$LATEST_VERSION" == "" ]]
 then
 	echo "$NAME: LATEST_VERSION is empty"
-	exit 0
+	exit 1
 fi
 
 ########################################################################################################################
 
-INSTALL_TO='/Applications/MakeMKV.app'
+if [ -e "$INSTALL_TO" ]
+then
+	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null | tr -d 'v'`
 
-INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null | tr -d 'v' || echo '0' `
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+	autoload is-at-least
 
-autoload is-at-least
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
 
 ########################################################################################################################
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 FILENAME="$HOME/Downloads/MakeMKV-${LATEST_VERSION}.dmg"
 
@@ -69,7 +84,7 @@ FILENAME="$HOME/Downloads/MakeMKV-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -92,11 +107,24 @@ fi
 
 if [ -e "$INSTALL_TO" ]
 then
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/MakeMKV.$INSTALLED_VERSION.app"
 fi
 
-ditto -v "$MNTPNT/MakeMKV.app" "$INSTALL_TO"
+echo "$NAME: Installing $MNTPNT/MakeMKV.app to $INSTALL_TO"
+
+ditto --noqtn -v "$MNTPNT/MakeMKV.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	exit 0
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	exit 1
+fi
 
 diskutil eject "$MNTPNT"
 
