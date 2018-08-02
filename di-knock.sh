@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Knock
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-19
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Knock.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -35,101 +37,101 @@ do
 done # for args
 
 
-
-
-
 ####################################################################################################
 ##
 ##	Knock requires a Mac which has Bluetooth 4.0 or later, the so-called Low Power BT
 ##		I have at least 2 Macs which don't support this
 ##
 
-
-	# This should be '4' or greater
-BLUETOOTH_VERSION=`system_profiler -detailLevel full SPBluetoothDataType | awk -F' ' '/LMP Version/{print $3}' | cut -d. -f 1`
-
-if [ "$BLUETOOTH_VERSION" -ge "4" ]
+if [ "$FORCE" != "yes" ]
 then
-	SUPPORTED='yes'
 
-	echo "$NAME: SUCCESS: This Mac support Bluetooth version 4 or greater"
+		# This should be '4' or greater
+	BLUETOOTH_VERSION=`system_profiler -detailLevel full SPBluetoothDataType | awk -F' ' '/LMP Version/{print $3}' | cut -d. -f 1`
 
-elif [ "$BLUETOOTH_VERSION" -lt "4" ]
-then
-	SUPPORTED='no'
-
-	echo "$NAME: FAILURE: This Mac does not support Bluetooth version 4 or greater (Version = $BLUETOOTH_VERSION)"
-
-	if [ "$FORCE" = "no" ]
+	if [ "$BLUETOOTH_VERSION" -ge "4" ]
 	then
+		echo "$NAME: SUCCESS: This Mac support Bluetooth version 4 or greater"
+
+	elif [ "$BLUETOOTH_VERSION" -lt "4" ]
+	then
+
+		echo "$NAME: FAILURE: This Mac does not support Bluetooth version 4 or greater (Version = $BLUETOOTH_VERSION)"
 
 		echo "$NAME: You can use '--force' to bypass this check"
 
-		exit 0
-	fi
+		exit 1
 
-else
-	SUPPORTED='unknown'
+	else
 
-	echo "$NAME: It is not known whether this Mac supports Bluetooth version 4 or later, as required by Knock"
+		echo "$NAME: It is not known whether this Mac supports Bluetooth version 4 or later, as required by Knock"
 
-	if [ "$FORCE" = "no" ]
-	then
 		echo "$NAME: You can use '--force' to bypass this check"
-		exit 0
-	fi
-fi
 
+		exit 1
+
+	fi
+
+fi # if not bypassed by --force
 
 
 ####################################################################################################
 
-
 XML_FEED='https://knock-updates.s3.amazonaws.com/Knock.xml'
 
-INSTALL_TO='/Applications/Knock.app'
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:shortVersionString|url=' \
-| sed 's#<sparkle:shortVersionString>##g; s#</sparkle:shortVersionString>##g; s#url="##g; s#"$##g '))
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:shortVersionString|url=' \
+		| sed 's#<sparkle:shortVersionString>##g; s#</sparkle:shortVersionString>##g; s#url="##g; s#"$##g '))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
+
 URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
-	exit 0
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
 fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+if [[ -e "$INSTALL_TO" ]]
+then
 
-autoload is-at-least
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
 
 FILENAME="$HOME/Downloads/Knock-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -163,10 +165,8 @@ then
 
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	exit 1
 fi
-
-
-
 
 exit 0
 #EOF
