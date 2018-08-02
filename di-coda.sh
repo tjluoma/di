@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -f
 # Purpose: download and install Coda (2.5)
 #
 # From:	Tj Luo.ma
@@ -9,6 +9,13 @@
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Coda 2.app'
+
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
 
 OS_VER=`sw_vers -productVersion`
 
@@ -30,25 +37,30 @@ URL="$INFO[2]"
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
+
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 	exit 0
 fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
-
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+	exit 0
+fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
@@ -56,7 +68,7 @@ FILENAME="$HOME/Downloads/Coda-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -70,7 +82,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Coda 2" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Coda 2.$INSTALLED_VERSION.app"
 fi
 
@@ -84,11 +96,13 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: Installation of $INSTALL_TO failed (ditto \$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+
+	exit 1
 fi
 
 
