@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Download and install Screens version 4
+# Purpose: Download and install Screens version 4
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-16
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Screens 4.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,17 +16,15 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-APPNAME="Screens 4"
+XML_FEED="https://updates.devmate.com/com.edovia.screens4.mac.xml"
 
-INSTALL_TO="/Applications/$APPNAME.app"
+# @TODO - sparkle:version also exists in feed, and is probably worth checking too, although both seem to be incremented when an update occurs
 
-FEED_URL="https://updates.devmate.com/com.edovia.screens4.mac.xml"
-
-INFO=($(curl -sfL "$FEED_URL" \
-| tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
-| head -2 \
-| awk -F'"' '//{print $2}'))
+INFO=($(curl -sfL "$XML_FEED" \
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:shortVersionString)=' \
+		| head -2 \
+		| awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
 
@@ -33,7 +33,7 @@ LATEST_VERSION="$INFO[2]"
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Cannot continue. Either URL ($URL) or LATEST_VERSION ($LATEST_VERSION) is empty."
-	echo "$NAME: Check \"$FEED_URL\" for format changes. This is what I got for \"$INFO\": "
+	echo "$NAME: Check \"$XML_FEED\" for format changes. This is what I got for \"$INFO\": "
 	echo "$INFO"
 	exit 1
 fi
@@ -81,7 +81,7 @@ FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -90,8 +90,7 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
