@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Evernote
 #
 # From:	Tj Luo.ma
@@ -8,82 +8,71 @@
 
 NAME="$0:t:r"
 
-zmodload zsh/datetime
+INSTALL_TO='/Applications/Evernote.app'
 
-TIME=$(strftime "%Y-%m-%d-at-%H.%M.%S" "$EPOCHSECONDS")
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
 
-HOST=`hostname -s`
-HOST="$HOST:l"
+XML_FEED='https://update.evernote.com/public/ENMacSMD/EvernoteMacUpdate.xml'
 
-LOG="$HOME/Library/Logs/metalog/$NAME/$HOST/$TIME.log"
+LATEST_VERSION=`curl -sfL "$XML_FEED" | awk -F'=' '/sparkle:shortVersionString/{print $NF}' | head -1 | tr -dc '[0-9].'`
 
-[[ -d "$LOG:h" ]] || mkdir -p "$LOG:h"
-[[ -e "$LOG" ]]   || touch "$LOG"
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
 
-function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
+	exit 1
+fi
 
-function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
+if [[ -e "$INSTALL_TO" ]]
+then
 
-XML_URL='https://update.evernote.com/public/ENMacSMD/EvernoteMacUpdate.xml'
+	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString`
 
-LATEST_VERSION=`curl -sfL "$XML_URL" | awk -F'=' '/sparkle:shortVersionString/{print $NF}' | head -1 | tr -dc '[0-9].'`
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
 
-INSTALLED_VERSION=`defaults read /Applications/Evernote.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '0'`
+	autoload is-at-least
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-autoload is-at-least
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+fi
 
-DL_URL=`curl -sfL "$XML_URL" | awk -F'"' '/url=/{print $2}' | head -1`
+URL=`curl -sfL "$XML_FEED" | awk -F'"' '/url=/{print $2}' | head -1`
 
 FILENAME="$HOME/Downloads/Evernote-$LATEST_VERSION.zip"
 
-if [ "$HOST" = "mini.luo.ma" ]
-then
-	cd "$HOME/Sites/iusethis.luo.ma/evernote" || cd "$HOME/Downloads"
-else
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	if [ -d "$HOME/BitTorrent Sync/iusethis.luo.ma/evernote" ]
-	then
-		cd "$HOME/BitTorrent Sync/iusethis.luo.ma/evernote" || cd "$HOME/Downloads"
-	else
-		cd "$HOME/Downloads"
-	fi
-fi
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-REMOTE_SIZE=`curl -sfL "$XML_URL" | awk -F'"' '/length=/{print $4}' | head -1`
+EXIT="$?"
 
-zmodload zsh/stat
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-if [ -e "$FILENAME" ]
-then
-	SIZE=$(zstat -L +size "$FILENAME")
-else
-	SIZE='0'
-fi
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-	# Download it
-while [ "$SIZE" -lt "$REMOTE_SIZE" ]
-do
-	curl --progress-bar --location --fail --output "$FILENAME" "$DL_URL"
-	SIZE=$(zstat -L +size "$FILENAME")
-done
-
-
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 if [ -e "$INSTALL_TO" ]
 then
@@ -92,16 +81,28 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Evernote" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Evernote.$INSTALLED_VERSION.app"
 fi
 
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
-	# Install it
-ditto -v --noqtn -xk "$FILENAME" /Applications/
+	# Extract from the .zip file and install (this will leave the .zip file in place)
+ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
+EXIT="$?"
 
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
 
-exit
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	exit 1
+fi
+
+exit 0
 #
 #EOF
