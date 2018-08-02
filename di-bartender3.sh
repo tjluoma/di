@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Bartender 3
+# Purpose: Download and install the latest version of Bartender 3 @todo - rename script?
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -81,7 +81,7 @@ FILENAME="$HOME/Downloads/Bartender-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
