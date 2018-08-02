@@ -47,10 +47,6 @@ then
 	exit 1
 fi
 
-echo "$INFO"
-
-exit 0
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
