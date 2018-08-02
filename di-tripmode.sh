@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Trip Mode
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-10
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/TripMode.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,40 +16,111 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-zmodload zsh/datetime
+# Found via cask
+XML_FEED='https://www.tripmode.ch/app/appcast.xml'
 
-TIME=$(strftime "%Y-%m-%d-at-%H.%M.%S" "$EPOCHSECONDS")
+INFO=($(curl -sfL "$XML_FEED" \
+	| tr ' ' '\012' \
+	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+	| head -3 \
+	| sort \
+	| awk -F'"' '//{print $2}'))
 
-HOST=`hostname -s`
-HOST="$HOST:l"
+LATEST_VERSION="$INFO[1]"
 
-LOG="$HOME/Library/Logs/$NAME.$HOST.$TIME.log"
+LATEST_BUILD="$INFO[2]"
 
-[[ -d "$LOG:h" ]] || mkdir -p "$LOG:h"
-[[ -e "$LOG" ]] || touch "$LOG"
+URL="$INFO[3]"
 
-function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
-
-function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
-
-if [ -e  /Applications/TripMode.app ]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: TripMode.app is already installed."
+	echo "$NAME: Bad data from $XML_FEED
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"
+
+	exit 1
+fi
+
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION/$INSTALLED_BUILD) is ahead of official version $LATEST_VERSION/$LATEST_BUILD"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+fi
+
+FILENAME="$HOME/Downloads/TripMode-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
+
+	# Download the latest version
+echo "$NAME: Downloading $URL to $FILENAME"
+
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+			| fgrep -A 1 '<key>mount-point</key>' \
+			| tail -1 \
+			| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
 	exit 0
-fi 
+else
+	echo "$NAME: Mounted $FILENAME at $MNTPNT"
+fi
 
-cd $HOME/Downloads
-	
-curl --location --fail --remote-name https://tripmode.ch/TripMode.pkg
+if [[ -e "$INSTALL_TO" ]]
+then
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/TripMode.${INSTALLED_VERSION}-${INSTALLED_BUILD}.app"
+fi
 
-sudo installer -pkg "TripMode.pkg" -target / 2>&1 | tee -a "$LOG"
+echo "$NAME:  Installing $MNTPNT/TripMode.app to $INSTALL_TO"
 
-# installer: The install failed (The Installer encountered an error that caused the installation to fail. Contact the software manufacturer for assistance.)
+ditto --noqtn "$MNTPNT/TripMode.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+fi
+
+diskutil eject "$MNTPNT"
 
 exit 0
 
-
-# @TODO - Add update not just install? Need to find XML feed for updates. Charles?
-
-
-#EOF
