@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install latest version of Feeder 3
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -10,12 +10,17 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Feeder 3.app'
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null || echo '0'`
+XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder3.xml"
 
-INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleVersion 2>/dev/null || echo '0'`
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
 
 
-INFO=($(curl -sfL "https://reinventedsoftware.com/feeder/downloads/Feeder3.xml" \
+INFO=($(curl -sfL "$XML_FEED" \
 | tr ' ' '\012' \
 |sed 's#>#>\
 #g' \
@@ -29,31 +34,62 @@ REMOTE_BUNDLE_VERSION="$INFO[2]"
 
 REMOTE_READABLE_VERSION="$INFO[3]"
 
+	## If any of these are blank, we should not continue
+	## @TODO - edit this for the variables used by this script
 
-if [ "$REMOTE_BUNDLE_VERSION" = "$INSTALLED_BUNDLE_VERSION" -a "$REMOTE_READABLE_VERSION" = "$INSTALLED_VERSION" ]
+# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+# then
+# 	echo "$NAME: Error: bad data received:
+# 	REMOTE_BUNDLE_VERSION: $REMOTE_BUNDLE_VERSION
+# 	REMOTE_READABLE_VERSION: $REMOTE_READABLE_VERSION
+# 	URL: $URL
+# 	"
+#
+# 	exit 1
+# fi
+
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
+
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleShortVersionString 2>/dev/null || echo '0'`
+
+	INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info"  CFBundleVersion 2>/dev/null || echo '0'`
+
+	if [ "$REMOTE_BUNDLE_VERSION" = "$INSTALLED_BUNDLE_VERSION" -a "$REMOTE_READABLE_VERSION" = "$INSTALLED_VERSION" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$REMOTE_BUNDLE_VERSION" "$INSTALLED_BUNDLE_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_BUNDLE_VERSION) is ahead of official version $REMOTE_BUNDLE_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_BUNDLE_VERSION vs Latest = $REMOTE_BUNDLE_VERSION)"
+
 fi
- 
- 
-
-autoload is-at-least
-
-is-at-least "$REMOTE_BUNDLE_VERSION" "$INSTALLED_BUNDLE_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Installed version ($INSTALLED_BUNDLE_VERSION) is ahead of official version $REMOTE_BUNDLE_VERSION"
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_BUNDLE_VERSION vs Latest = $REMOTE_BUNDLE_VERSION)"
 
 FILENAME="$HOME/Downloads/Feeder-${REMOTE_READABLE_VERSION}-${REMOTE_BUNDLE_VERSION}.dmg"
 
+echo "$NAME: Downloading $URL to $FILENAME"
+
 	# Download it
 curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 	# Mount the DMG
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -77,6 +113,20 @@ echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO..."
 
 	# Install it
 ditto -v --noqtn "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+
+	echo "$NAME: Successfully updated/installed $INSTALL_TO"
+
+else
+	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
+
 
 	# Eject the DMG
 if (( $+commands[unmount.sh] ))
