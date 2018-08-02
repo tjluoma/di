@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of TextExpander 6.
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-21
 
 NAME="$0:t:r"
+
+INSTALL_TO="/Applications/TextExpander.app"
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,19 +16,14 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/TextExpander.app" 
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-
 XML_FEED='https://smilesoftware.com/appcast/update.php?appName=TextExpander&appVersion=6'
 
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:shortVersionString=|url=' \
-| head -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:shortVersionString=|url=' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
@@ -35,31 +32,40 @@ URL="$INFO[2]"
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
-	exit 0
+	echo "$NAME: Error: bad data received:\n
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+	exit 1
 fi
 
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
-	exit 0
+
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
+
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
 fi
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-
-FILENAME="$HOME/Downloads/TextExpander-${LATEST_VERSION}.zip"	
+FILENAME="$HOME/Downloads/TextExpander-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -74,8 +80,6 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-
-
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
@@ -83,31 +87,29 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "TextExpander" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/TextExpander.$INSTALLED_VERSION.app"
 fi
 
-
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
 
 	# Extract from the .zip file and install (this will leave the .zip file in place)
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
-
 
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
-fi
 
-open -g -a TextExpander
+	exit 1
+
+fi
 
 exit 0
 #EOF
