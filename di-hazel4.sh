@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Hazel @todo - rename script?
+# Purpose: Download and install the latest version of Hazel
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -155,7 +155,7 @@ then
 	then
 		open "$LICENSE" || open -R "$LICENSE"
 	else
-		MSG="Hazel is unlicensed and no Hazel-3.hazellicense found at $LICENSE"
+		MSG="Hazel is unlicensed and no Hazel-4.hazellicense found at $LICENSE"
 
 		echo "$NAME: $MSG"
 
