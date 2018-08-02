@@ -1,102 +1,107 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of The Unarchiver
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# Date:	2018-07-17
 
 NAME="$0:t:r"
-APPNAME="The Unarchiver"
+
+INSTALL_TO='/Applications/The Unarchiver.app'
 
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_TO="/Applications/$APPNAME.app"
+XML_FEED="https://updates.devmate.com/com.macpaw.site.theunarchiver.xml"
 
+INFO=($(curl -sfL "$XML_FEED" \
+	| tr ' ' '\012' \
+	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+	| head -3 \
+	| sort \
+	| awk -F'"' '//{print $2}'))
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
+LATEST_VERSION="$INFO[1]"
 
-FEED_URL="https://unarchiver.c3.cx/updates.rss"
+LATEST_BUILD="$INFO[2]"
 
-# INFO=($(curl -sfL $FEED_URL \
-# | tr ' ' '\012' \
-# | egrep '^(url|sparkle:shortVersionString)=' \
-# | head -2 \
-# | awk -F'"' '//{print $2}'))
+URL="$INFO[3]"
 
-INFO=($(curl -sfL $FEED_URL \
-| tr '[:space:]' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
-| tail -2 \
-| awk -F'"' '{print $2}' \
-))
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
+then
+	echo "$NAME: Bad data from $XML_FEED
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"
 
-URL="$INFO[1]"
-
-LATEST_VERSION="$INFO[2]"
-
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
+	exit 1
 fi
 
-autoload is-at-least
+if [[ -e "$INSTALL_TO" ]]
+then
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
- 
- echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
+	if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
 
-FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
+	autoload is-at-least
 
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+fi
+
+FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}-${LATEST_BUILD}.zip"
+
+	# Download the latest version
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
-fi
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h"
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-	# Extract from the .zip file and install (this will leave the .zip file in place)
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+	exit 0
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	exit 1
 fi
 
-
-
-
 exit 0
-EOF
+#
+#EOF
