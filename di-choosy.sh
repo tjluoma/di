@@ -1,5 +1,5 @@
-#!/bin/zsh
-# download and install Choosy
+#!/bin/zsh -f
+# Purpose: download and install the latest version of Choosy
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -7,33 +7,61 @@
 
 NAME="$0:t:r"
 
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
+
 INSTALL_TO="$HOME/Library/PreferencePanes/Choosy.prefPane"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
-
-INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' | tr -s ' ' '\012' | egrep "sparkle:version=|url=" | head -2 | awk -F'"' '/^/{print $2}'))
+INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
+		| tr -s ' ' '\012' \
+		| egrep "sparkle:version=|url=" \
+		| head -2 \
+		| awk -F'"' '/^/{print $2}'))
 
 URL="$INFO[2]"
 
 LATEST_VERSION="$INFO[1]"
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
 
-autoload is-at-least
+	exit 1
+fi
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+if [[ -e "$INSTALL_TO" ]]
+then
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
+
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
 
 	# Where to save new download
 FILENAME="$HOME/Downloads/Choosy-$LATEST_VERSION.zip"
@@ -41,7 +69,18 @@ FILENAME="$HOME/Downloads/Choosy-$LATEST_VERSION.zip"
 	# Do the download
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+
 
 # Move old version to trash
 if [ -e "$INSTALL_TO" ]
@@ -63,6 +102,19 @@ echo "$NAME: Installing $FILENAME to $INSTALL_TO"
 
 ditto --noqtn -x -k  "$FILENAME" "$INSTALL_TO:h"
 
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+
+	echo "$NAME: Installation successful to $INSTALL_TO"
+
+else
+	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
+
 	# Remove quarantine info (there shouldn't be any, but just in case)
 find "$INSTALL_TO" -print | xargs xattr -d com.apple.quarantine 2>/dev/null
 
@@ -80,8 +132,8 @@ fi
 
 	# Launch Helper
 echo "$NAME: Launching Choosy helper app"
-open "$INSTALL_TO/Contents/Resources/Choosy.app/Contents/MacOS/Choosy"
 
+open "$INSTALL_TO/Contents/Resources/Choosy.app/Contents/MacOS/Choosy"
 
 	# If this is the first time it has been installed, open the preference pane so it can be configured
 if [[ "$FIRST_INSTALL" == "yes" ]]
