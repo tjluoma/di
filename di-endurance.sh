@@ -1,9 +1,9 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Endurance from http://enduranceapp.com
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-21
+# Date:	2015-11-21, verified 2018-08-02
 
 NAME="$0:t:r"
 
@@ -71,9 +71,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
