@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Charles
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -18,24 +18,24 @@ INSTALL_TO='/Applications/Charles.app'
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
-	# This returns just the version number 
+	# This returns just the version number
 LATEST_VERSION=`curl -sfL http://www.charlesproxy.com/latest.do`
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	exit 0
+fi
 
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+	exit 0
+fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
@@ -45,7 +45,7 @@ FILENAME="$HOME/Downloads/Charles-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -60,12 +60,12 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Charles" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Charles.$INSTALLED_VERSION.app"
 fi
 
 	# Note that this will automatically accept the EULA without reading it
-	# just like you would have done :-) 
+	# just like you would have done :-)
 MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
@@ -84,9 +84,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
