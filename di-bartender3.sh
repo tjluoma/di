@@ -27,7 +27,7 @@ XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
 
 
 	# This will work even if there is a space in the enclosure URL
-	# Don't indent this or you'll break 'sed'
+	# Don't indent this or you'll break sed
 IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
 | egrep 'sparkle:shortVersionString=|url=' \
 | tail -1 \
