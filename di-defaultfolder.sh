@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Default Folder X
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-05
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Default Folder X.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,79 +16,93 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# XML_FEED='http://www.stclairsoft.com/updates/DefaultFolderX5.XML_FEED'
-
+	# This is the URL actually given by the feed itself
+	# 	XML_FEED='http://www.stclairsoft.com/updates/DefaultFolderX5.xml'
+	# but this is the URL found in the app itself
 XML_FEED='https://www.stclairsoft.com/cgi-bin/sparkle.cgi?DX5'
 
-INSTALL_TO="/Applications/Default Folder X.app"
-
-# User Agent = Default Folder X/5.0b1 Sparkle/58
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-SHORT_VER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
-
-UA="Default Folder X/$INSTALLED_VERSION Sparkle/$SHORT_VER"
-
-INFO=($(curl -sfL -A "$UA" "$XML_FEED" \
-		| tr -s ' ' '\012' \
-		| egrep '^(sparkle:shortVersionString|url)=' \
-		| head -2 \
-		| awk -F'"' '//{print $2}'))
-
-LATEST_VERSION="$INFO[2]"
-
-URL="$INFO[1]"
-
-if [[ "$LATEST_VERSION" == "$SHORT_VER" ]]
-then
-	echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
-	exit 0
-fi
-
-if [[ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]]
-then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0 
-fi 
-
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Installed version  ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $SHORT_VER vs Latest = $LATEST_VERSION)"
-
-RSIZE=`curl -sfL --head "$URL" | awk -F' ' '/Content-Length/{print $NF}' | tr -d '\r'`
-
-FILENAME="$HOME/Downloads/DefaultFolderX-$LATEST_VERSION.dmg"
-
-echo "$NAME: Downloading $URL to $FILENAME"
-
-if [ -e "$FILENAME" ]
+if [[ -e "$INSTALL_TO" ]]
 then
 
-	zmodload zsh/stat
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
 
-	SIZE=$(zstat -L +size "$FILENAME")
+	INSTALLED_BUILD=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion`
 
-	while [ "`zstat -L +size ${FILENAME}`" -lt "$RSIZE" ]
-	do
-		curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
-	done
+		# User Agent = Default Folder X/5.0b1 Sparkle/58
+	UA="Default Folder X/$INSTALLED_VERSION Sparkle/$INSTALLED_BUILD"
 
 else
-
-	curl --progress-bar --fail --location --output "$FILENAME" "$URL" || exec 0
+		# This is current info as of 2018-08-02
+	UA="Default Folder X/5.2.5 Sparkle/483"
 fi
 
+INFO=($(curl -sfL -A "$UA" "$XML_FEED" \
+		 | tr -s ' ' '\012' \
+		 | egrep '^(sparkle:shortVersionString|url|sparkle:version)=' \
+		 | sort \
+		 | head -3 \
+		 | awk -F'"' '//{print $2}'))
 
-if [ -e "$INSTALL_TO" ]
+## Expected output something like:
+#
+# 5.2.5
+# 483
+# https://www.stclairsoft.com/download/DefaultFolderX-5.2.5.dmg
+
+LATEST_VERSION="$INFO[1]"
+LATEST_BUILD="$INFO[2]"
+URL="$INFO[3]"
+
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" -o "$LATEST_BUILD" = "" ]
+then
+	echo "$NAME Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL\n"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	if [[ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_BUILD vs Latest = $LATEST_VERSION)"
+
+fi
+
+FILENAME="$HOME/Downloads/DefaultFolderX-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
+
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+if [[ -e "$INSTALL_TO" ]]
 then
 		# Quit app, if running
 	pgrep -xq "Default Folder X" \
@@ -104,32 +120,39 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| tail -1 \
 		| sed 's#</string>.*##g ; s#.*<string>##g')
 
-
 if [[ "$MNTPNT" == "" ]]
 then
-		echo "$NAME: failed to mount $FILENAME. (MNTPNT is empty)"
-		exit 1
+	echo "$NAME: failed to mount $FILENAME. (MNTPNT is empty)"
+	exit 1
 fi
 
-ditto --noqtn "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" != "0" ]]
+then
+	echo "$NAME: ditto failed"
+
+	exit 1
+fi
+
+echo "$NAME: Installation successful. Ejecting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
 
-
-[[ "$LAUNCH" = "yes" ]] && open --background -a "$INSTALL_TO"
-
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 if (is-growl-running-and-unpaused.sh)
 then
-
-	growlnotify  \
+	growlnotify \
 	--appIcon "Default Folder X" \
 	--identifier "$NAME" \
 	--message "Updated to $LATEST_VERSION" \
 	--title "$NAME"
-
 fi
-
 
 
 exit 0
