@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Download and install the latest version of Beamer
+# Purpose: Download and install the latest version of Beamer
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-22
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Beamer.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,47 +18,57 @@ fi
 
 XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
 
-INSTALL_TO='/Applications/Beamer.app'
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
-
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
-| egrep 'sparkle:version=|url=' \
-| head -2 \
+| egrep 'sparkle:shortVersionString=|sparkle:version=|url=' \
+| head -3 \
 | sort \
 | awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_VERSION_READABLE="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
+URL="$INFO[3]"
+
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
-	exit 0
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
 fi
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+if [[ -e "$INSTALL_TO" ]]
+then
 
-autoload is-at-least
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	autoload is-at-least
 
-FILENAME="$HOME/Downloads/Beamer-${LATEST_VERSION}.zip"
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
+
+FILENAME="$HOME/Downloads/Beamer-${LATEST_VERSION_READABLE}-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -74,13 +86,11 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Beamer" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Beamer.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Downloading $URL to $FILENAME"
-
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+# @TODO - verify the installation part of this
 
 	# Extract from the .zip file and install (this will leave the .zip file in place)
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
@@ -90,11 +100,14 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: Installation of $INSTALL_TO failed (ditto \$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+
+	exit 1
+
 fi
 
 exit 0
