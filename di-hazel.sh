@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Hazel
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -8,11 +8,7 @@
 
 ## 2016-04-22 - changed from .dmg to .zip
 
-
 NAME="$0:t:r"
-
-DIR="$HOME/Downloads"
-
 
 if [ -e "$HOME/.path" ]
 then
@@ -39,8 +35,8 @@ else
 	INSTALL_TO="$LOCAL_INSTALL"
 fi
 
-	# If there's no installed version, output 3.0.0 so the Sparkle feed will give us the proper download URL
-	## DO NOT SET TO ZERO 
+	# If there's no installed version, output 4.0.0 so the Sparkle feed will give us the proper download URL
+	## DO NOT SET TO ZERO
 INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
 INFO=($(curl -sfL "https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION" \
@@ -51,38 +47,66 @@ INFO=($(curl -sfL "https://www.noodlesoft.com/Products/Hazel/generate-appcast.ph
 
 LATEST_VERSION="$INFO[1]"
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
-
-autoload is-at-least
-
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version >$LATEST_VERSION<"
- 	exit 0
- fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
 URL="$INFO[2]"
 
-FILENAME="$DIR/Hazel-$LATEST_VERSION.zip"
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version >$LATEST_VERSION<"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
+
+FILENAME="$HOME/Downloads/Hazel-$LATEST_VERSION.zip"
 
 	# Server does not support continued downloads, so assume that this is incomplete and try again
-[[ -f "$FILENAME" ]] && rm -f "$FILENAME" 
+[[ -f "$FILENAME" ]] && rm -f "$FILENAME"
 
 echo "$NAME: Downloading $URL to $FILENAME"
-curl -fL --progress-bar --output "$FILENAME" "$URL"
+
+ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 # If we get here we are ready to install
 
 # Quit HazelHelper
-pkill HazelHelper
+
+pgrep -qx HazelHelper && pkill HazelHelper
 
 if [ -e "$INSTALL_TO" ]
 then
@@ -99,29 +123,33 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+
+	exit 1
+fi
+
+if (is-growl-running-and-unpaused.sh)
+then
+
+	growlnotify  \
+		--appIcon "HazelHelper" \
+		--identifier "$NAME" \
+		--message "Launching Hazel Helper" \
+		--title "$NAME" 2>/dev/null
 fi
 
 echo "$NAME: Launching HazelHelper..."
 
-growlnotify  \
-	--appIcon "HazelHelper" \
-	--identifier "$NAME" \
-	--message "Launching Hazel Helper" \
-	--title "$NAME" 2>/dev/null
-
-
 open --background -a "$INSTALL_TO/Contents/MacOS/HazelHelper.app"
-
 
 if [[ ! -e "$HOME/Library/Application Support/Hazel/license" ]]
 then
 
-	LICENSE="$HOME/dotfiles/licenses/hazel/Hazel-3.hazellicense"
+	LICENSE="$HOME/Dropbox/dotfiles/licenses/hazel/Hazel-4.hazellicense"
 
 	if [[ -e "$LICENSE" ]]
 	then
@@ -131,11 +159,15 @@ then
 
 		echo "$NAME: $MSG"
 
-		growlnotify  \
-			--appIcon "HazelHelper" \
-			--identifier "$NAME" \
-			--message "$MSG" \
-			--title "$NAME" 2>/dev/null
+		if (is-growl-running-and-unpaused.sh)
+		then
+
+			growlnotify \
+				--appIcon "HazelHelper" \
+				--identifier "$NAME" \
+				--message "$MSG" \
+				--title "$NAME" 2>/dev/null
+		fi
 	fi
 fi
 
