@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and Install the latest version of ExpanDrive for Mac
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -8,36 +8,62 @@
 
 NAME="$0:t:r"
 
-# Not http://updates.expandrive.com/apps/expandrive.xml
+INSTALL_TO='/Applications/ExpanDrive.app'
 
-# XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
+
+
+# Not http://updates.expandrive.com/apps/expandrive.xml
 
 XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
 LATEST_VERSION=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/sparkle:version/{print $2}' | head -1`
 
+DL_URL=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/url=/{print $2}' | head -1`
+
+# @TODO - update XML_FEED parsing and update block below to check for appropriate variables
+
+	# If any of these are blank, we should not continue
+# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+# then
+# 	echo "$NAME: Error: bad data received:
+# 	INFO: $INFO
+# 	LATEST_VERSION: $LATEST_VERSION
+# 	URL: $URL
+# 	"
+#
+# 	exit 1
+# fi
+
+
+
+
 INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBundleVersion 2>/dev/null || echo '0'`
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	exit 0
+fi
 
 autoload is-at-least
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+if [ "$?" = "0" ]
+then
+	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+	exit 0
+fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 
-DL_URL=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/url=/{print $2}' | head -1`
 
 if [ -d "$HOME/Sites/iusethis.luo.ma/expandrive" ]
 then
