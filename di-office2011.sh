@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Office2011
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -90,7 +90,7 @@ FILENAME="$URL:t"
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
-	log "Up-To-Date ($INSTALLED_VERSION)"
+	log "Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
 	exit 0
 fi
 
@@ -177,7 +177,7 @@ do
 	sleep 30
 done
 
-sudo installer -pkg "$PKG" -target / -lang en 2>&1 | tee -a "$LOG"
+sudo /usr/sbin/installer -pkg "$PKG" -target / -lang en 2>&1 | tee -a "$LOG"
 
 
 EXIT="$?"
