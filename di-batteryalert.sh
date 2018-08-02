@@ -1,11 +1,22 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Battery Alert
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-24
 
 NAME="$0:t:r"
+
+echo "$NAME: https://sqwarq.com/batteryalert/ is now 404 and the app no longer seems to be available."
+
+exit 0
+
+
+### The code below is left for reference / historical purposes, but no longer works as of at least 2018-08-02
+
+
+
+
 
 if [ -e "$HOME/.path" ]
 then
@@ -29,7 +40,7 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 autoload is-at-least
 
  is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
+
  if [ "$?" = "0" ]
  then
  	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
@@ -58,7 +69,7 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "BatteryAlert" to quit'
 
-		# move installed version to trash 
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/BatteryAlert.$INSTALLED_VERSION.app"
 fi
 
@@ -72,9 +83,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
