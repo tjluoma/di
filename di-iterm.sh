@@ -1,12 +1,13 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of iTerm (note that a separate script exists for "nightly" builds)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# Date:	2016-01-19, updated 2018-08-02
 
 NAME="$0:t:r"
-APPNAME="iTerm"
+
+INSTALL_TO="/Applications/iTerm.app"
 
 if [ -e "$HOME/.path" ]
 then
@@ -15,51 +16,55 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/$APPNAME.app"
+	# if you want the nightly versions, see:
+	# https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh
+XML_FEED="https://iterm2.com/appcasts/final.xml"
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
+	# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
+INFO=($(curl -sfL "$XML_FEED" \
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:version)=' \
+		| tail -2 \
+		| sort \
+		| awk -F'"' '//{print $2}'))
 
-#    SUFeedURLForFinal = "https://iterm2.com/appcasts/final.xml";
-#    SUFeedURLForTesting = "https://iterm2.com/appcasts/nightly.xml";
+LATEST_VERSION="$INFO[1]"
 
-FEED_URL="https://iterm2.com/appcasts/final.xml"
+URL="$INFO[2]"
 
-INFO=($(curl -sfL $FEED_URL \
-| tr ' ' '\012' \
-| egrep '^(url|sparkle:version)=' \
-| tail -2 \
-| awk -F'"' '//{print $2}'))
-# echo $INFO
+# echo "
+# LATEST_VERSION: $LATEST_VERSION
+# URL: $URL
+# "
 
-URL="$INFO[1] $INFO[2].zip"
-# URL="$( echo "$URL" | sed 's/ /%20/g' )"
+if [[ -e "$INSTALL_TO" ]]
+then
 
-LATEST_VERSION="$INFO[2]"
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
 
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
 fi
 
-autoload is-at-least
+FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
- 
- echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-
-FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
-
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -68,10 +73,14 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+		# don't kill the app because it might be running this script. Oops.
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
@@ -84,15 +93,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
-
-
-
 
 exit 0
 EOF
