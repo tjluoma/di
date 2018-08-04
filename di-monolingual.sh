@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Monolingual
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-29
 
 NAME="$0:t:r"
+INSTALL_TO='/Applications/Monolingual.app'
+XML_FEED='https://ingmarstein.github.io/Monolingual/appcast.xml'
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,19 +16,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Monolingual.app'
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-
-XML_FEED='https://ingmarstein.github.io/Monolingual/appcast.xml'
-
+	# no other version info in feed
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version=|url=' \
-| head -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+	| tr -s ' ' '\012' \
+	| egrep 'sparkle:version=|url=' \
+	| head -2 \
+	| sort \
+	| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
@@ -35,32 +31,39 @@ URL="$INFO[2]"
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
-	exit 0
+	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION"
+	exit 1
 fi
 
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
-autoload is-at-least
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date ($LATEST_VERSION)"
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-FILENAME="$HOME/Downloads/Monolingual-${LATEST_VERSION}.tar.bz2"
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -73,23 +76,33 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "Monolingual" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Monolingual" to quit'
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
-		# move installed version to trash 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Monolingual.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
-
-
 echo "$NAME: Unpacking $FILENAME to $INSTALL_TO:h"
+
 tar -x -C "$INSTALL_TO:h" -j -f "$FILENAME"
 
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+
+	echo "$NAME: Installation success."
+
+else
+	echo "$NAME: 'tar' failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
 
 exit 0
 #EOF
