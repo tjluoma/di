@@ -9,6 +9,7 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/MacPilot.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,8 +17,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-INSTALL_TO='/Applications/MacPilot.app'
 
 	# The latest version is 10.1.1 so we want to fake at least version 10
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 10`
@@ -33,13 +32,6 @@ INFO=($(curl --silent --location "$XML_FEED" \
 		| sed 's#.*<version>##g ; s#</version>##g; s#.*<macpath>##g; s#</macpath>##g; '
 	))
 
-## 2018-08-02 - this is old
-##
-# INFO=($(curl -sfL "$OS_URL" \
-# | tr -s ' ' '\012' \
-# | egrep '^(url|sparkle:version)' \
-# | awk -F'"' '//{print $2}'))
-
 URL="$INFO[1]"
 
 LATEST_VERSION="$INFO[2]"
@@ -51,7 +43,6 @@ then
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	OS_URL: $OS_URL
 	"
 
 	exit 1
@@ -74,7 +65,6 @@ then
 fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
 
 FILENAME="$HOME/Downloads/MacPilot-$LATEST_VERSION.dmg"
 
@@ -103,7 +93,6 @@ then
 	echo "$NAME: MNTPNT is empty"
 	exit 0
 fi
-
 
 if [ -e "$INSTALL_TO" ]
 then
