@@ -67,8 +67,8 @@ EXIT="$?"
 
 if [ -e "$INSTALL_TO" ]
 then
-	pgrep -qx "BetterTouchTool" && LAUNCH='yes' && killall "BetterTouchTool"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/BetterTouchTool.$INSTALLED_VERSION.app"
+	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
