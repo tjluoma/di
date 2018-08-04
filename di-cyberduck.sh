@@ -7,6 +7,15 @@
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
+XML_FEED="https://version.cyberduck.io/changelog.rss" # stable
+
+# beta:
+# 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
+# nightly:
+# 	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
+#
+# 2018-08-04 -- right now all 3 feeds seem identical, but I'll keep
+# them all for possible future reference.
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,13 +23,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-# stable
-XML_FEED="https://version.cyberduck.io/changelog.rss"
-# beta:
-# 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
-# nightly:
-# 	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
 
 INFO=($(curl -sfL $XML_FEED \
 	| tr ' ' '\012' \
@@ -39,7 +41,6 @@ then
 	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nLATEST_BUILD: $LATEST_BUILD\nURL: $URL"
 	exit 1
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -87,7 +88,7 @@ EXIT="$?"
 if [[ -e "$INSTALL_TO" ]]
 then
 	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing '$FILENAME' to '$INSTALL_TO:h/':"
