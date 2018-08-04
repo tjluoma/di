@@ -8,7 +8,7 @@
 
 	# 2018-08-02 - this is what the newest version available calls itself
 INSTALL_TO='/Applications/BitTorrent Sync.app'
-APPNAME="$INSTALL_TO:t:r"
+
 
 if [ -e "$HOME/.path" ]
 then
@@ -104,7 +104,7 @@ DIR="$HOME/Downloads"
 #		Download the latest version to a file with the version number in the name
 #
 
-FILENAME="$DIR/${APPNAME}-${LATEST_VERSION}.dmg"
+FILENAME="$DIR/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -146,11 +146,11 @@ fi
 #		Quit the app if it is running
 #
 
-while [[ "`pgrep ${APPNAME}`" != "" ]]
+while [[ "`pgrep $INSTALL_TO:t:r`" != "" ]]
 do
 
 	log "Trying to quit "
-	osascript -e 'tell application "$APPNAME" to quit'
+	osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 	LAUNCH='yes'
 
 done
@@ -162,7 +162,7 @@ done
 
 if [ -e "$INSTALL_TO" ]
 then
-	mv -vn "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+	mv -vn "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
