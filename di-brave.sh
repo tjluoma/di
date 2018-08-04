@@ -16,7 +16,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL1=`curl -sfL https://github.com/brave/browser-laptop/releases.atom \
+URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
 | fgrep '/browser-laptop/releases/tag/' \
 | head -1 \
 | sed 's#.*https#https#g; s#"/>##g'`
@@ -29,8 +29,6 @@ URL2=`curl -sfL "$URL1" \
 # URL1: $URL1
 # URL2: $URL2
 # "
-
-FILENAME="$HOME/Downloads/$URL2:t"
 
 LATEST_VERSION=`echo "$URL2:t:r" | tr -dc '[0-9]\.'`
 
@@ -59,6 +57,8 @@ else
 
 	FIRST_INSTALL='yes'
 fi
+
+FILENAME="$HOME/Downloads/$URL2:t"
 
 echo "$NAME: Downloading '$URL2' to '$FILENAME':"
 
