@@ -1,12 +1,12 @@
 #!/bin/zsh -f
-# Purpose: 
+# Purpose: Download and install the latest version of Cyberduck
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-APPNAME="Cyberduck"
+INSTALL_TO="/Applications/Cyberduck.app"
 
 if [ -e "$HOME/.path" ]
 then
@@ -15,66 +15,59 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/$APPNAME.app"
-
-# https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/600008
-# https://app-updates.agilebits.com/check/1/15.2.0/OPM4/en/601003
-# where '600008' = CFBundleVersion
-
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-BUILD_NUMBER=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo 600000`
-
 # stable
-FEED_URL="https://version.cyberduck.io/changelog.rss"
-# beta
-# FEED_URL="https://version.cyberduck.io/beta/changelog.rss"
-# nightly
-# FEED_URL="https://version.cyberduck.io/nightly/changelog.rss"
+XML_FEED="https://version.cyberduck.io/changelog.rss"
+# beta:
+# 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
+# nightly:
+# 	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
 
-INFO=($(curl -sfL $FEED_URL \
-| tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
-| head -3 \
-| awk -F'"' '//{print $2}'))
+INFO=($(curl -sfL $XML_FEED \
+	| tr ' ' '\012' \
+	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+	| sort \
+	| head -3 \
+	| awk -F'"' '//{print $2}'))
 
+LATEST_VERSION="$INFO[1]"
+LATEST_BUILD="$INFO[2]"
 URL="$INFO[3]"
-LATEST_VERSION="$INFO[2]"
-LATEST_VERSION_SHORT="$INFO[1]"
-# echo $URL
-# echo $LATEST_VERSION
-# echo $LATEST_VERSION_SHORT
 
-if [[ $FEED_URL =~ "beta" || $FEED_URL =~ "nightly" ]]
- then
-  INSTALLED_VERSION="$INSTALLED_VERSION-$BUILD_NUMBER"
-  LATEST_VERSION="$LATEST_VERSION-$LATEST_VERSION_SHORT"
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
-# echo $INSTALLED_VERSION
-# echo $LATEST_VERSION
 
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
-fi
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
- 
- echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-
-FILENAME="$HOME/Downloads/${APPNAME//[[:space:]]/}-${LATEST_VERSION}.zip"
-
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -83,31 +76,65 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	pgrep -qx "$APPNAME" && LAUNCH='yes' && killall "$APPNAME"
+	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
 	mv -f "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+echo "$NAME: Installing '$FILENAME' to '$INSTALL_TO:h/':"
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
 
 exit 0
 EOF
