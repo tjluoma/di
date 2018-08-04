@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Brave
+# Purpose: Download and install the latest version of Brave from: <https://brave.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
