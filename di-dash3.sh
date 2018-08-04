@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Dash
+# Purpose: Download and install the latest version of Dash v3 (note v4 is also available)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
