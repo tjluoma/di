@@ -6,6 +6,7 @@
 # Date:	2018-08-02
 
 NAME="$0:t:r"
+INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -13,10 +14,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-INSTALL_TO='/Applications/Carbon Copy Cloner.app'
-
-APPNAME="$INSTALL_TO:t"
 
 	## NOTE: If nothing is installed, we need to pretend we have at least version 5
 	## 			or else we will get version 3 or 4
@@ -95,12 +92,12 @@ EXIT="$?"
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "$APPNAME" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$APPNAME" to quit'
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
-		# move installed version to trash 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
@@ -113,9 +110,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
