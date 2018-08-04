@@ -1,11 +1,10 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Bartender 3 @todo - rename script?
+# Purpose: Download and install the latest version of Bartender 3
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-04-16
+# Date:	2015-04-16; 2018-07-10 - updated for Bartender 3
 
-# 2018-07-10 - updated for Bartender 3
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Bartender 3.app'
@@ -19,7 +18,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
 
 LAUNCH='yes'
 
