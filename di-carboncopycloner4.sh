@@ -16,14 +16,12 @@ fi
 
 INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 
-APPNAME="$INSTALL_TO:t"
-
 	## NOTE: If nothing is installed, we need to pretend we have at least version 4
-	## 			or else we will get version 3 
+	## 			or else we will get version 3
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
 	## NOTE: If nothing is installed, we need to pretend we have at least version 4000
-	## 			or else we will get version 3 	
+	## 			or else we will get version 3
 INSTALLED_BUNDLE_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '4000'`
 
 OS_MINOR=`sw_vers -productVersion | cut -d. -f 2`
@@ -34,7 +32,7 @@ XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bug
 
 # XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
 
-## If you want betas, use this line  
+## If you want betas, use this line
 # XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=1&locale=en"
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -92,12 +90,12 @@ EXIT="$?"
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "$APPNAME" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$APPNAME" to quit'
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
-		# move installed version to trash 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$APPNAME.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
@@ -110,9 +108,9 @@ EXIT="$?"
 if [ "$EXIT" = "0" ]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	
+
 	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-	
+
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
