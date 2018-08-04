@@ -38,7 +38,7 @@ log "---------- STARTING AT `timestamp` ---------- "
 ##
 
 command ls -1 di-*sh \
-| fgrep -v 'di-all.sh' \
+| egrep -v '(di-all.sh|di-auto.sh)' \
 | while read line
 do
 
