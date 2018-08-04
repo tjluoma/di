@@ -33,6 +33,14 @@ LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
 URL="$INFO[3]"
 
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
+then
+	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nLATEST_BUILD: $LATEST_BUILD\nURL: $URL"
+	exit 1
+fi
+
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
