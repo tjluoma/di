@@ -20,19 +20,20 @@ XML_FEED='https://www.latenightsw.com/versions/com.latenightsw.ScriptDebugger7.p
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
-		| egrep 'sparkle:shortVersionString=|url=' \
-		| head -2 \
+		| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
+		| head -3 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_BUILD="$INFO[2]"
+URL="$INFO[3]"
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nURL: $URL"
+	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nLATEST_BUILD: $LATEST_BUILD\nURL: $URL"
 	exit 1
 fi
 
@@ -41,19 +42,25 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
 
@@ -62,7 +69,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/ScriptDebugger-${LATEST_VERSION}.dmg"
+
+FILENAME="$HOME/Downloads/ScriptDebugger-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
