@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install nvALT
+# Purpose: Download and install nvALT from <http://brettterpstra.com/projects/nvalt/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -22,7 +22,6 @@ fi
 # This is new, current as of 2018-07-10 at least
 XML_FEED='https://updates.designheresy.com/nvalt/updates.xml'
 
-
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString|sparkle:version=|url=' \
@@ -34,7 +33,6 @@ INFO=($(curl -sfL "$XML_FEED" \
 LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
 URL="$INFO[3]"
-
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -112,7 +110,6 @@ then
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
-
 
 exit 0
 #
