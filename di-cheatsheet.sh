@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: @todo - Download and install the latest version of Cheat Sheet <https://mediaatelier.com/CheatSheet/>
+# Purpose: Download and install the latest version of Cheat Sheet <https://mediaatelier.com/CheatSheet/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
