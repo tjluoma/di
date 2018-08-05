@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install Name Mangler @todo - rename script?
+# Purpose: Download and install Name Mangler v3
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
