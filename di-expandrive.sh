@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and Install the latest version of ExpanDrive for Mac
+# Purpose: Download and Install the latest version of ExpanDrive for Mac from <http://www.expandrive.com>
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -7,8 +7,10 @@
 # Date:	2015-07-30
 
 NAME="$0:t:r"
-
 INSTALL_TO='/Applications/ExpanDrive.app'
+XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
+
+# Not http://updates.expandrive.com/apps/expandrive.xml
 
 if [ -e "$HOME/.path" ]
 then
@@ -17,112 +19,129 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+# sparkle:version= is the only version string in XML_FEED
+# CFBundleShortVersionString and CFBundleVersion are identical in app plist
 
-# Not http://updates.expandrive.com/apps/expandrive.xml
+INFO=($(curl -sfL "${XML_FEED}" \
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version=|url=' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
-XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
-
-LATEST_VERSION=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/sparkle:version/{print $2}' | head -1`
-
-DL_URL=`curl -sfL "$XML_FEED" | tr -s '[:blank:]' '\012' | awk -F'"' '/url=/{print $2}' | head -1`
-
-# @TODO - update XML_FEED parsing and update block below to check for appropriate variables
+	# "Sparkle" will always come before "url" because of "sort"
+LATEST_VERSION="$INFO[1]"
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
-# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-# then
-# 	echo "$NAME: Error: bad data received:
-# 	INFO: $INFO
-# 	LATEST_VERSION: $LATEST_VERSION
-# 	URL: $URL
-# 	"
-#
-# 	exit 1
-# fi
-
-
-
-
-INSTALLED_VERSION=`defaults read /Applications/ExpanDrive.app/Contents/Info CFBundleVersion 2>/dev/null || echo '0'`
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
+	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nURL: $URL"
+	exit 1
 fi
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-	exit 0
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
 fi
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-
-
-if [ -d "$HOME/Sites/iusethis.luo.ma/expandrive" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	DIR="$HOME/Sites/iusethis.luo.ma/expandrive"
 
-	cd "$DIR"
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
-	mkdir -p old
+	autoload is-at-least
 
-	mv -vn * old/ 2>/dev/null
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	FIRST_INSTALL='no'
 
 else
-	DIR="$HOME/Downloads"
+
+	FIRST_INSTALL='yes'
 fi
 
-cd "$DIR"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-FILENAME="$DIR/ExpanDrive-$LATEST_VERSION.dmg"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-echo "$NAME: Downloading $DL_URL to $FILENAME"
-
-curl --progress-bar --continue-at - --fail --location --output  "$FILENAME" "$DL_URL"
+curl --progress-bar --continue-at - --fail --location --output  "$FILENAME" "$URL"
 
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-while [ "`pgrep ExpanDrive`" != "" ]
-do
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-	MSG="ExpanDrive is running. Please quit before proceeding."
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-	echo "$NAME: $MSG"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
-	if (is-growl-running-and-unpaused.sh)
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
 	then
 
-		growlnotify  \
-		--appIcon "ExpanDrive" \
-		--identifier "$NAME" \
-		--message "$MSG" \
-		--title "$NAME"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
+		exit 1
 	fi
+fi
 
-	sleep 30
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
-done
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
+EXIT="$?"
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+if [[ "$EXIT" = "0" ]]
+then
 
-## the App on the DMG is an installer which will move the old app aside and install the new one, then eject the DMG
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
-open "$MNTPNT/ExpanDrive.app"
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
+	exit 1
+fi
+
+[[ "$FIRST_INSTALL" == "yes" ]] && echo "$NAME: Launching $INSTALL_TO:t:r" && open -a "$INSTALL_TO"
 
 exit 0
 #
