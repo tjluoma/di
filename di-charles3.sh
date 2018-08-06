@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Charles.app'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
