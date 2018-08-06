@@ -118,9 +118,9 @@ Some apps specifically include a major version number in their installation, e.g
 	di-1password6.sh:INSTALL_TO='/Applications/1Password 6.app'
 	di-1password7.sh:INSTALL_TO='/Applications/1Password 7.app'
 
-Some scripts, such as `[di-handbrake-nightly.sh](https://github.com/tjluoma/di/blob/master/di-handbrake-nightly.sh)`,
-`[di-imageoptim-beta.sh](https://github.com/tjluoma/di/blob/master/di-imageoptim-beta.sh)`,
-and `[di-iterm-nightly.sh](https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh)`,
+Some scripts, such as [di-handbrake-nightly.sh](https://github.com/tjluoma/di/blob/master/di-handbrake-nightly.sh),
+[di-imageoptim-beta.sh](https://github.com/tjluoma/di/blob/master/di-imageoptim-beta.sh),
+and [di-iterm-nightly.sh](https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh),
 handle this situation by intentionally installing themselves to a distinct location
 in case you want to install both the nightly/beta version and the “regular” one:
 
