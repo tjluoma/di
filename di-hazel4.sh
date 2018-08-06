@@ -10,6 +10,10 @@
 
 NAME="$0:t:r"
 
+	## If you want to install Hazel for all users, replace 'INSTALL_TO=' with this line
+	# INSTALL_TO='/Library/PreferencePanes/Hazel.prefPane'
+INSTALL_TO="$HOME/Library/PreferencePanes/Hazel.prefPane"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -17,23 +21,60 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-LOCAL_INSTALL="$HOME/Library/PreferencePanes/Hazel.prefPane"
-
-SYSTEM_INSTALL='/Library/PreferencePanes/Hazel.prefPane'
-
-if [ -e "$SYSTEM_INSTALL" -a -e "$LOCAL_INSTALL" ]
+if [ -e "/Library/PreferencePanes/Hazel.prefPane" -a -e "$HOME/Library/PreferencePanes/Hazel.prefPane" ]
 then
-	echo "$NAME: Hazel is installed at BOTH $LOCAL_INSTALL and $SYSTEM_INSTALL. Please remove one."
+
+	echo "$NAME: Hazel.prefPane is installed at _BOTH_ '/Library/PreferencePanes/Hazel.prefPane' and '$HOME/Library/PreferencePanes/Hazel.prefPane'.
+	Please remove one."
+
 	exit 1
-elif [ -e "$SYSTEM_INSTALL" ]
-then
-	INSTALL_TO="$SYSTEM_INSTALL"
-elif [ -e "$LOCAL_INSTALL" ]
-then
-	INSTALL_TO="$LOCAL_INSTALL"
-else
-	INSTALL_TO="$LOCAL_INSTALL"
 fi
+
+function check_install_location {
+
+	if [ ! -e "$INSTALL_TO:h" ]
+	then
+		echo "$NAME: Trying to create $INSTALL_TO:h:"
+		mkdir -p "$INSTALL_TO:h" 2>&1
+	fi
+
+	if [ -d "$INSTALL_TO:h" -a -w "$INSTALL_TO" ]
+	then
+			# This is what we want/hope/expect
+		echo "$NAME: '$INSTALL_TO:h' exists as a directory and is writable."
+	elif [ -d "$INSTALL_TO:h" -a ! -w "$INSTALL_TO" ]
+	then
+		echo "$NAME: '$INSTALL_TO:h' exists as a directory but it is NOT writable. Cannot continue."
+		exit 1
+	elif [ ! -e "$INSTALL_TO:h" ]
+	then
+		echo "$NAME: '$INSTALL_TO:h' does not exist and we failed to create it."
+		exit 1
+	elif [ -e "$INSTALL_TO" -a ! -w "$INSTALL_TO" ]
+	then
+			# Ths app (or whatever) was either installed by a .pkg (which probably ran under 'sudo')
+			# or it was installed via the Mac App Store, which installs apps owned by 'root'
+			# We _could_ try a 'mv' command via 'sudo' I suppose.
+		echo "$NAME: '$INSTALL_TO' already exists but is not writable. To continue, we must remove it using administrator permissions:"
+
+		if (( $+commands[trash] ))
+		then
+				# The 'trash' command will prompt for user permission if necessary
+			trash "$INSTALL_TO"
+		else # no 'trash' command
+				# move the file to the trash, renaming it to use the $INSTALLED_VERSION and $INSTALLED_BUILD variables
+				# if those variables are unset use zero (0) instead
+			sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION-0}.${INSTALLED_BUILD-0}.$INSTALL_TO:e"
+		fi # 'trash' command
+
+			# Check again to see if we've successfully removed it
+		if [ -e "$INSTALL_TO" -a ! -w "$INSTALL_TO" ]
+		then
+			echo "$NAME: $INSTALL_TO exists, but is not writable, and we failed to remove it. Cannot continue"
+			exit 1
+		fi
+	fi
+}
 
 	# If there's no installed version, output 4.0.0 so the Sparkle feed will give us the proper download URL
 	## DO NOT SET TO ZERO
@@ -103,72 +144,95 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 # If we get here we are ready to install
+# let's make sure we can
 
-# Quit HazelHelper
+check_install_location
 
-pgrep -qx HazelHelper && pkill HazelHelper
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-if [ -e "$INSTALL_TO" ]
-then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Hazel.$INSTALLED_VERSION.prefPane"
-fi
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
-if (is-growl-running-and-unpaused.sh)
-then
+PID=$(pgrep -x 'HazelHelper')
 
-	growlnotify  \
-		--appIcon "HazelHelper" \
-		--identifier "$NAME" \
-		--message "Launching Hazel Helper" \
-		--title "$NAME" 2>/dev/null
+if [[ "$PID" != "" ]]
+then
+	echo "$NAME: Quitting HazelHelper:"
+	LAUNCH_HELPER='yes'
+		# try to quit HazelHelper nicely
+	osascript -e 'tell application "HazelHelper" to quit'
+		# give it a chance to exit
+	sleep 10
+		# if it's still running, kill it
+	pgrep -qx HazelHelper && pkill HazelHelper
+else
+	LAUNCH_HELPER='no'
 fi
 
-echo "$NAME: Launching HazelHelper..."
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
-open --background -a "$INSTALL_TO/Contents/MacOS/HazelHelper.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
-if [[ ! -e "$HOME/Library/Application Support/Hazel/license" ]]
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
 then
 
-	LICENSE="$HOME/Dropbox/dotfiles/licenses/hazel/Hazel-4.hazellicense"
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
-	if [[ -e "$LICENSE" ]]
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+if [[ "$LAUNCH_HELPER" == "yes" ]]
+then
+
+	if (is-growl-running-and-unpaused.sh)
 	then
-		open "$LICENSE" || open -R "$LICENSE"
-	else
-		MSG="Hazel is unlicensed and no Hazel-4.hazellicense found at $LICENSE"
 
-		echo "$NAME: $MSG"
-
-		if (is-growl-running-and-unpaused.sh)
-		then
-
-			growlnotify \
-				--appIcon "HazelHelper" \
-				--identifier "$NAME" \
-				--message "$MSG" \
-				--title "$NAME" 2>/dev/null
-		fi
+		growlnotify  \
+			--appIcon "HazelHelper" \
+			--identifier "$NAME" \
+			--message "Launching Hazel Helper" \
+			--title "$NAME" 2>/dev/null
 	fi
+
+	echo "$NAME: Launching HazelHelper..."
+
+	open -a "$INSTALL_TO/Contents/MacOS/HazelHelper.app"
 fi
 
 exit 0
