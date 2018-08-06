@@ -71,7 +71,7 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
-FILENAME="$HOME/Downloads/Arq-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
 
@@ -186,7 +186,7 @@ exit 0
 ##					I am saving it in case the Sparkle feed resumes working in the future.
 
 
-FILENAME="$HOME/Downloads/Arq-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
