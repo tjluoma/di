@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/MarsEdit.app'
+INSTALL_TO='/Applications/MarsEdit 3.app'
 
 if [ -e "$HOME/.path" ]
 then
