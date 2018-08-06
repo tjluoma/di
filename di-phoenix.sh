@@ -8,6 +8,9 @@
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Phoenix.app'
+# Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
+
+XML_FEED="https://iconfactory.com/appcasts/Phoenix/appcast.xml"
 
 if [ -e "$HOME/.path" ]
 then
@@ -15,8 +18,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-XML_FEED="https://iconfactory.com/appcasts/Phoenix/appcast.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr '[:blank:]' '\012' \
@@ -64,7 +65,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Phoenix-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

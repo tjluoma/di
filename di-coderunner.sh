@@ -72,7 +72,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/CodeRunner-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -91,7 +91,7 @@ EXIT="$?"
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/CodeRunner.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 fi
 

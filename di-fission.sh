@@ -74,7 +74,7 @@ URL=`curl -sfL 'http://www.rogueamoeba.com/fission/download.php' | tr '"' '\012'
 	# if we didn't get anything, fall back to this
 [[ "$URL" == "" ]] && URL='http://rogueamoeba.com/fission/download/Fission.zip'
 
-FILENAME="$HOME/Downloads/Fission-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

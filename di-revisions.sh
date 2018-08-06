@@ -92,7 +92,7 @@ then
 		echo "$NAME: Out of Date: $INSTALLED_VERSION vs $LATEST_VERSION"
 	fi
 
-	FILENAME="$HOME/Downloads/Revisions-${LATEST_VERSION}.dmg"
+	FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 else
 

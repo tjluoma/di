@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Dropbox.app'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -60,7 +62,7 @@ fi
 #		Get the version number for the installed version of Dropbox
 #
 
-INSTALL_TO='/Applications/Dropbox.app'
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -92,7 +94,7 @@ fi
 #		Download File
 #
 
-FILENAME="$HOME/Downloads/Dropbox-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME:"
 

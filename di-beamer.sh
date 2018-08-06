@@ -68,7 +68,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Beamer-${LATEST_VERSION_READABLE}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION_READABLE}-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -82,12 +82,12 @@ EXIT="$?"
 if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "Beamer" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Beamer" to quit'
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Beamer.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 # @TODO - verify the installation part of this

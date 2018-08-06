@@ -7,16 +7,16 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Butler.app'
+
+XML_FEED='https://manytricks.com/butler/butlercast.xml'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-INSTALL_TO='/Applications/Butler.app'
-
-XML_FEED='https://manytricks.com/butler/butlercast.xml'
 
 	# "sparkle:version" also exists in the XML_FEED, but 'shortVersionString' is the important one
 INFO=($(curl -sfL "$XML_FEED" \
@@ -62,7 +62,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Butler-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -80,12 +80,12 @@ EXIT="$?"
 if [[ -e "$INSTALL_TO" ]]
 then
 		# Quit app, if running
-	pgrep -xq "Butler" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Butler" to quit'
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Butler.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Mounting $FILENAME:"
@@ -101,7 +101,7 @@ then
 	exit 1
 fi
 
-echo "$NAME: Installing '$MNTPNT/Butler.app' to '$INSTALL_TO':"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t:r.app' to '$INSTALL_TO':"
 
 ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO" \
 && diskutil eject "$MNTPNT"

@@ -73,8 +73,8 @@ fi
 # What we download is a .zip file with a .pkg file inside of it,
 # so we first need to unzip the .zip file and then install the .pkg file
 
-FILENAME="$HOME/Downloads/BusyCal-$LATEST_VERSION.zip"
-	PKG="$FILENAME:h/BusyCal-$LATEST_VERSION.pkg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+	PKG="$FILENAME:h/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
 
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -140,7 +140,7 @@ fi
 
 NEWLY_INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
 
-echo "$NAME: Successfully installed BusyCal '$NEWLY_INSTALLED_VERSION'."
+echo "$NAME: Successfully installed $INSTALL_TO:t:r '$NEWLY_INSTALLED_VERSION'."
 
 exit 0
 

@@ -64,7 +64,7 @@ then
 fi
 
 	# Where to save new download
-FILENAME="$HOME/Downloads/Choosy-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 	# Do the download
 echo "$NAME: Downloading $URL to $FILENAME"

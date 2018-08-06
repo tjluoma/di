@@ -62,8 +62,8 @@ then
 fi
 
 
-FILENAME="$HOME/Downloads/BusyContacts-$LATEST_VERSION.zip"
-	PKG="$FILENAME:h/BusyContacts-$LATEST_VERSION.pkg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+	PKG="$FILENAME:h/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -122,7 +122,7 @@ fi
 
 NEWLY_INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
 
-echo "$NAME: Successfully installed BusyContacts '$NEWLY_INSTALLED_VERSION'."
+echo "$NAME: Successfully installed $INSTALL_TO:t:r '$NEWLY_INSTALLED_VERSION'."
 
 exit 0
 #

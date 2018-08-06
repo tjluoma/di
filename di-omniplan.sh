@@ -73,7 +73,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/OmniPlan-$LATEST_VERSION.tbz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

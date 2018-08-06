@@ -65,7 +65,7 @@ fi
 
 URL="https://bitbucket.org/objective-see/deploy/downloads/KnockKnock_$LATEST_VERSION.zip"
 
-FILENAME="$HOME/Downloads/KnockKnock-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

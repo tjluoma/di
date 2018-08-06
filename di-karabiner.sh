@@ -67,7 +67,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Karabiner-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

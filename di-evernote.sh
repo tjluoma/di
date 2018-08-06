@@ -59,7 +59,7 @@ fi
 
 URL=`curl -sfL "$XML_FEED" | awk -F'"' '/url=/{print $2}' | head -1`
 
-FILENAME="$HOME/Downloads/Evernote-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

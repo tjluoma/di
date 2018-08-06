@@ -71,7 +71,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Clarify-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -91,7 +91,7 @@ then
 		# 	&& osascript -e 'tell application "Clarify" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Clarify.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"

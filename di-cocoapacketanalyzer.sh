@@ -64,7 +64,7 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-FILENAME="$HOME/Downloads/CocoaPacketAnalyzer-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -92,7 +92,7 @@ then
 	exit 1
 fi
 
-ditto --noqtn -v "$MNTPNT/CocoaPacketAnalyzer.app" "$INSTALL_TO" \
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t:r" "$INSTALL_TO" \
 && echo "$NAME: Installation success. Ejecting $MNTPNT:" \
 && diskutil eject "$MNTPNT"
 

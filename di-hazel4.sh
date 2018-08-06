@@ -125,7 +125,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Hazel-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 	# Server does not support continued downloads, so assume that this is incomplete and try again
 [[ -f "$FILENAME" ]] && rm -f "$FILENAME"

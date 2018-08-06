@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Sharpshooter.app'
 
+XML_FEED='http://www.kerlmax.com/products/sharpshooter/sharpshooter_v2_appcast.php'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -17,8 +19,6 @@ else
 fi
 
 LAUNCH='no'
-
-XML_FEED='http://www.kerlmax.com/products/sharpshooter/sharpshooter_v2_appcast.php'
 
 # sparkle:shortVersionString and sparkle:version are identical, so no need to check both
 
@@ -69,7 +69,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Sharpshooter-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

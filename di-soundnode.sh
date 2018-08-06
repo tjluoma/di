@@ -7,14 +7,14 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO="/Applications/Soundnode.app"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-INSTALL_TO="/Applications/Soundnode.app"
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
@@ -60,7 +60,7 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 #		Here’s the download section
 #
 
-FILENAME="$HOME/Downloads/Soundnode-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

@@ -78,7 +78,7 @@ then
 		--title "$NAME"
 fi
 
-FILENAME="$HOME/Downloads/MailMate-${LATEST_VERSION}.tbz"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

@@ -71,7 +71,7 @@ fi
 
 
 ## Download it
-FILENAME="$HOME/Downloads/PDFpenPro-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

@@ -74,7 +74,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Jettison-${READABLE_VERSION}-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${READABLE_VERSION}-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

@@ -44,7 +44,7 @@ fi
 
 URL="https://www.charlesproxy.com/assets/release/$LATEST_VERSION/charles-proxy-$LATEST_VERSION.dmg"
 
-FILENAME="$HOME/Downloads/Charles-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

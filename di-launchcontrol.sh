@@ -76,7 +76,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/LaunchControl-$LATEST_VERSION.tar.bz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tar.bz2"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
