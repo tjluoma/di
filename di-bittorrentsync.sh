@@ -97,14 +97,12 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 #		Set download directory
 #
 
-DIR="$HOME/Downloads"
-
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
 #		Download the latest version to a file with the version number in the name
 #
 
-FILENAME="$DIR/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
