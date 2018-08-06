@@ -67,7 +67,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r_${LATEST_VERSION}-${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r_${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

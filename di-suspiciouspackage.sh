@@ -57,7 +57,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
+FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
 

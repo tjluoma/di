@@ -75,7 +75,7 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
-FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}-${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 	# Download the latest version
 echo "$NAME: Downloading $URL to $FILENAME"
