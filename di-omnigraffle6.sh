@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/OmniGraffle.app'
+INSTALL_TO='/Applications/OmniGraffle 6.app'
 
 if [ -e "$HOME/.path" ]
 then
