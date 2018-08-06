@@ -40,17 +40,6 @@ do
 
       LOC=`grep -m1 INSTALL_TO $i`
 
-      # Some of the new scripts have started using $APPNAME breaking the INSTALL_TO convention
-      # Now we have to check for $APPNAME, and pull it out if it exists
-      if [[ "$LOC" =~ "APPNAME" ]]
-      then
-        APPNAME=`grep -m1 APPNAME $i`
-        APPNAME=$(echo "$APPNAME" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
-        # Split $LOC, removing '$APPNAME' and rebuild it with $APPNAME
-        PREFIX=${${LOC}%'$APPNAME'*}
-        SUFFIX=${${LOC}#*APPNAME}
-        LOC=$PREFIX$APPNAME$SUFFIX
-      fi
       # There must be a better way to do this.  We split on the = and then use rev to flip the string
       LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
 
