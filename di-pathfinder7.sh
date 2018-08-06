@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Path Finder.app'
+INSTALL_TO='/Applications/Path Finder 7.app'
 
 if [ -e "$HOME/.path" ]
 then
