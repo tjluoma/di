@@ -84,7 +84,7 @@ fi
 #		This is where we do the actual download
 #
 
-FILENAME="$HOME/Downloads/Vellum-${LATEST_VERSION}-${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${LATEST_BUILD}.zip"
 
 	# Download the latest zip
 echo "$NAME: Downloading $URL to $FILENAME"
