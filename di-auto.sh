@@ -21,6 +21,8 @@ zmodload zsh/datetime
 LOG="$HOME/Library/Logs/$NAME.log"
 [[ -e "$LOG" ]]   || touch "$LOG"       # Create log file if needed
 
+DI_LIST="$HOME/.di.lst"
+
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
@@ -29,7 +31,8 @@ cd "$0:h"
 
 log "------------- STARTING AT `timestamp` -------------"
 
-[[  -e "./di.lst" ]] || touch "./di.lst"  # Create the list of installed software
+[[ -e "$DI_LIST" ]] || touch "$DI_LIST"  # Create the list of installed software
+
 for i in di-*sh
 do
     #check to ignote di-all.sh and di-auto.sh
@@ -47,11 +50,11 @@ do
       if [ -e "$LOCATION" ]
       then
         #  Check whether the App is already in the list
-        if (grep "$i" ./di.lst)
+        if (grep "$i" "$DI_LIST")
         then
           log "  $LOCATION already stored"
         else
-          echo $i >> ./di.lst
+          echo $i >> "$DI_LIST"
           log "  $LOCATION added"
         fi
       fi
