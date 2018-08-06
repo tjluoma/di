@@ -4,6 +4,7 @@
 # From: Alister Forbes
 # Mail:di at superbimble dot com
 # Date: 2016-05-21
+# Updated by TJ Luoma (luomat at gmail dot com) on 2018-08-06
 
 # add something to sort out the path
 NAME="$0:t:r"
