@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Fluid.app'
+INSTALL_TO='/Applications/Fluid 1.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -87,19 +87,58 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Fluid.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-	exit 0
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+	# Note that we can't use $INSTALL_TO:t:r here because we are renaming the
+	# app to avoid conflicting with Fluid v2
+mv -vn "$UNZIP_TO/Fluid.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
 	exit 1
 fi
 
