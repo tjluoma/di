@@ -9,9 +9,6 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Bartender 3.app'
 
-# INSTALL_TO='/Applications/Bartender 2.app'
-# XML_FEED='http://www.macbartender.com/B2/updates/updates.php'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
