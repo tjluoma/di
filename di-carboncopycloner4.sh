@@ -14,7 +14,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+INSTALL_TO='/Applications/Carbon Copy Cloner 4.app'
 
 	## NOTE: If nothing is installed, we need to pretend we have at least version 4
 	## 			or else we will get version 3
@@ -87,36 +87,59 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-fi
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+	# Note that we are renaming 'Carbon Copy Cloner.app' to 'Carbon Copy Cloner 4.app' as we do this
+mv -vn "$UNZIP_TO/Carbon Copy Cloner.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
 
 exit 0
 #EOF
