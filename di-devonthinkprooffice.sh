@@ -10,15 +10,14 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/DEVONthink Pro.app'
 
+XML_FEED='https://www.devontechnologies.com/Sparkle/DEVONthinkProOffice2.xml'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-
-XML_FEED='https://www.devontechnologies.com/Sparkle/DEVONthinkProOffice2.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
