@@ -73,6 +73,69 @@ However, a few of them are more likely than others.
 * [Dropbox](https://www.dropbox.com/) - has a silent self-updater, so it’s not a huge concern, but my method for checking the latest version of Dropbox is very fragile.
 * [BusyCal](http://www.busymac.com/busycal/) and [BusyContacts](http://www.busymac.com/busycontacts/) - updating them causes an “Open” dialog to appear, for reasons which are unclear to me. I assume it has something to do with sandboxing, but I’m not sure. I’m also not sure what to do about it, so I just hit `ESC` whenever that happens.
 
+
+## Renaming Apps
+
+A goal of this project for me is to make it easy to install whichever version of an app you want, even if there are different versions.
+
+However, now that this project has grown, some scripts were installing to the same location, e.g.
+
+	di-carboncopycloner3.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+	di-carboncopycloner4.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+	di-carboncopycloner5.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+
+On one level this is _not_ a problem, because each script should be intelligent enough to avoid installing an older version
+over a newer one, so if you ran `di-carboncopycloner3.sh` and `di-carboncopycloner5.sh`, `di-carboncopycloner3.sh` would
+simply report that the already-installed version was “Up To Date”.
+
+However, if you wanted to use [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) to _only_ run scripts for
+apps which are already installed, you would run into problems because finding '/Applications/Carbon Copy Cloner.app'
+did not tell you which of the scripts you need to run to check for updates.
+
+I decided that the best solution was to update scripts which intentionally install older versions to explicitly include the
+(major) version number in the app name, so that they install their apps to different places.
+
+For example:
+
+	di-carboncopycloner3.sh:INSTALL_TO='/Applications/Carbon Copy Cloner 3.app'
+	di-carboncopycloner4.sh:INSTALL_TO='/Applications/Carbon Copy Cloner 4.app'
+
+and just leave the latest one to use the usual path:
+
+	di-carboncopycloner5.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+
+That is what I have started to do whenever I have seen a duplicated INSTALL_TO.
+
+Some apps specifically include a major version number in their installation, e.g.
+
+	di-1password6.sh:INSTALL_TO='/Applications/1Password 6.app'
+	di-1password7.sh:INSTALL_TO='/Applications/1Password 7.app'
+
+Some scripts, such as `di-handbrake-nightly.sh`, `di-imageoptim-beta.sh` and `di-iterm-nightly.sh`,
+handle this situation by intentionally installing themselves to a distinct location
+in case you want to install both the nightly/beta version and the “regular” one:
+
+	di-handbrake-nightly.sh:INSTALL_TO='/Applications/HandBrake Nightly.app'
+	di-imageoptim-beta.sh:INSTALL_TO='/Applications/ImageOptimBeta.app'
+	di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm Nightly.app'
+
+Some developers have chosen to avoid this problem by adding a version number to a new version
+even if the old version did not have one. For example:
+
+	di-screens3.sh:INSTALL_TO="/Applications/Screens.app"
+	di-screens4.sh:INSTALL_TO='/Applications/Screens 4.app'
+
+### Guidance for Renaming Apps:
+
+- if the app itself chooses to include a version number in its name, honor that (i.e. “1Password 6” or “1Password 7”)
+
+- if we _know_ we are intentionally installing an older version (Dash, TextExpander, CarbonCopyCloner),
+	_add_ a major version number to the _OLDER_ installation, and let the newer version keep whatever name it wants.
+
+- an exception to the previous guidance  would be `di-screens3.sh` since `di-screens4.sh` added a version number.
+
+- if there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
+
 ### Update To Disclaimers (2018-08-02)
 
 Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date.
