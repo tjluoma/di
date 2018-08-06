@@ -74,7 +74,7 @@ FILENAME="$HOME/Downloads/Seil-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \

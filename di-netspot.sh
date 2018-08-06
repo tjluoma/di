@@ -68,7 +68,7 @@ fi
 
 FILENAME="$HOME/Downloads/NetSpot-${LATEST_VERSION}.dmg"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

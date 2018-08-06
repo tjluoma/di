@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-	# Note that we are installing this in a different path/name so it won't conflict with the non-beta version 
+	# Note that we are installing this in a different path/name so it won't conflict with the non-beta version
 INSTALL_TO='/Applications/ImageOptimBeta.app'
 
 if [ -e "$HOME/.path" ]
@@ -78,7 +78,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

@@ -76,7 +76,7 @@ FILENAME="$HOME/Downloads/GitHub-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 if [ -e "$INSTALL_TO" ]
 then
