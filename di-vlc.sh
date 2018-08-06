@@ -21,7 +21,6 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-
 # NOTE: XML_FEED does not show 'sparkle:shortVersionString'
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -71,7 +70,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/vlc-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
