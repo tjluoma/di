@@ -20,37 +20,40 @@ LAUNCH_APP="no"
 
 LAUNCH_ENGINE="yes"
 
-LATEST_VERSION=$(curl -sfL "http://www.keyboardmaestro.com/main/" | fgrep -i '<title>' | tr -dc '[0-9]\.')
+LATEST_VERSION_MAIN=$(curl -sfL "https://www.keyboardmaestro.com/main/" | fgrep -i '<title>' | tr -dc '[0-9]\.')
 
-if [[ "$LATEST_VERSION" == "" ]]
+LATEST_VERSION_ALT=$(curl -sL 'https://files.stairways.com' | awk -F'"| |<' '/keyboardmaestro.*zip/{print $8}' | head -1)
+
+[[ "$LATEST_VERSION_MAIN" = "" ]] && LATEST_VERSION_MAIN='0'
+
+[[ "$LATEST_VERSION_ALT" = ""  ]] && LATEST_VERSION_ALT='0'
+
+if [[ "$LATEST_VERSION_MAIN" == "$LATEST_VERSION_ALT" ]]
 then
-	echo "$NAME: Using backup method of trying to get URL and LATEST_VERSION"
-
-	INFO=($(curl -sL 'http://files.stairways.com' \
-			| egrep -i 'keyboardmaestro.*\.zip' \
-			| head -1 \
-			| sed 's#<li><a href="##g; s#">Keyboard Maestro # #g; s#</a></li>##g'))
-
-	URL="http://files.stairways.com/$INFO[1]"
-
-	LATEST_VERSION="$INFO[2]"
-
+	echo "$NAME: LATEST_VERSION (identical): $LATEST_VERSION_MAIN"
+	LATEST_VERSION="$LATEST_VERSION_MAIN"
 else
 
-	LATEST_VERSION_SQUISHED=`echo "${LATEST_VERSION}" | tr -dc '[0-9]'`
+	LATEST_VERSION_MAIN_SQUISHED=$(echo "$LATEST_VERSION_MAIN" | tr -dc '[0-9]')
+	LATEST_VERSION_ALT_SQUISHED=$(echo "$LATEST_VERSION_ALT" | tr -dc '[0-9]')
 
-	URL="https://files.stairways.com/keyboardmaestro-$LATEST_VERSION_SQUISHED.zip"
-fi
+	if [ "$LATEST_VERSION_MAIN_SQUISHED" -gt "$LATEST_VERSION_ALT_SQUISHED" ]
+	then
+		echo "$NAME: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is GREATER than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
+		LATEST_VERSION="$LATEST_VERSION_MAIN"
 
-	# If any of these are blank, we should not continue
-if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
-then
-	echo "$NAME: Error: bad data received:
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
+	elif [[ "$LATEST_VERSION_MAIN_SQUISHED" -lt "$LATEST_VERSION_ALT_SQUISHED" ]]
+	then
+		echo "$NAME: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is LESS than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
+		LATEST_VERSION="$LATEST_VERSION_ALT"
 
-	exit 1
+	else
+		echo "$NAME: I don't know how we got here, but:
+			LATEST_VERSION_MAIN: $LATEST_VERSION_MAIN ($LATEST_VERSION_MAIN_SQUISHED)
+			LATEST_VERSION_ALT: $LATEST_VERSION_ALT ($LATEST_VERSION_ALT_SQUISHED)"
+
+		exit 1
+	fi
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -78,9 +81,33 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$URL:t"
+# If we get here, we _are_ outdated. Now we just need to figure out which URL to use.
 
-echo "$NAME: Downloading $URL to $FILENAME"
+URL_MAIN=$(curl -sfL --head 'https://www.keyboardmaestro.com/action/download?km-kmi-7-b3' | awk -F' |\r' '/^Location/{print $2}' | sed 's#http://#https://#g')
+
+URL_ALT=$(curl -sfL 'https://files.stairways.com' | awk -F'"' '/keyboardmaestro.*\.zip/{print "https://files.stairways.com/"$2}' | head -1)
+
+if [[ "$URL_ALT" == "$URL_MAIN" ]]
+then
+	URL="$URL_ALT"
+	echo "$NAME: URL (identical): $URL"
+else
+	URL_ALT_NUMBERS=$(echo  "$URL_ALT:t:r"  | tr -dc '[0-9]')
+	URL_MAIN_NUMBERS=$(echo "$URL_MAIN:t:r" | tr -dc '[0-9]')
+
+	if [ "$URL_MAIN_NUMBERS" -gt "$URL_ALT_NUMBERS" ]
+	then
+		echo "$NAME: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
+		URL="$URL_MAIN"
+	else
+		echo "$NAME: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
+		URL="$URL_ALT"
+	fi
+fi
+
+FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -123,7 +150,7 @@ then
 	&& osascript -e 'tell application "Keyboard Maestro" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keyboard Maestro.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
 
 fi
 
@@ -141,13 +168,6 @@ then
 	[[ "$LAUNCH_APP" == "yes" ]] 		&& open -a "${INSTALL_TO}"
 
 	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
-	# Rename the downloaded file based on the version number we learned
-	# Note: CFBundleVersion is the same so we don't include it
-	NEW_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
-
-	[[ "$NEW_VERSION" != "" ]] &&
-	mv -fv "$FILENAME" "$FILENAME:h/KeyboardMaestro-${NEW_VERSION}.zip"
 
 else
 	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
