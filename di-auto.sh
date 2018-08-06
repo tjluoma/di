@@ -1,10 +1,55 @@
 #!/bin/zsh -f
-# Purpose: Runs all di- scripts found in the same directory
+# Purpose: Checks all di-*.sh scripts in same directory to see if the corresponding apps are installed.
 #
 # From: Alister Forbes
 # Mail:di at superbimble dot com
 # Date: 2016-05-21
 # Updated by TJ Luoma (luomat at gmail dot com) on 2018-08-06
+#
+# Known Bug: Now that this project has grown, some di-.sh scripts install to the same location, e.g.
+#
+# 	di-carboncopycloner3.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+# 	di-carboncopycloner4.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+# 	di-carboncopycloner5.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+#
+# So just because you found that '/Applications/Carbon Copy Cloner.app' exists
+# does not tell you which of the scripts you need to run.
+#
+# This is probably best solved by updating scripts which we know install old versions
+# so that they install their apps to different places, i.e.:
+#
+# 	di-carboncopycloner3.sh:INSTALL_TO='/Applications/Carbon Copy Cloner 3.app'
+# 	di-carboncopycloner4.sh:INSTALL_TO='/Applications/Carbon Copy Cloner 4.app'
+#
+# and just leave the latest one to use the usual path:
+#
+# 	di-carboncopycloner5.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+#
+# Here are some of the other known-duplicates:
+#
+# di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm.app'
+# di-iterm.sh:INSTALL_TO="/Applications/iTerm.app"
+#
+# di-fluid1.sh:INSTALL_TO='/Applications/Fluid.app'
+# di-fluid2.sh:INSTALL_TO='/Applications/Fluid.app'
+#
+# di-textexpander5.sh:INSTALL_TO='/Applications/TextExpander.app'
+# di-textexpander6.sh:INSTALL_TO="/Applications/TextExpander.app"
+#
+# Some other scripts avoid this by installing apps to different places
+# in case you want to install them both:
+#
+# di-imageoptim-beta.sh:INSTALL_TO='/Applications/ImageOptimBeta.app'
+# di-imageoptim.sh:INSTALL_TO='/Applications/ImageOptim.app'
+#
+# Other apps specifically include a major version number in their installation
+# di-1password6.sh:INSTALL_TO='/Applications/1Password 6.app'
+# di-1password7.sh:INSTALL_TO='/Applications/1Password 7.app'
+#
+# Although sometimes they don't think of it until later:
+#
+# di-screens3.sh:INSTALL_TO="/Applications/Screens.app"
+# di-screens4.sh:INSTALL_TO='/Applications/Screens 4.app'
 
 NAME="$0:t:r"
 
@@ -109,5 +154,9 @@ do
 done
 
 log "------------- FINISHED AT `timestamp` -------------"
+
+## Note: if you actually want to _run_ all of the scripts which update apps you have installed,
+## you could use 'source $DI_LIST' here.
+
 
 exit 0
