@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/OmniOutliner.app'
+INSTALL_TO='/Applications/OmniOutliner 4.app'
 
 LAUNCH='no'
 
