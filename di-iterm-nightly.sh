@@ -9,7 +9,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/iTerm.app'
+INSTALL_TO='/Applications/iTerm Nightly.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -51,7 +51,7 @@ fi
 	# because it is not used in CFBundleShortVersionString
 LATEST_VERSION=`echo "$LATEST_VERSION" | sed 's#-nightly##g'`
 
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
 		# if the app is installed, check to see what version we are running
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null | tr -dc '[0-9].'`
@@ -78,7 +78,7 @@ fi
 
 FILENAME="$HOME/Downloads/iTerm-${LATEST_VERSION}.zip"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -102,10 +102,45 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/iTerm.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/iTerm.app" "$INSTALL_TO"
 
 EXIT="$?"
 
@@ -120,7 +155,7 @@ then
 		# No reason to keep the nightly download, it's not like we'd want to use it again in days/months
 	mv -vf "$FILENAME" "$HOME/.Trash/"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (ditto \$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: Installation of '$INSTALL_TO' failed (ditto \$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 
 	exit 1
 fi
