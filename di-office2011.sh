@@ -5,8 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-04-15
 
+	# 'di-auto' needs an actual path for 'INSTALL_TO='
+INSTALL_TO='/Applications/Microsoft Office 2011/Microsoft Word.app'
 
-MSWORD='/Applications/Microsoft Office 2011/Microsoft Word.app'
+	# previous versions of this script uses '$MSWORD' for the variable,
+	# instead of $INSTALL_TO, so we define it to be the same as INSTALL_TO
+	# in order to avoid adding potential bugs.
+MSWORD="$INSTALL_TO"
 
 DIR="$HOME/Downloads"
 
