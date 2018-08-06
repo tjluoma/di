@@ -149,6 +149,18 @@ I recommend handling this situation by installing the beta/nightly version to a 
 
 - If there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
 
+### Guidance for Naming Scripts for Multiple Versions of Apps
+
+When I started this project, I did not anticipate the issue of installing older versions of apps, and therefore I mostly avoided using version numbers in script names, even if the app itself used a number (for example, I think `di-1password.sh` previously installed “1Password 6.app”).
+
+Now we are left with a quandary: should we use a generic name for installation of specific versions? Very often developers will change the Sparkle feeds for new major versions of the app, and sometimes even the _format_ changes (i.e. version 3 was a .dmg but version 4 is a .pkg).
+
+I am currently leaning towards including the version number in the script filename.
+
+This is slightly inconvenient, because it requires that you _know__ which version you want to install (it would be easier to just type `di-1password.sh` and just get the latest version of 1Password, rather than having to remember to use `di-1password7.sh`), but I think there is no good solution that will satisfy everyone and every instance, so we just have to make a choice and try to apply it consistently.
+
+I suppose another alternative would be to have a `di-1password.sh` which looks to see if you have installed version 6 or 7 (or both), and then runs either/both `di-1password6.sh` and `di-1password7.sh`, or just `di-1password7.sh` if you are doing a clean install and don't have any version of 1Password installed. A more advanced version could even try to figure out which version you _should_ install for your version of Mac OS. I have a Mac mini running an older version of Mac OS, so I _have_ to use `di-1password6.sh` on that machine.
+
 ## How does this work? Give me the nerdy details.
 
 See [the Advanced Nerdy Details](https://github.com/tjluoma/di/wiki/Advanced-Nerdy-Details) in the wiki.
