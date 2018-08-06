@@ -157,7 +157,7 @@ Now we are left with a quandary: should we use a generic name for installation o
 
 I am currently leaning towards including the version number in the script filename.
 
-This is slightly inconvenient, because it requires that you _know__ which version you want to install (it would be easier to just type `di-1password.sh` and just get the latest version of 1Password, rather than having to remember to use `di-1password7.sh`), but I think there is no good solution that will satisfy everyone and every instance, so we just have to make a choice and try to apply it consistently.
+This is slightly inconvenient, because it requires that you _know_ which version you want to install (it would be easier to just type `di-1password.sh` and just get the latest version of 1Password, rather than having to remember to use `di-1password7.sh`), but I think there is no good solution that will satisfy everyone and every instance, so we just have to make a choice and try to apply it consistently.
 
 I suppose another alternative would be to have a `di-1password.sh` which looks to see if you have installed version 6 or 7 (or both), and then runs either/both `di-1password6.sh` and `di-1password7.sh`, or just `di-1password7.sh` if you are doing a clean install and don't have any version of 1Password installed. A more advanced version could even try to figure out which version you _should_ install for your version of Mac OS. I have a Mac mini running an older version of Mac OS, so I _have_ to use `di-1password6.sh` on that machine.
 
