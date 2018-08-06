@@ -23,6 +23,7 @@ zmodload zsh/datetime
 [[ -e "$DI_LIST" ]] || touch "$DI_LIST"  # Create the list of installed software
 
 LOG="$HOME/Library/Logs/$NAME.log"
+
 [[ -e "$LOG" ]]   || touch "$LOG"       # Create log file if needed
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
@@ -40,7 +41,6 @@ do
 	then
 			# get the full path to $i
 		i=($i(:A))
-
 
 		#Check if the INSTALL_TO exists.  If it does, add it to the list
 		# This FAILS for Evernote and hazel
@@ -80,7 +80,7 @@ do
 		else
 
 			# If the app exists, put the script name in the list of installed apps
-			if [ -e "$INSTALL_TO" ]
+			if [[ -e "$INSTALL_TO" ]]
 			then
 				#  Check whether the App is already in the list
 				if (egrep -qi "^${i}$" "$DI_LIST")
