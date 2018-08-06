@@ -7,7 +7,10 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Carbon Copy Cloner.app'
+	# Note: This is a different location than usual to avoid conflicts with later versions of CCC
+INSTALL_TO='/Applications/Carbon Copy Cloner 3.app'
+
+XML_FEED='https://bombich.com/software/updates/ccc.php'
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,20 +19,15 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-
-# @TODO - This feed seems to stop with version 3.4.7 but there is a version 5. Need new feed URL?
-
-XML_FEED='https://bombich.com/software/updates/ccc.php'
-
 # sparkle:version is the only version info in the feed
 
 INFO=($(curl -sfL "$XML_FEED" \
-| gunzip \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version=|url=' \
-| head -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+		| gunzip \
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version=|url=' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
@@ -70,15 +68,13 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-
 fi
-
 
 FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
- curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -88,7 +84,6 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
@@ -101,12 +96,11 @@ then
 	exit 1
 fi
 
-echo "$NAME: Installing MNTPNT/Carbon Copy Cloner.app to $INSTALL_TO"
+	# Note that this handles the rename that we are doing to avoid potential conflicts with later versions of CCC
+echo "$NAME: Installing $MNTPNT/Carbon Copy Cloner.app to $INSTALL_TO"
 
 ditto --noqtn -v "$MNTPNT/Carbon Copy Cloner.app" "$INSTALL_TO" \
 && diskutil eject "$MNTPNT"
-
-
 
 
 exit 0
