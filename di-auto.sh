@@ -47,9 +47,7 @@ do
 				echo "	$NAME [warning]: Don't know what to do with arg: $1"
 				shift
 		;;
-
 	esac
-
 done # for args
 
 for i in di-*sh
