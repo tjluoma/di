@@ -1,9 +1,15 @@
 #!/bin/zsh -f
-# download and install Bartender
+# Purpose: Download and install the latest version of Bartender 2 (note that v3 is also available.)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-04-16
+
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/Bartender 2.app"
+
+XML_FEED='https://www.macbartender.com/B2/updates/updates.php'
 
 if [ -e "$HOME/.path" ]
 then
@@ -12,74 +18,143 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/Bartender 2.app"
-
 LAUNCH='no'
 
-XML_FEED='http://www.macbartender.com/B2/updates/updates.php'
-
 	# This will work even if there is a space in the enclosure URL
+	# We have to limit to 'https://macbartender.com/B2/updates/2'
+	# because the feed includes version 3 items too.
+
 IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
-| egrep 'sparkle:shortVersionString=|url=' \
-| tail -1 \
-| sed 's#" #"\
-#g' \
-| egrep 'sparkle:shortVersionString=|url=' \
-| sed 's#<enclosure url="##g; s#"$##g; s#sparkle:shortVersionString="##g'))
+				| fgrep 'https://macbartender.com/B2/updates/2' \
+				| egrep 'sparkle:version|sparkle:shortVersionString=|url=' \
+				| tail -1 \
+				| sort ))
 
-URL="$INFO[1]"
+URL=$(echo "$INFO" | sed 's#.*https://#https://#g; s#.zip".*#.zip#g;')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:shortVersionString="##g; s#".*##g; ')
 
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*sparkle:version="##g; s#".*##g;')
+
+FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO"
-	exit 0
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	FILENAME: $FILENAME
+	"
+
+	exit 1
 fi
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+if [[ -e "$INSTALL_TO" ]]
+then
 
- if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
- then
- 	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
- 	exit 0
- fi
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-autoload is-at-least
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
- is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
- 
- if [ "$?" = "0" ]
- then
- 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
- 	exit 0
- fi
+	autoload is-at-least
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-FILENAME="$HOME/Downloads/Bartender-$LATEST_VERSION.zip"
+	VERSION_COMPARE="$?"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
+fi
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-if [ -e "$INSTALL_TO" ]
-then
-	pgrep -xq "Bartender 2" && LAUNCH='yes' && osascript -e 'tell application "Bartender 2" to quit'
+EXIT="$?"
 
-	mv -f "$INSTALL_TO" "$HOME/.Trash/Bartender 2.$INSTALLED_VERSION.app"
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+	pgrep -xq "$INSTALL_TO:t:r" && LAUNCH='yes' && osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/Bartender 2.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
 
 if [ "$LAUNCH" = "yes" ]
 then
-	echo "$NAME: Launching Bartender 2"
-	open -a "Bartender 2"
+	echo "$NAME: Launching $INSTALL_TO:t:r"
+	open -a "$INSTALL_TO:t:r"
 fi
 
 exit 0
