@@ -89,7 +89,7 @@ over a newer one, so if you ran `di-carboncopycloner3.sh` and `di-carboncopyclon
 simply report that the already-installed version was “Up To Date”.
 
 However, if you wanted to use [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) to _only_ run scripts for
-apps which are already installed, you would run into problems because finding '/Applications/Carbon Copy Cloner.app'
+apps which are already installed, you would run into problems because finding `/Applications/Carbon Copy Cloner.app`
 did not tell you which of the scripts you need to run to check for updates.
 
 I decided that the best solution was to update scripts which intentionally install older versions to explicitly include the
