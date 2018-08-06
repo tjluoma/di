@@ -1,12 +1,12 @@
 #!/bin/zsh -f
 # Purpose: Checks all di-*.sh scripts in same directory to see if the corresponding apps are installed.
 #
-# From: Alister Forbes
-# Mail:di at superbimble dot com
-# Date: 2016-05-21
+# From: 	Alister Forbes
+# Mail:	di at superbimble dot com
+# Date: 	2016-05-21
 # Updated by TJ Luoma (luomat at gmail dot com) on 2018-08-06
 #
-# Known Bug: Now that this project has grown, some di-.sh scripts install to the same location, e.g.
+# Known Bug: Now that this project has grown, some di-.sh scripts were installing to the same location, e.g.
 #
 # 	di-carboncopycloner3.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 # 	di-carboncopycloner4.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
@@ -25,16 +25,13 @@
 #
 # 	di-carboncopycloner5.sh:INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 #
+# That is what I have started to do whenever I have seen a duplicated INSTALL_TO
+#
 # Here are some of the other known-duplicates:
 #
 # di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm.app'
 # di-iterm.sh:INSTALL_TO="/Applications/iTerm.app"
 #
-# di-fluid1.sh:INSTALL_TO='/Applications/Fluid.app'
-# di-fluid2.sh:INSTALL_TO='/Applications/Fluid.app'
-#
-# di-textexpander5.sh:INSTALL_TO='/Applications/TextExpander.app'
-# di-textexpander6.sh:INSTALL_TO="/Applications/TextExpander.app"
 #
 # Some other scripts avoid this by installing apps to different places
 # in case you want to install them both:
