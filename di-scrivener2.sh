@@ -8,7 +8,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Scrivener.app'
+INSTALL_TO='/Applications/Scrivener 2.app'
 
 XML_FEED='https://www.literatureandlatte.com/downloads/scrivener-2.xml'
 
