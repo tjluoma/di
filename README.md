@@ -73,8 +73,15 @@ However, a few of them are more likely than others.
 * [Dropbox](https://www.dropbox.com/) - has a silent self-updater, so it’s not a huge concern, but my method for checking the latest version of Dropbox is very fragile.
 * [BusyCal](http://www.busymac.com/busycal/) and [BusyContacts](http://www.busymac.com/busycontacts/) - updating them causes an “Open” dialog to appear, for reasons which are unclear to me. I assume it has something to do with sandboxing, but I’m not sure. I’m also not sure what to do about it, so I just hit `ESC` whenever that happens.
 
+### Update To Disclaimers (2018-08-02)
+
+Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date.
+
+For BusyCal and BusyContacts, I took some time to examine them with [unpkg](https://www.timdoug.com/unpkg/) and realized that by using a (very slightly modified) version of the [unpkg.py](https://github.com/tjluoma/unpkg/blob/master/unpkg.py) script that powers `unpkg`, I can install the apps directly _without_ using their installers. So far, it hasn’t seemed to cause any problems for me, so checkout `unpkg.py` if you want to avoid that weird “Installer.app opens for no real purpose” bug when updating those two apps.
 
 ## Renaming Apps
+
+_Added 2018-08-06_
 
 A goal of this project for me is to make it easy to install whichever version of an app you want, even if there are different versions.
 
@@ -137,12 +144,6 @@ even if the old version did not have one. For example:
 - An exception to the previous guidance  would be `di-screens3.sh` since `di-screens4.sh` added a version number.
 
 - If there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
-
-### Update To Disclaimers (2018-08-02)
-
-Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date.
-
-For BusyCal and BusyContacts, I took some time to examine them with [unpkg](https://www.timdoug.com/unpkg/) and realized that by using a (very slightly modified) version of the [unpkg.py](https://github.com/tjluoma/unpkg/blob/master/unpkg.py) script that powers `unpkg`, I can install the apps directly _without_ using their installers. So far, it hasn’t seemed to cause any problems for me, so checkout `unpkg.py` if you want to avoid that weird “Installer.app opens for no real purpose” bug when updating those two apps.
 
 ## How does this work? Give me the nerdy details.
 
