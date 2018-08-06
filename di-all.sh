@@ -56,7 +56,7 @@ do
 				shift
 		;;
 
-		-A|--apps)
+		-A|--apps|-g|--gui)
 					# JUST launch the GUI apps, don't run the di- scripts
 				launch_apps
 
