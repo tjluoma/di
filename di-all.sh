@@ -109,7 +109,7 @@ else
 		# Explain how to launch GUI updaters, if any are found.
 
 	[[ "$EXPLAIN_USAGE" = "yes" ]] \
-	&& echo "\n$NAME: use '$0 --apps' to _just_ launch updater apps,\nor '$0 --all' to use both di- scripts _and_ GUI updaters. "
+	&& echo "\n$NAME: use '$0 --apps' to _just_ launch updater apps,\n	or '$0 --all' to use both di- scripts _and_ GUI updaters. "
 fi
 
 exit 0
