@@ -105,7 +105,7 @@ do
 
 		fi # if INSTALL_TO is empty
 
-	fi # not either "di-all.sh or di-auto).sh"
+	fi # neither "di-all.sh nor di-auto.sh"
 done
 
 log "------------- FINISHED AT `timestamp` -------------"
