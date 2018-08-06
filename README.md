@@ -127,14 +127,16 @@ even if the old version did not have one. For example:
 
 ### Guidance for Renaming Apps:
 
-- if the app itself chooses to include a version number in its name, honor that (i.e. “1Password 6” or “1Password 7”)
+- No two scripts should ever install to the same place (`INSTALL_TO=`).
 
-- if we _know_ we are intentionally installing an older version (Dash, TextExpander, CarbonCopyCloner),
+- If the app itself chooses to include a version number in its name, honor that (i.e. “1Password 6” or “1Password 7”)
+
+- If we _know_ we are intentionally installing an older version (Dash, TextExpander, CarbonCopyCloner),
 	_add_ a major version number to the _OLDER_ installation, and let the newer version keep whatever name it wants.
 
-- an exception to the previous guidance  would be `di-screens3.sh` since `di-screens4.sh` added a version number.
+- An exception to the previous guidance  would be `di-screens3.sh` since `di-screens4.sh` added a version number.
 
-- if there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
+- If there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
 
 ### Update To Disclaimers (2018-08-02)
 
