@@ -118,21 +118,23 @@ Some apps specifically include a major version number in their installation, e.g
 	di-1password6.sh:INSTALL_TO='/Applications/1Password 6.app'
 	di-1password7.sh:INSTALL_TO='/Applications/1Password 7.app'
 
-Some scripts, such as [di-handbrake-nightly.sh](https://github.com/tjluoma/di/blob/master/di-handbrake-nightly.sh),
-[di-imageoptim-beta.sh](https://github.com/tjluoma/di/blob/master/di-imageoptim-beta.sh),
-and [di-iterm-nightly.sh](https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh),
-handle this situation by intentionally installing themselves to a distinct location
-in case you want to install both the nightly/beta version and the “regular” one:
-
-	di-handbrake-nightly.sh:INSTALL_TO='/Applications/HandBrake Nightly.app'
-	di-imageoptim-beta.sh:INSTALL_TO='/Applications/ImageOptimBeta.app'
-	di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm Nightly.app'
-
 Some developers have chosen to avoid this problem by adding a version number to a new version
 even if the old version did not have one. For example:
 
 	di-screens3.sh:INSTALL_TO="/Applications/Screens.app"
 	di-screens4.sh:INSTALL_TO='/Applications/Screens 4.app'
+
+If an app has a “beta” and “regular” versions, they might normally install to the same place, but what if the user wants to
+install both the regular and beta versions?
+
+In this case, such as [di-handbrake-nightly.sh](https://github.com/tjluoma/di/blob/master/di-handbrake-nightly.sh),
+[di-imageoptim-beta.sh](https://github.com/tjluoma/di/blob/master/di-imageoptim-beta.sh),
+and [di-iterm-nightly.sh](https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh),
+I recommend handling this situation by installing the beta/nightly version to a slightly-different name:
+
+	di-handbrake-nightly.sh:INSTALL_TO='/Applications/HandBrake Nightly.app'
+	di-imageoptim-beta.sh:INSTALL_TO='/Applications/ImageOptimBeta.app'
+	di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm Nightly.app'
 
 ### Guidance for Renaming Apps:
 
