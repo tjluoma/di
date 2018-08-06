@@ -6,7 +6,7 @@
 # Date:	2016-05-11
 
 NAME="$0:t:r"
-INSTALL_TO='/Applications/Dash.app'
+INSTALL_TO='/Applications/Dash 3.app'
 XML_FEED='https://kapeli.com/Dash3.xml'
 
 if [ -e "$HOME/.path" ]
@@ -126,7 +126,8 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+	# Note that we are renaming 'Dash.app' to "Dash 3.app" at the same time.
+mv -vn "$UNZIP_TO/Dash.app" "$INSTALL_TO"
 
 EXIT="$?"
 
