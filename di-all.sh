@@ -19,7 +19,7 @@ zmodload zsh/datetime
 LOG="$HOME/Library/Logs/$NAME.log"
 
 	# Delete (old) log if it exists already
-[[ -e "$LOG" ]] 	|| rm -f "$LOG"
+# [[ -e "$LOG" ]] 	|| rm -f "$LOG"
 
 function timestamp { strftime "%Y-%m-%d at %-l:%M:%S %p" "$EPOCHSECONDS" }
 
@@ -31,7 +31,6 @@ cd "$0:h"
 COUNT='0'
 
 log "---------- STARTING AT `timestamp` ---------- "
-
 
 ##
 ## Get a list of all of the 'di-*.sh' files (be sure to exclude this script (di-all.sh) or else it'll go on forever)
@@ -46,7 +45,7 @@ do
 
 	((COUNT++))
 
-	"${line}"  2>&1 | tee -a "$LOG"
+	"${line}" 2>&1 | tee -a "$LOG"
 
 done
 
