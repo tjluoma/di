@@ -6,8 +6,8 @@
 # Date:	2015-04-16; 2018-07-10 - updated for Bartender 3
 
 NAME="$0:t:r"
-
 INSTALL_TO='/Applications/Bartender 3.app'
+XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
 
 if [ -e "$HOME/.path" ]
 then
@@ -17,9 +17,6 @@ else
 fi
 
 LAUNCH='yes'
-
-XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
-
 
 	# This will work even if there is a space in the enclosure URL
 	# Don't indent this or you'll break sed
@@ -98,7 +95,6 @@ echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
 
-
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
@@ -111,7 +107,6 @@ else
 
 	exit 1
 fi
-
 
 if [ "$LAUNCH" = "yes" ]
 then
