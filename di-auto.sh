@@ -35,6 +35,23 @@ cd "$0:h"
 
 log "------------- STARTING AT `timestamp` -------------"
 
+for ARGS in "$@"
+do
+	case "$ARGS" in
+		-u|--update)
+				DI_UPDATE='yes'
+				shift
+		;;
+
+		-*|--*)
+				echo "	$NAME [warning]: Don't know what to do with arg: $1"
+				shift
+		;;
+
+	esac
+
+done # for args
+
 for i in di-*sh
 do
 	#check to ignore di-all.sh and di-auto.sh
@@ -80,10 +97,10 @@ do
 			echo "$NAME: No 'INSTALL_TO=' found in '$i'."
 		else
 
-			# If the app exists, put the script name in the list of installed apps
+				# If the app exists, put the script name in the list of installed apps
 			if [[ -e "$INSTALL_TO" ]]
 			then
-				#  Check whether the App is already in the list
+					#  Check whether the App is already in the list
 				if (egrep -qi "^${i}$" "$DI_LIST")
 				then
 					log "'$i' already stored in $DI_LIST"
@@ -98,6 +115,10 @@ do
 
 					log "Found '$INSTALL_TO', so added '$i:t' to '$DI_LIST'."
 				fi
+
+					# If you want to actually update the apps, not just check the list.
+				[[ "$DI_UPDATE" = "yes" ]] && log "Running '$i' due to 'DI_UPDATE' status:" && "$i" 2>&1 | tee -a "$LOG"
+
 			else
 
 				log "'$INSTALL_TO' is not installed (does not exist) on this computer."
@@ -111,8 +132,9 @@ done
 
 log "------------- FINISHED AT `timestamp` -------------"
 
-## Note: if you actually want to _run_ all of the scripts which update apps you have installed,
-## you could use 'source $DI_LIST' here.
-
+if [[ "$DI_UPDATE" != "yes" ]]
+then
+	echo "$NAME: Use '$0 --update' to update apps using the corresponding di- script, but only for apps which are already installed."
+fi
 
 exit 0
