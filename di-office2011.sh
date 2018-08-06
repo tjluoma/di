@@ -13,8 +13,6 @@ INSTALL_TO='/Applications/Microsoft Office 2011/Microsoft Word.app'
 	# in order to avoid adding potential bugs.
 MSWORD="$INSTALL_TO"
 
-DIR="$HOME/Downloads"
-
 ################################################################################
 
 
@@ -89,7 +87,7 @@ LATEST_VERSION=`fgrep -A1 '<key>Title</key>' "$TEMPFILE" | tail -1 | awk '{print
 
 URL=`fgrep -i .dmg  "$TEMPFILE" | tail -1 | sed 's#.*<string>##g; s#</string>##g'`
 
-FILENAME="$URL:t"
+FILENAME="$HOME/Downloads/$URL:t"
 
 ################################################################################
 
@@ -114,7 +112,7 @@ fi
 
 log "Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-cd "$DIR"
+cd "$FILENAME:h"
 
 log "Downloading $URL to $FILENAME"
 
