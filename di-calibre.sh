@@ -10,7 +10,6 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/calibre.app'
 
-
 zmodload zsh/stat
 
 if [ -e "$HOME/.path" ]
@@ -41,7 +40,7 @@ fi
 
 URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
 
-FILENAME="$HOME/Downloads/calibre-${CURRENT_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
 
 ########################################################################################################################
 
@@ -92,7 +91,7 @@ fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-ditto --noqtn -v "$MNTPNT/calibre.app" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
