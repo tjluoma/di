@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Charles.app'
+INSTALL_TO='/Applications/Charles 3.app'
 
 if [[ -e "$HOME/.path" ]]
 then
