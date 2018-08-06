@@ -120,7 +120,9 @@ fi
 #	Check local (installed version) if any
 #
 
-PLIST='/Library/Internet Plug-Ins/Flash Player.plugin/Contents/version.plist'
+INSTALL_TO='/Library/Internet Plug-Ins/Flash Player.plugin'
+
+PLIST="$INSTALL_TO/Contents/version.plist"
 
 if [ -e "$PLIST" ]
 then
