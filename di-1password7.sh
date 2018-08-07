@@ -32,7 +32,7 @@ zmodload zsh/datetime
 
 DL_URL='https://app-updates.agilebits.com/download/OPM7'
 
-URL=$(curl -sfL --head "$DL_URL" | awk -F' ' '/^.ocation: /{print $2}' | tail -1 | tr -d '\r')
+URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
 
