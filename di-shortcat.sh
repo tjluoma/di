@@ -21,8 +21,6 @@ fi
 	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
 XML_FEED='https://shortcatapp.com/updates/appcast.xml'
 
-# sparkle:version and shortVersionString are both in the feed, but only shortVersionString seems to matter
-
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep '(url|sparkle:version|sparkle:shortVersionString)=' \
