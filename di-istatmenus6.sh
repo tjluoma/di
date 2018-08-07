@@ -1,12 +1,13 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of iStat Menus 6
-# Source: https://bjango.com/mac/istatmenus/
+# Purpose: Download and install the latest version of iStat Menus 6 from <https://bjango.com/mac/istatmenus/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-20
 
 NAME="$0:t:r"
+
+INSTALL_TO="/Applications/iStat Menus.app"
 
 if [ -e "$HOME/.path" ]
 then
@@ -15,11 +16,8 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_TO="/Applications/iStat Menus.app"
-
 URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus6/ \
-		| awk -F' ' '/Location.*\.zip/{print $NF}' \
-		| tr -d '\r')
+		| awk -F' |\r' '/Location.*\.zip/{print $2}' )
 
 # That gives us something like this:
 # https://files.bjango.com/istatmenus6/istatmenus6.20.zip
@@ -106,7 +104,6 @@ fi
 echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
 
 	# Move the file out of the folder
-	# Note that this is different than "INSTALL_TO:t" because we are using a non-standard INSTALL_TO which includes the version number
 mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
