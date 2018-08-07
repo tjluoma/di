@@ -77,6 +77,19 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+echo "$NAME: Mounting $FILENAME:"
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+fi
+
 if [[ -e "$INSTALL_TO" ]]
 then
 		# Quit app, if running
@@ -85,27 +98,27 @@ then
 	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
-echo "$NAME: Mounting $FILENAME:"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
-if [[ "$MNTPNT" == "" ]]
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: MNTPNT is empty"
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
+	echo "$NAME: ditto failed"
+
 	exit 1
 fi
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t:r.app' to '$INSTALL_TO':"
+echo "$NAME: Unmounting $MNTPNT:"
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO" \
-&& diskutil eject "$MNTPNT"
-
+diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
