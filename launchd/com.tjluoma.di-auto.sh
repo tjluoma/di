@@ -43,7 +43,6 @@ cat <<EOINPUT > "$PLIST"
 	<key>ProgramArguments</key>
 	<array>
 		<string>${DI_AUTO_PATH}</string>
-		<string>--update</string>
 	</array>
 	<key>StandardErrorPath</key>
 	<string>${ERROR_LOG}</string>
