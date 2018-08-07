@@ -46,7 +46,7 @@ cat <<EOINPUT > "$PLIST"
 		<string>--update</string>
 	</array>
 	<key>RunAtLoad</key>
-	<true/>
+	<false/>
 	<key>StandardErrorPath</key>
 	<string>${ERROR_LOG}</string>
 	<key>StandardOutPath</key>
