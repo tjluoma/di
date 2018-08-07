@@ -4,7 +4,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-07-20
+# Date:	2018-07-20, verified 2018-08-07
 
 NAME="$0:t:r"
 
@@ -62,7 +62,7 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r.$LATEST_VERSION.zip"
 
-echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -88,14 +88,14 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# failed
-	echo "$NAME failed (ditto --noqtn -xkv \"$FILENAME\" \"$UNZIP_TO\")"
+	echo "$NAME failed (ditto --noqtn -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -110,7 +110,7 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
 	## Note there is an extra sub-folder compared to what we usually find in "$UNZIP_TO/"
@@ -121,10 +121,10 @@ EXIT="$?"
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
