@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-05-22
+# Date:	2016-05-22, verified 2018-08
 
 NAME="$0:t:r"
 
