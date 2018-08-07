@@ -41,34 +41,6 @@ do
 			# get the full path to $i
 		i=($i(:A))
 
-		#Check if the INSTALL_TO exists.  If it does, add it to the list
-		# This FAILS for Evernote and hazel
-		#LOC=`grep -m1 INSTALL_TO $i`
-
-		# TJL added:
-		# if there are multiple INSTALL_TO= lines, just get the last one'
-		# in case the variable gets re-assigned during the script.
-		# This will fail if INSTALL_TO= includes some kind of variable from the 'di-' script
-		# which we obviously won't have access to here (that it what caused previous problems when
-		# some scripts were using 'APPNAME=' instead of 'INSTALL_TO:t:r')
-		#
-		# ignore lines that start with '#' (after any optional tabs/spaces)
-		# since those are just comments
-
-		# Alister had previously commented:
-		# "There must be a better way to do this.  We split on the = and then use rev to flip the string"
-		# He was referring to this line:
-		#LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
-		##
-		## I'm not 100% sure what this was supposed to do, but it appears that it is
-		## trying to get the value of '$LOCATION' without the '$INSTALL_TO=' part
-		## The problem is that it won't expand variables such as "$HOME"
-		## which is why it fails for a few scripts, most notably preference panes
-		## such as Hazel and Witch, as they are most often installed to "$HOME/Library/PreferencePanes"
-		##
-		## I think the solution is that we need to use 'eval'.
-		## Now I just need to get the syntax right. 'eval' always trips me up for some reason.
-
 		unset INSTALL_TO
 
 		eval `egrep '^[	| ]*INSTALL_TO=' "$i" | egrep -v '^[	| ]*#' | tail -1`
