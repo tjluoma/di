@@ -16,17 +16,12 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-# INFO=($(curl -sfL 'http://accordancefiles1.com/php/v11/profileInfo.php' \
-# | tr ' ' '\012' \
-# | egrep '^(url|sparkle:shortVersionString)=' \
-# | head -2 \
-# | awk -F'"' '//{print $2}'))
-
+	# sparkle:version identical to sparkle:shortVersionString
 INFO=($(curl -sfL 'https://accordancefiles1.com/php/v12/profileInfo.php' \
-| tr ' ' '\012' \
-| egrep '^(url|sparkle:shortVersionString)=' \
-| head -2 \
-| awk -F'"' '//{print $2}'))
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:shortVersionString)=' \
+		| head -2 \
+		| awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
 
