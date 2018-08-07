@@ -33,7 +33,7 @@ function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
 XML_FEED='https://www.xquartz.org/releases/sparkle/release.xml'
 
-# sparkle:shortVersionString exists in the feed, but sparkle:version seems to be the important number to check
+# sparkle:shortVersionString exists in the feed, but sparkle:version/CFBundleVersion is the important number to check
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr -s ' ' '\012' \
@@ -176,34 +176,16 @@ EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
+
 	msg "Successfully installed XQuartz.app version $LATEST_VERSION"
 
-	COUNT='0'
-
-	while [ -e "$MNTPNT" ]
-	do
-		((COUNT++))
-
-		if [ "$COUNT" -gt "10" ]
-		then
-			exit 0
-		fi
-			# unmount the DMG
-		diskutil eject "$MNTPNT" || sleep 5
-	done
-
-	if [ ! -e "$MNTPNT" ]
-	then
-		msg "Unmounted $MNTPNT"
-	fi
-
-	exit 0
+	diskutil eject "$MNTPNT"
 
 else
 	msg "FAILED to install XQuartz.app version $LATEST_VERSION (exit = $EXIT)"
+
 	exit 1
 fi
-
 
 exit
 #
