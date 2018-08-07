@@ -43,7 +43,7 @@ if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Trying backup method to find URL and LATEST_VERSION"
 
-	URL=`curl -sfL --head 'http://subtitlesapp.com/download/' | awk -F' ' '/^Location:/{print $2}' | tail -1 | tr -d '\r'`
+	URL=`curl -sfL --head 'http://subtitlesapp.com/download/' | awk -F' |\r' '/^Location:/{print $2}' | tail -1`
 
 	LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
 
