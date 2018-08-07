@@ -30,7 +30,7 @@ LATEST_VERSION_ALT=$(curl -sL 'https://files.stairways.com' | awk -F'"| |<' '/ke
 
 if [[ "$LATEST_VERSION_MAIN" == "$LATEST_VERSION_ALT" ]]
 then
-	echo "$NAME: LATEST_VERSION (identical): $LATEST_VERSION_MAIN"
+	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION (identical): $LATEST_VERSION_MAIN"
 	LATEST_VERSION="$LATEST_VERSION_MAIN"
 else
 
@@ -39,12 +39,12 @@ else
 
 	if [ "$LATEST_VERSION_MAIN_SQUISHED" -gt "$LATEST_VERSION_ALT_SQUISHED" ]
 	then
-		echo "$NAME: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is GREATER than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is GREATER than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
 		LATEST_VERSION="$LATEST_VERSION_MAIN"
 
 	elif [[ "$LATEST_VERSION_MAIN_SQUISHED" -lt "$LATEST_VERSION_ALT_SQUISHED" ]]
 	then
-		echo "$NAME: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is LESS than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is LESS than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
 		LATEST_VERSION="$LATEST_VERSION_ALT"
 
 	else
@@ -90,17 +90,17 @@ URL_ALT=$(curl -sfL 'https://files.stairways.com' | awk -F'"' '/keyboardmaestro.
 if [[ "$URL_ALT" == "$URL_MAIN" ]]
 then
 	URL="$URL_ALT"
-	echo "$NAME: URL (identical): $URL"
+	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL (identical): $URL"
 else
 	URL_ALT_NUMBERS=$(echo  "$URL_ALT:t:r"  | tr -dc '[0-9]')
 	URL_MAIN_NUMBERS=$(echo "$URL_MAIN:t:r" | tr -dc '[0-9]')
 
 	if [ "$URL_MAIN_NUMBERS" -gt "$URL_ALT_NUMBERS" ]
 	then
-		echo "$NAME: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
 		URL="$URL_MAIN"
 	else
-		echo "$NAME: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
 		URL="$URL_ALT"
 	fi
 fi
