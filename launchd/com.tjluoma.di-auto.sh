@@ -14,7 +14,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-ERROR_LOG="$HOME/Desktop/$NAME.log"
+ERROR_LOG="$HOME/Desktop/com.tjluoma.di-auto.log"
 
 [ -e "${ERROR_LOG}" -a ! -s "${ERROR_LOG}" ] && rm -fv "${ERROR_LOG}"
 
@@ -72,8 +72,8 @@ then
 
 else
 
-	(echo "$0 [failure at `date`]: 'di-auto.sh' not found in $PATH";
-	 echo "$0: You can download 'di-auto.sh' from 'https://raw.githubusercontent.com/tjluoma/di/master/di-auto.sh'") 2>&1 \
+	(echo "'di-auto.sh' not found in $PATH";
+	 echo "You can download 'di-auto.sh' from 'https://raw.githubusercontent.com/tjluoma/di/master/di-auto.sh'") 2>&1 \
 	| tee -a "$ERROR_LOG"
 fi
 
