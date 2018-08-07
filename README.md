@@ -190,7 +190,7 @@ That’s where [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh
 
 You can even [run it via launchd](https://github.com/tjluoma/di/tree/master/launchd) and have it update your apps once a day, automatically.
 
-Want to install a new app? Use one of the `di-scripts`, or just install it however you would have previously.
+Want to install a new app? Use one of the `di-` scripts, or just install it however you would have previously.
 
 ## Mac App Store Clarification
 
