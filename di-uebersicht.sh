@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# Date:	2016-01-19, updated and verified 2018-08
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Übersicht.app"
