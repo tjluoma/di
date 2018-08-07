@@ -29,23 +29,9 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 cd "$0:h"
 
 COUNT='0'
+SKIP_COUNT='0'
 
 log "------------- STARTING AT `timestamp` -------------"
-
-for ARGS in "$@"
-do
-	case "$ARGS" in
-		-u|--update)
-				DI_UPDATE='yes'
-				shift
-		;;
-
-		-*|--*)
-				echo "	$NAME [warning]: Don't know what to do with arg: $1"
-				shift
-		;;
-	esac
-done # for args
 
 for i in di-*sh
 do
@@ -89,7 +75,7 @@ do
 
 		if [[ "$INSTALL_TO" == "" ]]
 		then
-			echo "$NAME: No 'INSTALL_TO=' found in '$i'."
+			log "[ERROR!] No 'INSTALL_TO=' found in '$i'."
 		else
 
 				# If the app exists, put the script name in the list of installed apps
@@ -107,6 +93,8 @@ do
 				## Uncomment the line below for more verbose output
 				log "'$INSTALL_TO' is not installed (does not exist) on this computer."
 
+				((SKIP_COUNT++))
+
 			fi # if INSTALL_TO exists
 
 		fi # if INSTALL_TO is empty
@@ -114,18 +102,6 @@ do
 	fi # neither "di-all.sh nor di-auto.sh"
 done
 
-if [ "$COUNT" = "0" ]
-then
-	log "------------- FINISHED AT `timestamp` -------------"
-else
-	log "------------- FINISHED AT `timestamp`. Checked $COUNT apps for updates. -------------"
-fi
-
-if [[ "$DI_UPDATE" != "yes" ]]
-then
-	echo "$NAME: Use '$0 --update' to update apps using the corresponding di- script, but only for apps which are already installed."
-fi
-
-
+log "Finished at `timestamp`. Checked $COUNT apps and skipped $SKIP_COUNT."
 
 exit 0
