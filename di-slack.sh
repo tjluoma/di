@@ -18,9 +18,8 @@ fi
 
 	# ".ocation" takes care of Location: or location:
 URL=$(curl -sfL --head "https://slack.com/ssb/download-osx" \
-		| awk -F' ' '/^.ocation: /{print $2}' \
-		| tail -1 \
-		| tr -d '\r' )
+		| awk -F' |\r' '/^.ocation: /{print $2}' \
+		| tail -1 )
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
