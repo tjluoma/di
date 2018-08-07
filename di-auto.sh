@@ -16,12 +16,7 @@ fi
 
 NAME="$0:t:r"
 
-	# Change this if you want the cache stored somewhere else, or under another name
-DI_LIST="$HOME/.di.lst"
-
 zmodload zsh/datetime
-
-[[ -e "$DI_LIST" ]] || touch "$DI_LIST"  # Create the list of installed software
 
 LOG="$HOME/Library/Logs/$NAME.log"
 
@@ -32,6 +27,8 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
 # chdir to the directory where this script is found
 cd "$0:h"
+
+COUNT='0'
 
 log "------------- STARTING AT `timestamp` -------------"
 
@@ -98,27 +95,16 @@ do
 				# If the app exists, put the script name in the list of installed apps
 			if [[ -e "$INSTALL_TO" ]]
 			then
-					#  Check whether the App is already in the list
-				if (egrep -qi "^${i}$" "$DI_LIST")
-				then
-					log "'$i' already stored in $DI_LIST"
-
-				else
-						# We got the full path to "$i" above
-						# see the 'i=($i(:A))' line
-						# so we can launch each of these scripts directly from that list if we need to
-						# just by doing 'source "$DI_LIST"'
-
-					echo "$i" >> "$DI_LIST"
-
-					log "Found '$INSTALL_TO', so added '$i:t' to '$DI_LIST'."
-				fi
 
 					# If you want to actually update the apps, not just check the list.
-				[[ "$DI_UPDATE" = "yes" ]] && log "Running '$i' due to 'DI_UPDATE' status:" && "$i" 2>&1 | tee -a "$LOG"
+				((COUNT++))
+
+				log "Running '$i'"
+
+				"$i" 2>&1 | tee -a "$LOG"
 
 			else
-
+				## Uncomment the line below for more verbose output
 				log "'$INSTALL_TO' is not installed (does not exist) on this computer."
 
 			fi # if INSTALL_TO exists
@@ -128,11 +114,18 @@ do
 	fi # neither "di-all.sh nor di-auto.sh"
 done
 
-log "------------- FINISHED AT `timestamp` -------------"
+if [ "$COUNT" = "0" ]
+then
+	log "------------- FINISHED AT `timestamp` -------------"
+else
+	log "------------- FINISHED AT `timestamp`. Checked $COUNT apps for updates. -------------"
+fi
 
 if [[ "$DI_UPDATE" != "yes" ]]
 then
 	echo "$NAME: Use '$0 --update' to update apps using the corresponding di- script, but only for apps which are already installed."
 fi
+
+
 
 exit 0
