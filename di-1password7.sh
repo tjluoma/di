@@ -22,13 +22,12 @@ fi
 
 zmodload zsh/datetime
 
-
+## Another way of getting the URL. Still works (2018-08-07). Keeping as backup.
 # URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
 # 		fgrep .pkg |\
 # 		fgrep -vi beta |\
 # 		head -1 |\
 # 		sed 's#.*a href="##g; s#">download</a>##g')
-
 
 DL_URL='https://app-updates.agilebits.com/download/OPM7'
 
@@ -46,7 +45,6 @@ then
 
 	exit 1
 fi
-
 
 	# show current version or default to '7' if not installed
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo '7.0.0'`
