@@ -194,8 +194,5 @@ Want to install a new app? Use one of the `di-scripts`, or just install it howev
 
 ## Mac App Store Clarification
 
-This project does not update or install Mac App Store apps. Use the [App Store.app](macappstore://showUpdatesPage) for that.
-
-
-
+This project does not update or install Mac App Store apps. Use the <a href='macappstore://showUpdatesPage'>App Store.app</a> for that.
 
