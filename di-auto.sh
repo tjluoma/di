@@ -5,7 +5,8 @@
 # Mail:	di at superbimble dot com
 # Date: 	2016-05-21
 # Updated by TJ Luoma (luomat at gmail dot com) on 2018-08-06
-#
+# See 'di-auto.txt' for details about significant changes to this script:
+# https://github.com/tjluoma/di/blob/master/di-auto.txt
 
 if [ -e "$HOME/.path" ]
 then
