@@ -45,8 +45,6 @@ cat <<EOINPUT > "$PLIST"
 		<string>${DI_AUTO_PATH}</string>
 		<string>--update</string>
 	</array>
-	<key>RunAtLoad</key>
-	<false/>
 	<key>StandardErrorPath</key>
 	<string>${ERROR_LOG}</string>
 	<key>StandardOutPath</key>
