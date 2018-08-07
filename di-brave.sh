@@ -16,13 +16,16 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+	# 2018-08-07 -- adding explicit exclusion of 'beta' versions
 URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
 | fgrep '/browser-laptop/releases/tag/' \
+| fgrep -vi 'beta' \
 | head -1 \
 | sed 's#.*https#https#g; s#"/>##g'`
 
 URL2=`curl -sfL "$URL1" \
 | egrep '/brave/browser-laptop/releases/.*\.dmg"' \
+| fgrep -vi 'beta' \
 | sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
 
 # echo "
@@ -62,7 +65,7 @@ FILENAME="$HOME/Downloads/$URL2:t"
 
 echo "$NAME: Downloading '$URL2' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL2" 2>/dev/null
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL2"
 
 EXIT="$?"
 
