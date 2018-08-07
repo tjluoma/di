@@ -1,12 +1,9 @@
 #!/bin/zsh -f
 # Purpose: 	Download and install the latest version of VLC
 #
-#	Author:		Timothy J. Luoma
-#	Email:		luomat at gmail dot com
-#	Date:		2011-10-26
-#
-#
-#	URL:
+# Author:		Timothy J. Luoma
+# Email:		luomat at gmail dot com
+# Date:		2011-10-26
 
 NAME="$0:t"
 
@@ -85,37 +82,48 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && exit 0
 
+echo "$NAME: Mounting $FILENAME:"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-			| fgrep -A 1 '<key>mount-point</key>' \
-			| tail -1 \
-			| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
-	exit 0
-else
-	echo "$NAME: Mounted $FILENAME at $MNTPNT"
+	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/VLC.$INSTALLED_VERSION.app"
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
-echo "$NAME:  Installing $MNTPNT/VLC.app to $INSTALL_TO (this may take a few minutes)"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-ditto --noqtn "$MNTPNT/VLC.app" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: ditto failed"
+
+	exit 1
 fi
 
+echo "$NAME: Unmounting $MNTPNT:"
+
 diskutil eject "$MNTPNT"
+
 
 exit 0
