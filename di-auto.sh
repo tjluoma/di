@@ -7,17 +7,17 @@
 # Updated by TJ Luoma (luomat at gmail dot com) on 2018-08-06
 #
 
-NAME="$0:t:r"
-
-	# Change this if you want the cache stored somewhere else, or under another name
-DI_LIST="$HOME/.di.lst"
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:./di-scripts'
 fi
+
+NAME="$0:t:r"
+
+	# Change this if you want the cache stored somewhere else, or under another name
+DI_LIST="$HOME/.di.lst"
 
 zmodload zsh/datetime
 
