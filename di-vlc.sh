@@ -3,7 +3,7 @@
 #
 # Author:		Timothy J. Luoma
 # Email:		luomat at gmail dot com
-# Date:		2011-10-26
+# Date:		2011-10-26, verified 2018-08-07
 
 NAME="$0:t"
 
@@ -124,6 +124,5 @@ fi
 echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
-
 
 exit 0
