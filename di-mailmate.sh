@@ -78,6 +78,24 @@ then
 		--title "$NAME"
 fi
 
+
+if (( $+commands[lynx] ))
+then
+		# 2018-08-08 - This says that it's for betas, but I can't find a non-beta version at the moment
+	RELEASE_NOTES_URL='https://updates.mailmate-app.com/beta_release_notes'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
+
+	(curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<body>/d; /<\/ul>/,$d' \
+	;echo '</ul>') \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 
 echo "$NAME: Downloading $URL to $FILENAME"
