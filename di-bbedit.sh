@@ -106,14 +106,14 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RN="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
 	echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
 
-	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RN" \
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RELEASE_NOTES_URL" \
 	| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
 
-	echo "\nSource: <$RN>"
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"

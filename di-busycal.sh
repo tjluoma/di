@@ -71,15 +71,15 @@ fi
 
 if (( $+commands[lynx] ))
 then
-	RN='https://www.busymac.com/busycal/releasenotes.html'
+	RELEASE_NOTES_URL='https://www.busymac.com/busycal/releasenotes.html'
 
 	echo -n "$NAME: Release Notes for "
 
-	curl -sfL "$RN" \
+	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
 
-	echo "\nSource: <$RN>"
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 # What we download is a .zip file with a .pkg file inside of it,

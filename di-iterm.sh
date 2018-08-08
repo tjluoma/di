@@ -63,15 +63,15 @@ fi
 
 ## Release Notes - start
 # This always seems to be a plain-text file, but the filename itself changes
-RN=$(curl -sfL "$XML_FEED" \
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
 	| awk -F' ' '/https/{print $1}')
 
 echo -n "$NAME: Release Notes for "
 
-curl -sfL "$RN"
+curl -sfL "$RELEASE_NOTES_URL"
 
-echo "\nSource: <$RN>"
+echo "\nSource: <$RELEASE_NOTES_URL>"
 ## Release Notes - end
 
 FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"

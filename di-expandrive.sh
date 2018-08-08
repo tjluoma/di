@@ -81,19 +81,19 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RN=$(curl -sfL "$XML_FEED" \
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
 		| awk -F' ' '/http/{print $1}')
 
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
 
-	curl -sfL "$RN" \
+	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\body>/,$d ; s#</span><span>#: #g' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
 	| fgrep -v 'ExpanDrive 6 is a paid upgrade and costs $24.95 if you purchased before April 1, 2017.' \
 	| fgrep -v '  * Improvements in ExpanDrive '
 
-	echo "\nSource: <$RN>"
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 
 fi
 

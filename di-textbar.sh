@@ -77,14 +77,14 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RN='http://www.richsomerfield.com/apps/textbar/releasenotes_textbar.html'
+	RELEASE_NOTES_URL='http://www.richsomerfield.com/apps/textbar/releasenotes_textbar.html'
 
 	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
 
-	(curl -sfL "$RN" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
 
-	echo "\nSource: <$RN>"
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 
 fi
 

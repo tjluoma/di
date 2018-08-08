@@ -64,15 +64,15 @@ fi
 
 if (( $+commands[lynx] ))
 then
-	RN='https://www.busymac.com/busycontacts/releasenotes.html'
+	RELEASE_NOTES_URL='https://www.busymac.com/busycontacts/releasenotes.html'
 
 	echo -n "$NAME: Release Notes for "
 
-	curl -sfL "$RN" \
+	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
 
-	echo "\nSource: <$RN>"
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
