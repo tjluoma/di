@@ -31,19 +31,19 @@ INFO=($(curl -sfL "$XML_FEED" \
 #
 ## NOTE: sparkle:version is changed even when sparkle:shortVersionString isn't
 
-MAJOR_VERSION=$(echo "$INFO[1]" | tr -dc '[0-9]\.')
+LATEST_VERSION=$(echo "$INFO[1]" | tr -dc '[0-9]\.')
 
-LATEST_VERSION=$(echo "$INFO[2]" | tr -dc '[0-9]\.')
+LATEST_BUILD=$(echo "$INFO[2]" | tr -dc '[0-9]\.')
 
 URL=$(echo "$INFO[3]" | sed 's#url="##g; s#"##g')
 
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$MAJOR_VERSION" = "" ]
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	echo "$NAME: Bad data from $XML_FEED"
-	echo "
+	echo "$NAME: Error: bad data received:
 	INFO: $INFO
-	MAJOR_VERSION: $MAJOR_VERSION
 	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -53,27 +53,36 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($LATEST_VERSION)"
+		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
+
+
 
 if (( $+commands[lynx] ))
 then
@@ -88,7 +97,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${MAJOR_VERSION}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
