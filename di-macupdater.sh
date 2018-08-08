@@ -74,15 +74,15 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RL='https://www.corecode.io/macupdater/history.html'
+	RN='https://www.corecode.io/macupdater/history.html'
 
 	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: "
 
-	curl -sfL "$RL" | sed '1,/<br>/d; /<br>/,$d' \
+	curl -sfL "$RN" | sed '1,/<br>/d; /<br>/,$d' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| egrep --colour=never -i '[a-z0-9]'
 
-	echo "Source: <$RL>"
+	echo "Source: <$RN>"
 
 fi
 

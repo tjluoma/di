@@ -71,15 +71,15 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RL='https://www.trankynam.com/atext/releasenotes.html'
+	RN='https://www.trankynam.com/atext/releasenotes.html'
 
 	echo -n "$NAME: Release Notes for: "
 
-	curl -sfL "$RL" \
+	curl -sfL "$RN" \
 	| sed '1,/<div class="release" id="/d; /<div class="release" id="/,$d' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
 
-	echo "\nSource: $RL"
+	echo "\nSource: $RN"
 
 fi
 
