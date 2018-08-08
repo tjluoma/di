@@ -77,6 +77,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION/$LATEST_BUILD:"
+
+	curl -sfL "$XML_FEED" \
+	| perl -p -e 's/\[CDATA\[/\[CDATA\[\n/' \
+	| sed '1,/CDATA/d; /<sparkle:deltas>/,$d ; s#]]></description>##g ' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
