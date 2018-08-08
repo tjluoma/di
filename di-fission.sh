@@ -78,20 +78,20 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 if (( $+commands[lynx] ))
 then
+		# We require lynx for this optional feature because we don't want to have to parse HTML
+		# That's what computers are for.
 
-echo -n "$NAME: Latest Release notes for:"
+	echo -n "$NAME: Latest Release Notes for:"
 
-curl -sfL https://www.rogueamoeba.com/fission/releasenotes.php \
-| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
-| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -nonumbers -width=1000  -nolist -stdin \
-| sed '/^[[:space:]]*$/d' \
-| tr -s ' ' ' '
+	curl -sfL 'https://www.rogueamoeba.com/fission/releasenotes.php' \
+	| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
+	| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -nonumbers -width=1000 -nolist -stdin \
+	| sed '/^[[:space:]]*$/d' \
+	| tr -s ' ' ' '
 
 fi
 
-exit
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
