@@ -18,12 +18,13 @@ fi
 
 URL='http://www.busymac.com/download/BusyContacts.zip'
 
+# if this ever stops working, try https://www.busymac.com/busycontacts/releasenotes.html
+
 LATEST_VERSION=`curl -sfL http://versioncheck.busymac.com/busycontacts/news.plist \
 				| fgrep -A1 '<key>current</key>' \
 				| fgrep '<string>' \
 				| head -1 \
 				| tr -dc '[0-9].'`
-
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -61,6 +62,18 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+	RN='https://www.busymac.com/busycontacts/releasenotes.html'
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RN" \
+	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: <$RN>"
+fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 	PKG="$FILENAME:h/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
