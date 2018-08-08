@@ -75,6 +75,19 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	echo -n "$NAME: Release Notes for: "
+
+	curl -sfL "$XML_FEED" \
+	| sed '1,/<description>/d; /<\/description>/,$d ; s#&lt;#<#g' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: XML_FEED <$XML_FEED>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${MAJOR_VERSION}-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
