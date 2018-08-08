@@ -80,7 +80,9 @@ function check_install_location {
 	## DO NOT SET TO ZERO
 INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
-INFO=($(curl -sfL "https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION" \
+APPCAST_URL="https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION"
+
+INFO=($(curl -sfL "$APPCAST_URL" \
 			| tr -s ' ' '\012' \
 			| egrep '^(sparkle:version|url)=' \
 			| head -2 \
@@ -123,6 +125,19 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://www.noodlesoft.com/release_notes'
+
+	echo -n "$NAME: Release Notes for Hazel "
+
+	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
