@@ -113,6 +113,7 @@ then
 	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RN" \
 	| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
 
+	echo "\nSource: <$RN>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
