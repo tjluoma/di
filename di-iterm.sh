@@ -59,6 +59,20 @@ then
 	fi
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+fi
+
+if (( $+commands[lynx] ))
+then
+		# This always seems to be a plain-text file, but the filename itself changes
+	RN=$(curl -sfL "$XML_FEED" \
+		| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
+		| awk -F' ' '/https/{print $1}')
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RN"
+
+	echo "\nSource: <$RN>"
 
 fi
 
