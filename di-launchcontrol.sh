@@ -24,20 +24,12 @@ INFO=($(curl -sfL "$XML_FEED" \
 		| tr '[:blank:]' '\012' \
 		| egrep '^(url|sparkle:shortVersionString=)' \
 		| tail -2 \
-		| sort ))
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
-XML_FEED='https://somazonecom.ipage.com/soma-zone.com/LaunchControl/a/appcast_update.xml'
+LATEST_VERSION="$INFO[1]"
 
-INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:shortVersionString=|url=' \
-| tail -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
-
-URL="$INFO[1]"
-
-LATEST_VERSION="$INFO[2]"
+URL="$INFO[2]"
 
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
@@ -75,6 +67,21 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
+
+if (( $+commands[lynx] ))
+then
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
+
+	curl -sfL "$XML_FEED" \
+	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d" \
+	| sed '1,/<description>/d; /<\/description>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: XML_FEED: <$XML_FEED>"
+
+fi
+
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tar.bz2"
 
