@@ -74,6 +74,19 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RN='http://www.richsomerfield.com/apps/textbar/releasenotes_textbar.html'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
+
+	(curl -sfL "$RN" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: <$RN>"
+
+fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
