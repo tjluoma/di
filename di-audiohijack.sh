@@ -21,18 +21,18 @@ zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
-URL="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
+XML_FEED="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
 
 # sparkle:version= is the only version information in feed
 
-LATEST_VERSION=`curl -sfL "$URL" | awk -F'"' '/sparkle:version=/{print $2}'`
+LATEST_VERSION=`curl -sfL "$XML_FEED" | awk -F'"' '/sparkle:version=/{print $2}'`
 
 	# If any of these are blank, we should not continue
-if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$LATEST_VERSION" = "" -o "$XML_FEED" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
+	XML_FEED: $XML_FEED
 	"
 
 	exit 1
@@ -65,7 +65,7 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="$URL"
+	RELEASE_NOTES_URL="$XML_FEED"
 
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
 
@@ -78,22 +78,22 @@ then
 fi
 
 
-## 2018-07-10 this doesn't seem to work, so I'm just hard-coding in the URL in DL_URL
-# DL_URL=`curl -sfL 'http://rogueamoeba.com/audiohijack/download.php' | awk -F'"' '/http.*zip/{print $2}'`
+## 2018-07-10 this doesn't seem to work, so I'm just hard-coding in the URL in URL
+# URL=`curl -sfL 'http://rogueamoeba.com/audiohijack/download.php' | awk -F'"' '/http.*zip/{print $2}'`
 #
-# if [[ "$DL_URL" == "" ]]
+# if [[ "$URL" == "" ]]
 # then
-# 	echo "DL_URL is empty"
+# 	echo "URL is empty"
 # 	exit 1
 # fi
 
-DL_URL="https://rogueamoeba.com/audiohijack/download/AudioHijack.zip"
+URL="https://rogueamoeba.com/audiohijack/download/AudioHijack.zip"
 
 FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
 
-echo "$NAME: Downloading $DL_URL\nto\n$FILENAME:"
+echo "$NAME: Downloading $URL\nto\n$FILENAME:"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$DL_URL"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 function get-pid { export PID=`pgrep -x 'Audio Hijack' || echo ` }
 
