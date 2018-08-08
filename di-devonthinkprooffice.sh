@@ -84,7 +84,6 @@ then
 
 fi
 
-
 FILENAME="$HOME/Downloads/DevonThinkProOffice-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
