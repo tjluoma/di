@@ -67,9 +67,26 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+if (( $+commands[lynx] ))
+then
+
+	RN='https://app-updates.agilebits.com/product_history/OPM7'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
+
+	curl -sfL "$RN" \
+	| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
+	| egrep -vi '1Password never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| sed '/./,/^$/!d'
+	# sed delete blank lines at start of file
+
+	echo "\nSource: <$RN>"
+fi
+
 FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -78,6 +95,9 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 if (( $+commands[pkginstall.sh] ))
 then
