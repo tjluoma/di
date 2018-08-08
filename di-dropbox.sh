@@ -40,7 +40,7 @@ DL_URL='https://www.dropbox.com/download?plat=mac&full=1'
 #
 # https://clientupdates.dropboxstatic.com/dbx-releng/client/Dropbox%2053.4.67.dmg
 
-URL=$(curl -sfL --head "$DL_URL" | awk -F' ' '/^.ocation: /{print $2}' | tail -1 | tr -d '\r')
+URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
 
 if [[ "$URL" == "" ]]
 then
