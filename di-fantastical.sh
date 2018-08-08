@@ -46,7 +46,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
