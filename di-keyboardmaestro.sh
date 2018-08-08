@@ -105,6 +105,8 @@ else
 	fi
 fi
 
+echo "$NAME: No Release Notes available, but <https://wiki.keyboardmaestro.com/manual/Whats_New> eventually has summary updates."
+
 FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
