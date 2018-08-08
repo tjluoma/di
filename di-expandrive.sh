@@ -10,7 +10,7 @@ NAME="$0:t:r"
 INSTALL_TO='/Applications/ExpanDrive.app'
 XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
-# Not http://updates.expandrive.com/apps/expandrive.xml
+# Do Not Use: http://updates.expandrive.com/apps/expandrive.xml
 
 if [ -e "$HOME/.path" ]
 then
@@ -76,6 +76,25 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RN=$(curl -sfL "$XML_FEED" \
+		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
+		| awk -F' ' '/http/{print $1}')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
+
+	curl -sfL "$RN" \
+	| sed '1,/<body>/d; /<\body>/,$d ; s#</span><span>#: #g' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| fgrep -v 'ExpanDrive 6 is a paid upgrade and costs $24.95 if you purchased before April 1, 2017.' \
+	| fgrep -v '  * Improvements in ExpanDrive '
+
+	echo "\nSource: <$RN>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
