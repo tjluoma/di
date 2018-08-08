@@ -18,6 +18,9 @@ fi
 
 LAUNCH='yes'
 
+	# sparkle:version and sparkle:shortVersionString both exist, but
+	# they are "308" and "3.0.8" respectively, so we only need one.
+	#
 	# This will work even if there is a space in the enclosure URL
 	# Don't indent this or you'll break sed
 IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
@@ -67,6 +70,29 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+fi
+
+RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}' | tail -1`
+
+	# lynx can parse the HTML just fine, but its output is sort of ugly,
+	# so we'll use html2text if it's available
+if (( $+commands[html2text] ))
+then
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
+
+	curl -sfL "${RELEASE_NOTES_URL}" | html2text
+
+	echo "\nSource: ${RELEASE_NOTES_URL}"
+
+elif (( $+commands[lynx] ))
+then
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RELEASE_NOTES_URL"
+
+	echo "\nSource: ${RELEASE_NOTES_URL}"
 fi
 
 FILENAME="$HOME/Downloads/Bartender-$LATEST_VERSION.zip"
