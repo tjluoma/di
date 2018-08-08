@@ -23,6 +23,8 @@ function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
 URL="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
 
+# sparkle:version= is the only version information in feed
+
 LATEST_VERSION=`curl -sfL "$URL" | awk -F'"' '/sparkle:version=/{print $2}'`
 
 	# If any of these are blank, we should not continue
@@ -58,6 +60,21 @@ then
 	fi
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="$URL"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<body>/d; /<\/body>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSouce: <${RELEASE_NOTES_URL}>"
+
 fi
 
 
