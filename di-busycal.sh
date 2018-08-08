@@ -69,6 +69,18 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+	RN='https://www.busymac.com/busycal/releasenotes.html'
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RN" \
+	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: <$RN>"
+fi
 
 # What we download is a .zip file with a .pkg file inside of it,
 # so we first need to unzip the .zip file and then install the .pkg file
