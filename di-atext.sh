@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of aText
+# Purpose: Download and install the latest version of aText from <https://www.trankynam.com/atext/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -66,6 +66,21 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RL='https://www.trankynam.com/atext/releasenotes.html'
+
+	echo -n "$NAME: Release Notes for: "
+
+	curl -sfL "$RL" \
+	| sed '1,/<div class="release" id="/d; /<div class="release" id="/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+	echo "\nSource: $RL"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
