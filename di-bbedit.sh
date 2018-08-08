@@ -80,9 +80,44 @@ then
 
 fi
 
+
+## Release Notes: Well, if you wanted to, you could do something like this:
+##
+# curl -sfL https://versioncheck.barebones.com/BBEdit.xml \
+# | sed '1,/<string>397082<\/string>/d' \
+# | sed '/<\/data>/,$d' \
+# | sed '1,/<data>/d' \
+# | base64 --decode \
+# | unrtf \
+# | tr -s '"' '"' \
+# | lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin -listonly \
+# | head -1
+##
+## which would get you something like:
+# https://www.barebones.com/support/bbedit/notes-12.1.5.html
+## or, if you remove the '-listonly' part, you'll get this:
+# BBEdit 12.1.5 is a focused maintenance update to address issues reported in BBEdit 12.0 through 12.1.4. Detailed change notes are available hyperlink.
+##
+## But rather than go through all that, why not just guess that the URL will be:
+## "https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+## ?
+## So that's what I'm doing instead.
+
+if (( $+commands[lynx] ))
+then
+
+	RN="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+
+	echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RN" \
+	| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -99,9 +134,8 @@ if [ -e "$INSTALL_TO" ]
 then
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/BBEdit.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
-
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
@@ -131,9 +165,7 @@ else
 	exit 1
 fi
 
-
 diskutil eject "$MNTPNT"
-
 
 exit 0
 #EOF
