@@ -68,6 +68,23 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep -i '<description>' \
+	| tail -1 \
+	| sed 's#.*<description>##g; s#&amp;.*</description>.*#\&format=html#g')
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
+
 FILENAME="$HOME/Downloads/DevonThinkProOffice-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
