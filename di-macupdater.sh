@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MacUpdater.app'
 
+XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,22 +18,15 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
-
-	# If this ever starts to fail in the future, check to see if these three elements are still in the same order in the XML_FEED
-	# since we aren't using 'sort' on them.
-	# The 'curl' line should give 3 lines of info, like this:
-	# 	https://www.corecode.io/downloads/macupdater_1.2.10.zip
-	# 	2474
-	# 	1.2.10
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '(<enclosure.*url="https://.*\.zip"|sparkle:version=|sparkle:shortVersionString=)' \
 		| head -3 \
+		| sort \
 		| awk -F'"' '/url|sparkle:version|sparkle:shortVersionString/{print $2}'))
 
-URL="$INFO[1]"
+LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
-LATEST_VERSION="$INFO[3]"
+URL="$INFO[3]"
 
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
@@ -74,6 +69,21 @@ then
 
 else
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RL='https://www.corecode.io/macupdater/history.html'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: "
+
+	curl -sfL "$RL" | sed '1,/<br>/d; /<br>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| egrep --colour=never -i '[a-z0-9]'
+
+	echo "Source: <$RL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
