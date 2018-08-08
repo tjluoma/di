@@ -57,6 +57,23 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+	RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<a name="/d; /<a name="/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| sed '/./,/^$/!d'
+
+	# last line: sed remove blank lines from start
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading >$URL< to >$FILENAME<"
