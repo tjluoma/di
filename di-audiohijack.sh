@@ -71,7 +71,7 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\/body>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSouce: <${RELEASE_NOTES_URL}>"
 
@@ -91,41 +91,71 @@ URL="https://rogueamoeba.com/audiohijack/download/AudioHijack.zip"
 
 FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
 
-echo "$NAME: Downloading $URL\nto\n$FILENAME:"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-function get-pid { export PID=`pgrep -x 'Audio Hijack' || echo ` }
+EXIT="$?"
 
-get-pid
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-while [ "$PID" != "" ]
-do
-	echo "$NAME: $INSTALL_TO:t is running (PID: $PID). Quit to continue. Sleeping 30 seconds from `timestamp`."
-	sleep 30
-	get-pid
-done
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-if [[ -e "$INSTALL_TO" ]]
-then
-	mv -vn "$INSTALL_TO" "$HOME/.Trash/Audio Hijack.$INSTALLED_VERSION.app"
-fi
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-ditto -xk -v --rsrc --extattr --noqtn "$FILENAME" "$INSTALL_TO:h"
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Installation of $INSTALL_TO successful"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
 
 exit 0
 #
