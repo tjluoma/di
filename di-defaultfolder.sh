@@ -87,6 +87,23 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed '1,/<sparkle:releaseNotesLink xml:lang="en">/d; /<\/sparkle:releaseNotesLink>/,$d' \
+	| tr -d '[:blank:]')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD: \n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<h3>/d; /<h3>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
+
+fi
+
 FILENAME="$HOME/Downloads/DefaultFolderX-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
