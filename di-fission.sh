@@ -89,6 +89,7 @@ then
 	| sed '/^[[:space:]]*$/d' \
 	| tr -s ' ' ' '
 
+	echo "Source: <https://www.rogueamoeba.com/fission/releasenotes.php>"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
