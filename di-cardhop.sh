@@ -86,6 +86,7 @@ then
 	| sed '1,/CDATA/d; /<sparkle:deltas>/,$d ; s#]]></description>##g ' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
+	echo "Source: XML_FEED <$XML_FEED>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
