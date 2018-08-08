@@ -17,7 +17,8 @@ else
 fi
 
 URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus6/ \
-		| awk -F' |\r' '/Location.*\.zip/{print $2}' )
+		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
+		| tail -1)
 
 # That gives us something like this:
 # https://files.bjango.com/istatmenus6/istatmenus6.20.zip
