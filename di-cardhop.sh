@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of CardHop
+# Purpose: Download and install the latest version of CardHop from <https://flexibits.com/cardhop/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/CardHop.app'
 
+XML_FEED='https://flexibits.com/cardhop/appcast.php'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,14 +18,15 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://flexibits.com/cardhop/appcast.php'
-
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '<enclosure url="https.*\.zip' \
 		| awk -F'"' '/url=/{print $2" "$4" "$6}'))
 
 		# Result should be something like this:
 		# https://d60ism0l33mmr.cloudfront.net/Cardhop_1.1.2.zip 106 1.1.2
+		#
+		# If this ever stops working, try 'https://flexibits.com/cardhop/download'
+		# which redirects to the latest .zip file
 
 URL="$INFO[1]"
 
