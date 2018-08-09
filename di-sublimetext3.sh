@@ -8,6 +8,8 @@
 NAME="$0:t:r"
 INSTALL_TO='/Applications/Sublime Text.app'
 
+XML_FEED="https://www.sublimetext.com/updates/3/stable/appcast_osx.xml"
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -15,19 +17,24 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Who puts spaces in URLs?!?
-URL=$(curl -sfL "https://www.sublimetext.com/3" \
-	| awk -F'"' '/https.*dmg/{print $4}' \
-	| sed 's# #%20#g')
+# WATCH FOR SPACES IN URL!
+# n.b. That's the only version info in feed
+IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
+	| egrep "<enclosure url=|sparkle:version=" \
+	| sort \
+	| sed 's#.*http#http#g ; s#.*sparkle:version="##g ; s#"##g ; s# #%20#g'))
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*%20##g')
+LATEST_VERSION="$INFO[1]"
+
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$INFO" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
+	INFO: $INFO
 	"
 
 	exit 1
@@ -57,6 +64,22 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	# alternative: http://www.sublimetext.com/updates/3/stable/release_notes.html
+
+	RELEASE_NOTES_URL='https://www.sublimetext.com/3'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<article class="current">/d; /<\/article>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
 fi
 
 FILENAME="$HOME/Downloads/SublimeText-${LATEST_VERSION}.dmg"
