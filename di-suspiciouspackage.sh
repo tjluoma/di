@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Suspicious Package
+# Purpose: Download and install the latest version of Suspicious Package from <http://www.mothersruin.com/software/SuspiciousPackage/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -57,9 +57,24 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<tbody>/d; /<\/tr>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| sed G
+
+	echo "Source: <$RELEASE_NOTES_URL>"
+fi
+
 FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
-echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -94,7 +109,7 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME installing \"$MNTPNT/$INSTALL_TO:t\" to \"$INSTALL_TO\":"
+echo "$NAME installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO':"
 
 ditto --noqtn "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
@@ -119,7 +134,7 @@ fi
 if [[ "$FIRST_INSTALL" == 'yes' ]]
 then
 
-	echo "$NAME: This is the first time we have installed $INSTALL_TO. Launching app to force it to register its QuickLook plugins."
+	echo "$NAME: This is the first time we have installed $INSTALL_TO:t:r. Launching it in order to register its QuickLook plugins."
 
 	open -a "$INSTALL_TO"
 
@@ -132,6 +147,26 @@ else
 	diskutil eject "$MNTPNT"
 fi
 
+	# we'll try to install 'spkg' if we can
+
+if ((! $+commands[spkg] ))
+then
+
+	SPKG="$INSTALL_TO/Contents/SharedSupport/spkg"
+
+	if [[ -e "$SPKG" ]]
+	then
+		if [[ -w /usr/local/bin ]]
+		then
+			ln -s "$SPKG" /usr/local/bin/spkg && \
+			echo "$NAME: Linked $SPKG to /usr/local/bin/spkg"
+		else
+			echo "$NAME: cannot link $SPKG to /usr/local/bin because it is not writable."
+		fi
+	else
+		echo "$NAME: Did not find 'spkg' at $SPKG"
+	fi
+fi
 
 exit 0
 #
