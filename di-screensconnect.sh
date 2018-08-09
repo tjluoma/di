@@ -74,6 +74,26 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| fgrep -v 'dm-rn-head-title-fixed' \
+	| fgrep -v '</ul><hr /><ul>' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| tr -s '_' '_'
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/ScreensConnect-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
