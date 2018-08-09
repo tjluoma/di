@@ -105,15 +105,52 @@ else
 fi
 # IF installed
 
+if (( $+commands[lynx] ))
+then
 
-echo "$NAME: Downloading >$URL< to >$FILENAME<"
+	alias mytidy='tidy --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no \
+		--output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
+		--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
+		--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes'
+
+	RELEASE_NOTES_URL='https://www.revisionsapp.com/releases'
+
+	SECOND_VERSION=$(curl -sfL "${RELEASE_NOTES_URL}" \
+	| mytidy \
+	| egrep '<h5>.*</h5>' \
+	| sed -n '2p' \
+	| sed 's#<\/h5>#<\\/h5>#g')
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
+
+	# For some reason, trying to use 'mytidy' below did not work, so I just copied it again. ¯\_(ツ)_/¯
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+		| tidy --char-encoding utf8 --wrap 0 --show-errors 0 --indent no \
+			--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
+			--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
+			--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
+		| sed '1,/RETURN TO MAIN PAGE/d' \
+		| sed "/$SECOND_VERSION/,\$d" \
+		| sed '1,/<br \/>/d ; s#<hr \/>##g' \
+		| egrep -i '.' \
+		| uniq \
+		| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+fi
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 	# This will agree to the EULA for you without you reading it
 	# If you do not want that, don't use this script
@@ -154,7 +191,6 @@ else
 	echo "$NAME: Installation failed (\$EXIT = $EXIT)"
 
 fi
-
 
 exit 0
 #
