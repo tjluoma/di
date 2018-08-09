@@ -19,17 +19,16 @@ fi
 XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:shortVersionString=|sparkle:version=|url=' \
-| head -3 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:shortVersionString=|sparkle:version=|url=' \
+		| head -3 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION_READABLE="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
 URL="$INFO[3]"
-
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -65,6 +64,23 @@ then
 	fi
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| egrep "<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>" \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>##g')
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
+	| sed '/./,/^$/!d'
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 
 fi
 
