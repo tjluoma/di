@@ -18,7 +18,7 @@ fi
 INSTALL_TO='/Applications/Audiobook Builder.app'
 
 	## if installed, get current version. If not, put in 1.0.0
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1.0'`
 
 	## Use installed version in User Agent when requesting Sparkle feed
 UA="Audiobook Builder/$INSTALLED_VERSION Sparkle/1.5"
@@ -86,6 +86,20 @@ fi
 
 	## If we get here, we need to update
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<message>/d; /<\/message>/,$d ; s#\]\]\>##g ; s#<\!\[CDATA\[##g' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: XML_FEED: <$XML_FEED>"
+fi
 
 	## Since the XML_FEED doesn't specify an enclosure url, I assume this
 	## will always point to the latest version
