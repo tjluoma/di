@@ -105,6 +105,7 @@ else
 	fi
 fi
 
+	# No RELEASE_NOTES_URL possible as far as I can tell ☹️
 echo "$NAME: No Release Notes available, but <https://wiki.keyboardmaestro.com/manual/Whats_New> eventually has summary updates."
 
 FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
