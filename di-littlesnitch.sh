@@ -16,12 +16,12 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED="https://sw-update.obdev.at/update-feeds/littlesnitch3.plist"
+XML_FEED="https://sw-update.obdev.at/update-feeds/littlesnitch4.plist"
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep -A1 'BundleVersion|DownloadURL' \
 		| fgrep '<string>' \
-		| tail -2 \
+		| head -2 \
 		| sed 's#.*<string>##g; s#</string>##g'))
 
 LATEST_VERSION="$INFO[1]"
@@ -64,6 +64,22 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
+
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep -A1 "<key>ReleaseNotesURL</key>" \
+		| awk -F'>|<' '/string/{print $3}' \
+		| head -1)
+
+	echo "$NAME: Release Notes:"
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
+
+fi
+
 
 FILENAME="$HOME/Downloads/LittleSnitch-$LATEST_VERSION.dmg"
 
