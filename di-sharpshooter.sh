@@ -69,6 +69,22 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<div>/d; /<div>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -89,6 +105,8 @@ fi
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+
+EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
