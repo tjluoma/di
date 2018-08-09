@@ -73,10 +73,25 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://manytricks.com/timesink/releasenotes/'
+
+	echo -n "$NAME: Release Notes for "
+
+	(curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<!-- BODY STARTS HERE -->/d; /<\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 	# note we have hard-coded the name in order to remove the space from the app name
 FILENAME="$HOME/Downloads/TimeSink-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
