@@ -18,14 +18,21 @@ fi
 
 HOMEPAGE="https://www.decisivetactics.com/products/printopia/"
 
-
 	## 2018-07-17 we should get something like this:
 	## https://www.decisivetactics.com/products/printopia/dl/Printopia_3.0.11.zip
 
-URL=$(curl -sfL "$HOMEPAGE" \
-| tr '"' '\012' \
-| egrep "^https://www.decisivetactics.com/products/printopia/dl/Printopia_.*\.zip$" \
-| head -1)
+if (( $+commands[lynx] ))
+then
+
+	URL=$(lynx -listonly -dump -nomargins -nonumbers "$HOMEPAGE" | egrep '^http.*\.zip$' | head -1)
+
+else
+
+	URL=$(curl -sfL "$HOMEPAGE" \
+		| tr '"' '\012' \
+		| egrep "^http.*\.zip$" \
+		| head -1)
+fi
 
 if [[ "$URL" == "" ]]
 then
