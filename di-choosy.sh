@@ -16,6 +16,7 @@ fi
 
 INSTALL_TO="$HOME/Library/PreferencePanes/Choosy.prefPane"
 
+	# sparkle:version= is the only version information available
 INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
 		| tr -s ' ' '\012' \
 		| egrep "sparkle:version=|url=" \
@@ -61,6 +62,22 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
+		| sed '1,/<description><\!\[CDATA\[/d; /<\/description>/,$d' \
+		| awk -F'"' '/http/{print $2}')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<h3>Release notes<\/h3>/d; /<h3>Download<\/h3>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 	# Where to save new download
@@ -131,7 +148,7 @@ else
 fi
 
 	# Launch Helper
-echo "$NAME: Launching Choosy helper app"
+echo "$NAME: Launching Choosy Helper app"
 
 open "$INSTALL_TO/Contents/Resources/Choosy.app/Contents/MacOS/Choosy"
 
