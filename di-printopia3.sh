@@ -66,6 +66,21 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://www.decisivetactics.com/products/printopia/release-notes"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<div class="date">/d; /<div class="releasenotes">/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
