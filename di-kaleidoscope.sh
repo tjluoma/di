@@ -159,6 +159,25 @@ else
 	exit 1
 fi
 
+if ((! $+commands[ksdiff] ))
+then
+
+	KSDIFF="$INSTALL_TO/Contents/Resources/bin/ksdiff"
+
+	if [[ -e "${KSDIFF}" ]]
+	then
+		if [[ -w /usr/local/bin ]]
+		then
+			ln -s "${KSDIFF}" /usr/local/bin/ksdiff && \
+			echo "$NAME: Linked ${KSDIFF} to /usr/local/bin/ksdiff"
+		else
+			echo "$NAME: cannot link ${KSDIFF} to /usr/local/bin because it is not writable."
+		fi
+	else
+		echo "$NAME: Did not find 'ksdiff' at ${KSDIFF}"
+	fi
+fi
+
 exit 0
 #
 #EOF
