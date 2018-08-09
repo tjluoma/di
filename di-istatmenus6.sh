@@ -52,6 +52,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://bjango.com/mac/istatmenus/versionhistory/'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
+
+	(curl -sfL $RELEASE_NOTES_URL | sed '1,/<div class="button-moreinfo">/d; /<\/p>/,$d' ; echo '</p>') \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/iStatMenus-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
