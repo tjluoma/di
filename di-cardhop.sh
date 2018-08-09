@@ -79,14 +79,16 @@ fi
 
 if (( $+commands[lynx] ))
 then
+	RELEASE_NOTES_URL="$XML_FEED"
+
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION/$LATEST_BUILD:"
 
-	curl -sfL "$XML_FEED" \
+	curl -sfL "$RELEASE_NOTES_URL" \
 	| perl -p -e 's/\[CDATA\[/\[CDATA\[\n/' \
 	| sed '1,/CDATA/d; /<sparkle:deltas>/,$d ; s#]]></description>##g ' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
-	echo "Source: XML_FEED <$XML_FEED>"
+	echo "Source: XML_FEED <$RELEASE_NOTES_URL>"
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
