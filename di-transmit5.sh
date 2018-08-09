@@ -21,10 +21,43 @@ CHANGELOG="https://library.panic.com/releasenotes/transmit5"
 
 	# Web-Scraping. Obviously very fragile and prone to breaking if the format of the page changes,
 	# but there's no appcast, at least none that I can find
-LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
-				| fgrep '<h2 id="' \
-				| head -1 \
-				| sed 's#</h2>##g ; s#.*>##g')
+
+if (( $+commands[lynx] ))
+then
+	# If we have lynx, use it
+
+	URL=$(lynx -listonly -dump -nomargins -nonumbers "https://www.panic.com/transmit/" \
+				| egrep -i 'https://.*Transmit.*\.zip' \
+				| head -1)
+
+	LATEST_VERSION=`echo "$URL:t:r" | sed 's#Transmit%20##g'`
+
+	if [[ "$LATEST_VERSION" == "" ]]
+	then
+		LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
+			| fgrep '<h2 id="' \
+			| head -1 \
+			| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
+	fi
+
+else
+
+	URL=$(curl -sfL "https://www.panic.com/transmit/" \
+			| egrep -i '.*Transmit.*\.zip' \
+			| head -1 \
+			| sed 's#.*panic.com#https://panic.com#g ; s#\.zip.*#.zip#g')
+
+	LATEST_VERSION=`echo "$URL:t:r" | sed 's#Transmit%20##g'`
+
+	if [[ "$LATEST_VERSION" == "" ]]
+	then
+
+		LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
+			| fgrep '<h2 id="' \
+			| head -1 \
+			| sed 's#</h2>##g ; s#.*>##g')
+	fi
+fi
 
 if [[ "$LATEST_VERSION" == "" ]]
 then
@@ -36,7 +69,7 @@ then
 	if [[ "$HTTP_CODE" == "200" ]]
 	then
 			# Page does exist
-		echo "$NAME: \$LATEST_VERSION is empty. Check \"$CHANGELOG\" for format changes."
+		echo "$NAME: \$LATEST_VERSION is empty. Check '$CHANGELOG' for format changes."
 	else
 			# Page does NOT exist
 		echo "$NAME: $CHANGELOG not found: HTTP_CODE = $HTTP_CODE"
@@ -79,7 +112,7 @@ fi
 	# 302 ->
 	# "Location: https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
 
-URL="https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
+[[ "$URL" == "" ]] && URL="https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
 
 	# So let's quickly test to make sure it's valid
 HTTP_CODE=$(curl --silent --location --head "$URL" \
@@ -89,7 +122,7 @@ HTTP_CODE=$(curl --silent --location --head "$URL" \
 if [[ "$HTTP_CODE" != "200" ]]
 then
 		# Download URL does NOT exist
-	echo "$NAME: \"$URL\" not found: HTTP_CODE = $HTTP_CODE"
+	echo "$NAME: '$URL' not found: HTTP_CODE = $HTTP_CODE"
 	exit 1
 fi
 
@@ -110,7 +143,7 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -136,14 +169,14 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# failed
-	echo "$NAME failed (ditto --noqtn -xkv \"$FILENAME\" \"$UNZIP_TO\")"
+	echo "$NAME failed (ditto --noqtn -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -158,7 +191,7 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
 mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
@@ -168,10 +201,10 @@ EXIT="$?"
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
