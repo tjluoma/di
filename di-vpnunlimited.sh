@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/VPN Unlimited.app'
 
+## 2018-08-09 - RELEASE_NOTES_URL ☹️ cannot find a change log or release notes page anywhere.
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
