@@ -9,6 +9,24 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Little Snitch Configuration.app'
 
+
+if [ -e "$HOME/.di-littlesnitch-prefer-betas" ]
+then
+		## this is for betas
+		## create a file (which can be empty) at
+		## $HOME/.di-alfred-prefer-betas
+		## to tell this script to look for betas
+	CHANNEL='Nightly'
+	HEAD_OR_TAIL='tail'
+
+else
+		## This is for official, non-beta versions
+	CHANNEL='Official'
+	HEAD_OR_TAIL='head'
+fi
+
+echo -n "$NAME: Checking for ${CHANNEL} updates: "
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -21,7 +39,7 @@ XML_FEED="https://sw-update.obdev.at/update-feeds/littlesnitch4.plist"
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep -A1 'BundleVersion|DownloadURL' \
 		| fgrep '<string>' \
-		| head -2 \
+		| ${HEAD_OR_TAIL} -2 \
 		| sed 's#.*<string>##g; s#</string>##g'))
 
 LATEST_VERSION="$INFO[1]"
@@ -72,14 +90,13 @@ then
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| fgrep -A1 "<key>ReleaseNotesURL</key>" \
 		| awk -F'>|<' '/string/{print $3}' \
-		| head -1)
+		| ${HEAD_OR_TAIL} -1)
 
 	echo "$NAME: Release Notes:"
 
 	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
 
 fi
-
 
 FILENAME="$HOME/Downloads/LittleSnitch-$LATEST_VERSION.dmg"
 
