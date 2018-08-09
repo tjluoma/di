@@ -22,6 +22,7 @@ fi
 
 XML_FEED="https://www.arqbackup.com/download/arq5.xml"
 
+	# no other version information in feed
 INFO=($(curl -sfL "$XML_FEED" \
 | tr -s ' ' '\012' \
 | egrep 'sparkle:version=|url=' \
@@ -69,6 +70,21 @@ then
 	fi
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://www.arqbackup.com/download/arq5_release_notes.html'
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<h1>/d; /<h1>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
