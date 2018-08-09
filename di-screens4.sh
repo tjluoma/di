@@ -69,6 +69,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+
+### These release notes seem to be for the entire 4.0 release, with no clear way to tell what happened with one particular version
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| egrep '<sparkle:releaseNotesLink>https://updates.devmate.com/releasenotes/.*/com.edovia.screens4.mac.html</sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
+
+echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to display, but can be found at:\n\t<${RELEASE_NOTES_URL}>"
+
+
 	####################################################################################
 	####################################################################################
 	##
