@@ -64,6 +64,22 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='http://accordancefiles1.com/appcastupdates/rnotes12.html'
+
+	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<div class="versionBox">/d; /<div class="versionBox">/,$d' \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| sed '/./,/^$/!d'
+
+	echo "\nSouce: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
