@@ -78,6 +78,23 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g ; s#\?.*##g')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n"
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+		| sed "/You will need to manually update from our website. We're sorry for the inconvenience./,\$d"
+
+	echo "Source: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/Coda-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
