@@ -122,7 +122,7 @@ HTTP_CODE=$(curl --silent --location --head "$URL" \
 if [[ "$HTTP_CODE" != "200" ]]
 then
 		# Download URL does NOT exist
-	echo "$NAME: '$URL' not found: HTTP_CODE = $HTTP_CODE"
+	echo "$NAME: '$URL' not valid: HTTP_CODE = $HTTP_CODE"
 	exit 1
 fi
 
@@ -208,7 +208,6 @@ else
 
 	exit 1
 fi
-
 
 exit 0
 #
