@@ -70,6 +70,24 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<omniappcast:releaseNotesLink>' \
+		| sed 's#.*<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g' \
+		| head -1)
+
+		echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<article>/d; /<\/article>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -80,9 +98,6 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
-
-
-
 
 MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
