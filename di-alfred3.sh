@@ -85,6 +85,20 @@ then
 
 fi
 
+## Release Notes BEGIN
+## Release notes for Alfred do not require lynx
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed "1,/^## Alfred $LATEST_VERSION/d; /^## /,\$d"
+
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+
+## Release Notes END
+
 FILENAME="$HOME/Downloads/Alfred-${MAJOR_VERSION}-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
