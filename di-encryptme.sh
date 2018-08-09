@@ -18,7 +18,10 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INFO=($(curl -sfL 'https://www.getcloak.com/updates/osx/public/' \
+XML_FEED='https://www.getcloak.com/updates/osx/public/'
+
+	# No other version info in feed
+INFO=($(curl -sfL "$XML_FEED" \
 		| tr ' ' '\012' \
 		| egrep '^(url|sparkle:version)=' \
 		| tail -2 \
@@ -64,9 +67,24 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed "1,/<title>Encrypt.me $LATEST_VERSION<\/title>/d ; /<pubDate>/,\$d ; s#<description><\!\[CDATA\[##g ; s#\]\]>##g" \
+	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
