@@ -69,6 +69,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n"
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<\/style>/d; /<h2 id="toc_1">/,$d' \
+	| sed '1,/<\/style>/d'  \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| egrep -v 'FIXED NEW UPDATE' \
+	| uniq
+
+	echo "\nSource: XML_FEED: <$RELEASE_NOTES_URL>"
+
+fi
 
 FILENAME="$HOME/Downloads/ScriptDebugger-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
