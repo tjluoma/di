@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: download and install CodeRunner
+# Purpose: download and install CodeRunner from <https://coderunnerapp.com/>
 #
 # Date:		2014-12-13
 # From:	  	Timothy J. Luoma
