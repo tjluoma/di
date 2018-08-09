@@ -82,18 +82,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
-
 if (( $+commands[lynx] ))
 then
 
+	RELEASE_NOTES_URL="$XML_FEED"
+
 	echo -n "$NAME: Release Notes for: "
 
-	curl -sfL "$XML_FEED" \
+	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<description>/d; /<\/description>/,$d ; s#&lt;#<#g' \
 	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
 
-	echo "\nSource: XML_FEED <$XML_FEED>"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
 
 fi
 
