@@ -168,5 +168,47 @@ fi
 
 diskutil eject "$MNTPNT"
 
+if ((! $+commands[bbedit] ))
+then
+
+	BBEDIT="$INSTALL_TO/Contents/Helpers/bbedit_tool"
+
+	if [[ -e "${BBEDIT}" ]]
+	then
+		if [[ -w /usr/local/bin ]]
+		then
+			ln -s "${BBEDIT}" /usr/local/bin/bbedit && \
+			echo "$NAME: Linked ${BBEDIT} to /usr/local/bin/bbedit"
+		else
+			echo "$NAME: cannot link ${BBEDIT} to /usr/local/bin because it is not writable."
+		fi
+	else
+		echo "$NAME: Did not find 'bbedit_tool' at ${BBEDIT}"
+	fi
+fi
+
+for i in bbdiff bbfind bbresults
+do
+	if ((! $+commands[$i] ))
+	then
+
+		BBCMD="$INSTALL_TO/Contents/Helpers/$i"
+
+		if [[ -e "${BBCMD}" ]]
+		then
+			if [[ -w /usr/local/bin ]]
+			then
+				ln -s "${BBCMD}" /usr/local/bin/${i} && \
+				echo "$NAME: Linked '${BBCMD}' to '/usr/local/bin/$i'."
+			else
+				echo "$NAME: cannot link '${BBCMD}' to '/usr/local/bin/$i' because '/usr/local/bin/' is not writable."
+			fi
+		else
+			echo "$NAME: Did not find '$i' at '${BBCMD}'"
+		fi
+	fi
+done
+
+
 exit 0
 #EOF
