@@ -18,7 +18,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-# NOTE: XML_FEED does not show 'sparkle:shortVersionString'
+# NOTE: XML_FEED does not show 'sparkle:shortVersionString' (they're identical in the app)
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
