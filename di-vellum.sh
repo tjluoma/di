@@ -78,6 +78,25 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	RELEASE_NOTES_URL=$(echo "$RELEASE_NOTES_URL" | sed 's#https:/180g#https://180g#g')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
+
+fi
+
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
 #		This is where we do the actual download
