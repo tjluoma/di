@@ -18,6 +18,7 @@ fi
 
 XML_FEED="https://updates.marked2app.com/marked.xml"
 
+	# sparkle:version also exists, but seems unimportant
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|url=' \
@@ -67,6 +68,24 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
+		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo -n "$NAME: Release Notes for "
+
+	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "${RELEASE_NOTES_URL}" \
+	| fgrep -v ' Follow @markedapp on Twitter' \
+	| uniq
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
+
+fi
+
 FILENAME="$HOME/Downloads/Marked-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -82,36 +101,58 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# Quit app, if running
-# 	pgrep -xq "Marked 2" \
-# 	&& LAUNCH='yes' \
-# 	&& osascript -e 'tell application "Marked 2" to quit'
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Marked 2.$INSTALLED_VERSION.app"
-fi
-
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
 
 exit 0
 #EOF
