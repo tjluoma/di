@@ -76,6 +76,23 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r\n"
+
+	curl -sfl "$RELEASE_NOTES_URL" \
+	| sed '1,/<item>/d; /<sparkle:version>/,$d' \
+	| sed 's#\<\!\[CDATA\[##g ; s#\]\]\>##g' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| tr -s '_' '_'
+
+	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
