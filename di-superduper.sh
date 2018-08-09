@@ -157,6 +157,12 @@ if [ -e "$APP_TEMP" -a ! -e "$INSTALL_TO" ]
 then
 	mv -v "$APP_TEMP" "$INSTALL_TO" \
 	|| sudo mv -v "$APP_TEMP" "$INSTALL_TO"
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	mv -vf "$FILENAME" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.tar.gz"
 fi
 
 exit 0
