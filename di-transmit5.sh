@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Transmit 5
+# Purpose: Download and install the latest version of Transmit 5 from <https://www.panic.com/transmit/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -91,6 +91,21 @@ then
 		# Download URL does NOT exist
 	echo "$NAME: \"$URL\" not found: HTTP_CODE = $HTTP_CODE"
 	exit 1
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://library.panic.com/releasenotes/transmit5'
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r: "
+
+	curl -sfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/<article class="postBody">/d; /<\/article>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
