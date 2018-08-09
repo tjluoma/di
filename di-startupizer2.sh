@@ -18,6 +18,7 @@ fi
 
 XML_FEED="https://updates.devmate.com/com.gentlebytes.Startupizer2.xml"
 
+	# sparkle:version= and sparkle:shortVersionString= are identical in feed, but not in the app
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|url=' \
@@ -60,6 +61,25 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| fgrep -vi '<div class="dm-rn-head-title-fixed">' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin\
+	| tr -s '_' '_'
+
+	echo "\nSource: <${RELEASE_NOTES_URL}>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
