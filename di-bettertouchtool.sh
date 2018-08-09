@@ -15,7 +15,9 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sfL "https://updates.bettertouchtool.net/bettertouchtool_release_notes.html" \
+RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
+
+URL=$(curl -sfL "$RELEASE_NOTES_URL" \
 	| awk -F'"' '/http.*\.zip/{print $2}' \
 	| head -1)
 
@@ -54,9 +56,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | fgrep "$URL")
+
+BODY=$(curl -sfL "$RELEASE_NOTES_URL" \
+| sed '1,/<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//d; /<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//,$d')
+
+echo "$NAME: Release Notes for $HEADER\n$BODY" \
+| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+
+echo "\nSource: <$RELEASE_NOTES_URL>"
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -64,6 +76,10 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 if [ -e "$INSTALL_TO" ]
 then
