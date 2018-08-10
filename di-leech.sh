@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Leech
+# Purpose: Download and install the latest version of Leech from <https://manytricks.com/leech/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -62,6 +62,13 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
 
 else
 
