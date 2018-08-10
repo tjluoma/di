@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Shortcat
+# Purpose: Download and install the latest version of Shortcat from <https://shortcatapp.com>
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -36,20 +36,6 @@ URL_RAW=`echo "$INFO[3]" | sed 's#&amp\;#\&#g' `
 
 	# 2018-07-10 - changed Location to location (case change)
 URL=`curl -sfL --head "$URL_RAW" | awk -F' |\r' '/^.ocation:/{print $2}'`
-
-## Useful for debugging:
-# echo "
-# INFO: $INFO
-#
-# LATEST_VERSION: $LATEST_VERSION
-#
-# LATEST_BUILD: $LATEST_BUILD
-#
-# URL_RAW: $URL_RAW
-#
-# URL: $URL
-#
-# "
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
