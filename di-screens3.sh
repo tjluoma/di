@@ -1,5 +1,6 @@
 #!/bin/zsh -f
 # Purpose: Download and install the latest version of Screens 3 (note v4 is available in a separate script)
+# Note that v4 installs as 'Screens 4.app' so there's no worry about a conflict if you install both
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -8,8 +9,6 @@
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Screens.app"
 FEED_URL="https://updates.edovia.com/com.edovia.screens.mac/appcast.xml"
-
-# Note that v4 installs as 'Screens 4.app' so there's no worry about a conflict if you install both
 
 if [ -e "$HOME/.path" ]
 then
@@ -110,17 +109,19 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-
 		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
 		exit 1
 	fi
 fi
@@ -142,6 +143,8 @@ else
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 EOF
