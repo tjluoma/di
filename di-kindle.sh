@@ -112,7 +112,6 @@ echo "$NAME: Successfully installed to: '$INSTALL_TO'.\n\tUnmounting '$FILENAME'
 
 diskutil eject "$MNTPNT"
 
-
 	# Rename the generic filename to include the Version and Build information
 INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
