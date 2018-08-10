@@ -18,10 +18,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-## Note: Downloads are available in tbz2 and dmg but dmg has EULA so I use tbz2
+XML_FEED='http://update.omnigroup.com/appcast/com.omnigroup.OmniOutliner4/'
 
 # Don't indent or you'll break sed
-INFO=($(curl -sfL "http://update.omnigroup.com/appcast/com.omnigroup.OmniOutliner4/" 2>&1 \
+INFO=($(curl -sfL "$XML_FEED" 2>&1 \
 | sed 's#<#\
 <#g' \
 | tr -s ' ' '\012' \
@@ -71,6 +71,8 @@ then
 
 fi
 
+# No RELEASE_NOTES_URL available now that v5 is available 🙁
+
 FILENAME="$HOME/Downloads/OmniOutliner-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -86,30 +88,43 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
+echo "$NAME: Unpacking $FILENAME to $UNZIP_TO"
 
-if [ -e "$INSTALL_TO" ]
-then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/OmniOutliner.$INSTALLED_VERSION.app"
-fi
-
-echo "$NAME: Installing $FILENAME to $INSTALL_TO"
-
-tar -x -C "$INSTALL_TO:h" -f "$FILENAME"
+tar -x -C "$UNZIP_TO" -f "$FILENAME"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [ "$EXIT" != "0" ]
 then
-
-	echo "$NAME: Installation of $INSTALL_TO successful"
-	exit 0
-
-else
 	echo "$NAME: tar failed (\$EXIT = $EXIT)"
-
 	exit 1
 fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		exit 1
+	fi
+fi
+
+	# Note difference in names
+mv -vf "$UNZIP_TO//OmniOutliner.app" "$INSTALL_TO/"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 
