@@ -162,15 +162,23 @@ then
 	exit 1
 fi
 
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-		## 		Quit app, if running
-		# 	pgrep -xq "Revisions" \
-		# 	&& LAUNCH='yes' \
-		# 	&& osascript -e 'tell application "Revisions" to quit'
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Revisions.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		exit 1
+	fi
 fi
 
 echo "$NAME: installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO"
@@ -191,6 +199,8 @@ else
 	echo "$NAME: Installation failed (\$EXIT = $EXIT)"
 
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #
