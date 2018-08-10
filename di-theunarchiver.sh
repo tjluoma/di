@@ -73,6 +73,14 @@ then
 	fi
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
+
 fi
 
 if (( $+commands[lynx] ))

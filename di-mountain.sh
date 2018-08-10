@@ -18,8 +18,6 @@ fi
 
 XML_FEED='https://appgineers.de/mountain/files/mountaincast.xml'
 
-## 2018-07-27 - the feed seems to have changed to use the build number instead of the version string like it was before.
-
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|sparkle:version=|url=' \
@@ -71,6 +69,13 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
 
 else
 

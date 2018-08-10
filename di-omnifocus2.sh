@@ -67,36 +67,77 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-if [ -e "$INSTALL_TO" ]
-then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/OmniFocus.$INSTALLED_VERSION.app"
-fi
+EXIT="$?"
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO"
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-tar -x -C "$INSTALL_TO:h" -f "$FILENAME"
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Installing $FILENAME to $UNZIP_TO"
+
+tar -x -C "$UNZIP_TO" -f "$FILENAME"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [ "$EXIT" != "0" ]
+then
+	echo "$NAME: 'tar' failed (\$EXIT = $EXIT)"
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
 then
 
-	echo "$NAME: Installation of $INSTALL_TO successful"
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
-else
-	echo "$NAME: tar failed (\$EXIT = $EXIT)"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		exit 1
+	fi
+fi
+
+	# move the app from the temp folder to the regular installation dir
+mv -vf "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" != "0" ]]
+then
+
+	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi
 
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 ## 2018-07-22 - I don't know if this would actually work to license a copy of OmniFocus which hasn't been licensed through the app itself.
 INSTALLED_LICENSE_DIR="$HOME/Library/Containers/com.omnigroup.OmniFocus2/Data/Library/Application Support/Omni Group/Software Licenses/"
@@ -112,7 +153,7 @@ then
 	fi
 fi
 
-mkdir -p "$LICENSE_DIR"
+mkdir -p "$INSTALLED_LICENSE_DIR"
 
 MY_LICENSE_FILE="$HOME/Dropbox/dotfiles/licenses/omnifocus/OmniFocus-908786.omnilicense"
 
@@ -120,7 +161,6 @@ if [[ -e "$MY_LICENSE_FILE" ]]
 then
 	cp -vn "$MY_LICENSE_FILE" "$INSTALLED_LICENSE_DIR/" && echo "$NAME: Installed license file." && exit 0
 fi
-
 
 exit 0
 

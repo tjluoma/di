@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Mousepose
+# Purpose: Download and install the latest version of Mousepose from <https://boinx.com/mousepose/overview/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -63,6 +63,13 @@ then
 
 	FIRST_INSTALL='no'
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
+
 else
 
 	FIRST_INSTALL='yes'
@@ -70,7 +77,7 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 2>/dev/null
 
@@ -96,14 +103,14 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# failed
-	echo "$NAME failed (ditto --noqtn -xkv \"$FILENAME\" \"$UNZIP_TO\")"
+	echo "$NAME failed (ditto --noqtn -xkv '$FILENAME’ '$UNZIP_TO')"
 
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -118,7 +125,7 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
 mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
@@ -128,10 +135,10 @@ EXIT="$?"
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
