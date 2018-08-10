@@ -22,7 +22,8 @@ fi
 
 XML_FEED='https://updates.devmate.com/com.smileonmymac.textexpander.xml'
 
-# sparkle:version exists in feed, but TextExpander 5 is EOL and the numbers always seem to be in unison, so probably not worth adding
+# sparkle:version exists in feed, but TextExpander 5 is EOL and the numbers always seem to be in unison,
+# so probably not worth adding
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr -s ' ' '\012' \
