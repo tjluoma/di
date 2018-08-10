@@ -111,6 +111,17 @@ then
 	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+fi
+
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
 ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
@@ -129,6 +140,8 @@ fi
 echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
