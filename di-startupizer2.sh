@@ -19,6 +19,9 @@ fi
 XML_FEED="https://updates.devmate.com/com.gentlebytes.Startupizer2.xml"
 
 	# sparkle:version= and sparkle:shortVersionString= are identical in feed, but not in the app
+	# must compare to installed 'CFBundleVersion'
+	# Unfortunately CFBundleShortVersionString is not in the feed at all
+
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|url=' \
@@ -148,6 +151,22 @@ else
 	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
+fi
+
+
+
+if [[ -d "${INSTALL_TO}" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	DIRNAME="$FILENAME:h"
+	EXT="$FILENAME:e"
+
+	mv -vf "$FILENAME" "$DIRNAME/Startupizer-${INSTALLED_VERSION}_${INSTALLED_BUILD}.$EXT"
+
 fi
 
 exit 0
