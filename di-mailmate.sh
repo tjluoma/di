@@ -24,6 +24,7 @@ LAUNCH='no'
 ## Use this for betas
 XML_FEED='http://updates.mailmate-app.com/beta'
 
+	# Very minimal feed. Uses same version # as CFBundleVersion
 INFO=($(curl -sfL "$XML_FEED" | awk '{print $4" " $7}' | tr -d "'|;"))
 
 URL="$INFO[1]"
@@ -95,7 +96,6 @@ then
 
 fi
 
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -135,6 +135,20 @@ then
 
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+fi
+
+if [[ -d "${INSTALL_TO}" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	DIRNAME="$FILENAME:h"
+	EXT="$FILENAME:e"
+
+	mv -vf "$FILENAME" "$DIRNAME/$INSTALL_TO:t:r-${INSTALLED_VERSION}_${INSTALLED_BUILD}.$EXT"
+
 fi
 
 exit 0
