@@ -85,13 +85,16 @@ fi
 
 ## Release Notes BEGIN
 
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" | fgrep -A1 '<key>infoURL</key>' | fgrep 'http' | sed 's#.*<string>## ; s#</string>##g')
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep -A1 '<key>infoURL</key>' \
+		| fgrep 'http' \
+		| sed 's#.*<string>## ; s#</string>##g')
 
 echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):"
 
 curl -sfL "$RELEASE_NOTES_URL" \
-| textutil -convert txt -stdin -stdout \
-| sed 's#	•	# * #g ; s#  # #g'
+	| textutil -convert txt -stdin -stdout \
+	| sed 's#	•	# * #g ; s#  # #g'
 
 echo "\nSource: <${RELEASE_NOTES_URL}>"
 
