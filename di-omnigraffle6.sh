@@ -77,7 +77,7 @@ fi
 
 FILENAME="$HOME/Downloads/OmniGraffle-$LATEST_VERSION.tbz2"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -90,28 +90,42 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/OmniGraffle.$INSTALLED_VERSION.app"
-fi
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO"
+echo "$NAME: Unpacking '$FILENAME' to '$UNZIP_TO':"
 
-tar -x -C "$INSTALL_TO:h" -f "$FILENAME"
+tar -x -C "$UNZIP_TO" -f "$FILENAME"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" != "0" ]]
 then
-
-	echo "$NAME: Installation of $INSTALL_TO successful"
-	exit 0
-
-else
 	echo "$NAME: tar failed (\$EXIT = $EXIT)"
-
 	exit 1
 fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		exit 1
+	fi
+fi
+	# Note name difference
+mv -vf "$UNZIP_TO/OmniGraffle.app" "$INSTALL_TO"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 
