@@ -4,9 +4,15 @@
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-02-12
+## 2015-10-26 - rewritten to use
+## https://updates.smilesoftware.com/com.smileonmymac.PDFpenPro.xml
+#
+# 2018-07-17 - found alternate URL which seems to have identical info:
+# https://updates.devmate.com/com.smileonmymac.PDFpenPro.xml
 
 NAME="$0:t:r"
 INSTALL_TO='/Applications/PDFpenPro.app'
+XML_FEED='https://updates.smilesoftware.com/com.smileonmymac.PDFpenPro.xml'
 
 if [ -e "$HOME/.path" ]
 then
@@ -14,14 +20,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-## 2015-10-26 - rewritten to use
-## https://updates.smilesoftware.com/com.smileonmymac.PDFpenPro.xml
-
-# 2018-07-17 - found alternate URL which seems to have identical info:
-# https://updates.devmate.com/com.smileonmymac.PDFpenPro.xml
-
-XML_FEED='https://updates.smilesoftware.com/com.smileonmymac.PDFpenPro.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -81,7 +79,24 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-# RELEASE_NOTES_URL here
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo -n "$NAME: Release Notes for "
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| fgrep -v 'please note: PDFpenPro 10 is a paid upgrade' \
+	| sed '1,/<div class="dm-rn-head-title-fixed">/d' \
+	| sed '/<\/ul><\/li>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+fi
 
 ## Download it
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
