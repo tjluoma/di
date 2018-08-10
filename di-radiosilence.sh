@@ -59,6 +59,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+# No RELEASE_NOTES_URL available ☹️
+
 FILENAME="$HOME/Downloads/$URL:t"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
