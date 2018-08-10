@@ -68,6 +68,13 @@ then
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		exit 0
+	fi
+
 	FIRST_INSTALL='no'
 
 else
@@ -75,7 +82,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-# RELEASE_NOTES_URL
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://manytricks.com/moom/releasenotes/"
+
+	echo -n "$NAME: Release Notes for "
+
+	H2=`curl -sfL "$RELEASE_NOTES_URL" | sed '1,/BODY STARTS HERE/d' | sed '1d' | fgrep -i '<h2>' | head -1 | sed 's#<\/h2>##g'`
+
+	(echo "$H2" ; curl -sfL "$RELEASE_NOTES_URL" | sed "1,/$H2/d" | sed '/<h2>/,$d') \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
