@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download the latest version of Soundnode
+# Purpose: Download the latest version of Soundnode from <http://www.soundnodeapp.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
