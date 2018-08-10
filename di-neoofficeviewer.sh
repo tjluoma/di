@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest NeoOffice Viewer app (free)
+# Purpose: Download and install the latest NeoOffice Viewer app (free) from <https://www.neooffice.org>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -82,6 +82,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL='https://neowiki.neooffice.org/index.php/NeoOffice_Release_Notes'
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	(curl -sfL $RELEASE_NOTES_URL \
+	| sed '1,/http:\/\/twitter.com\/NeoOffice/d;' \
+	| sed '1d ; /<\/li><\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 ########################################################################################################################
 
 if [[ -e "$FILENAME" ]]
@@ -92,7 +108,7 @@ else
 
 	echo "$NAME: Downloading \"$URL2\" to \"$FILENAME\":"
 
-	curl --progress-bar  --location -A "$UA" --output "$FILENAME" "$URL2"
+	curl --progress-bar --location -A "$UA" --output "$FILENAME" "$URL2"
 
 	EXIT="$?"
 
@@ -144,7 +160,6 @@ then
 fi
 
 echo "$NAME: Preparing to install PKG: $PKG"
-
 
 if (( $+commands[unpkg.py] ))
 then
@@ -199,7 +214,6 @@ else
 
 	exit 1
 fi
-
 
 exit 0
 #EOF
