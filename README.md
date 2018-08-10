@@ -198,3 +198,10 @@ This project does not update or install Mac App Store apps. Use the **App Store.
 
 	/usr/bin/open macappstore://showUpdatesPage
 
+I have recently gone through all of the scripts that are available both as direct-downloads and via the Mac App Store, and added some
+code to try to prevent the scripts from trying to update an app if it was installed from the Mac App Store.
+
+(Realistically, an attempt to use the script to install an update “over” a Mac App Store version would probably fail anyway, due to permissions, but
+I would rather err on the side of caution.)
+
+
