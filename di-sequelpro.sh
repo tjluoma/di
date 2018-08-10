@@ -72,6 +72,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://www.sequelpro.com/appcast/app-releases.xml"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
+
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/CDATA/d; /<\/description>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/SequelPro-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
