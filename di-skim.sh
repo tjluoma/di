@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Skim
+# Purpose: Download and install the latest version of Skim from <https://skim-app.sourceforge.io>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -72,6 +72,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="http://skim-app.sourceforge.net/skim.xml"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
+
+	curl -sSfL "$RELEASE_NOTES_URL" \
+	| sed '1,/CDATA/d; /<\/description>/,$d' \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -124,6 +138,8 @@ fi
 echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
