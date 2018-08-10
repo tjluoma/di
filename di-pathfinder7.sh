@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of PathFinder 7 (note: PathFinder 8 is now available)
+# Purpose: Download and install the latest version of PathFinder 7 (note: PathFinder 8 is now available) from <https://cocoatech.com/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -21,6 +21,8 @@ URL="https://get.cocoatech.com/PF7.zip"
 	## I determined LATEST_VERSION by downloading 'https://get.cocoatech.com/PF7.zip' on 2018-07-17
 	## I do not think PathFinder 7 will be updated anymore, so this is likely to be the last version
 LATEST_VERSION="7.6.2"
+
+# RELEASE_NOTES_URL - this version is EOL, so no new releases will be coming, so release note support seems superfluous
 
 if [[ -e "$INSTALL_TO" ]]
 then
