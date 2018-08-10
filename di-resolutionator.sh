@@ -68,6 +68,21 @@ then
 
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://manytricks.com/resolutionator/releasenotes/?rref=appcast"
+
+	echo -n "$NAME: Release Notes for "
+
+	(curl -sSfL "${RELEASE_NOTES_URL}" \
+	| sed '1,/BODY STARTS HERE/d; /<\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -113,7 +128,6 @@ then
 
 	[[ "$LAUNCH" = "yes" ]] && open -b com.manytricks.Resolutionator
 
-	exit 0
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 	exit 1
