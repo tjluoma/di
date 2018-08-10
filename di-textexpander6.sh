@@ -114,10 +114,15 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
+
 		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
+	pgrep -xq "TextExpander" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+	&& osascript -e 'tell application "TextExpander" to quit'
+
+	pgrep -xq "TextExpander Helper" \
+	&& osascript -e 'tell application "TextExpander Helper" to quit'
+	&& LAUNCH_HELPER='yes'
 
 	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
@@ -153,6 +158,8 @@ else
 fi
 
 [[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+
+[[ "$LAUNCH_HELPER" == "yes" ]] && open "$INSTALL_TO/Contents/Helpers/TextExpander Helper.app"
 
 exit 0
 #EOF
