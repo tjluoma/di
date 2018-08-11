@@ -17,6 +17,7 @@ else
 fi
 
 	# 2018-08-07 -- adding explicit exclusion of 'beta' versions
+	# @todo - add ""$HOME/.config/di/brave-prefer-betas.txt" support?
 URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
 | fgrep '/browser-laptop/releases/tag/' \
 | fgrep -vi 'beta' \
@@ -27,11 +28,6 @@ URL2=`curl -sfL "$URL1" \
 | egrep '/brave/browser-laptop/releases/.*\.dmg"' \
 | fgrep -vi 'beta' \
 | sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
-
-# echo "
-# URL1: $URL1
-# URL2: $URL2
-# "
 
 LATEST_VERSION=`echo "$URL2:t:r" | tr -dc '[0-9]\.'`
 
