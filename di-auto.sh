@@ -77,4 +77,6 @@ done
 
 log "Finished at `timestamp`. Checked $COUNT apps and skipped $SKIP_COUNT."
 
+echo "Checked $COUNT apps at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
+
 exit 0
