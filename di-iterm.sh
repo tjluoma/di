@@ -16,15 +16,25 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# if you want the nightly versions, see:
-	# https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh
-XML_FEED="https://iterm2.com/appcasts/final.xml"
+	# create a file (empty, if you like) at "$HOME/.config/di/iterm-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/iterm-prefer-betas.txt" ]
+then
+		# This is for betas
+	HEAD_OR_TAIL='tail'
+	NAME="$NAME (beta releases)"
+	XML_FEED="https://iterm2.com/appcasts/nightly.xml"
+else
+		## This is for official, non-beta versions
+	HEAD_OR_TAIL='tail'
+	XML_FEED="https://iterm2.com/appcasts/final.xml"
+fi
 
 	# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr ' ' '\012' \
 		| egrep '^(url|sparkle:version)=' \
-		| tail -2 \
+		| ${HEAD_OR_TAIL} -2 \
 		| sort \
 		| awk -F'"' '//{print $2}'))
 
@@ -32,10 +42,17 @@ LATEST_VERSION="$INFO[1]"
 
 URL="$INFO[2]"
 
-# echo "
-# LATEST_VERSION: $LATEST_VERSION
-# URL: $URL
-# "
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -89,24 +106,57 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-		# don't kill the app because it might be running this script. Oops.
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-fi
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
 fi
 
 exit 0
