@@ -43,7 +43,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -53,7 +53,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
