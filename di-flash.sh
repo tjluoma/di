@@ -131,7 +131,7 @@ then
 
 	if [ "$LOCAL_VERSION" = "$LATEST_VERSION" ]
 	then
-		log "Flash is up to date $LATEST_VERSION = $LOCAL_VERSION"
+		log "Flash is Up-To-Date $LATEST_VERSION = $LOCAL_VERSION"
 		mv -f "$LOG" "$HOME/.Trash/"
 		exit 0
 	fi

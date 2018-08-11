@@ -53,7 +53,7 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-		# If MarsEdit is already installed, check to see if it is up to date
+		# If MarsEdit is already installed, check to see if it is Up-To-Date
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null`
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]

@@ -66,7 +66,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up To Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 

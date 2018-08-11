@@ -35,7 +35,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
@@ -48,7 +48,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-	# No need to calculate this unless we need to because we're going to install 
+	# No need to calculate this unless we need to because we're going to install
 URL=$(curl -sfL "$LATEST_URL" \
 		| egrep -i '/matryer/bitbar/releases/download/.*\.zip' \
 		| fgrep -vi "bitbardistro" \
@@ -64,7 +64,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -118,7 +118,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO" 
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 

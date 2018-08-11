@@ -21,14 +21,14 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/
 
 OS_VER=`sw_vers -productVersion || echo '10.11'`
 
-	# If you are up to date, you get an empty document with a 204 response code
+	# If you are Up-To-Date, you get an empty document with a 204 response code
 
 RESPONSE=`curl --head -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" \
 			| awk -F' ' '/^HTTP/{print $2}'`
 
 if [[ "$RESPONSE" == "204" ]]
 then
-	echo "$NAME: Up to Date (Version $INSTALLED_VERSION)"
+	echo "$NAME: Up-To-Date (Version $INSTALLED_VERSION)"
 	exit 0
 fi
 

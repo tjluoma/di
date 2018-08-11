@@ -51,7 +51,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 

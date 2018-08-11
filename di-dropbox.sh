@@ -81,7 +81,7 @@ then
 
 	if [ "$?" = "0" ]
 	then
-		msg "Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+		msg "Installed version ($INSTALLED_VERSION) is ahead of official version ($LATEST_VERSION)"
 		exit 0
 	fi
 

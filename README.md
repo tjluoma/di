@@ -93,7 +93,7 @@ However, now that this project has grown, some scripts were installing to the sa
 
 On one level this is _not_ a problem, because each script should be intelligent enough to avoid installing an older version
 over a newer one, so if you ran `di-carboncopycloner3.sh` and `di-carboncopycloner5.sh`, `di-carboncopycloner3.sh` would
-simply report that the already-installed version was “Up To Date”.
+simply report that the already-installed version was “Up-To-Date”.
 
 However, if you wanted to use [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) to _only_ run scripts for
 apps which are already installed, you would run into problems because finding `/Applications/Carbon Copy Cloner.app`

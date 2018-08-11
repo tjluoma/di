@@ -39,7 +39,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up To Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 

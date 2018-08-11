@@ -93,7 +93,7 @@ FILENAME="$HOME/Downloads/$URL:t"
 
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
-	log "Up-To-Date (Installed/Latest Version = $INSTALLED_VERSION)"
+	log "Up-To-Date ($INSTALLED_VERSION)"
 	exit 0
 fi
 

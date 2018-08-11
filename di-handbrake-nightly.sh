@@ -52,7 +52,7 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 then
 		# No Update Needed
-	echo "$NAME: Up To Date (Installed: $INSTALLED_VERSION and Latest: $LATEST_VERSION)"
+	echo "$NAME: Up-To-Date (Installed: $INSTALLED_VERSION and Latest: $LATEST_VERSION)"
 	exit 0
 fi
 
