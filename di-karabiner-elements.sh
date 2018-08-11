@@ -9,9 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
-RELEASE_NOTES_URL="https://pqrs.org/osx/karabiner/history.html"
-
-	# No appcast 🙁
+	# create a file (empty, if you like) at "$HOME/.di-karabiner-elements-prefer-betas" if you want to install betas
+if [[ -e "$HOME/.di-karabiner-elements-prefer-betas" ]]
+then
+	XML_FEED="https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast-devel.xml"
+	NAME="$NAME (beta releases)"
+else
+	XML_FEED="https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml"
+fi
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -20,31 +25,26 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-if (( $+commands[lynx] ))
-then
-		# use lynx if we have it, since it's better at scraping HTML than we are
-	URL=$(lynx -listonly -dump -nomargins -nonumbers "$RELEASE_NOTES_URL" \
-		| awk -F'^' '/https:\/\/pqrs.org\/osx\/karabiner\/files\/Karabiner-Elements-.*.dmg/{print $NF}' \
-		| head -1)
+INFO=($(curl -sfL "$XML_FEED" \
+	| tr -s ' |\t' '\012' \
+	| egrep -i '^(sparkle:version|url)=' \
+	| head -2 \
+	| sort \
+	| awk -F'"' '//{print $2}'))
 
-else
+LATEST_VERSION="$INFO[1]"
 
-	URL=$(curl -sfL "$RELEASE_NOTES_URL" \
-		| tr -s '"|\047' '\012' \
-		| awk -F'^' '/files\/Karabiner-Elements-.*\.dmg/{print "https://pqrs.org/osx/karabiner/"$NF}' \
-		| head -1)
-fi
+URL="$INFO[2]"
 
-	# FYI - CFBundleShortVersionString and CFBundleVersion are identical in the app
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
-
-	# If either of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	# If any of these are blank, we should not continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
+	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
 	"
+
 	exit 1
 fi
 
@@ -77,13 +77,16 @@ fi
 if (( $+commands[lynx] ))
 then
 
+	RELEASE_NOTES_URL="$XML_FEED"
+
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
 
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<\/h2>/d; /<h2>/,$d' \
+	curl -sfL "$XML_FEED" \
+	| sed '1,/ update-description-begin /d; / update-description-end /,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
@@ -148,3 +151,4 @@ diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
+
