@@ -23,15 +23,12 @@ LAUNCH='no'
 if [[ -e "$HOME/.config/di/alfred-prefer-betas.txt" ]]
 then
 	XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
-	CHANNEL='Beta'
+	NAME="$NAME (beta releases)"
 
 else
 		## This is for official, non-beta versions
 	XML_FEED='https://www.alfredapp.com/app/update/general.xml'
-	CHANNEL='Official (Non-Beta)'
 fi
-
-echo -n "$NAME: Checking for ${CHANNEL} updates: "
 
 INFO=$(curl -sfL "$XML_FEED" \
 	| egrep -A1 '<key>(version|build|location)</key>')
