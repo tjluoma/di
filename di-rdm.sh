@@ -124,7 +124,7 @@ then
 
 	TIME=`strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS"`
 
-		# Clean up what should be empty directories
+		# Move what should be empty directories to the trash
 	mv -vf "$EXTRACTED_TO" "$HOME/.Trash/$EXTRACTED_TO:t_${TIME}"
 
 	[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
