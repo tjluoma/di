@@ -7,15 +7,35 @@
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
-XML_FEED="https://version.cyberduck.io/changelog.rss" # stable
 
-# beta:
-# 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
-# nightly:
-# 	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
+
+# Create a file (empty, if you like) at:
+# 	"$HOME/.config/di/cyberduck-prefer-nightly.txt"
+# if you prefer “nightly” builds
+#
+# Create a file (empty, if you like) at:
+# 	$HOME/.config/di/cyberduck-prefer-beta.txt
+# if you prefer “beta” builds
+#
+# if both are found, you’ll get nightly builds.
 #
 # 2018-08-04 -- right now all 3 feeds seem identical, but I'll keep
 # them all for possible future reference.
+#
+# 2018-08-11 -- correction: the beta and nightly seem identical, and
+# are actually _behind_ the official releases.
+
+if [[ -e "$HOME/.config/di/cyberduck-prefer-nightly.txt" ]]
+then
+ 	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
+	NAME="$NAME (nightly releases)"
+elif [[ -e "$HOME/.config/di/cyberduck-prefer-beta.txt" ]]
+then
+ 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
+	NAME="$NAME (beta releases)"
+else
+	XML_FEED="https://version.cyberduck.io/changelog.rss"
+fi
 
 if [ -e "$HOME/.path" ]
 then
