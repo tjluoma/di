@@ -25,13 +25,14 @@ function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
 ########################################################################################################################
 
-	## This appears to be old
-	## XML_FEED='http://xquartz.macosforge.org/downloads/sparkle/release.xml'
-	# Found new appcast URL in "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/xquartz.rb"
-	##
-	## The app seems to show 'https://www.xquartz.org/releases/sparkle/beta.xml' as the Sparkle URL
-
-XML_FEED='https://www.xquartz.org/releases/sparkle/release.xml'
+	# create a file (empty, if you like) at "$HOME/.di-xquartz-prefer-betas" if you want to install betas
+if [[ -e "$HOME/.di-xquartz-prefer-betas" ]]
+then
+	XML_FEED='https://www.xquartz.org/releases/sparkle/beta.xml'
+	NAME="$NAME (beta releases)"
+else
+	XML_FEED='https://www.xquartz.org/releases/sparkle/release.xml'
+fi
 
 # sparkle:shortVersionString exists in the feed, but sparkle:version/CFBundleVersion is the important number to check
 
