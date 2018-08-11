@@ -22,10 +22,6 @@ LAUNCH='no'
 	# if you want to use beta releases
 if [[ -e "$HOME/.config/di/alfred-prefer-betas.txt" ]]
 then
-		## this is for betas
-		## create a file (which can be empty) at
-		## $HOME/.di-alfred-prefer-betas
-		## to tell this script to look for betas
 	XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
 	CHANNEL='Beta'
 
