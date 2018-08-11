@@ -9,23 +9,20 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Little Snitch Configuration.app'
 
-
-if [ -e "$HOME/.di-littlesnitch-prefer-betas" ]
+	# create a file (empty, if you like) at "$HOME/.config/di/littlesnitch-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/littlesnitch-prefer-betas.txt" ]
 then
 		## this is for betas
 		## create a file (which can be empty) at
 		## $HOME/.di-alfred-prefer-betas
 		## to tell this script to look for betas
-	CHANNEL='Nightly'
 	HEAD_OR_TAIL='tail'
-
+	NAME="$NAME (beta releases)"
 else
 		## This is for official, non-beta versions
-	CHANNEL='Official'
 	HEAD_OR_TAIL='head'
 fi
-
-echo -n "$NAME: Checking for ${CHANNEL} updates: "
 
 if [ -e "$HOME/.path" ]
 then
