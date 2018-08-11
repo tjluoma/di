@@ -25,8 +25,9 @@ function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
 ########################################################################################################################
 
-	# create a file (empty, if you like) at "$HOME/.di-xquartz-prefer-betas" if you want to install betas
-if [[ -e "$HOME/.di-xquartz-prefer-betas" ]]
+	# create a file (empty, if you like) at "$HOME/.config/di/xquartz-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/xquartz-prefer-betas.txt" ]
 then
 	XML_FEED='https://www.xquartz.org/releases/sparkle/beta.xml'
 	NAME="$NAME (beta releases)"
