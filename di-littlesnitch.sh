@@ -13,10 +13,7 @@ INSTALL_TO='/Applications/Little Snitch Configuration.app'
 	# if you want to install beta releases
 if [ -e "$HOME/.config/di/littlesnitch-prefer-betas.txt" ]
 then
-		## this is for betas
-		## create a file (which can be empty) at
-		## $HOME/.di-alfred-prefer-betas
-		## to tell this script to look for betas
+		# This is for betas
 	HEAD_OR_TAIL='tail'
 	NAME="$NAME (beta releases)"
 else
