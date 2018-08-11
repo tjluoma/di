@@ -9,6 +9,8 @@ NAME="$0:t:r"
 INSTALL_TO="/Applications/Monodraw.app"
 XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"
 
+# @TODO _ is there a 'non-beta' XML_FEED?
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
