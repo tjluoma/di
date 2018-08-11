@@ -18,11 +18,16 @@ fi
 
 LAUNCH='no'
 
-## Use this for regular releases
-# XML_FEED='http://updates.mailmate-app.com/'
-
-## Use this for betas
-XML_FEED='http://updates.mailmate-app.com/beta'
+	# create a file (empty, if you like) at "$HOME/.config/di/mailmate-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/mailmate-prefer-betas.txt" ]
+then
+	XML_FEED='http://updates.mailmate-app.com/beta'
+	NAME="$NAME (beta releases)"
+else
+		## This is for official, non-beta versions
+	XML_FEED='http://updates.mailmate-app.com/'
+fi
 
 	# Very minimal feed. Uses same version # as CFBundleVersion
 INFO=($(curl -sfL "$XML_FEED" | awk '{print $4" " $7}' | tr -d "'|;"))
