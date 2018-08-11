@@ -30,18 +30,13 @@ OS_BUGFIX=`sw_vers -productVersion | cut -d. -f 3`
 
 XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
 
-# XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=0&locale=en"
-
-## If you want betas, use this line
-# XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUNDLE_VERSION&beta=1&locale=en"
-
 INFO=($(curl -sfL "$XML_FEED" \
-| gunzip \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version|url="' \
-| head -2 \
-| sort \
-| awk -F'"' '//{print $2}'))
+		| gunzip \
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version|url="' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '//{print $2}'))
 
 # "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
