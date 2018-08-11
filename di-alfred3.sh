@@ -18,7 +18,9 @@ fi
 
 LAUNCH='no'
 
-if [ -e "$HOME/.di-alfred-prefer-betas" ]
+	# Create a file, empty if you like, at "$HOME/.config/di/alfred-prefer-betas.txt"
+	# if you want to use beta releases
+if [[ -e "$HOME/.config/di/alfred-prefer-betas.txt" ]]
 then
 		## this is for betas
 		## create a file (which can be empty) at
