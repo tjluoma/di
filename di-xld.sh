@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of XLD
+# Purpose: Download and install the latest version of XLD from <https://sourceforge.net/projects/xld/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,8 +16,6 @@ else
 fi
 
 XML_FEED='https://svn.code.sf.net/p/xld/code/appcast/xld-appcast_e.xml'
-
-RELEASE_NOTES_URL="https://svn.code.sf.net/p/xld/code/appcast/releasenotes_e.html"
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr ' ' '\012' \
@@ -73,6 +71,20 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://svn.code.sf.net/p/xld/code/appcast/releasenotes_e.html"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
+
+	(curl -sfL $RELEASE_NOTES_URL | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -width='80' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
