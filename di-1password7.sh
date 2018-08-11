@@ -22,18 +22,30 @@ fi
 
 zmodload zsh/datetime
 
-## Another way of getting the URL. Still works (2018-08-07). Keeping as backup.
-# URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
-# 		fgrep .pkg |\
-# 		fgrep -vi beta |\
-# 		head -1 |\
-# 		sed 's#.*a href="##g; s#">download</a>##g')
+	# create a file (empty, if you like) at "$HOME/.config/di/1Password-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/1Password-prefer-betas.txt" ]
+then
+	URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
+ 		fgrep .pkg |\
+ 		fgrep -i beta |\
+ 		head -1 |\
+ 		sed 's#.*a href="##g; s#">download</a>##g')
 
-DL_URL='https://app-updates.agilebits.com/download/OPM7'
+	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
 
-URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
+	NAME="$NAME (beta releases)"
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+	BETAS='yes'
+else
+	BETAS='no'
+
+	DL_URL='https://app-updates.agilebits.com/download/OPM7'
+
+	URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
+
+	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+fi
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -77,18 +89,36 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
+	if [ "$BETAS" = 'yes' ]
+	then
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
+		RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
 
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
-	| egrep -vi '1Password never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-	# sed delete blank lines at start of file
+		echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION)"
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed "1,/class='beta'/d; /<article /,\$d" \
+		| sed '1,/<\/h3>/d' \
+		| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+		echo "\nSource: <$RELEASE_NOTES_URL>"
+
+	else
+
+		RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
+
+		echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
+
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
+		| egrep -vi '1Password never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed '/./,/^$/!d'
+		# sed delete blank lines at start of file
+
+		echo "\nSource: <$RELEASE_NOTES_URL>"
+	fi
+
 fi
 
 FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
@@ -122,4 +152,11 @@ else
 fi
 exit 0
 
+
+## Another way of getting the URL. Still works (2018-08-07). Keeping as backup.
+# URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
+# 		fgrep .pkg |\
+# 		fgrep -vi beta |\
+# 		head -1 |\
+# 		sed 's#.*a href="##g; s#">download</a>##g')
 # EOF
