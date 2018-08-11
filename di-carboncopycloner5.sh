@@ -12,10 +12,6 @@ INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 	# if you want to install beta releases
 if [ -e "$HOME/.config/di/carboncopycloner-prefer-betas.txt" ]
 then
-		## this is for betas
-		## create a file (which can be empty) at
-		## $HOME/.di-alfred-prefer-betas
-		## to tell this script to look for betas
 	HEAD_OR_TAIL='tail'
 	NAME="$NAME (beta releases)"
 else
