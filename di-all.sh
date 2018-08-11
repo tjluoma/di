@@ -42,8 +42,11 @@ function launch_apps {
 	do
 		EXPLAIN_USAGE='yes'
 
-		echo "$NAME: Launching $APP:t"
-		open -g -a "$APP:t"
+		if [[ -e "$APP" ]]
+		then
+			echo "$NAME: Launching $APP:t"
+			open -g -a "$APP:t"
+		fi
 
 	done
 }
