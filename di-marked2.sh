@@ -86,7 +86,8 @@ then
 	echo -n "$NAME: Release Notes for "
 
 	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "${RELEASE_NOTES_URL}" \
-	| fgrep -v ' Follow @markedapp on Twitter' \
+	| fgrep -v 'Follow @markedapp on Twitter' \
+	| tr -s '_' '_' \
 	| uniq
 
 	echo "\nSource: <${RELEASE_NOTES_URL}>"
