@@ -67,7 +67,7 @@ then
 	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
 
 	(curl -sfL $RELEASE_NOTES_URL | sed '1,/<div class="button-moreinfo">/d; /<\/p>/,$d' ; echo '</p>') \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 

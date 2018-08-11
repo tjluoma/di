@@ -78,7 +78,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<\/style>/d; /<h2 id="toc_1">/,$d' \
 	| sed '1,/<\/style>/d'  \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| egrep -v 'FIXED NEW UPDATE' \
 	| uniq
 

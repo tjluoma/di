@@ -94,7 +94,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
-	| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -nonumbers -width=1000 -nolist -stdin \
+	| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=1000 -stdin \
 	| sed '/^[[:space:]]*$/d' \
 	| tr -s ' ' ' '
 

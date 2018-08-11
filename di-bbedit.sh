@@ -90,7 +90,7 @@ fi
 # | base64 --decode \
 # | unrtf \
 # | tr -s '"' '"' \
-# | lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin -listonly \
+# | lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin -listonly \
 # | head -1
 ##
 ## which would get you something like:
@@ -110,7 +110,7 @@ then
 
 	echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
 
-	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RELEASE_NOTES_URL" \
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
 	| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"

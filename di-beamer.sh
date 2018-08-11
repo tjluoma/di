@@ -84,7 +84,7 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>##g')
 
-	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
 	| sed 's#[ 	]*Release Notes for Beamer#Release Notes for Beamer#g'
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"

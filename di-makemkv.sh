@@ -24,7 +24,7 @@ if (( $+commands[lynx] ))
 then
 
 		# if lynx is installed, use it, since it is better at parsing HTML than a shell script ever will be
-	URL=$(lynx -dump -listonly -nonumbers 'http://www.makemkv.com/download/' | egrep '^http.*\.dmg' | head -1)
+	URL=$(lynx -dump -nonumbers -listonly 'http://www.makemkv.com/download/' | egrep '^http.*\.dmg' | head -1)
 
 else
 		# if lynx is not installed, parse the output of 'curl'
@@ -89,7 +89,7 @@ then
 
 	curl -sfL 'http://www.makemkv.com/download/' \
 	| sed "1,/<h4>Revision history<\/h4>/d ; /$SECOND_VERSION/,\$d" \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed 's#^ ##g'
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"

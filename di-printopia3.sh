@@ -24,7 +24,7 @@ HOMEPAGE="https://www.decisivetactics.com/products/printopia/"
 if (( $+commands[lynx] ))
 then
 
-	URL=$(lynx -listonly -dump -nomargins -nonumbers "$HOMEPAGE" | egrep '^http.*\.zip$' | head -1)
+	URL=$(lynx -nonumbers -listonly -dump -nomargins "$HOMEPAGE" | egrep '^http.*\.zip$' | head -1)
 
 else
 
@@ -82,7 +82,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/<div class="date">/d; /<div class="releasenotes">/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 

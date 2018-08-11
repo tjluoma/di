@@ -72,7 +72,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/<a name="/d; /<a name="/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d'
 
 	# last line: sed remove blank lines from start

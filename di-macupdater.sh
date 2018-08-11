@@ -79,7 +79,7 @@ then
 	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: "
 
 	curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<br>/d; /<br>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| egrep --colour=never -i '[a-z0-9]'
 
 	echo "Source: <$RELEASE_NOTES_URL>"

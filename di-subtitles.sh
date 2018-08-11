@@ -97,7 +97,7 @@ then
 		| tidy --input-xml yes --output-xml yes --show-warnings no --force-output yes --quiet yes --wrap 0 \
 		| sed 's#&lt;#<#g ; s#&gt;#>#g ' \
 		| sed '1,/<item>/d; /<br><h3>/,$d' \
-		| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>"
 

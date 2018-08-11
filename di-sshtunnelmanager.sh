@@ -80,7 +80,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" \
 		| fgrep -v 'dm-rn-head-title-fixed' \
-		| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 		| tr -s '_' '_'
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"

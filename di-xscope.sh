@@ -95,7 +95,7 @@ then
 
 	curl -sfl "$RELEASE_NOTES_URL" \
 	| sed '1,/xScope 4.0 is a paid upgrade/d; /<\/div>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d'
 
 	# removes blank lines from top of document

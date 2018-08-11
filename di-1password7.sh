@@ -84,7 +84,7 @@ then
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
 	| egrep -vi '1Password never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d'
 	# sed delete blank lines at start of file
 

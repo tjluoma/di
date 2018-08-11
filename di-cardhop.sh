@@ -93,7 +93,7 @@ then
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| perl -p -e 's/\[CDATA\[/\[CDATA\[\n/' \
 	| sed '1,/CDATA/d; /<sparkle:deltas>/,$d ; s#]]></description>##g ' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "Source: XML_FEED <$RELEASE_NOTES_URL>"
 fi

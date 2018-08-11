@@ -95,7 +95,7 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/Use Help to view this list with /d ; /<\/div>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d'
 
 	echo "\nSource: <${RELEASE_NOTES_URL}>"

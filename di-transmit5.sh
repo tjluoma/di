@@ -26,7 +26,7 @@ if (( $+commands[lynx] ))
 then
 	# If we have lynx, use it
 
-	URL=$(lynx -listonly -dump -nomargins -nonumbers "https://www.panic.com/transmit/" \
+	URL=$(lynx -nonumbers -listonly -dump -nomargins "https://www.panic.com/transmit/" \
 				| egrep -i 'https://.*Transmit.*\.zip' \
 				| head -1)
 
@@ -37,7 +37,7 @@ then
 		LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
 			| fgrep '<h2 id="' \
 			| head -1 \
-			| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
+			| lynx -nonumbers -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
 	fi
 
 else
@@ -135,7 +135,7 @@ then
 
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/<article class="postBody">/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 

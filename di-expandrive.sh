@@ -89,7 +89,7 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\body>/,$d ; s#</span><span>#: #g' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| fgrep -v 'ExpanDrive 6 is a paid upgrade and costs $24.95 if you purchased before April 1, 2017.' \
 	| fgrep -v '  * Improvements in ExpanDrive '
 

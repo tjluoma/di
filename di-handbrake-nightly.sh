@@ -32,7 +32,7 @@ then
 	exit 1
 fi
 
-URL=`lynx -listonly -dump -nomargins -nonumbers 'http://handbrake.fr/nightly.php' | fgrep -i .dmg | fgrep -iv "CLI"`
+URL=`lynx -listonly -dump -nomargins 'http://handbrake.fr/nightly.php' | fgrep -i .dmg | fgrep -iv "CLI"`
 
 LATEST_VERSION=`echo "$URL:t:r" | sed 's#HandBrake-##g; s#-osx##g'`
 

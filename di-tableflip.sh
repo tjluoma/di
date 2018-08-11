@@ -80,7 +80,7 @@ then
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
 
 	(curl -sfL "$XML_FEED" | sed '1,/Read the release notes/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
 fi

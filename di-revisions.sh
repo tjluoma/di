@@ -142,7 +142,7 @@ then
 		| sed '1,/<br \/>/d ; s#<hr \/>##g' \
 		| egrep -i '.' \
 		| uniq \
-		| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 fi
 

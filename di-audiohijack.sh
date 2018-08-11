@@ -71,7 +71,7 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\/body>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSouce: <${RELEASE_NOTES_URL}>"
 

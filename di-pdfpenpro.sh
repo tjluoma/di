@@ -100,7 +100,7 @@ then
 	| fgrep -v 'please note: PDFpenPro 10 is a paid upgrade' \
 	| sed '1,/<div class="dm-rn-head-title-fixed">/d' \
 	| sed '/<\/ul><\/li>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi

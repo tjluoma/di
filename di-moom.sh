@@ -92,7 +92,7 @@ then
 	H2=`curl -sfL "$RELEASE_NOTES_URL" | sed '1,/BODY STARTS HERE/d' | sed '1d' | fgrep -i '<h2>' | head -1 | sed 's#<\/h2>##g'`
 
 	(echo "$H2" ; curl -sfL "$RELEASE_NOTES_URL" | sed "1,/$H2/d" | sed '/<h2>/,$d') \
-	| lynx -dump -nomargins -nonumbers -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi

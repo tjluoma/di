@@ -190,7 +190,7 @@ function do_download
 		### This is the only 'hacky' bit: it depends on the format of the web page not changing too much.
 		###
 		### If you have `lynx` installed, this might be a little 'safer':
-		# PKG_URL=`lynx -listonly -dump -nomargins -nonumbers "$URL" | fgrep -i pkg.dmg | head -1`
+		# PKG_URL=`lynx -listonly -dump -nomargins "$URL" | fgrep -i pkg.dmg | head -1`
 
 		# Get the page source HTML,
 		#	replace any ' or " with a new line,

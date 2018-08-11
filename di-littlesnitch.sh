@@ -94,7 +94,7 @@ then
 
 	echo "$NAME: Release Notes:"
 
-	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
 
 fi
 

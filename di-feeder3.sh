@@ -88,7 +88,7 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<h2>/d; /<h2>/,$d' \
-	| lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines  -stdin
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines  -stdin
 
 	echo "Source: <$RELEASE_NOTES_URL>"
 fi

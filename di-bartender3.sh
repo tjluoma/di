@@ -90,7 +90,7 @@ then
 
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
 
-	lynx -dump -nomargins -nonumbers -width=10000 -assume_charset=UTF-8 -pseudo_inlines -nolist "$RELEASE_NOTES_URL"
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
 
 	echo "\nSource: ${RELEASE_NOTES_URL}"
 fi
