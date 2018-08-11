@@ -118,7 +118,14 @@ then
 		fi
 	fi
 
-	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'
+	mv -vf "$EXTRACTED_TO/Applications/RDM.app" "$INSTALL_TO" || die 'move failed'
+
+	zmodload zsh/datetime
+
+	TIME=`strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS"`
+
+		# Clean up what should be empty directories
+	mv -vf "$EXTRACTED_TO" "$HOME/.Trash/$EXTRACTED_TO:t_${TIME}"
 
 	[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
