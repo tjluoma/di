@@ -58,13 +58,13 @@ do
 					# If you want to actually update the apps, not just check the list.
 				((COUNT++))
 
-				log "Running '$i'"
+				[[ "$VERBOSE" == "yes" ]] && log "Running '$i'"
 
 				"$i" 2>&1 | tee -a "$LOG"
 
 			else
 				## Uncomment the line below for more verbose output
-				log "'$INSTALL_TO' is not installed (does not exist) on this computer."
+				[[ "$VERBOSE" == "yes" ]] && log "'$INSTALL_TO' is not installed (does not exist) on this computer."
 
 				((SKIP_COUNT++))
 
