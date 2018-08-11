@@ -8,6 +8,21 @@
 NAME="$0:t:r"
 INSTALL_TO='/Applications/Carbon Copy Cloner.app'
 
+	# create a file (empty, if you like) at "$HOME/.config/di/carboncopycloner-prefer-betas.txt"
+	# if you want to install beta releases
+if [ -e "$HOME/.config/di/carboncopycloner-prefer-betas.txt" ]
+then
+		## this is for betas
+		## create a file (which can be empty) at
+		## $HOME/.di-alfred-prefer-betas
+		## to tell this script to look for betas
+	HEAD_OR_TAIL='tail'
+	NAME="$NAME (beta releases)"
+else
+		## This is for official, non-beta versions
+	HEAD_OR_TAIL='head'
+fi
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -32,7 +47,7 @@ XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bug
 # Replace 'head -3' with 'tail -3' if you want beta, instead of stable, releases
 INFO=($(curl -sfL "$XML_FEED" \
 | egrep '"(version|build|downloadURL)":' \
-| head -3 \
+| ${HEAD_OR_TAIL} -3 \
 | tr -d ',|"' \
 | sort ))
 
@@ -73,6 +88,8 @@ then
 fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+#@TODO - add $RELEASE_NOTES_URL support?
 
 FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
