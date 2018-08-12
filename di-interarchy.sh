@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Interarchy from <https://nolobe.com/interarchy/>
+# Purpose: Download and install the latest version of Interarchy FTP client from <https://nolobe.com/interarchy/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -21,7 +21,7 @@ URL=$(curl -sfL --head 'https://nolobe.com/interarchy/download' \
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
-	# If any of these are blank, we should not continue
+	# If either of these are blank, we should not continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
@@ -66,7 +66,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -120,7 +120,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO" 
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
