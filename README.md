@@ -190,4 +190,62 @@ code to try to prevent the scripts from trying to update an app if it was instal
 (Realistically, an attempt to use the script to install an update “over” a Mac App Store version would probably fail anyway, due to permissions, but
 I would rather err on the side of caution.)
 
+## Integrated Beta Installations
+
+When I started this project, I built separate scripts for “beta” or “nightly” versions of apps, and had them install to different locations, i.e **/Applications/iTerm Nightly.app** compared to **/Applications/iTerm.app**.
+
+I’ve come to consider this a mistake, because, in reality, I have found that for each app I have a clear preference. I _either_ want the beta/nightly or the regular version, not both. In fact, having both installed actually caused problems with different launchers, etc. It was confusing and frustrating. It also meant that there could potentially be _two_ scripts (or three, in at least one cast) trying to install / check-for-updates against the same application, unless special care was taken to install the beta/nightly versions to a separate location, which added complexity to the code.
+
+Instead, we can have a single script with a unified code base, and all we need to do is give the user a way to indicate if they would prefer the beta versions or not. The easiest and most-reliable way I could think to do this was to add a simple check to see if a file existed in the user’s `$HOME` directory. If the file exists, they want the beta/nightly versions. Otherwise, they get the regular versions. The files can be zero-byte files, and they are all contained within a single hidden folder (in `~/.config/di/`, to be specific). So there's no worries about cluttering up the `$HOME` directory, for people who might worry about such things.
+
+If you’re looking for examples of how this is done, so far these scripts have code variations for optional beta installations:
+
+1. di-1password7.sh
+2. di-alfred3.sh
+3. di-carboncopycloner5.sh
+4. di-cyberduck.sh
+5. di-handbrake.sh
+6. di-imageoptim.sh
+7. di-iterm.sh
+8. di-karabiner-elements.sh
+9. di-littlesnitch.sh
+10. di-mailmate.sh
+11. di-xquartz.sh
+
+`di-cyberduck.sh` actually has two options: “nightly” or “beta”. (Right now they’re identical, but the potential is there.)
+
+`di-handbrake.sh` is the most complicated (so far). This is due to the fact that the regular builds have an XML/RSS file which is used for updates, but the “nightly” builds do not. So there’s a _lot_ of code which has to be handled separately, but that’s accomplished fairly easily, all things considered.
+
+`di-littlesnitch.sh` and `di-carboncopycloner5.sh` are interesting because they use the same RSS/XML feed for both the beta and regular releases, so choosing one becomes a matter of how we parse the `$XML_FEED`.
+
+### “What if I forget that I told one of these scripts that I want to use the betas?”
+
+Each script which has beta support changes the `$NAME` variable to `$NAME (beta releases)`. This should make it clear when the scripts are running which of them, if any, are checking for betas. Instead of output like this:
+
+	di-alfred3: Up-To-Date (3.6.2/922)
+
+it will appear like this:
+
+	di-alfred3 (beta releases): Up-To-Date (3.6.2/922)
+
+### “What if I change my mind and want to stop checking for beta/nightly versions?”
+
+Simple! Just delete the corresponding file in `~/.config/di/`. Each file is clearly named, so there should be no confusion over which one to delete in order to stop using betas.
+
+For most apps, you don’t need to do anything else. The script will keep on checking for new releases, and when the stable version passes the beta versions, you’ll start to get non-beta versions again.
+
+However, there are some apps (HandBrake comes to mind, but ImageOptim is also guilty of this) where the version numbers are _so_ different that I would recommend these steps:
+
+1.	Delete the appropriate “beta indicator” file in `~/.config/di/`
+2.	Delete the currently installed version of the app. This can normally be accomplished by just dragging the app to the Trash. ♻️
+3.	Re-run the script, and it will download and install the newest (non-beta) version of the app.
+4.	Reboot, just to be sure. (That’s probably not actually necessary, but for those who prefer to be cautious, it won’t hurt.)
+
+N.B. For step #2, I would recommend _against_ using any type of “App Cleaner” or uninstaller, unless it is specifically created by the developer. In most cases, you do _not_ want to delete the associated files in ~/Library/Preferences/ or wherever, because those will be used by the non-beta versions of the app when they are installed. Don’t worry if the app was installed with an installer, all you need to do is remove the main installation file (i.e. the app), and let the installer for the non-beta version deal with any residual files.
+
+IF you _are_ one of the people who _do_ like the install beta and stable versions of the same app, the good news is that the three installers which were previously a part of the main project are still available, they are just slightly “hidden” in the [discontinued](https://github.com/tjluoma/di/tree/master/discontinued) folder. But they should continue to work as they did before.
+
+1.	di-iterm-nightly.sh
+2.	di-imageoptim-beta.sh
+3.	di-handbrake-nightly.sh
 
