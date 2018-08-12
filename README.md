@@ -124,18 +124,6 @@ even if the old version did not have one. For example:
 	di-screens3.sh:INSTALL_TO="/Applications/Screens.app"
 	di-screens4.sh:INSTALL_TO='/Applications/Screens 4.app'
 
-If an app has a “beta” and “regular” versions, they might normally install to the same place, but what if the user wants to
-install both the regular and beta versions?
-
-In this case, such as [di-handbrake-nightly.sh](https://github.com/tjluoma/di/blob/master/di-handbrake-nightly.sh),
-[di-imageoptim-beta.sh](https://github.com/tjluoma/di/blob/master/di-imageoptim-beta.sh),
-and [di-iterm-nightly.sh](https://github.com/tjluoma/di/blob/master/di-iterm-nightly.sh),
-I recommend handling this situation by installing the beta/nightly version to a slightly-different name:
-
-	di-handbrake-nightly.sh:INSTALL_TO='/Applications/HandBrake Nightly.app'
-	di-imageoptim-beta.sh:INSTALL_TO='/Applications/ImageOptimBeta.app'
-	di-iterm-nightly.sh:INSTALL_TO='/Applications/iTerm Nightly.app'
-
 ### Guidance for Renaming Apps:
 
 - No two scripts should ever install to the same place (`INSTALL_TO=`).
@@ -146,8 +134,6 @@ I recommend handling this situation by installing the beta/nightly version to a 
 	_add_ a major version number to the _OLDER_ installation, and let the newer version keep whatever name it wants.
 
 - An exception to the previous guidance  would be `di-screens3.sh` since `di-screens4.sh` added a version number.
-
-- If there is a script for a beta or nightly version, (e.g. iTerm and ImageOptim) rename the beta/nightly version, and let the other keep the "usual" name.
 
 ### Guidance for Naming Scripts for Multiple Versions of Apps
 
