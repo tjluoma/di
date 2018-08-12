@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install ImageOptim
+# Purpose: Download and install ImageOptim from <https://imageoptim.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,15 +16,19 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+	# create a file (empty, if you like) at "$HOME/.config/di/imageoptim-prefer-betas.txt"
+	# if you want to install beta releases
+if [[ -e "$HOME/.config/di/imageoptim-prefer-betas.txt" ]]
+then
+		# This is for betas
+	XML_FEED='https://imageoptim.com/appcast-test.xml'
+	NAME="$NAME (beta releases)"
+else
+		## This is for official, non-beta versions
+	XML_FEED='https://imageoptim.com/appcast.xml'
+fi
 
-
-# wget -c http://dl.macupdate.com/prod/ImageOptim.zip
-# https://imageoptim.com/ImageOptim1.6.1a1.tar.bz2
-
-#XML_FEED='https://imageoptim.com/appcast-test.xml'
-
-XML_FEED='https://imageoptim.com/appcast.xml'
-
+	# FYI - CFBundleShortVersionString and CFBundleVersion are identical in the app
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version=|url=' \
@@ -76,42 +80,80 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="$XML_FEED"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
+
+	curl -sSfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+fi
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+TEMPDIR=`mktemp -d "${TMPDIR-/tmp/}XXXXXXXX"`
+
+## I am installing into a temp directory so that I can use my own custom INSTALL_TO name rather than overwriting the non-beta version
+
+echo "$NAME: Extracting $FILENAME to $TEMPDIR..."
+
+tar -x -C "${TEMPDIR}" -j -f "$FILENAME"
+
+EXIT="$?"
+
+if [ "$EXIT" != "0" ]
+then
+
+	echo "$NAME: 'tar' failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
 		## Quit app, if running
-		# 	pgrep -xq "ImageOptim" \
-		# 	&& LAUNCH='yes' \
-		# 	&& osascript -e 'tell application "ImageOptim" to quit'
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/ImageOptim.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
-tar -x -C "$INSTALL_TO:h" -j -f "$FILENAME"
+mv -vf "$TEMPDIR/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
 
-	echo "$NAME: Installation of $INSTALL_TO successful"
+	echo "$NAME: Successfully installed $TEMPDIR/$INSTALL_TO:t to $INSTALL_TO"
 
 else
-	echo "$NAME: tar failed (\$EXIT = $EXIT)"
+	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi
 
+rmdir "$TEMPDIR"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #
