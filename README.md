@@ -243,9 +243,13 @@ However, there are some apps (HandBrake comes to mind, but ImageOptim is also gu
 
 N.B. For step #2, I would recommend _against_ using any type of “App Cleaner” or uninstaller, unless it is specifically created by the developer. In most cases, you do _not_ want to delete the associated files in ~/Library/Preferences/ or wherever, because those will be used by the non-beta versions of the app when they are installed. Don’t worry if the app was installed with an installer, all you need to do is remove the main installation file (i.e. the app), and let the installer for the non-beta version deal with any residual files.
 
-IF you _are_ one of the people who _do_ like the install beta and stable versions of the same app, the good news is that the three installers which were previously a part of the main project are still available, they are just slightly “hidden” in the [discontinued](https://github.com/tjluoma/di/tree/master/discontinued) folder. But they should continue to work as they did before.
+If you _are_ one of the people who _do_ like the install beta and stable versions of the same app, the good news is that the three installers which were previously a part of the main project are still available, they are just slightly “hidden” in the [discontinued](https://github.com/tjluoma/di/tree/master/discontinued) folder. But they should continue to work as they did before.
 
 1.	di-iterm-nightly.sh
 2.	di-imageoptim-beta.sh
 3.	di-handbrake-nightly.sh
+
+Feel free to use or modify them as you see fit.
+
+I do believe having unified scripts which are capable of installing _either_ beta or stable builds is the best way to proceed for the future.
 
