@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+# It doesn't really matter which one we use, they both have the same version information
+INSTALL_TO="/Applications/Karabiner-EventViewer.app"
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
 	# if you want to install beta releases
