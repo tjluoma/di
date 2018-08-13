@@ -27,7 +27,6 @@ UA='curl/7.54.0'
 if [[ -e "$HOME/.config/di/handbrake-prefer-betas.txt" ]]
 then
 		# This is for betas
-	XML_FEED='https://imageoptim.com/appcast-test.xml'
 	NAME="$NAME (beta releases)"
 	BETA='yes'
 
