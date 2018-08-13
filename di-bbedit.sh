@@ -20,7 +20,7 @@ fi
 	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
 XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
-INFO=$((curl -sfL "$XML_FEED" \
+INFO=($(curl -sfL "$XML_FEED" \
 		| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadURL)</key>' \
 		| tail -5 \
 		| sort \
