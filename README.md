@@ -190,6 +190,54 @@ code to try to prevent the scripts from trying to update an app if it was instal
 (Realistically, an attempt to use the script to install an update “over” a Mac App Store version would probably fail anyway, due to permissions, but
 I would rather err on the side of caution.)
 
+## di-auto.sh and why it’s awesome
+
+I’m sorry to admit that I never paid much attention to [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) until recently.
+
+That was a mistake, because it provided a big feature that I should have been more keen to
+support from early on.
+
+Alister Forbes made a few comments, including these:
+
+	# Check if the INSTALL_TO exists.  If it does, add it to the list
+	# This FAILS for Evernote and hazel
+	LOC=`grep -m1 INSTALL_TO $i`
+
+	# There must be a better way to do this.  We split on the = and then use rev to flip the string
+	LOCATION=$(echo "$LOC" | cut -d'=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
+
+It took me awhile to figure out what Alister was doing. One of the great things about
+shell scripting is that there are so many ways to do things, and it's also one of the
+terrible things about shell scripting. If you aren’t in the same “zone” as whoever wrote
+the original code, it can be a challenge to figure out the “Why?”.
+
+I suspect this is true for just about any programming language.
+
+Anyway, in short, Alister was trying to figure out a way to make it so that `di-auto.sh`
+would run `di-` scripts to update your apps, but only if those apps were already installed.
+
+He did this by checking the INSTALL_TO= line for each app, but it failed for some of them
+because they used variables like "$HOME", most notably preference panes such as Hazel and Witch,
+as they are most often installed to "$HOME/Library/PreferencePanes"
+
+I finally figured out how to do this by using `eval`. But the original idea came from Alister,
+and I owe him big time for that.
+
+I have made some significant changes to the script, however. One of the biggest is that it no
+longer keeps a 'di.lst' file which seems to have been a list of each script that matched an
+app on the computer.
+
+I’m not sure what purpose that was serving, and I tend to install and remove apps a lot, so
+I didn’t really want a cache of apps that were installed “at some point”.
+
+So my version of the script removes that feature.
+
+Of course, the great thing about GitHub is that you can easily see how things have evolved,
+so if you want to see how Alister did things, check out the history page at:
+
+<https://github.com/tjluoma/di/commits/master/di-auto.sh>
+
+
 ## Integrated Beta Installations
 
 When I started this project, I built separate scripts for “beta” or “nightly” versions of apps, and had them install to different locations, i.e **/Applications/iTerm Nightly.app** compared to **/Applications/iTerm.app**.
