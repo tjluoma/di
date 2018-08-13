@@ -70,7 +70,8 @@ then
 
 	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r $VERSION_HEADER:\n" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" | sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
+		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" \
+		| sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
