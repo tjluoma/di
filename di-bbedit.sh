@@ -16,32 +16,20 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-# INFO=($(curl -sfL 'https://versioncheck.barebones.com/BBEdit.cgi' \
-# | egrep -A1 '<key>SUFeedEntryShortVersionString</key>|<key>SUFeedEntryUpdateURL</key>' \
-# | fgrep '<string>' \
-# | tail -2 \
-# | sed 's#.*<string>##g; s#</string>.*##g'))
-#
-# LATEST_VERSION="$INFO[1]"
-#
-# URL="$INFO[2]"
-
-################################################################################################################
-## 2016-02-04 - the URL seems to lead to a 'BBEdit_11.5.cpgz' file but I want the dmg
-## so I look for the DMG and then extract the version number from the filename
-
 	## 2018-07-17 Found new URL via find_appcast
 	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
 XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
-URL=$(curl -sfL "$XML_FEED" \
-	| egrep '\.dmg</string>$' \
-	| tail -1 \
-	| sed 's#.*<string>##g; s#</string>##g')
+INFO=$((curl -sfL "$XML_FEED" \
+		| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadURL)</key>' \
+		| tail -5 \
+		| sort \
+		| awk -F'>|<' '/string/{print $3}'))
 
-LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9].'`
+LATEST_VERSION="$INFO[1]"
+URL="$INFO[2]"
 
-	# If any of these are blank, we should not continue
+	# If either of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
@@ -51,9 +39,6 @@ then
 
 	exit 1
 fi
-
-##
-################################################################################################################
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -79,7 +64,6 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
-
 
 ## Release Notes: Well, if you wanted to, you could do something like this:
 ##
@@ -208,7 +192,6 @@ do
 		fi
 	fi
 done
-
 
 exit 0
 #EOF
