@@ -18,9 +18,11 @@ fi
 
 LAUNCH='no'
 
-	# create a file (empty, if you like) at "$HOME/.config/di/mailmate-prefer-betas.txt"
 	# if you want to install beta releases
-if [[ -e "$HOME/.config/di/mailmate-prefer-betas.txt" ]]
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/mailmate-prefer-betas.txt"
+
+if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
 	XML_FEED='http://updates.mailmate-app.com/beta'
 	NAME="$NAME (beta releases)"

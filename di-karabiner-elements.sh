@@ -9,9 +9,11 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
-	# create a file (empty, if you like) at "$HOME/.config/di/karabiner-elements-prefer-betas.txt"
-	# if you want to install betas
-if [[ -e "$HOME/.config/di/karabiner-elements-prefer-betas.txt" ]]
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/karabiner-elements-prefer-betas.txt"
+
+if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
 	XML_FEED="https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast-devel.xml"
 	NAME="$NAME (beta releases)"

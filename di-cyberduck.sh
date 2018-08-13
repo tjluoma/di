@@ -8,33 +8,44 @@
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
 
+## This is a more complicated case than usual, because Cyberduck
+## has THREE feeds:
+##	one for _nightly_ releases
+##	one for _beta_ releases
+##	one for _stable_ releases
+##
+## Now, currently, as of 2018-08-13, both of the so-called “nightly”
+## and the “beta” feeds actually seem to contain the same information
+## but, that might change in the future.
+##
+## So we have to give people the option of being able to set two
+## 'PREFERS_BETAS_FILE' files. The question is, how do we prioritize them?
+##
+## Well, I made the decision that if someone has created a file for
+## _both_ the nightly _and_ the betas, I was going to use the betas
+##
+## But they could still opt for the betas instead of the nightly
+## builds, if they prefer.
 
-# Create a file (empty, if you like) at:
-# 	"$HOME/.config/di/cyberduck-prefer-nightly.txt"
-# if you prefer “nightly” builds
-#
-# Create a file (empty, if you like) at:
-# 	$HOME/.config/di/cyberduck-prefer-beta.txt
-# if you prefer “beta” builds
-#
-# if both are found, you’ll get nightly builds.
-#
-# 2018-08-04 -- right now all 3 feeds seem identical, but I'll keep
-# them all for possible future reference.
-#
-# 2018-08-11 -- correction: the beta and nightly seem identical, and
-# are actually _behind_ the official releases.
+	## Create _this_ file if you want NIGHTLY builds
+PREFERS_BETAS_FILE="$HOME/.config/di/cyberduck-prefer-nightly.txt"
 
-if [[ -e "$HOME/.config/di/cyberduck-prefer-nightly.txt" ]]
+if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
  	XML_FEED="https://version.cyberduck.io/nightly/changelog.rss"
 	NAME="$NAME (nightly releases)"
-elif [[ -e "$HOME/.config/di/cyberduck-prefer-beta.txt" ]]
-then
- 	XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
-	NAME="$NAME (beta releases)"
+
 else
-	XML_FEED="https://version.cyberduck.io/changelog.rss"
+		## Create _this_ file if you want BETA builds
+	PREFERS_BETAS_FILE="$HOME/.config/di/cyberduck-prefer-betas.txt"
+
+	if [[ -e "$PREFERS_BETAS_FILE" ]]
+	then
+		NAME="$NAME (beta releases)"
+		XML_FEED="https://version.cyberduck.io/beta/changelog.rss"
+	else
+		XML_FEED="https://version.cyberduck.io/changelog.rss"
+	fi
 fi
 
 if [ -e "$HOME/.path" ]

@@ -18,9 +18,11 @@ fi
 
 LAUNCH='no'
 
-	# Create a file, empty if you like, at "$HOME/.config/di/alfred-prefer-betas.txt"
-	# if you want to use beta releases
-if [[ -e "$HOME/.config/di/alfred-prefer-betas.txt" ]]
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/alfred-prefer-betas.txt"
+
+if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
 	XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
 	NAME="$NAME (beta releases)"
