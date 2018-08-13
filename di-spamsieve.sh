@@ -24,7 +24,7 @@ URL=$(curl -sfL --head "https://c-command.com/downloads/SpamSieve-current.dmg" \
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
-	# If any of these are blank, we should not continue
+	# If either of these are blank, we should not continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
@@ -69,8 +69,8 @@ then
 	VERSION_HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | egrep -i "<dt>$LATEST_VERSION.*<\/dt>" | sed 's#<dt>## ; s#<\/dt>##g')
 
 	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r $VERSION_HEADER:\n" ;
-			curl -sfL "$RELEASE_NOTES_URL" \
-			| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" | sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" | sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
@@ -135,8 +135,6 @@ fi
 echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
-
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
