@@ -18,7 +18,7 @@ fi
 
 	# create a file (empty, if you like) at "$HOME/.config/di/defaultfolderx-prefer-betas.txt"
 	# if you want to install beta releases
-if [ -e "$HOME/.config/di/defaultfolderx-prefer-betas.txt" ]
+if [[ -e "$HOME/.config/di/defaultfolderx-prefer-betas.txt" ]]
 then
 		# This is for betas
 	URL=$(curl -sfL 'http://www.stclairsoft.com/cgi-bin/dl.cgi?DX-B' \

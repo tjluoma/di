@@ -24,7 +24,7 @@ zmodload zsh/datetime
 
 	# create a file (empty, if you like) at "$HOME/.config/di/1Password-prefer-betas.txt"
 	# if you want to install beta releases
-if [ -e "$HOME/.config/di/1Password-prefer-betas.txt" ]
+if [[ -e "$HOME/.config/di/1Password-prefer-betas.txt" ]]
 then
 	URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
  		fgrep .pkg |\
