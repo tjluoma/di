@@ -55,7 +55,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INFO=($(curl -sfL $XML_FEED \
+INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
 	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
 	| sort \
@@ -110,6 +110,26 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
+
+	(echo '<ul>';
+		curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<ul>/d; /<\/ul>/,$d' ;
+		echo '</ul>' ) \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
