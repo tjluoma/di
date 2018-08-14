@@ -10,9 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/calibre.app'
 
-zmodload zsh/stat
-
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
@@ -24,22 +22,33 @@ CURRENT_VERSION=`curl -sfL 'http://status.calibre-ebook.com/latest'`
 	# curent version is empty, something went wrong
 [[ "$CURRENT_VERSION" = "" ]] && exit 0
 
-##
-
-if [ -e '/Applications/calibre.app/Contents/Info.plist' ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	LOCAL_VERSION=`defaults read '/Applications/calibre.app/Contents/Info.plist' CFBundleShortVersionString `
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	FIRST_INSTALL='no'
+
 else
-	LOCAL_VERSION='0'
+
+	FIRST_INSTALL='yes'
 fi
 
-	# no update needed
-[[ "$CURRENT_VERSION" = "$LOCAL_VERSION" ]] && echo "$NAME: calibre $CURRENT_VERSION is current" && exit 0
-
 ##
-
-URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
-
 
 if (( $+commands[lynx] ))
 then
@@ -56,9 +65,11 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
-
 ########################################################################################################################
+
+URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
+
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -78,32 +89,29 @@ EXIT="$?"
 #		Installation
 #
 
-echo "NAME: Mounting $FILENAME:"
+echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
- 		| fgrep -A 1 '<key>mount-point</key>' \
- 		| tail -1 \
- 		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-
-if [ "$MNTPNT" = "" ]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: Failed to mount $FILENAME"
+	echo "$NAME: MNTPNT is empty"
 	exit 1
 fi
 
-
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vn "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$LOCAL_VERSION.app"
-fi
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
-if [ -e "$INSTALL_TO" ]
-then
-	echo "$NAME: Failed to remove existing $INSTALL_TO"
-	exit 1
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
-
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
@@ -111,18 +119,21 @@ ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" != "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
 	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
-echo "$NAME: Installation success. Unmounting $MNTPNT:"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-	# Try to eject the DMG
+echo "$NAME: Unmounting $MNTPNT:"
+
 diskutil eject "$MNTPNT"
 
-exit
+exit 0
 #
 #EOF
