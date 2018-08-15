@@ -60,6 +60,8 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 #		Here’s the download section
 #
 
+# RELEASE_NOTES_URL = ? Couldn't find a clear place for release notes.
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
