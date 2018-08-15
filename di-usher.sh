@@ -73,6 +73,9 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+# RELEASE_NOTES_URL support not added as Usher is “hibernating”. See
+# https://manytricks.com/blog/?p=4372
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

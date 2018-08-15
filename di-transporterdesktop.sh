@@ -66,6 +66,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+# RELEASE_NOTES_URL not added, as the app seems to be dead.
+
 	# Hard-coding appname to remove space in appname
 FILENAME="$HOME/Downloads/TransporterDesktop-${LATEST_VERSION}.zip"
 

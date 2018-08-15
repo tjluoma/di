@@ -68,6 +68,8 @@ then
 
 fi
 
+# No RELEASE_NOTES_URL support, app is replaced by version 3
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

@@ -85,6 +85,8 @@ then
 
 fi
 
+# RELEASE_NOTES_URL support not added since v5 is EOL, replaced by v6
+
 FILENAME="$HOME/Downloads/TextExpander-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
