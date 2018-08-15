@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/M4VGear.app'
 
+XML_FEED="http://www.m4vgear.com/feed-m4vgear.xml"
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"
@@ -16,7 +18,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INFO=($(curl -sfL http://www.m4vgear.com/feed-m4vgear.xml | tr -s ' ' '\012' | egrep "^url=|sparkle:version=" | awk -F'"' '//{print $2}'))
+INFO=($(curl -sfL "$XML_FEED" | tr -s ' ' '\012' | egrep "^url=|sparkle:version=" | awk -F'"' '//{print $2}'))
 
 URL="$INFO[1]"
 
@@ -58,6 +60,16 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
+
+RELEASE_NOTES_URL="$XML_FEED"
+
+echo -n "$NAME: Release Notes for "
+
+curl -sfL "$RELEASE_NOTES_URL" \
+| perl -p -e 's/<description>/\n<description>\n/ ; s/<\/description>/\n<\/description>\n/' \
+| sed '1,/<description>/d; /<\/description>/,$d'
+
+echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
