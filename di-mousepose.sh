@@ -75,6 +75,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+# No RELEASE_NOTES_URL as the app is pretty much dead
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
