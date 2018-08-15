@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Seil (which may not be actively developed anymore?)
+# Purpose: Download and install the latest version of Seil, which is no longer developed: <https://pqrs.org/osx/karabiner/seil.html>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -69,6 +69,8 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
+
+# No RELEASE_NOTES_URL since it's EOL
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 

@@ -75,6 +75,8 @@ then
 
 fi
 
+# No RELEASE_NOTES_URL as it's been replaced by v7
+
 FILENAME="$HOME/Downloads/OmniGraffle-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

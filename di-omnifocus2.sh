@@ -76,6 +76,8 @@ then
 
 fi
 
+# No RELEASE_NOTES_URL support as v3 is expected soon
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

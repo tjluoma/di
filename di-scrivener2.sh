@@ -69,6 +69,8 @@ then
 
 fi
 
+# No RELEASE_NOTES_URL as it's replaced by v3
+
 FILENAME="$HOME/Downloads/Scrivener-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

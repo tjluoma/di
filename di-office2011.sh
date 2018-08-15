@@ -87,6 +87,8 @@ LATEST_VERSION=`fgrep -A1 '<key>Title</key>' "$TEMPFILE" | tail -1 | awk '{print
 
 URL=`fgrep -i .dmg  "$TEMPFILE" | tail -1 | sed 's#.*<string>##g; s#</string>##g'`
 
+# No RELEASE_NOTES_URL support as the product is replaced by Office 2016
+
 FILENAME="$HOME/Downloads/$URL:t"
 
 ################################################################################
