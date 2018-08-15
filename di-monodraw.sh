@@ -82,7 +82,24 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
+
+	(curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/table>/,$d' ;
+		echo '</table>') \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin	\
+	| sed '/./,/^$/!d'
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
+
+fi
+
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -91,18 +108,11 @@ curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL
 EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-fi
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -124,7 +134,12 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -157,9 +172,7 @@ else
 	exit 1
 fi
 
-
-
-
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 EOF
