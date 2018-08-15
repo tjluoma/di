@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install Mailplane.app (v3)
+# Purpose: Download and install Mailplane.app (v3) note that v4 is now available
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -17,45 +17,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-# This is a new URL, to keep in case it's needed in the future
-# XML_FEED="https://rink.hockeyapp.net/api/2/apps/e5d0b87b6eecc18e40fcd29f2125ac7d"
-
-
-## 2018-07-17 - this is the URL I was using
-
-# OS_VER=`sw_vers -productVersion`
-#
-# INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
-#
-# XML_FEED="https://update.mailplaneapp.com/appcast.php?appName=Mailplane%203&osVersion=${OS_VER}&appVersion=${INSTALLED_VERSION}&selectedLanguage=en"
-#
-# INFO=($(curl -sfL "$XML_FEED" \
-# 		| gunzip \
-# 		| tr -s ' ' '\012' \
-# 		| egrep 'sparkle:version=|url=' \
-# 		| head -2 \
-# 		| sort \
-# 		| awk -F'"' '/^/{print $2}' ))
-#
-# 	# "Sparkle" will always come before "url" because of "sort"
-# LATEST_VERSION="$INFO[1]"
-#
-# URL="$INFO[2]"
-#
-#
-# 	# If any of these are blank, we should not continue
-# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-# then
-# 	echo "$NAME: Error: bad data received:
-# 	INFO: $INFO
-# 	LATEST_VERSION: $LATEST_VERSION
-# 	URL: $URL
-# 	"
-#
-# 	exit 1
-# fi
-
-URL=$(curl -sfL --head http://update.mailplaneapp.com/mailplane_3.php | awk -F': ' '/^Location/{print $NF}' | tail -1 | tr -d '[:cntrl:]')
+URL=$(curl -sfL --head http://update.mailplaneapp.com/mailplane_3.php \
+	| awk -F': ' '/^Location/{print $NF}' \
+	| tail -1 \
+	| tr -d '[:cntrl:]')
 
 [[ "$URL" == "" ]] && echo "$NAME: Empty URL" && exit 1
 
@@ -95,7 +60,6 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
