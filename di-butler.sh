@@ -11,11 +11,11 @@ INSTALL_TO='/Applications/Butler.app'
 
 XML_FEED='https://manytricks.com/butler/butlercast.xml'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
-	source "$HOME/.path"
+		source "$HOME/.path"
 else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+		PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# "sparkle:version" also exists in the XML_FEED, but 'shortVersionString' is the important one
@@ -59,6 +59,21 @@ then
 	fi
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+fi
+
+if (( $+commands[lynx] ))
+then
+
+  RELEASE_NOTES_URL="https://manytricks.com/butler/guide/releasenotes.html"
+
+	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
+
+	(curl -sfl "$RELEASE_NOTES_URL" | sed '1,/<body/d; /<\/ul>/,$d' ; echo '</ul>') \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| sed '/./,/^$/!d'
+
+	echo "\nSource: <$RELEASE_NOTES_URL>"
 
 fi
 
