@@ -76,6 +76,8 @@ then
 
 fi
 
+	# No RELEASE_NOTES_URL since v4 is released
+
 	# This is where the latest version will be saved to
 FILENAME="$HOME/Downloads/MarsEdit-${LATEST_VERSION}.zip"
 
