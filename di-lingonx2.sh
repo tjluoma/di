@@ -1,12 +1,12 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Lingon X
+# Purpose: Download and install version 2 of Lingon X (note that the current version is _6_!)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-29
 
 NAME="$0:t:r"
-INSTALL_TO='/Applications/Lingon X.app'
+INSTALL_TO='/Applications/Lingon X 2.app'
 XML_FEED='https://www.peterborgapps.com/updates/lingonx2-appcast.xml'
 
 if [ -e "$HOME/.path" ]
@@ -133,7 +133,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -vn "$UNZIP_TO/Lingon X.app" "$INSTALL_TO"
 
 EXIT="$?"
 
