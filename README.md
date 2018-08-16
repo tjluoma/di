@@ -165,19 +165,6 @@ Anyway, I posted a bunch of updates today, and if you notice anything that doesn
 
 Thanks!
 
-## Automatically update only the apps you have already installed.
-
-One of the biggest challenges with a project like this is that you end up with a bunch of scripts which are meant to download and install apps,
-but you might not want to install _all_ of them.
-
-That’s where [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) comes in.
-
-`di-auto.sh` will check all of the `di-` scripts, and only run the ones which will update apps that you have already installed.
-
-You can even [run it via launchd](https://github.com/tjluoma/di/tree/master/launchd) and have it update your apps once a day, automatically.
-
-Want to install a new app? Use one of the `di-` scripts, or just install it however you would have previously.
-
 ## Mac App Store Clarification
 
 This project does not update or install Mac App Store apps. Use the **App Store.app** for that. You can use this command in Terminal.app:
@@ -196,6 +183,17 @@ I’m sorry to admit that I never paid much attention to [di-auto.sh](https://gi
 
 That was a mistake, because it provided a big feature that I should have been more keen to
 support from early on.
+
+One of the biggest challenges with a project like this is that you end up with a bunch of scripts which are meant to download and install apps,
+but you might not want to install _all_ of them.
+
+That’s where [di-auto.sh](https://github.com/tjluoma/di/blob/master/di-auto.sh) comes in.
+
+`di-auto.sh` will check all of the `di-` scripts, and only run the ones which will update apps that you have already installed.
+
+You can even [run it via launchd](https://github.com/tjluoma/di/tree/master/launchd) and have it update your apps once a day, automatically.
+
+Want to install a new app? Use one of the `di-` scripts, or just install it however you would have previously.
 
 Alister Forbes made a few comments, including these:
 
