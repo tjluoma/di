@@ -16,13 +16,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+	#   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml' 	# This one seems outdated
 XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
-
-# Looking for Sparkle appcast… Found!
-#   http://updates.duetdisplay.com/checkMacUpdates
-# Looking for HockeyApp appcast… Not found.
-# Looking for DevMate appcast… Found!
-#   https://updates.devmate.com/com.kairos.duet.xml
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
