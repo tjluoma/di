@@ -85,7 +85,9 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 then
 	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+	echo "	See <https://itunes.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12> or"
+	echo "	<macappstore://itunes.apple.com/us/app/1password-7-password-manager/id1333542190>"
+	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 	exit 0
 fi
 

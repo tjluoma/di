@@ -86,7 +86,9 @@ then
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "$NAME: Please use the App Store app to update $INSTALL_TO."
+		echo "	See <https://itunes.apple.com/us/app/texpad-latex-editor/id458866234?mt=12> or"
+		echo "	<macappstore://itunes.apple.com/us/app/texpad-latex-editor/id458866234>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
 
