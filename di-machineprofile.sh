@@ -46,15 +46,6 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://itunes.apple.com/us/app/machineprofile/id530194517?mt=12> or"
-		echo "	<macappstore://itunes.apple.com/us/app/machineprofile/id530194517>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
-
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
 	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
@@ -78,6 +69,15 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://itunes.apple.com/us/app/machineprofile/id530194517?mt=12> or"
+		echo "	<macappstore://itunes.apple.com/us/app/machineprofile/id530194517>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 
 else
 
