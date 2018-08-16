@@ -18,7 +18,7 @@ fi
 
 XML_FEED="https://updates.blackpixel.com/updates?app=ks"
 
-INFO=($(curl -sfL "$XML_FEED" \
+INFO=($(curl -sSfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|sparkle:version=|url=' \
 		| head -3 \
