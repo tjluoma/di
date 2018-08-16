@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of iTerm (note that a separate script exists for "nightly" builds)
+# Purpose: Download and install the latest version of iTerm
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
