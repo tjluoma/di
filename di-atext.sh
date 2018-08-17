@@ -63,6 +63,13 @@ then
 
 	FIRST_INSTALL='no'
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "Please see <http://www.trankynam.com/atext/doc/index.html#line2> for more information."
+		exit 0
+	fi
+
 else
 
 	FIRST_INSTALL='yes'
