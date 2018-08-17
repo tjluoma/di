@@ -26,7 +26,18 @@ URL=$(curl -A "$UA" -sfL 'https://www.vpnunlimitedapp.com/en/downloads/mac' \
 	| awk -F'"' '/http.*\.dmg/{print $2}' \
 	| head -1)
 
-LATEST_VERSION=`echo "$URL:t:r" | sed 's#VPN%20Unlimited_v##g'`
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+
+	# If either of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
