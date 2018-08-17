@@ -24,7 +24,7 @@ XML_FEED='https://raw.githubusercontent.com/richie5um/richie5um.github.io/master
 
 # sparkle:version is the ONLY field available in XML_FEED as far as version numbers go
 
-INFO=($(curl -sfL "$XML_FEED" \
+INFO=($(curl -sSfL "$XML_FEED" \
 		| tr ' ' '\012' \
 		| egrep '^(url|sparkle:version)=' \
 		| head -2 \
@@ -46,7 +46,6 @@ then
 
 	exit 1
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -89,8 +88,6 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
-
-	# Download the latest zip
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
