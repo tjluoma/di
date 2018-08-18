@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Sloth from <http://sveinbjorn.org/sloth>
+# Purpose: Download and install the latest version of Sloth (GUI for lsof) from <http://sveinbjorn.org/sloth>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
