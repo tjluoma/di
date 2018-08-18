@@ -7,8 +7,6 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Brave.app'
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,18 +14,44 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# 2018-08-07 -- adding explicit exclusion of 'beta' versions
-	# @todo - add ""$HOME/.config/di/brave-prefer-betas.txt" support?
-URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
-| fgrep '/browser-laptop/releases/tag/' \
-| fgrep -vi 'beta' \
-| head -1 \
-| sed 's#.*https#https#g; s#"/>##g'`
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/brave-prefer-betas.txt"
 
-URL2=`curl -sfL "$URL1" \
-| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
-| fgrep -vi 'beta' \
-| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
+if [[ -e "$PREFERS_BETAS_FILE" ]]
+then
+	NAME="$NAME (beta releases)"
+
+	INSTALL_TO='/Applications/Brave-Beta.app'
+
+	URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
+	| fgrep '/browser-laptop/releases/tag/' \
+	| fgrep -i 'beta' \
+	| head -1 \
+	| sed 's#.*https#https#g; s#"/>##g'`
+
+	URL2=`curl -sfL "$URL1" \
+	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
+	| fgrep -i 'beta' \
+	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
+
+else
+	# This is for non-beta
+
+	INSTALL_TO='/Applications/Brave.app'
+
+	URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
+	| fgrep '/browser-laptop/releases/tag/' \
+	| fgrep -vi 'beta' \
+	| head -1 \
+	| sed 's#.*https#https#g; s#"/>##g'`
+
+	URL2=`curl -sfL "$URL1" \
+	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
+	| fgrep -vi 'beta' \
+	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
+
+fi
 
 LATEST_VERSION=`echo "$URL2:t:r" | tr -dc '[0-9]\.'`
 
