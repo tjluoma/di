@@ -12,7 +12,7 @@ if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:./di-scripts'
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 NAME="$0:t:r"
@@ -37,7 +37,7 @@ log "------------- STARTING AT `timestamp` -------------"
 for i in di-*sh
 do
 	#check to ignore di-all.sh and di-auto.sh
-	if ! [[ "$i:t" =~  "di-(all|auto)\.sh" ]]
+	if ! [[ "$i:t" =~ "di-(all|auto)\.sh" ]]
 	then
 			# get the full path to $i
 		i=($i(:A))
@@ -78,5 +78,17 @@ done
 log "Finished at `timestamp`. Checked $COUNT apps and skipped $SKIP_COUNT."
 
 echo "Checked $COUNT apps at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
+
+if (( $+commands[di-local.sh] ))
+then
+		# if the command 'di-local.sh' is found in $PATH, run it.
+		# This is intended to allow users to have their own 'di-'
+		# scripts which are not part of the official repo
+		# but which are triggered as part of 'di-auto.sh'
+	echo "$NAME: Found 'di-local.sh'. Running it:"
+
+	di-local.sh
+
+fi
 
 exit 0
