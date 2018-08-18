@@ -7,9 +7,7 @@
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Monodraw.app"
-XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"
-
-# @TODO _ is there a 'non-beta' XML_FEED?
+XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"        # There does not seem to be a non-beta appcast URL
 
 if [ -e "$HOME/.path" ]
 then
@@ -101,7 +99,6 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
-
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
