@@ -7,10 +7,24 @@
 
 NAME="$0:t:r"
 INSTALL_TO='/Applications/Bartender 3.app'
-XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
 
-# Feed reports itself as 'http://macbartender.com/B2/updates/Appcast.xml'
-# which is weird because it's for Bartender 3, not 2. But OK.
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/bartender3-prefer-betas.txt"
+
+if [[ -e "$PREFERS_BETAS_FILE" ]]
+then
+	NAME="$NAME (beta releases)"
+
+	     # Reports itself as 'http://macbartender.com/B2/updates/TestAppcast.xml'
+	XML_FEED='https://www.macbartender.com/B2/updates/TestUpdates.php'
+
+else
+		# This is for non-beta
+		# Feed reports itself as 'http://macbartender.com/B2/updates/Appcast.xml'
+		# which is weird because it's for Bartender 3, not 2. But OK.
+	XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
+fi
 
 if [ -e "$HOME/.path" ]
 then
