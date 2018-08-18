@@ -1,11 +1,11 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of MacPilot @TODO - update this?
+# Purpose: Download and install the latest version of MacPilot
+# {Note: ideally this script would use `sw_vers` to make sure to download the right version for the particular OS the user is running.}
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-27
-
 
 NAME="$0:t:r"
 
@@ -31,7 +31,7 @@ OS_VER=`sw_vers -productVersion`
 
 XML_FEED="http://www.koingosw.com/postback/versioncheck.php?appname=macpilot&appversion=${INSTALLED_VERSION}&sysplatform=Mac%20OS%20X&sysversion=Mac%20OS%20X%20${OS_VER}"
 
-INFO=($(curl --silent --location "$XML_FEED" \
+INFO=($(curl --silent --location --fail "$XML_FEED" \
 		| fgrep -A3 '<macpilot>' \
 		| egrep '(<version>|<macpath>)' \
 		| sort \
