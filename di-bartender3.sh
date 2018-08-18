@@ -9,6 +9,9 @@ NAME="$0:t:r"
 INSTALL_TO='/Applications/Bartender 3.app'
 XML_FEED='https://www.macbartender.com/B2/updates/updatesB3.php'
 
+# Feed reports itself as 'http://macbartender.com/B2/updates/Appcast.xml'
+# which is weird because it's for Bartender 3, not 2. But OK.
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -20,20 +23,16 @@ LAUNCH='yes'
 
 	# sparkle:version and sparkle:shortVersionString both exist, but
 	# they are "308" and "3.0.8" respectively, so we only need one.
-	#
-	# This will work even if there is a space in the enclosure URL
-	# Don't indent this or you'll break sed
-IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
-| egrep 'sparkle:shortVersionString=|url=' \
-| tail -1 \
-| sed 's#" #"\
-#g' \
-| egrep 'sparkle:shortVersionString=|url=' \
-| sed 's#<enclosure url="##g; s#"$##g; s#sparkle:shortVersionString="##g'))
+INFO=($(curl -sSfL "${XML_FEED}" \
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:shortVersionString|url=' \
+		| tail -2 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
-URL=$(echo "$INFO[1]" | sed 's#.*http#http#g')
-
-LATEST_VERSION="$INFO[2]"
+	# "Sparkle" will always come before "url" because of "sort"
+LATEST_VERSION="$INFO[1]"
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -41,9 +40,7 @@ then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
-
+	URL: $URL"
 	exit 1
 fi
 
@@ -110,35 +107,65 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if [ -e "$INSTALL_TO" ]
-then
-	pgrep -xq "Bartender 3" && LAUNCH='yes' && osascript -e 'tell application "Bartender 3" to quit'
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-	mv -f "$INSTALL_TO" "$HOME/.Trash/Bartender 3.$INSTALLED_VERSION.app"
-fi
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Update/install of $INSTALL_TO successful"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
-if [ "$LAUNCH" = "yes" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Launching Bartender 3"
-	open -a "Bartender 3"
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
 fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #
