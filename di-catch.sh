@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Catch
+# Purpose: Download and install the latest version of Catch from <http://giorgiocalderolla.com/catch.html>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -9,14 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Catch.app"
 
+XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -41,6 +41,38 @@ then
 	"
 
 	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
 if (( $+commands[lynx] ))
