@@ -61,35 +61,39 @@ then
 	exit 1
 fi
 
-	# show current version or default to '7' if not installed
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo '7.0.0'`
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
+
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info.plist" CFBundleShortVersionString`
+
+	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+		echo "$NAME: Installed version $INSTALLED_VERSION is ahead of official version $LATEST_VERSION"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://itunes.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12> or"
+		echo "	<macappstore://itunes.apple.com/us/app/1password-7-password-manager/id1333542190>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 fi
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Installed version $INSTALLED_VERSION is ahead of official version $LATEST_VERSION"
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-
-if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-then
-	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://itunes.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12> or"
-	echo "	<macappstore://itunes.apple.com/us/app/1password-7-password-manager/id1333542190>"
-	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-	exit 0
-fi
 
 if (( $+commands[lynx] ))
 then
