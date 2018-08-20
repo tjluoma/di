@@ -76,6 +76,17 @@ case "$OS_VER" in
 	;;
 esac
 
+if [ "$USE_VERSION" != "" -a "$LATEST_VERSION" = "" ]
+then
+	if [ "$USE_VERSION" = "3" ]
+	then
+		LATEST_VERSION="3.5.7"
+	elif [ "$USE_VERSION" = "4" ]
+	then
+		LATEST_VERSION="4.1.23"
+	fi
+fi
+
 if [ "$USE_VERSION" = "3" ]
 then
 	URL=$(curl -sfL --head "https://bombich.com/software/download_ccc_update.php?v=$LATEST_VERSION" \
