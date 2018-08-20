@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Charles (now at version 4)
+# Purpose: Download and install Charles proxy v3 (if installed) or 4 from <https://www.charlesproxy.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,8 +16,37 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# This returns just the version number
-LATEST_VERSION=`curl -sfL http://www.charlesproxy.com/latest.do`
+function use_charles_v3 {
+
+	URL="https://www.charlesproxy.com/assets/release/3.12.3/charles-proxy-3.12.3.dmg"
+	LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]\.'`
+}
+
+	# versions 3 and 4 are both compatible with macOS 10.7 - 10.13
+
+if [[ -e "$INSTALL_TO" ]]
+then
+		# if v3 is installed, check that. Otherwise, use v4
+	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
+
+	if [[ "$MAJOR_VERSION" == "3" ]]
+	then
+		use_charles_v3
+	fi
+else
+	if [ "$1" = "--use3" -o "$1" = "-3" ]
+	then
+		use_charles_v3
+	fi
+fi
+
+if [[ "$LATEST_VERSION" == "" ]]
+then
+
+		# This returns just the version number
+	LATEST_VERSION=`curl -sfL http://www.charlesproxy.com/latest.do`
+	URL="https://www.charlesproxy.com/assets/release/$LATEST_VERSION/charles-proxy-$LATEST_VERSION.dmg"
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -42,7 +71,8 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
-URL="https://www.charlesproxy.com/assets/release/$LATEST_VERSION/charles-proxy-$LATEST_VERSION.dmg"
+# @TODO - add RELEASE_NOTES_URL support - https://www.charlesproxy.com/documentation/version-history/
+
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
@@ -54,6 +84,10 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 if [ -e "$INSTALL_TO" ]
 then
