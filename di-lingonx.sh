@@ -8,11 +8,80 @@
 NAME="$0:t:r"
 INSTALL_TO='/Applications/Lingon X.app'
 
-# For older versions, use one of these feeds instead:
-# 	XML_FEED='https://www.peterborgapps.com/updates/lingonx2-appcast.xml'
-# 	XML_FEED='https://www.peterborgapps.com/updates/lingonx4-appcast.xml'
-# 	XML_FEED='https://www.peterborgapps.com/updates/lingonx5-appcast.xml'
-XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
+OLD_VERSION='yes'
+
+SPARKLE_VERSION='sparkle:shortVersionString'
+
+OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
+
+OS_VER_SHORT=$(sw_vers -productVersion | cut -d '.' -f 2)
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	MAJOR_VERSION=$(defaults read "/Applications/Lingon X.app/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
+
+	case "$MAJOR_VERSION" in
+		1)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx-appcast.xml'
+			SPARKLE_VERSION='sparkle:version'
+		;;
+
+		2)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx2-appcast.xml'
+		;;
+
+		# FYI - Lingon 3 was only released in the Mac App Store: <https://itunes.apple.com/us/app/lingon-3/id450201424>
+
+		4)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx4-appcast.xml'
+		;;
+
+		5)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx5-appcast.xml'
+		;;
+
+		*)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
+			OLD_VERSION='no'
+		;;
+
+	esac
+
+else
+
+	case "$OS_VER" in
+		10.8|10.9)
+				XML_FEED='https://www.peterborgapps.com/updates/lingonx-appcast.xml'
+				SPARKLE_VERSION='sparkle:version'
+		;;
+
+		10.10)
+				XML_FEED='https://www.peterborgapps.com/updates/lingonx2-appcast.xml'
+		;;
+
+		10.11)
+				XML_FEED='https://www.peterborgapps.com/updates/lingonx4-appcast.xml'
+		;;
+
+		10.12)
+				XML_FEED='https://www.peterborgapps.com/updates/lingonx5-appcast.xml'
+		;;
+
+		10.13|10.14)
+			XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
+			OLD_VERSION='no'
+
+		;;
+
+		*)
+			echo "$NAME: Not sure if 'Lingon X' can run on this version of Mac OS: $OS_VER"
+			exit 1
+		;;
+
+	esac
+
+fi
 
 if [ -e "$HOME/.path" ]
 then
@@ -24,23 +93,21 @@ fi
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr '\r' '\n' \
 		| tr -s ' ' '\012' \
-		| egrep 'sparkle:shortVersionString|sparkle:version=|url=' \
-		| head -3 \
+		| egrep "$SPARKLE_VERSION|url=" \
+		| head -2 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	echo "$NAME: Error: bad data received:
+	echo "$NAME: Error: bad data received from $XML_FEED
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -50,9 +117,8 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
+		# Lingon X v1 uses CFBundleShortVersionString even though the XML_FEED only shows 'sparkle:version='
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
-
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -60,17 +126,19 @@ then
 
 	VERSION_COMPARE="$?"
 
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+
+		if [ "$OLD_VERSION" = "yes" -a "$OS_VER_SHORT" -ge "13" ]
+		then
+			echo "$NAME: 'Lingon X' version 6 is now available. See <https://www.peterborgapps.com/lingon/> for more details."
+		fi
+
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
 
@@ -95,7 +163,7 @@ fi
 
 echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
 
-FILENAME="$HOME/Downloads/LingonX-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/LingonX-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
