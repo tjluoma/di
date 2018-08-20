@@ -20,7 +20,7 @@ fi
 
 XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
 
-INFO=($(curl -SsfL "${XML_FEED}" \
+INFO=($(curl -H "Accept-Encoding: gzip,deflate" -SsfL "${XML_FEED}" \
 		| gunzip \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
@@ -86,7 +86,7 @@ then
 		# we need to find this so we know where to 'cut' the Release Notes info
 		# otherwise we risk overwhelming the user. If they want more information,
 		# we'll show them the URL and they can check it out themselves.
-	GET_SECOND_H2=$(curl -sfL "${RELEASE_NOTES_URL}" \
+	GET_SECOND_H2=$(curl -H "Accept-Encoding: gzip,deflate" -sfL "${RELEASE_NOTES_URL}" \
 	| gunzip \
 	| fgrep '<h2>HoudahSpot' \
 	| head -2 \
@@ -95,7 +95,7 @@ then
 
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
 
-	curl -sfL "${RELEASE_NOTES_URL}" \
+	curl -H "Accept-Encoding: gzip,deflate" -sfL "${RELEASE_NOTES_URL}" \
 	| gunzip \
 	| sed "1,/<body/d ; /$GET_SECOND_H2/,\$d" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin

@@ -400,10 +400,10 @@ else
 
 		RELEASE_NOTES_URL=$(curl -sfLS "$XML_FEED" | awk -F'"' '/releaseNotes/{print $4}' | ${HEAD_OR_TAIL} -1)
 
-		curl -sfLS "$RELEASE_NOTES_URL" \
-		| gunzip \
-		| sed '1,/<details open id="primary">/d; /<details>/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+		curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
+			| gunzip \
+			| sed '1,/<details open id="primary">/d; /<details>/,$d' \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 		echo "\nSource: <$RELEASE_NOTES_URL>"
 

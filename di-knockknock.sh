@@ -18,7 +18,7 @@ fi
 
 CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/knockknock.rb"
 
-LATEST_VERSION=$(curl --silent --location --fail "https://objective-see.com/products/changelogs/KnockKnock.txt" \
+LATEST_VERSION=$(curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail "https://objective-see.com/products/changelogs/KnockKnock.txt" \
 				| gunzip \
 				| awk -F' ' '/^VERSION/{print $2}' \
 				| head -1 )
