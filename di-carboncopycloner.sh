@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: download the latest version of Carbon Copy Cloner
+# Purpose: Download/Install/Upgrade Carbon Copy Cloner version 3, 4, or 5, depending on OS and what's installed.
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
