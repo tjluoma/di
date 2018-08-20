@@ -5,6 +5,8 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-10-28
 
+# @todo - https://www.barebones.com/support/bbedit/updates.html shows which versions compatible with which OSes
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BBEdit.app'
