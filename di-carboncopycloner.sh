@@ -333,11 +333,9 @@ else
 	fi
 
 		## NOTE: If nothing is installed, we need to pretend we have at least version 5
-		## 			or else we will get version 3 or 4
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '5.0.0'`
 
 		## NOTE: If nothing is installed, we need to pretend we have at least version 5000
-		## 			or else we will get version 3 or 4
 	INSTALLED_BUILD=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '5000'`
 
 	OS_MINOR=`sw_vers -productVersion | cut -d. -f 2`
