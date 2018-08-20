@@ -16,6 +16,16 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
+
+if [ "$PPID_NAME" = "/sbin/launchd" ]
+then
+		# this was launched via launchd. We don't want to use 'exit 1' in launchd because it might keep it from running again
+	function die { exit 0 }
+else
+	function die { exit 1 }
+fi
+
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
 PREFERS_BETAS_FILE="$HOME/.config/di/iterm-prefer-betas.txt"
@@ -53,7 +63,7 @@ then
 	URL: $URL
 	"
 
-	exit 1
+	die
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -123,7 +133,7 @@ else
 		# failed
 	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
-	exit 1
+	die
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -139,7 +149,7 @@ then
 	then
 		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
-		exit 1
+		die
 	fi
 fi
 
@@ -158,7 +168,7 @@ then
 else
 	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
-	exit 1
+	die
 fi
 
 exit 0
