@@ -19,7 +19,7 @@ OS_VER_SHORT=$(sw_vers -productVersion | cut -d '.' -f 2)
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	MAJOR_VERSION=$(defaults read "/Applications/Lingon X.app/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
+	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
 
 	case "$MAJOR_VERSION" in
 		1)
