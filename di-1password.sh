@@ -162,7 +162,7 @@ then
 	fi
 fi
 
-FILENAME="$HOME/Downloads/1Password${USE_VERSION}-${LATEST_VERSION}.pkg"
+FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -190,8 +190,6 @@ else
 	|| open -R "$FILENAME"
 
 fi
-exit 0
-
 
 exit 0
 #EOF
