@@ -358,13 +358,7 @@ else
 	# If any of these are blank, we should not continue
 	if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" -o "$LATEST_BUILD" = "" ]
 	then
-		echo "$NAME: Error: bad data received from ${XML_FEED}
-
-		INFO: $INFO
-		URL: $URL
-		LATEST_VERSION: $LATEST_VERSION
-		LATEST_BUILD: $LATEST_BUILD
-		"
+		echo "$NAME: Error: bad data received from ${XML_FEED}\n\tINFO: $INFO\n\tURL: $URL\n\tLATEST_VERSION: $LATEST_VERSION\n\tLATEST_BUILD: $LATEST_BUILD\n"
 		exit 1
 	fi
 
