@@ -1,6 +1,6 @@
 #!/bin/zsh -f
 # Purpose: Download and install the latest version of MacPilot
-# {Note: ideally this script would use `sw_vers` to make sure to download the right version for the particular OS the user is running.}
+# {Note/@todo: ideally this script would use `sw_vers` to make sure to download the right version for the particular OS the user is running.}
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
