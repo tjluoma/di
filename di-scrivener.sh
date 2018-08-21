@@ -23,6 +23,9 @@ function use_v2 {
 		# This is the old Mac App Store url for v2: http://itunes.apple.com/us/app/scrivener/id418889511?mt=12
 		# but it won't do any good to show it to anyone, because it no longer works, even if you had
 		# purchased it in the Mac App Store
+
+	ASTERISK='(Note that version 3 is also available.)'
+
 	}
 
 function use_v3 {
@@ -95,7 +98,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD) $ASTERISK"
 		exit 0
 	fi
 
