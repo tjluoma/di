@@ -20,7 +20,10 @@ fi
 USE_VERSION='7'
 XML_FEED='https://clientservices.logos.com/update/v1/feed/logos7-mac/stable.xml'
 
-function use_v6 { XML_FEED='https://clientservices.logos.com/update/v1/feed/logos6-mac/stable.xml' }
+function use_v6 {
+	XML_FEED='https://clientservices.logos.com/update/v1/feed/logos6-mac/stable.xml'
+	ASTERISK='(Note that version 7 is now available.)'
+	}
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -82,7 +85,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 
