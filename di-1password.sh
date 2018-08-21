@@ -45,6 +45,12 @@ function do_os_check {
 
 function use_v6 {
 
+	if [[ -e "$V7_INSTALL_TO" ]]
+	then
+		echo "$NAME: $V7_INSTALL_TO is installed. Cannot have both installed at the same time. To install 1Password 6, please remove 1Password 7."
+		exit 0
+	fi
+
 	ASTERISK='(Note that version 7 is also available.)'
 	USE_VERSION='6'
 	INSTALL_TO='/Applications/1Password 6.app'
@@ -101,33 +107,34 @@ function use_v7 {
         # if the user explicitly askes for version 6, use it, regardless of the above
 if [ "$1" = "--use6" -o "$1" = "-6" ]
 then
-        use_v6
+	use_v6
 elif [ "$1" = "--use7" -o "$1" = "-7" ]
 then
-        use_v7
+	use_v7
 else
-        if [ -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
-        then
-                echo "$NAME: Both versions 6 and 7 of 1Password are installed. I will _only_ check for updates for version 7 in this situation."
-                echo "  If you want to check for updates for version 6, add the argument '--use6' i.e. '$0:t --use6' "
-                echo "  To avoid this message in the future, add the argument '--use7' i.e. '$0:t --use7' "
+	if [ -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+	then
+		# Technically this should never happen, as the installers for v6 and v7 will remove the other version
+		# if found during installation. But if it _does_ happen, we should be ready for it.
+			echo "$NAME: Both versions 6 and 7 of 1Password are installed. I will _only_ check for updates for version 7 in this situation."
+			echo "  If you want to check for updates for version 6, add the argument '--use6' i.e. '$0:t --use6' "
+			echo "  To avoid this message in the future, add the argument '--use7' i.e. '$0:t --use7' "
 
-                use_v7
+			use_v7
 
-        elif [ ! -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
-        then
-                        # version 6 is not installed but version 7 is
-                use_v7
-        elif [ -e "$V6_INSTALL_TO" -a ! -e "$V7_INSTALL_TO" ]
-        then
-                        # version 6 is installed but version 7 is not
-                use_v6
-        else
-                        # neither v6 or v7 are installed
-                use_v7
-        fi
+	elif [ ! -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+	then
+			# version 6 is not installed but version 7 is
+		use_v7
+	elif [ -e "$V6_INSTALL_TO" -a ! -e "$V7_INSTALL_TO" ]
+	then
+		# version 6 is installed but version 7 is not
+		use_v6
+	else
+		# neither v6 or v7 are installed
+		use_v7
+	fi
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -181,9 +188,9 @@ then
 			echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION)"
 
 			curl -sfL "$RELEASE_NOTES_URL" \
-			| sed "1,/class='beta'/d; /<article /,\$d" \
-			| sed '1,/<\/h3>/d' \
-			| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin
+				| sed "1,/class='beta'/d; /<article /,\$d" \
+				| sed '1,/<\/h3>/d' \
+				| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
 			echo "\nSource: <$RELEASE_NOTES_URL>"
 
