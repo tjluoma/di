@@ -44,25 +44,30 @@ LAUNCH='no'
 
 ## Note: Downloads are available in tbz2 and dmg but dmg has EULA so I use tbz2
 
-INFO=($(curl -sfL $XML_FEED \
+INFO=($(curl -sfL "$XML_FEED" \
 		| tidy 	--char-encoding utf8 --force-output yes --indent no --input-xml yes --markup yes --output-xhtml no \
 				--output-xml yes --quiet yes --quote-ampersand yes --quote-marks yes --quote-nbsp no --show-errors 0 \
 				--show-warnings no --uppercase-attributes no --uppercase-tags no --wrap 0 \
-		| egrep '<omniappcast:marketingVersion>|url=.*\.tbz2' \
-		| head -2 \
-		| sed 's#<omniappcast:marketingVersion>##g ; s#<\/omniappcast:marketingVersion>##g ; s#.*url="##g ; s#".*##g ; '))
+		| egrep '<omniappcast:releaseNotesLink>|<omniappcast:marketingVersion>|url=.*\.tbz2' \
+		| head -3 \
+		| sort \
+		| sed \
+			-e 's#.*url="##g ; s#".*##g' \
+			-e 's#<omniappcast:marketingVersion>##g ; s#<\/omniappcast:marketingVersion>##g' \
+			-e 's#<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g'))
 
-LATEST_VERSION="$INFO[1]"
-
-URL="$INFO[2]"
+URL="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
+RELEASE_NOTES_URL="$INFO[3]"
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" -o "$RELEASE_NOTES_URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
+	RELEASE_NOTES_URL: $RELEASE_NOTES_URL
 	"
 
 	exit 1
@@ -95,14 +100,6 @@ fi
 
 if (( $+commands[lynx] ))
 then
-
-	RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
-		| tidy 	--char-encoding utf8 --force-output yes --indent no --input-xml yes --markup yes --output-xhtml no \
-				--output-xml yes --quiet yes --quote-ampersand yes --quote-marks yes --quote-nbsp no --show-errors 0 \
-				--show-warnings no --uppercase-attributes no --uppercase-tags no --wrap 0 \
-		| fgrep '<omniappcast:releaseNotesLink>' \
-		| sed 's#<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g ; ' \
-		| head -1)
 
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed "1,/<section class='latest'>/d; /<\/section>/,\$d" \
