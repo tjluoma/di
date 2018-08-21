@@ -23,9 +23,7 @@ LAUNCH='no'
 XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniPlan3"
 
 INFO=($(curl -sfL "$XML_FEED" \
-		| tidy 	--char-encoding utf8 --force-output yes --indent no --input-xml yes --markup yes --output-xhtml no \
-				--output-xml yes --quiet yes --quote-ampersand yes --quote-marks yes --quote-nbsp no --show-errors 0 \
-				--show-warnings no --uppercase-attributes no --uppercase-tags no --wrap 0 \
+		| tidy --input-xml yes --output-xml yes --show-warnings no --force-output yes --quiet yes --wrap 0  \
 		| egrep '<omniappcast:releaseNotesLink>|<omniappcast:marketingVersion>|url=.*\.tbz2' \
 		| head -3 \
 		| sort \
