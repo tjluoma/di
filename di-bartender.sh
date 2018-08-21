@@ -14,6 +14,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+V1_INSTALL_TO="/Applications/Bartender.app"
 V2_INSTALL_TO="/Applications/Bartender 2.app"
 V3_INSTALL_TO='/Applications/Bartender 3.app'
 
@@ -51,6 +52,8 @@ fi
 
 function use_v1 {
 
+	INSTALL_TO="/Applications/Bartender.app"
+
 	URL='http://www.macbartender.com/updates/latest/Bartender.zip'
 
 	LATEST_VERSION="1.3.3"
@@ -58,7 +61,6 @@ function use_v1 {
 	LATEST_BUILD="96"
 
 }
-
 
 
 function use_v2 {
@@ -133,35 +135,17 @@ function use_v3 {
 	fi
 }
 
-
-        # if the user explicitly askes for version 2, try to use it
-if [ "$1" = "--use2" -o "$1" = "-2" ]
+if [[ -e "$V3_INSTALL_TO" ]]
 then
-        use_v2
-elif [ "$1" = "--use3" -o "$1" = "-3" ]
+	use_v3
+elif [[ -e "$V2_INSTALL_TO" ]]
 then
-        use_v3
+	use_v2
+elif [[ -e "$V1_INSTALL_TO" ]]
+then
+	use_v1
 else
-        if [ -e "$V2_INSTALL_TO" -a -e "$V3_INSTALL_TO" ]
-        then
-                echo "$NAME: Both versions 2 and 3 of Bartender are installed. I will _only_ check for updates for version 3 in this situation."
-                echo "  If you want to check for updates for version 2, add the argument '--use2' i.e. '$0:t --use2' "
-                echo "  To avoid this message in the future, add the argument '--use3' i.e. '$0:t --use3' "
-
-                use_v3
-
-        elif [ ! -e "$V2_INSTALL_TO" -a -e "$V3_INSTALL_TO" ]
-        then
-                        # version 2 is not installed but version 3 is
-                use_v3
-        elif [ -e "$V2_INSTALL_TO" -a ! -e "$V3_INSTALL_TO" ]
-        then
-                        # version 2 is installed but version 3 is not
-                use_v2
-        else
-                        # neither v2 or v3 are installed
-                use_v3
-        fi
+	use_v3
 fi
 
 	# If any of these are blank, we should not continue
