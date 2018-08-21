@@ -14,30 +14,68 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# Bartender 2 cannot control system items in macOS High Sierra
+V2_INSTALL_TO="/Applications/Bartender 2.app"
+V3_INSTALL_TO='/Applications/Bartender 3.app'
 
-OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
+OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
-autoload is-at-least
+case "$OS_VER" in
+	13|14)
+		CAN_USE_3='yes'
+		CAN_USE_2='no'
+	;;
 
-is-at-least "10.13" "$OS_VER"
+	12)
+		CAN_USE_3='yes'
+		CAN_USE_2='yes'
+	;;
 
-IS_AT_LEAST="$?"
+	10|11)
+		CAN_USE_3='no'
+		CAN_USE_2='yes'
+	;;
+esac
 
-if [[ "$IS_AT_LEAST" == "0" ]]
-then
-	# Can use either
 
-	if [[ -e "/Applications/Bartender 2.app" ]]
+function use_v2 {
+
+	if [[ "$CAN_USE_2" = "yes" ]]
 	then
+		XML_FEED='https://www.macbartender.com/B2/updates/updates.php'
+
+		IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
+						| fgrep 'https://macbartender.com/B2/updates/2' \
+						| egrep 'sparkle:version|sparkle:shortVersionString=|url=' \
+						| tail -1 \
+						| sort ))
+
+		URL=$(echo "$INFO" | sed 's#.*https://#https://#g; s#.zip".*#.zip#g;')
+
+		LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:shortVersionString="##g; s#".*##g; ')
+
+		LATEST_BUILD=$(echo "$INFO" | sed 's#.*sparkle:version="##g; s#".*##g;')
+
+		INSTALL_TO="/Applications/Bartender 2.app"
+
+		ASTERISK='(Note that version 3 is also available.)'
 		USE_VERSION='2'
 	else
+		echo "$NAME: Cannot use v2 with 10.$OS_VER. See <https://www.macbartender.com/faq/> for more information."
+		exit 0
+	fi
+}
+
+function use_v3 {
+
+	if [ "$CAN_USE_3" = "yes" ]
+	then
+
 		USE_VERSION='3'
 
 		INSTALL_TO='/Applications/Bartender 3.app'
 
-			# if you want to install beta releases
-			# create a file (empty, if you like) using this file name/path:
+				# if you want to install beta releases
+				# create a file (empty, if you like) using this file name/path:
 		PREFERS_BETAS_FILE="$HOME/.config/di/bartender3-prefer-betas.txt"
 
 		if [[ -e "$PREFERS_BETAS_FILE" ]]
@@ -65,34 +103,41 @@ then
 		LATEST_VERSION="$INFO[1]"
 		LATEST_BUILD="$INFO[2]"
 		URL="$INFO[3]"
-
+	else
+		echo "$NAME: Cannot use v3 with 10.$OS_VER. See <https://www.macbartender.com/faq/> for more information."
+		exit 0
 	fi
+}
 
-else
-	# Can only use 2
 
-	USE_VERSION='2'
-
-fi
-
-if [[ "$USE_VERSION" == "2" ]]
+        # if the user explicitly askes for version 2, try to use it
+if [ "$1" = "--use2" -o "$1" = "-2" ]
 then
-	XML_FEED='https://www.macbartender.com/B2/updates/updates.php'
+        use_v2
+elif [ "$1" = "--use3" -o "$1" = "-3" ]
+then
+        use_v3
+else
+        if [ -e "$V2_INSTALL_TO" -a -e "$V3_INSTALL_TO" ]
+        then
+                echo "$NAME: Both versions 2 and 3 of Bartender are installed. I will _only_ check for updates for version 3 in this situation."
+                echo "  If you want to check for updates for version 2, add the argument '--use2' i.e. '$0:t --use2' "
+                echo "  To avoid this message in the future, add the argument '--use3' i.e. '$0:t --use3' "
 
-	IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
-					| fgrep 'https://macbartender.com/B2/updates/2' \
-					| egrep 'sparkle:version|sparkle:shortVersionString=|url=' \
-					| tail -1 \
-					| sort ))
+                use_v3
 
-	URL=$(echo "$INFO" | sed 's#.*https://#https://#g; s#.zip".*#.zip#g;')
-
-	LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:shortVersionString="##g; s#".*##g; ')
-
-	LATEST_BUILD=$(echo "$INFO" | sed 's#.*sparkle:version="##g; s#".*##g;')
-
-	INSTALL_TO="/Applications/Bartender 2.app"
-
+        elif [ ! -e "$V2_INSTALL_TO" -a -e "$V3_INSTALL_TO" ]
+        then
+                        # version 2 is not installed but version 3 is
+                use_v3
+        elif [ -e "$V2_INSTALL_TO" -a ! -e "$V3_INSTALL_TO" ]
+        then
+                        # version 2 is installed but version 3 is not
+                use_v2
+        else
+                        # neither v2 or v3 are installed
+                use_v3
+        fi
 fi
 
 	# If any of these are blank, we should not continue
