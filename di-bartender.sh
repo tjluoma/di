@@ -20,36 +20,6 @@ V3_INSTALL_TO='/Applications/Bartender 3.app'
 
 OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
-if [ "$OS_VER" -lt "10" ]
-then
-
-	CAN_USE_3='no'
-	CAN_USE_2='no'
-
-	use_v1
-
-else
-
-	case "$OS_VER" in
-		13|14)
-			CAN_USE_3='yes'
-			CAN_USE_2='no'
-			use_v3
-		;;
-
-		12)
-			CAN_USE_3='yes'
-			CAN_USE_2='yes'
-		;;
-
-		10|11)
-			CAN_USE_3='no'
-			CAN_USE_2='yes'
-			use_v2
-		;;
-	esac
-fi
-
 function use_v1 {
 
 	INSTALL_TO="/Applications/Bartender.app"
@@ -134,6 +104,38 @@ function use_v3 {
 		exit 0
 	fi
 }
+
+
+if [ "$OS_VER" -lt "10" ]
+then
+
+	CAN_USE_3='no'
+	CAN_USE_2='no'
+
+	use_v1
+
+else
+
+	case "$OS_VER" in
+		13|14)
+			CAN_USE_3='yes'
+			CAN_USE_2='no'
+			use_v3
+		;;
+
+		12)
+			CAN_USE_3='yes'
+			CAN_USE_2='yes'
+		;;
+
+		10|11)
+			CAN_USE_3='no'
+			CAN_USE_2='yes'
+			use_v2
+		;;
+	esac
+fi
+
 
 if [[ -e "$V3_INSTALL_TO" ]]
 then
