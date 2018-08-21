@@ -19,22 +19,46 @@ V3_INSTALL_TO='/Applications/Bartender 3.app'
 
 OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
-case "$OS_VER" in
-	13|14)
-		CAN_USE_3='yes'
-		CAN_USE_2='no'
-	;;
+if [ "$OS_VER" -lt "10" ]
+then
 
-	12)
-		CAN_USE_3='yes'
-		CAN_USE_2='yes'
-	;;
+	CAN_USE_3='no'
+	CAN_USE_2='no'
 
-	10|11)
-		CAN_USE_3='no'
-		CAN_USE_2='yes'
-	;;
-esac
+	use_v1
+
+else
+
+	case "$OS_VER" in
+		13|14)
+			CAN_USE_3='yes'
+			CAN_USE_2='no'
+			use_v3
+		;;
+
+		12)
+			CAN_USE_3='yes'
+			CAN_USE_2='yes'
+		;;
+
+		10|11)
+			CAN_USE_3='no'
+			CAN_USE_2='yes'
+			use_v2
+		;;
+	esac
+fi
+
+function use_v1 {
+
+	URL='http://www.macbartender.com/updates/latest/Bartender.zip'
+
+	LATEST_VERSION="1.3.3"
+
+	LATEST_BUILD="96"
+
+}
+
 
 
 function use_v2 {
