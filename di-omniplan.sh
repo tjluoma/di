@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of OmniPlan
+# Purpose: Download and install the latest version of OmniPlan (3)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -22,30 +22,29 @@ LAUNCH='no'
 
 XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniPlan3"
 
-# Don't indent or you'll break the 'sed' command
+INFO=($(curl -sfL "$XML_FEED" \
+		| tidy 	--char-encoding utf8 --force-output yes --indent no --input-xml yes --markup yes --output-xhtml no \
+				--output-xml yes --quiet yes --quote-ampersand yes --quote-marks yes --quote-nbsp no --show-errors 0 \
+				--show-warnings no --uppercase-attributes no --uppercase-tags no --wrap 0 \
+		| egrep '<omniappcast:releaseNotesLink>|<omniappcast:marketingVersion>|url=.*\.tbz2' \
+		| head -3 \
+		| sort \
+		| sed \
+			-e 's#.*url="##g ; s#".*##g' \
+			-e 's#<omniappcast:marketingVersion>##g ; s#<\/omniappcast:marketingVersion>##g' \
+			-e 's#<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g'))
 
-# There's also a <omniappcast:buildVersion> ~ </omniappcast:buildVersion>
-# which corresponds to 'CFBundleVersion' but the number is too absurdly long to be useful
+URL="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
+RELEASE_NOTES_URL="$INFO[3]"
 
-INFO=($(curl -sfL "$XML_FEED" 2>&1 \
-| sed 's#<#\
-<#g' \
-| tr -s ' ' '\012' \
-| egrep '<omniappcast:marketingVersion>|url=.*\.tbz2' \
-| head -2 \
-| tr -s '>|"' ' ' \
-| awk '{print $NF}'))
-
-LATEST_VERSION="$INFO[1]"
-
-URL="$INFO[2]"
-
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$RELEASE_NOTES_URL" = "" ]
 then
 	echo "$NAME: Bad data received from $XML_FEED
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
+	RELEASE_NOTES_URL: $RELEASE_NOTES_URL
 	"
 
 	exit 1
@@ -82,16 +81,10 @@ then
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
-
 fi
 
 if (( $+commands[lynx] ))
 then
-
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| egrep '<omniappcast:releaseNotesLink>.*</omniappcast:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<omniappcast:releaseNotesLink>##g; s#</omniappcast:releaseNotesLink>.*##g')
 
 	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
 
