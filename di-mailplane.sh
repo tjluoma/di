@@ -13,7 +13,7 @@ V4_INSTALL_TO='/Applications/Mailplane.app'
 
 function use_v3 {
 
-	INSTALL_TO="$V3_INSTALL_TO"
+	INSTALL_TO="/Applications/Mailplane 3.app"
 
 	URL=$(curl -sfL --head "http://update.mailplaneapp.com/mailplane_3.php" \
 		| awk -F'\r|: ' '/^Location/{print $2}' \
@@ -26,7 +26,7 @@ function use_v3 {
 
 function use_v4 {
 
-	INSTALL_TO="$V4_INSTALL_TO"
+	INSTALL_TO="/Applications/Mailplane.app"
 
 	OS_VER=`sw_vers -productVersion`
 
