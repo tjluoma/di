@@ -14,35 +14,39 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-OS_VER=$(sw_vers -productVersion)
+V6_INSTALL_TO='/Applications/1Password 6.app'
+V7_INSTALL_TO='/Applications/1Password 7.app'
 
-autoload is-at-least
+function do_os_check {
 
-is-at-least "10.12.6" "$OS_VER"
+	OS_VER=$(sw_vers -productVersion)
 
-IS_AT_LEAST="$?"
+	OS_MINIMUM='10.12.6'
 
-if [ "$IS_AT_LEAST" = "0" ]
-then
-	# Can use either version 6 or 7. Is one installed?
+	autoload is-at-least
 
-	if [[ -d '/Applications/1Password 7.app' ]]
+	is-at-least "$OS_MINIMUM" "$OS_VER"
+
+	IS_AT_LEAST="$?"
+
+	if [ "$IS_AT_LEAST" != "0" ]
 	then
-		USE_VERSION='7'
-	elif [[ -d '/Applications/1Password 6.app' ]]
-	then
-		USE_VERSION='6'
+			# Cannot use version 7
+		CAN_USE_7='no'
+
+		echo "$NAME: Cannot use 1Password 7 with $OS_VER (requires at least $OS_MINIMUM). Using 1Password 6 instead."
+
+		use_v6
+
 	else
-		# Neither version is installed, default to 7
-		USE_VERSION='7'
+		CAN_USE_7='yes'
 	fi
-else
-	# Cannot use version 7
-	USE_VERSION='6'
-fi
+}
 
-if [[ "$USE_VERSION" == "6" ]]
-then
+function use_v6 {
+
+	ASTERISK='(Note that version 7 is also available.)'
+	USE_VERSION='6'
 	INSTALL_TO='/Applications/1Password 6.app'
 
 	# 	https://app-updates.agilebits.com/download/OPM4
@@ -53,37 +57,77 @@ then
 
 	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#1Password-##g' | tr -dc '[0-9]\.')
 
-else
-	# If not explicitly 6, use 7
+}
 
-	INSTALL_TO='/Applications/1Password 7.app'
+function use_v7 {
 
-	PREFERS_BETAS_FILE="$HOME/.config/di/1Password-prefer-betas.txt"
+	do_os_check
 
-	if [[ -e "$PREFERS_BETAS_FILE" ]]
+	if [[ "$CAN_USE_7" == "yes" ]]
 	then
 
-		URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
-			fgrep .pkg |\
-			fgrep -i beta |\
-			head -1 |\
-			sed 's#.*a href="##g; s#">download</a>##g')
+		USE_VERSION='7'
+		INSTALL_TO='/Applications/1Password 7.app'
 
-		LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+		PREFERS_BETAS_FILE="$HOME/.config/di/1Password-prefer-betas.txt"
 
-		NAME="$NAME (beta releases)"
+		if [[ -e "$PREFERS_BETAS_FILE" ]]
+		then
 
-		BETAS='yes'
-	else
-		BETAS='no'
+			URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
+				fgrep .pkg |\
+				fgrep -i beta |\
+				head -1 |\
+				sed 's#.*a href="##g; s#">download</a>##g')
 
-		DL_URL='https://app-updates.agilebits.com/download/OPM7'
+			LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
 
-		URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
+			NAME="$NAME (beta releases)"
 
-		LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+			BETAS='yes'
+		else
+			BETAS='no'
+
+			DL_URL='https://app-updates.agilebits.com/download/OPM7'
+
+			URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
+
+			LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+		fi
 	fi
+}
+
+
+        # if the user explicitly askes for version 6, use it, regardless of the above
+if [ "$1" = "--use6" -o "$1" = "-6" ]
+then
+        use_v6
+elif [ "$1" = "--use7" -o "$1" = "-7" ]
+then
+        use_v7
+else
+        if [ -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+        then
+                echo "$NAME: Both versions 6 and 7 of 1Password are installed. I will _only_ check for updates for version 7 in this situation."
+                echo "  If you want to check for updates for version 6, add the argument '--use6' i.e. '$0:t --use6' "
+                echo "  To avoid this message in the future, add the argument '--use7' i.e. '$0:t --use7' "
+
+                use_v7
+
+        elif [ ! -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+        then
+                        # version 6 is not installed but version 7 is
+                use_v7
+        elif [ -e "$V6_INSTALL_TO" -a ! -e "$V7_INSTALL_TO" ]
+        then
+                        # version 6 is installed but version 7 is not
+                use_v6
+        else
+                        # neither v6 or v7 are installed
+                use_v7
+        fi
 fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
