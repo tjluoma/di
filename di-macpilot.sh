@@ -1,6 +1,7 @@
 #!/bin/zsh -f
 # Purpose: Download and install the latest version of MacPilot
 # {Note/@todo: ideally this script would use `sw_vers` to make sure to download the right version for the particular OS the user is running.}
+# See https://www.koingosw.com/products/macpilot/
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
@@ -18,30 +19,85 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
-else
-	# we need to fake that we've installed something if it isn't installed, so I chose '10'
-	# since it's the most recent major version as of this writing
-	INSTALLED_VERSION='10'
-fi
+OS_VER=$(sw_vers -productVersion)
 
-OS_VER=`sw_vers -productVersion`
+function use_v8 {
+
+	ASTERISK='(Note that version 10 is also available.)'
+	INFO='(Valued are hard-coded)'
+	URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_81_intel_1010.dmg"
+	LATEST_VERSION="8.1"
+}
+
+function use_v9 {
+
+	ASTERISK='(Note that version 10 is also available.)'
+	URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_914_intel_1012.dmg"
+	LATEST_VERSION="9.1.4"
+}
+
+function use_v10 {
+
+	if [[ -e "$INSTALL_TO" ]]
+	then
+		INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
+	else
+		# we need to fake that we've installed something if it isn't installed, so I chose '10'
+		# since it's the most recent major version as of this writing
+		INSTALLED_VERSION='10'
+	fi
 
 XML_FEED="http://www.koingosw.com/postback/versioncheck.php?appname=macpilot&appversion=${INSTALLED_VERSION}&sysplatform=Mac%20OS%20X&sysversion=Mac%20OS%20X%20${OS_VER}"
 
-INFO=($(curl --silent --location --fail "$XML_FEED" \
-		| fgrep -A3 '<macpilot>' \
-		| egrep '(<version>|<macpath>)' \
-		| sort \
-		| sed 's#.*<version>##g ; s#</version>##g; s#.*<macpath>##g; s#</macpath>##g; '
-	))
+	INFO=($(curl --silent --location --fail "$XML_FEED" \
+			| fgrep -A3 '<macpilot>' \
+			| egrep '(<version>|<macpath>)' \
+			| sort \
+			| sed 's#.*<version>##g ; s#</version>##g; s#.*<macpath>##g; s#</macpath>##g; '
+		))
 
-URL="$INFO[1]"
+	URL="$INFO[1]"
 
-	# That's the only version info the app uses
-LATEST_VERSION="$INFO[2]"
+		# That's the only version info the app uses
+	LATEST_VERSION="$INFO[2]"
+
+}
+
+case "$OS_VER" in
+	10.12|10.13|10.14)
+		use_v10
+	;;
+
+	10.10|10.11)
+		use_v8
+	;;
+
+esac
+
+if [[ -e "$INSTALL_TO" ]]
+then
+	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
+
+		# if v8 or v9 are installed, check that. Otherwise, use v10
+	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
+
+	if [[ "$MAJOR_VERSION" == "8" ]]
+	then
+		use_v8
+	elif [[ "$MAJOR_VERSION" == "9" ]]
+	then
+		use_v9
+	else
+		use_v10
+	fi
+else
+	if [ "$1" = "--use9" -o "$1" = "-9" ]
+	then
+		use_v9
+	else
+		use_v10
+	fi
+fi
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -60,7 +116,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 
