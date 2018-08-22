@@ -1,11 +1,9 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of BBEdit
+# Purpose: Download and install the latest version of BBEdit determined by OS version
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-10-28
-
-# @todo - https://www.barebones.com/support/bbedit/updates.html shows which versions compatible with which OSes
 
 NAME="$0:t:r"
 
@@ -18,20 +16,105 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	## 2018-07-17 Found new URL via find_appcast
-	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
-XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+ARGS_GIVEN='no'
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadURL)</key>' \
-		| tail -5 \
-		| sort \
-		| awk -F'>|<' '/string/{print $3}'))
+OS_VER=$(sw_vers -productVersion)
 
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+OS_VER_SHORT=$(sw_vers -productVersion | cut -d '.' -f 2)
 
-	# If either of these are blank, we should not continue
+autoload is-at-least
+
+function use_v12 {
+
+	USE12='yes'
+
+		## 2018-07-17 Found new URL via find_appcast
+		#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
+	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+
+	INFO=($(curl -sfL "$XML_FEED" \
+			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadURL)</key>' \
+			| tail -5 \
+			| sort \
+			| awk -F'>|<' '/string/{print $3}'))
+
+	LATEST_VERSION="$INFO[1]"
+
+	URL="$INFO[2]"
+}
+
+function use_v11 {
+
+	if [ "$OS_VER_SHORT" -ge "13" ]
+	then
+		echo "$NAME: Cannot use BBEdit v11 with macOS High Sierra (10.13) or later. Must use v12."
+
+		use_v12
+	else
+
+		is-at-least "10.8.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.1.4.dmg" 	&& LATEST_VERSION="11.1.4"
+
+		is-at-least "10.9.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.6.8.dmg" 	&& LATEST_VERSION="11.6.8"
+	fi
+}
+
+function use_v10 {
+
+	if [ "$OS_VER_SHORT" -ge "13" ]
+	then
+		echo "$NAME: Cannot use BBEdit v10 with macOS High Sierra (10.13) or later. Must use v12."
+
+		use_v12
+	else
+		is-at-least "10.6.8" "$OS_VER" \
+		&& URL="http://pine.barebones.com/files/BBEdit_10.5.13.dmg" \
+		&& LATEST_VERSION="10.5.13"
+	fi
+
+}
+
+case "$@" in
+	--use12)
+		use_v12
+		ARGS_GIVEN='yes'
+	;;
+
+	--use11)
+		use_v11
+		ARGS_GIVEN='yes'
+	;;
+
+	--use10)
+		use_v10
+		ARGS_GIVEN='yes'
+	;;
+
+esac
+
+if [ "$ARGS_GIVEN" = "no" ]
+then
+
+	if [ "$OS_VER_SHORT" -ge "13" ]
+	then
+
+		use_v12
+
+	else
+
+		is-at-least "10.6.8"  "$OS_VER" 	&& use_v10
+
+		is-at-least "10.8.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.1.4.dmg" 	&& LATEST_VERSION="11.1.4"
+
+		is-at-least "10.9.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.6.8.dmg" 	&& LATEST_VERSION="11.6.8"
+
+		is-at-least "10.11.6" "$OS_VER"	&& use_v12
+
+	fi
+fi
+
+## I don't actually have any Macs running a version of Mac OS older than 10.11.6, so it's a hard thing to test
+
+	# If either of these are blank, we cannot continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
@@ -89,17 +172,21 @@ fi
 ## ?
 ## So that's what I'm doing instead.
 
-if (( $+commands[lynx] ))
+
+if [[ "$USE12" = "yes" ]]
 then
+	if (( $+commands[lynx] ))
+	then
 
-	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+		RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
-	echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
+		echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
 
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-	| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
+		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+		| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+		echo "\nSource: <$RELEASE_NOTES_URL>"
+	fi
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
