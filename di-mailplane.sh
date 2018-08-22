@@ -22,6 +22,8 @@ function use_v3 {
 	LATEST_VERSION=`echo "$URL:t:r" | sed 's#Mailplane_3_##g'`
 
 	FILENAME="$HOME/Downloads/MailPlane-3-${LATEST_VERSION}.tbz"
+
+	ASTERISK='(Note that version 4 is also available.)'
 }
 
 function use_v4 {
@@ -90,7 +92,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 

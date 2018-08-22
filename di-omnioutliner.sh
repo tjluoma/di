@@ -29,6 +29,8 @@ function use_v4 {
 	RELEASE_NOTES_URL="https://www.omnigroup.com/releasenotes/omnioutliner-4/$LATEST_VERSION"
 
 	URL="https://downloads.omnigroup.com/software/MacOSX/10.10/OmniOutliner-$LATEST_VERSION.tbz2"
+
+	ASTERISK='(Note that version 5 is now available.)'
 }
 
 function use_v5 {
@@ -92,7 +94,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 

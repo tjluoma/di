@@ -20,6 +20,7 @@ function use_charles_v3 {
 
 	URL="https://www.charlesproxy.com/assets/release/3.12.3/charles-proxy-3.12.3.dmg"
 	LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]\.'`
+	ASTERISK='(Note that version 4 is now available.)'
 }
 
 	# versions 3 and 4 are both compatible with macOS 10.7 - 10.13
@@ -54,7 +55,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 

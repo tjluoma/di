@@ -30,6 +30,8 @@ function use_istat_v5 {
 	URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus5/ \
 		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
 		| tail -1)
+
+	ASTERISK='(Note that version 6 is now available.)'
 }
 
 if [[ -e "$INSTALL_TO" ]]
@@ -63,7 +65,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 

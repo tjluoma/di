@@ -16,7 +16,10 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-function use_v3 { XML_FEED='https://www.red-sweater.com/marsedit/appcast3.php' }
+function use_v3 {
+	XML_FEED='https://www.red-sweater.com/marsedit/appcast3.php'
+	ASTERISK='(Note that version 4 is now available.)'
+}
 
 function use_v4 { XML_FEED='https://www.red-sweater.com/marsedit/appcast4.php' }
 
@@ -91,7 +94,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD) $ASTERISK"
 		exit 0
 	fi
 

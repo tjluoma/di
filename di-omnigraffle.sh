@@ -16,7 +16,10 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-function use_v6 { XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniGraffle6" }
+function use_v6 {
+	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniGraffle6"
+	ASTERISK='(Note that version 7 is also available.)'
+}
 
 function use_v7 { XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniGraffle7" }
 
@@ -78,7 +81,7 @@ then
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 

@@ -19,7 +19,10 @@ fi
 
 OS_VER=`sw_vers -productVersion`
 
-function use_v2 { XML_FEED="https://updates.fournova.com/updates/tower2-mac/stable/?os_version=$OS_VER" }
+function use_v2 {
+	XML_FEED="https://updates.fournova.com/updates/tower2-mac/stable/?os_version=$OS_VER"
+	ASTERISK='(Note that version 3 is now available.)'
+}
 
 function use_v3 {
 
@@ -89,7 +92,7 @@ then
 
 	 if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	 then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	 fi
 

@@ -16,19 +16,35 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# default to Fluid 2, unless Fluid 1 is already installed
-XML_FEED="https://fluidapp.com/appcast/fluid2.rss"
+function use_v1 {
+	USE_VERSION='1'
+	XML_FEED="https://fluidapp.com/appcast/fluid1.rss"
+	ASTERISK='(Note that version 2 is also available.)'
+}
+
+function use_v2 {
+	USE_VERSION='2'
+	XML_FEED="https://fluidapp.com/appcast/fluid2.rss"
+}
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# if v1 is installed, check that. Otherwise, use v2
 	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
 
 	if [[ "$MAJOR_VERSION" == "1" ]]
 	then
-		XML_FEED="https://fluidapp.com/appcast/fluid1.rss"
+		use_v1
+	else
+		use_v2
 	fi
-
+else
+	if [ "$1" = "--use1" -o "$1" = "-1" ]
+	then
+		use_v1
+	else
+		use_v2
+	fi
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -83,14 +99,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo -n "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-
-		if [[ "$MAJOR_VERSION" == "1" ]]
-		then
-			echo " (Note that version 2 is available. See <https://www.fluidapp.com> for details.)"
-		else
-			echo
-		fi
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD) $ASTERISK"
 
 		exit 0
 	fi

@@ -15,30 +15,37 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+function use_v3 {
+
+	ASTERISK='(Note that version 4 is also available.)'
+	USE_VERSION='3'
+	XML_FEED='https://kapeli.com/Dash3.xml'
+}
+
+function use_v4 {
+
+	USE_VERSION='4'
+	XML_FEED='https://kapeli.com/Dash4.xml'
+}
+
 if [[ -e "$INSTALL_TO" ]]
 then
+		# if v3 is installed, check that. Otherwise, use v4
 	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
 
-	case "$MAJOR_VERSION" in
-		3)
-			XML_FEED='https://kapeli.com/Dash3.xml'
-		;;
-
-		4)
-			XML_FEED='https://kapeli.com/Dash4.xml'
-		;;
-
-		*)
-			echo "$NAME: Don't know what to do for version $MAJOR_VERSION"
-			exit 1
-		;;
-
-	esac
-
+	if [[ "$MAJOR_VERSION" == "3" ]]
+	then
+		use_v3
+	else
+		use_v4
+	fi
 else
-
-	XML_FEED='https://kapeli.com/Dash4.xml'
-
+	if [ "$1" = "--use3" -o "$1" = "-3" ]
+	then
+		use_v3
+	else
+		use_v4
+	fi
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -85,14 +92,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo -n "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-
-		if [ "$MAJOR_VERSION" = "3" ]
-		then
-			echo " (Note: Dash v4 is also available. See <https://kapeli.com/dash> for details.)"
-		else
-			echo
-		fi
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD) $ASTERISK"
 
 		exit 0
 	fi
