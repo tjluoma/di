@@ -6,6 +6,14 @@
 # Date:	2018-08-14
 
 NAME="$0:t:r"
+
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+fi
+
 INSTALL_TO='/Applications/Lingon X.app'
 
 OLD_VERSION='yes'
@@ -81,13 +89,6 @@ else
 
 	esac
 
-fi
-
-if [ -e "$HOME/.path" ]
-then
-	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
