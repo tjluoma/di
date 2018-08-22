@@ -76,7 +76,11 @@ function use_v3 {
 
 		if [[ -e "$PREFERS_BETAS_FILE" ]]
 		then
-			NAME="$NAME (beta releases)"
+
+			if [[ "$NAME" == "$0:t:r" ]]
+			then
+				NAME="$NAME (beta releases)"
+			fi
 
 				# Reports itself as 'http://macbartender.com/B2/updates/TestAppcast.xml'
 			XML_FEED='https://www.macbartender.com/B2/updates/TestUpdates.php'
