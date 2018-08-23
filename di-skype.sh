@@ -16,10 +16,44 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sfLS --head 'https://get.skype.com/go/getskype-skypeformac' \
-	| awk -F'\r| ' '/^.ocation/{print $2}')
+function use_v7 {
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+	ASTERISK='(Note that version 8 is also available.)'
+	USE_VERSION='7'
+	URL='https://www.dropbox.com/s/8yakzhul3bmefnb/Skype-7.59.0.37.dmg?dl=0'
+	LATEST_VERSION="7.59.0.37"
+}
+
+function use_v8 {
+
+	USE_VERSION='8'
+
+	URL=$(curl -sfLS --head 'https://get.skype.com/go/getskype-skypeformac' \
+		| awk -F'\r| ' '/^.ocation/{print $2}')
+
+	LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+
+}
+
+if [[ -e "$INSTALL_TO" ]]
+then
+		# if v7 is installed, check that. Otherwise, use v8
+	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | cut -d. -f1)
+
+	if [[ "$MAJOR_VERSION" == "7" ]]
+	then
+		use_v7
+	else
+		use_v8
+	fi
+else
+	if [ "$1" = "--use7" -o "$1" = "-7" ]
+	then
+		use_v7
+	else
+		use_v8
+	fi
+fi
 
 	# If any of these are blank, we should not continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -45,7 +79,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION) $ASTERISK"
 		exit 0
 	fi
 
