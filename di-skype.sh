@@ -172,5 +172,85 @@ then
 	di-skypecallrecorder-private.sh
 fi
 
+PLIST="$HOME/Library/Preferences/com.skype.skype.plist"
+
+[[ -e "$PLIST" ]] && exit 0
+
+## If there is no plist, create one.
+## Basically, I want to make sure that Skype doesn't try to automatically force me to “upgrade” to version 8.
+##
+## That involves setting this, I think:
+##
+## 	<key>SKAllowStealthUpgrade</key>
+##	<false/>
+##
+## but it's just as easy to create the whole plist from an example one I had around.
+
+cat <<EOINPUT > "$PLIST"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AutoCollapseChatView</key>
+	<true/>
+	<key>AutoCollapseSidebar</key>
+	<false/>
+	<key>ChatViewIsCollapsed</key>
+	<false/>
+	<key>DialpadOpen</key>
+	<false/>
+	<key>DisableWebKitDeveloperExtras</key>
+	<true/>
+	<key>HasMigratedUserDefinedEvents_2</key>
+	<true/>
+	<key>HockeySDKAutomaticallySendCrashReports</key>
+	<false/>
+	<key>HockeySDKCrashReportActivated</key>
+	<true/>
+	<key>IncludeDebugMenu</key>
+	<false/>
+	<key>LastUserSidebarWidth</key>
+	<real>200</real>
+	<key>NSFullScreenMenuItemEverywhere</key>
+	<false/>
+	<key>NSSplitView Subview Frames MainSplitView</key>
+	<array>
+		<string>0.000000, 0.000000, 200.000000, 600.000000, NO, NO</string>
+		<string>201.000000, 0.000000, 649.000000, 600.000000, NO, NO</string>
+	</array>
+	<key>NSStatusItem Preferred Position Item-0</key>
+	<real>1000</real>
+	<key>NSTreatUnknownArgumentsAsOpen</key>
+	<string>NO</string>
+	<key>NSWindow Frame DialpadMonitor</key>
+	<string>154 154 207 234 0 0 1440 877 </string>
+	<key>SKAllowStealthUpgrade</key>
+	<false/>
+	<key>SKAvatarCacheDiskCacheVersion</key>
+	<integer>22</integer>
+	<key>SKDisableWelcomeTour</key>
+	<false/>
+	<key>SKLocationDataCacheDiskCacheVersion</key>
+	<integer>4</integer>
+	<key>SKMacUserSkypeVersion</key>
+	<string>7.59.0.37</string>
+	<key>SKShowCallDebugAutomatically</key>
+	<true/>
+	<key>SKShowWelcomeTour</key>
+	<false/>
+	<key>SKUpgradedFromVersion</key>
+	<string>7.56.0.776</string>
+	<key>SKUpgradedWithUpgradeType</key>
+	<integer>2</integer>
+	<key>ShowDialpadOnLogin</key>
+	<false/>
+	<key>SidebarIsCollapsed</key>
+	<false/>
+	<key>WebKitDeveloperExtras</key>
+	<false/>
+</dict>
+</plist>
+EOINPUT
+
 exit 0
 #EOF
