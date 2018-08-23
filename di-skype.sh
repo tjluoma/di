@@ -40,16 +40,29 @@ then
 		# if v7 is installed, check that. Otherwise, use v8
 	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | cut -d. -f1)
 
-	if [[ "$MAJOR_VERSION" == "7" ]]
+	if [[ "$1" == "--force7" ]]
+	then
+
+		if [[ "$MAJOR_VERSION" -gt "7" ]]
+		then
+			echo "$NAME: Version $MAJOR_VERSION is installed. Removing it and installing to version 7."
+
+			rm -rf "$INSTALL_TO" || sudo rm -rf "$INSTALL_TO"
+		fi
+
+		use_v7
+
+	elif [[ "$MAJOR_VERSION" == "7" ]]
 	then
 		use_v7
 	else
 		use_v8
 	fi
 else
-	if [ "$1" = "--use7" -o "$1" = "-7" ]
+	if [ "$1" = "--use7" -o "$1" = "-7" -o "$1" = "--force7" ]
 	then
 		use_v7
+
 	else
 		use_v8
 	fi
