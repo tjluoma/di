@@ -118,11 +118,11 @@ echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
 
-if (( $+commands[di-callrecorder-private.sh] ))
+if (( $+commands[di-skypecallrecorder-private.sh] ))
 then
-		# if 'di-callrecorder-private.sh' exists, run it.
-		# di-callrecorder-private.sh can't be shared because the download link contains the user's registration code.
-	di-callrecorder-private.sh
+		# if 'di-skypecallrecorder-private.sh' exists, run it.
+		# n.b. that script can't be shared because the download link contains the user's registration code.
+	di-skypecallrecorder-private.sh
 fi
 
 exit 0
