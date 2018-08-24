@@ -16,7 +16,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# 2018-07-17 this was the old URL I was using:
+	# 2018-07-17 this was the old URL I was using (still works, at least for now):
 	# XML_URL='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
 XML_FEED='https://somazonecom.ipage.com/soma-zone.com/LaunchControl/a/appcast_update.xml'
 
@@ -68,23 +68,21 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tar.bz2"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
-
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d" \
 	| sed '1,/<description>/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tar.bz2"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
