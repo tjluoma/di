@@ -16,12 +16,14 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+
 function use_v7 {
 
+		# via https://go.skype.com/classic.skype
+	URL='https://download.skype.com/macosx/bf9ccdd6b5b079049ff5a87419033ce3/Skype_7.59.37.dmg'
+	LATEST_VERSION="7.59.0.37"
 	ASTERISK='(Note that version 8 is also available.)'
 	USE_VERSION='7'
-	URL='https://www.dropbox.com/s/8yakzhul3bmefnb/Skype-7.59.0.37.dmg?dl=0'
-	LATEST_VERSION="7.59.0.37"
 }
 
 function use_v8 {
