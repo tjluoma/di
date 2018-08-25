@@ -109,10 +109,8 @@ FILENAME="$HOME/Downloads/SkypeCallRecorder-${LATEST_VERSION}.zip"
 if (( $+commands[lynx] ))
 then
 
-	(curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/What's new in/d; /<\/table>/,\$d" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
+	(lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
+	 echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
 fi
 
