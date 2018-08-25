@@ -18,10 +18,19 @@
 	#### Replace that with your actual URL
 PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
 
+XML_FEED='https://www.ecamm.com/appcasts/callrecorder.xml'
 
 	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo
 	# But we can get the version number from it.
-LATEST_VERSION=$(curl -sfLS "https://www.ecamm.com/appcasts/callrecorder.xml" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
+LATEST_VERSION=$(curl -sfLS "$XML_FEED" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
+
+	# And the release-notes URL
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 
 if [[ "$LATEST_VERSION" = "" ]]
 then
@@ -61,7 +70,7 @@ then
 
 fi
 
-[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^https://www.ecamm.com/.*\.zip' "$PRIVATE_FILE")
+[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^http.*//www.ecamm.com/' "$PRIVATE_FILE")
 
 if [ "$PRIVATE_URL" != "" ]
 then
@@ -100,9 +109,7 @@ FILENAME="$HOME/Downloads/SkypeCallRecorder-${LATEST_VERSION}.zip"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="$PRIVATE_URL"
-
-	(curl -sfL "$PRIVATE_URL" \
+	(curl -sfL "$RELEASE_NOTES_URL" \
 	| sed "1,/What's new in/d; /<\/table>/,\$d" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
