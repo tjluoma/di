@@ -13,7 +13,7 @@
 	##
 	## So, create a file "$HOME/.config/di/private/di-skypecallrecorder.txt" with a line like this in it:
 	##
-	# PRIVATE_URL='https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF'
+	## 	https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF
 	##
 	#### Replace that with your actual URL
 PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
@@ -61,47 +61,38 @@ then
 
 fi
 
-if [ -e "$INSTALL_TO" -a ! -e "$PRIVATE" ]
-then
-		# the app is already installed, _BUT_ there is no $PRIVATE file
-		# we don't want to install the demo, so bail out.
-	echo "$NAME: No file found at '$PRIVATE'. Cannot continue."
-	exit 1
+[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^https://www.ecamm.com/.*\.zip' "$PRIVATE_FILE")
 
-elif [ ! -e "$INSTALL_TO" -a ! -e "$PRIVATE" ]
+if [ "$PRIVATE_URL" != "" ]
 then
-		# the app is not installed and there is no $PRIVATE file
-		# so we can at least install the demo version
-	echo "$NAME: No file found at '$PRIVATE'. Will download demo version of Skype Call Recorder."
-	URL='https://www.ecamm.com/mac/callrecorder/CallRecorder.zip'
+		# This is what we hope for:
+		# if we get to this point, we know we need to do either an install or an update
+		# AND we have an URL to work with.
+
+	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*\.zip')
 
 else
-	PRIVATE_URL=$(egrep "http.*\.zip" "$PRIVATE")
+	# These are the less-desirable options. All of these end with 'exit 1'
 
-	if [ "$PRIVATE_URL" = "" ]
+	if [ ! -e "$PRIVATE_FILE" ]
 	then
-			# we found the file, but not the URL
-			# We don't want to install the demo here, so bail
-		echo "$NAME: Found '$PRIVATE' but did not find a URL in it. Cannot continue."
-		exit 1
+			# no PRIVATE_FILE exists.
+
+		echo "$NAME: Fatal Error. '$PRIVATE_FILE' does not exist. Cannot continue. See '$0' for details on how to create it."
+
+	elif [ "$PRIVATE_URL" = "" ]
+	then
+			# the PRIVATE_FILE exists
+			# but the PRIVATE_URL is empty
+		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain a URL. Cannot continue."
 	else
-			# we found the file AND it has a URL in it
-			# which is what we wanted. Yay!
-			# Hopefully it's the right URL.
-
-		URL=$(curl -sfLS "$PRIVATE_URL" \
-			| tr '"' '\012' \
-			| egrep -i 'https://www.ecamm.com.*\.zip')
-
-
-			# If URL is empty, we can't continue
-		if [ "$URL" = "" ]
-		then
-			echo "$NAME [Fatal Error]: \$URL is empty."
-			exit 1
-		fi
-
+			# I'm not sure how we'd ever get here, but just in case we do, we should say something, at least
+		echo "$NAME: Fatal Error. Cannot continue. (For unclear reasons, sorry.)"
 	fi
+
+	echo "$NAME: If you just want to download the demo version, you can do that here: <https://www.ecamm.com/mac/callrecorder/CallRecorder.zip>"
+
+	exit 1
 fi
 
 FILENAME="$HOME/Downloads/SkypeCallRecorder-${LATEST_VERSION}.zip"
@@ -118,7 +109,10 @@ then
 
 fi
 
-# The server doesn't do continued downloads, so if we find something there, we need to test it.
+	# The server doesn't do continued downloads, so if we find something where our download is supposed to go,
+	# we need to test it to see if it is a) a working zip file -- which probably means that they've previously
+	# downloaded the file, so we don't need to download it again, or b) an incomplete zip -- which probably
+	# means that the file download has started previously, but did not complete.
 
 if [[ -e "$FILENAME" ]]
 then
@@ -197,7 +191,7 @@ fi
 
 echo "$NAME: Found it at: '$APP'. Launching it now. Requires manual installation from here."
 
-	# the app is an installer which needs user intervention, so the most we can do is just open it and wait
+	# the app is an installer which needs user intervention, so the most we can do is just open it
 open "$APP"
 
 if [ ! -d "/Applications/Skype.app" -a ! -d "$HOME/Applications/Skype.app" ]

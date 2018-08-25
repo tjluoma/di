@@ -7,8 +7,9 @@
 # Date:	2018-08-25
 
 
-## This is the file that has your private URL in it, formatted like this:
-# PRIVATE_URL='http://www.ecamm.com/cgi-bin/customercenter?u=YOU%40EXAMPLE%2ECOM&c=YOURCODE'
+## This is the file that has your private URL in it, like this:
+# 	http://www.ecamm.com/cgi-bin/customercenter?u=YOU%40EXAMPLE%2ECOM&c=YOURCODE
+## but replace with your email address and code from Ecamm
 
 PRIVATE_FILE="$HOME/.config/di/private/di-phoneview.txt"
 
@@ -53,7 +54,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 		# Get the installed version, if any, otherwise set it to zero
-	INSTALLED_VERSION=$(defaults read /Applications/PhoneView.app/Contents/Info CFBundleShortVersionString)
+	INSTALLED_VERSION=$(defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString)
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
@@ -78,39 +79,41 @@ else
 	IS_INSTALLED='no'
 fi
 
+[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^https://www.ecamm.com/.*\.zip' "$PRIVATE_FILE")
 
-[[ -e "$PRIVATE_FILE" ]] && source "$PRIVATE_FILE"
-
-if [ "$IS_INSTALLED" = 'yes' -a "$PRIVATE_URL" != "" ]
+if [ "$PRIVATE_URL" != "" ]
 then
+		# This is what we hope for:
+		# if we get to this point, we know we need to do either an install or an update
+		# AND we have an URL to work with.
 
 	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*\.zip')
 
-elif [ "$IS_INSTALLED" = 'yes' -a "$PRIVATE_URL" = "" ]
-then
-	if [ -e "$PRIVATE_FILE" ]
+else
+	# These are the less-desirable options. All of these end with 'exit 1'
+
+	if [ ! -e "$PRIVATE_FILE" ]
 	then
-		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain 'PRIVATE_URL='. Cannot continue."
-		exit 1
-	else
+			# no PRIVATE_FILE exists.
+
 		echo "$NAME: Fatal Error. '$PRIVATE_FILE' does not exist. Cannot continue. See '$0' for details on how to create it."
-		exit 1
+
+	elif [ "$PRIVATE_URL" = "" ]
+	then
+			# the PRIVATE_FILE exists
+			# but the PRIVATE_URL is empty
+		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain a URL. Cannot continue."
+	else
+			# I'm not sure how we'd ever get here, but just in case we do, we should say something, at least
+		echo "$NAME: Fatal Error. Cannot continue. (For unclear reasons, sorry.)"
 	fi
 
-elif [ "$IS_INSTALLED" = 'no' -a "$PRIVATE_URL" != "" ]
-then
+	echo "$NAME: If you just want to download the demo version, you can do that here: <https://downloads.ecamm.com/PhoneView.zip>"
 
-	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*\.zip')
-
-elif [ "$IS_INSTALLED" = 'no' -a "$PRIVATE_URL" = "" ]
-then
-
-	URL='https://downloads.ecamm.com/PhoneView.zip'
-	DEMO="-DEMO"
-
+	exit 1
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r${DEMO}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
@@ -125,8 +128,10 @@ then
 	exit 1
 fi
 
-	# The server doesn't do 'continued' or resumed downloads, so if the file exists already, we need
-	# to check to see if we can use it, and if not, replace it.
+	# The server doesn't do continued downloads, so if we find something where our download is supposed to go,
+	# we need to test it to see if it is a) a working zip file -- which probably means that they've previously
+	# downloaded the file, so we don't need to download it again, or b) an incomplete zip -- which probably
+	# means that the file download has started previously, but did not complete.
 if [[ -e "$FILENAME" ]]
 then
 	(command unzip -qqt "$FILENAME" 2>&1) >/dev/null
@@ -150,7 +155,7 @@ then
 
 		function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
-		mv -vn "$FILENAME" "$HOME/Downloads/PhoneView${DEMO}-BROKEN-EXAMINE.${TIME}.${LATEST_VERSION}.zip"
+		mv -vn "$FILENAME" "$HOME/Downloads/PhoneView-BROKEN-EXAMINE.${TIME}.${LATEST_VERSION}.zip"
 	fi
 fi
 
