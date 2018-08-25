@@ -23,6 +23,12 @@ PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
 	# But we can get the version number from it.
 LATEST_VERSION=$(curl -sfLS "https://www.ecamm.com/appcasts/callrecorder.xml" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
 
+if [[ "$LATEST_VERSION" = "" ]]
+then
+	echo "$NAME [Fatal Error]: \$LATEST_VERSION is empty. Cannot continue."
+	exit 1
+fi
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Library/Audio/Plug-Ins/HAL/EcammAudioLoader.plugin/Contents/Plugins/CallRecorder.plugin"
@@ -53,54 +59,49 @@ then
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
-	FIRST_INSTALL='no'
-
-else
-
-	FIRST_INSTALL='yes'
 fi
 
-
-if [[ ! -e "$PRIVATE" ]]
+if [ -e "$INSTALL_TO" -a ! -e "$PRIVATE" ]
 then
+		# the app is already installed, _BUT_ there is no $PRIVATE file
+		# we don't want to install the demo, so bail out.
+	echo "$NAME: No file found at '$PRIVATE'. Cannot continue."
+	exit 1
 
-	if [[ -e "$INSTALL_TO" ]]
+elif [ ! -e "$INSTALL_TO" -a ! -e "$PRIVATE" ]
+then
+		# the app is not installed and there is no $PRIVATE file
+		# so we can at least install the demo version
+	echo "$NAME: No file found at '$PRIVATE'. Will download demo version of Skype Call Recorder."
+	URL='https://www.ecamm.com/mac/callrecorder/CallRecorder.zip'
+
+else
+	PRIVATE_URL=$(egrep "http.*\.zip" "$PRIVATE")
+
+	if [ "$PRIVATE_URL" = "" ]
 	then
-		echo "$NAME: No file found at '$PRIVATE'. Cannot continue."
+			# we found the file, but not the URL
+			# We don't want to install the demo here, so bail
+		echo "$NAME: Found '$PRIVATE' but did not find a URL in it. Cannot continue."
 		exit 1
 	else
-		echo "$NAME: No file found at '$PRIVATE'. Will download demo version of Skype Call Recorder"
-		URL='https://www.ecamm.com/mac/callrecorder/CallRecorder.zip'
-	fi
-else
-	source "$PRIVATE"
+			# we found the file AND it has a URL in it
+			# which is what we wanted. Yay!
+			# Hopefully it's the right URL.
 
-	if [[ "$PRIVATE_URL" == "" ]]
-	then
-		if [[ -e "$INSTALL_TO" ]]
-		then
-			echo "$NAME: Found '$PRIVATE' but did not find '$PRIVATE_URL' in it. Cannot continue."
-			exit 1
-		else
-			echo "$NAME: Found '$PRIVATE' but did not find '$PRIVATE_URL' in it. Will download demo version of Skype Call Recorder."
-			URL='https://www.ecamm.com/mac/callrecorder/CallRecorder.zip'
-		fi
-	else
 		URL=$(curl -sfLS "$PRIVATE_URL" \
 			| tr '"' '\012' \
 			| egrep -i 'https://www.ecamm.com.*\.zip')
+
+
+			# If URL is empty, we can't continue
+		if [ "$URL" = "" ]
+		then
+			echo "$NAME [Fatal Error]: \$URL is empty."
+			exit 1
+		fi
+
 	fi
-fi
-
-	# If any of these are blank, we should not continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
-then
-	echo "$NAME: Error: bad data received:
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
-
-	exit 1
 fi
 
 FILENAME="$HOME/Downloads/SkypeCallRecorder-${LATEST_VERSION}.zip"
@@ -213,7 +214,6 @@ then
 		echo "$NAME: Skype is not installed. Go to <https://www.skype.com/en/get-skype/> for more information,"
 		echo "	or use this link to download it directly: <https://get.skype.com/go/getskype-skypeformac>"
 	fi
-
 fi
 
 exit 0
