@@ -5,6 +5,20 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-22
 
+	## You need to provide your own private URL to download Skype Call Recorder. You should have received this
+	## in an email when you first registered it. So the question is: “How do you share a public script with private
+	## information in it?”
+	##
+	## Answer: Put the secret bit in a separate file which is read into the main script.
+	##
+	## So, create a file "$HOME/.config/di/private/di-skypecallrecorder.txt" with a line like this in it:
+	##
+	# PRIVATE_URL='https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF'
+	##
+	#### Replace that with your actual URL
+PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
+
+
 	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo
 	# But we can get the version number from it.
 LATEST_VERSION=$(curl -sfLS "https://www.ecamm.com/appcasts/callrecorder.xml" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
@@ -46,17 +60,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
-	## You need to provide your own private URL to download Skype Call Recorder. You should have received this
-	## in an email when you first registered it. So the question is: “How do you share a public script with private
-	# information in it?”
-	#
-	# Answer: Put the secret bit in a separate file which is read into the main script.
-	#
-	# So, create a file "$HOME/.config/di/private/di-skypecallrecorder.txt" with a line like this in it:
-	# PRIVATE_URL='https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF'
-	#### Replace that with your actual URL
-PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
 
 if [[ ! -e "$PRIVATE" ]]
 then
