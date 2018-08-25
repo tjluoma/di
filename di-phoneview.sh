@@ -79,7 +79,7 @@ else
 	IS_INSTALLED='no'
 fi
 
-[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^https://www.ecamm.com/.*\.zip' "$PRIVATE_FILE")
+[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^http.*//www.ecamm.com/.*' "$PRIVATE_FILE")
 
 if [ "$PRIVATE_URL" != "" ]
 then
