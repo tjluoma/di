@@ -14,6 +14,8 @@ HOMEPAGE='http://richsomerfield.com/apps/textbar/'
 
 DOWNLOAD_PAGE='http://richsomerfield.com/apps/textbar/'
 
+BLURB='TextBar is a tiny but powerful app that lets you add any text to your MenuBar.'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
