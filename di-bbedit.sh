@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BBEdit.app'
 
+SUMMARY='BBEdit is the leading professional HTML and text editor for macOS. It doesn’t suck.®'
+
+HOMEPAGE="https://www.barebones.com/products/bbedit/"
+
+DOWNLOAD_PAGE="https://www.barebones.com/support/bbedit/updates.html"
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"
