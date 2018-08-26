@@ -8,7 +8,10 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/GitHub Desktop.app'
+INSTALL_TO='/Applications/GitHub Desktop Classic.app'
+
+# Note: It's technically called “GitHub Desktop.app” but since the new version also uses that name
+# I've taken the liberty of renaming this to what GitHub seems to call it now.
 
 if [ -e "$HOME/.path" ]
 then
@@ -17,99 +20,151 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
+URL="https://github-central.s3.amazonaws.com/mac/GitHub%20Desktop%20224.zip"
 
-OS_VER=`sw_vers -productVersion || echo '10.11'`
+LATEST_VERSION="224"
 
-	# If you are Up-To-Date, you get an empty document with a 204 response code
-
-RESPONSE=`curl --head -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" \
-			| awk -F' ' '/^HTTP/{print $2}'`
-
-if [[ "$RESPONSE" == "204" ]]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date (Version $INSTALLED_VERSION)"
-	exit 0
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
-INFO=($(curl -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" \
-		| tr ',' '\012' \
-		| egrep '"version"|"url"' \
-		| head -2 \
-		| awk -F'"' '//{print $4}'))
-
-LATEST_VERSION="$INFO[1]"
-
-URL="$INFO[2]"
-
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-then
-	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
-
-	exit 1
-fi
-
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
-fi
-
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)."
-	exit 0
-fi
-
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 FILENAME="$HOME/Downloads/GitHub-$LATEST_VERSION.zip"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
-if [ -e "$INSTALL_TO" ]
-then
-		# If there's an installed
-		# Quit app, if running
-	pgrep -xq "GitHub Desktop" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "GitHub Desktop" to quit'
+EXIT="$?"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/GitHub Desktop.$INSTALLED_VERSION.app"
-fi
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-	# Install zip to /Applications/
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Update/installation of $INSTALL_TO was successful"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: ditto failed (\$EXIT = $EXIT)"
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+	# Note that we have to specify the name since we're renaming it on install.
+	# See note at top of document.
+mv -vn "$UNZIP_TO/GitHub Desktop.app" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
 
 
 exit 0
 #
+
+# 2018-08-26 - We don't really need to calculate any of this anymore, since the app is EOL. But here's how it worked:
+
+# OS_VER=`sw_vers -productVersion || echo '10.11'`
+# 	# If you are Up-To-Date, you get an empty document with a 204 response code
+# RESPONSE=`curl --head -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" | awk -F' ' '/^HTTP/{print $2}'`
+#
+# if [[ "$RESPONSE" == "204" ]]
+# then
+# 	echo "$NAME: Up-To-Date (Version $INSTALLED_VERSION)"
+# 	exit 0
+# fi
+#
+# INFO=($(curl -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" \
+# 		| tr ',' '\012' \
+# 		| egrep '"version"|"url"' \
+# 		| head -2 \
+# 		| awk -F'"' '//{print $4}'))
+#
+# LATEST_VERSION="$INFO[1]"
+#
+# URL="$INFO[2]"
+#
+# 	# If any of these are blank, we should not continue
+# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+# then
+# 	echo "$NAME: Error: bad data received:
+# 	INFO: $INFO
+# 	LATEST_VERSION: $LATEST_VERSION
+# 	URL: $URL
+# 	"
+#
+# 	exit 1
+# fi
+
 #EOF
