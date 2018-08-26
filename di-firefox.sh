@@ -152,6 +152,12 @@ case "${FF_LANG}" in
 	*)
 		GIVEN_LANG="${FF_LANG}"
 
+			# The nice thing about doing this check is that it is case-INsenitive
+			# so if someone put in 'en-gb' instead of 'en-GB', this will find it
+			#
+			# We _could_ just do this every time instead of having a list of “known”
+			# languages above, but that seems a bit wasteful. Why not cache the known-data
+			# rather than always having to make another hit on the website?
 		FF_LANG=$(curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
 		| fgrep '<option lang=' \
 		| sed 's#.*<option lang="##g ; s#" .*##g' \
@@ -169,7 +175,6 @@ case "${FF_LANG}" in
 			echo "\n\n	and update the file '$LANGUAGE_FILE' with the appropriate country/language code."
 
 			exit 1
-
 		fi
 
 		# If we get here, then we were given a valid FF_LANG option, it just was not in our list of known-language/country-codes
@@ -184,8 +189,6 @@ else
 		# (Please note that “Because America” should be read ironically.)
 	FF_LANG='en-US'
 fi
-
-
 
 USER_SELECTED=''
 
