@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Default Folder X.app'
 
+HOMEPAGE="https://stclairsoft.com/DefaultFolderX/index.html"
+
+DOWNLOAD_PAGE="https://www.stclairsoft.com/cgi-bin/dl.cgi?DX"
+
+SUMMARY="Make your Open and Save dialogs work as quickly as you do"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

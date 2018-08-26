@@ -7,6 +7,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://1password.com"
+
+DOWNLOAD_PAGE="https://1password.com/downloads/"
+
+SUMMARY="Go ahead. Forget your passwords. 1Password remembers them all for you. Save your passwords and log in to sites with a single click. It's that simple."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
