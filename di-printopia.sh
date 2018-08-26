@@ -182,10 +182,10 @@ done
 	# we are out of the loop now, check the size of the local file one last time
 check_bytes
 
-	# We are out of the loop, now
+	# here's the big moment. Is the size correct?
 if [[ "$ACTUAL_BYTES" == "$EXPECTED_BYTES" ]]
 then
-		# if we get here, the size match! Life is good!
+		# if we get here, the sizes match! Life is good!
 	echo "$NAME: '$FILENAME' is the correct size ($ACTUAL_BYTES)."
 else
 		# if we get here, the sizes do NOT match. Tell the user, and then give up
@@ -193,15 +193,8 @@ else
 	exit 1
 fi
 
-	# check the actual 'shasum' of the file so we can compare it against what the server told us to expect
-	# first we tell the user what we are doing
-echo "$NAME: Calculating shasum of $FILENAME (this may take a moment)..."
-
-	# then we do the actual calculation and save it to a variable
-ACTUAL_SHASUM256=$(shasum -a 256 "$FILENAME" | awk '{print $1}')
-
 	# tell the user that we are checking the shasum
-echo "$NAME: Verifying shasum of '$FILENAME': "
+echo "$NAME: Verifying '$FILENAME' using 'shasum -a 256': "
 
 	# and now actually check it. Note that this is checking against the file we created earlier
 	# we should just compare against the shasum directly, but saving the shasum to a file
@@ -220,10 +213,13 @@ then
 	echo "$NAME: '$FILENAME' passed shasum verification."
 
 else
-
 		# we hope to never get here, but if we do, verification has failed.
 		# we should tell the user what we found vs what we expected to find
 
+		# save the actual (but incorrect) shasum to a variable
+	ACTUAL_SHASUM256=$(shasum -a 256 "$FILENAME" | awk '{print $1}')
+
+		# Show the user (if they are watching) what the difference is between them shasums
 	echo "$NAME: '$FILENAME' failed shasum verification (SHA_EXIT = $SHA_EXIT): \n\tExpected: $EXPECTED_SHASUM256\n\tReceived: $ACTUAL_SHASUM256"
 
 		# and then tell the user we will not be continuing with the installation
@@ -242,13 +238,14 @@ else
 		# but I'm loathe to delete anything on another person's computer,
 		# so putting it in the trash seems like a good compromise.
 
+		# I created a function for this because we might need to do it later
+		# even if we don't need to do it here
 	trash_our_files
 
 		# now we exit with code = 1 which the user can use if automating this process to tell
 		# that something has gone wrong
 	exit 1
 fi
-
 
 # PHEW. Ok, if we get here, we have a downloaded file that has passed a validation check
 # now we need to unzip it and install it
