@@ -10,6 +10,10 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/TextBar.app'
 
+HOMEPAGE='http://richsomerfield.com/apps/textbar/'
+
+DOWNLOAD_PAGE='http://richsomerfield.com/apps/textbar/'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
