@@ -1,10 +1,10 @@
 #!/bin/zsh -f
-# Purpose: download and install GitHub’s Mac app
+# Purpose: download and install GitHub’s Mac app (now referred to as “Classic” since they have a new Electron-based version now.)
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
-# Date:	2014-09-30
+# Date:	2014-09-30, updated and renamed 2018-08-26
 
 NAME="$0:t:r"
 
@@ -21,6 +21,10 @@ else
 fi
 
 URL="https://github-central.s3.amazonaws.com/mac/GitHub%20Desktop%20224.zip"
+
+# Bytes = 29721791
+# MD5 = 01db3451668b8790bf6b74b13e4baec7
+# shasum -a 256 or gsha256sum = 4933303a2d8f2545422d395b5ad8d5cb5a16aabd746304e139260d15578bd5cb
 
 LATEST_VERSION="224"
 
@@ -51,7 +55,7 @@ else
 fi
 
 
-FILENAME="$HOME/Downloads/GitHub-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/GitHubDesktopClassic-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
