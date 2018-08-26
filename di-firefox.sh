@@ -112,10 +112,10 @@ appropriate language/country code into a plain-text file at:
 
 	"$HOME/.config/di/prefers/firefox-language.txt"
 
-Just the code, nothing else. For example, if you wanted to get the 'South Africa' version of Firefox,
+Just the code, nothing else. For example, if you wanted to get the 'Canadian' version of Firefox,
 then the contents of the "$HOME/.config/di/prefers/firefox-language.txt" file should be:
 
-	za
+	ca
 
 and nothing else.
 
