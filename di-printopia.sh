@@ -257,7 +257,7 @@ UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
 	# and now unzip the file using 'ditto'
-	# we could use '/usr/bin/unzip' but I prefer 'ditto'. Because reasons.
+	# we could use '/usr/bin/unzip' but I prefer 'ditto'. Because reasons. ¯\_(ツ)_/¯
 ditto -xk "$FILENAME" "$UNZIP_TO"
 
 DITTO_EXIT="$?"
@@ -268,13 +268,23 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# if we get here, ditto failed for some reason. Tell the user, and then give up
-		# note that we still have not touched an existing installation, if any, so
+		#
+		# Note that we still have not touched an existing installation, if any, so
 		# if they had a functional installation of the app before, they still do,
 		# even if it is now slightly outdated. Maybe they will try again
 		# or maybe they have the app set to check for updates too, and it will
 		# prompt them to try again later
 	echo "$NAME failed (ditto exited = $DITTO_EXIT)"
 
+		# we might as well delete this, since it is incomplete and no good to anyone
+	rm -rf "$UNZIP_TO"
+
+		# and, since 'ditto' failed to un-zip the file correctly
+		# we should probably just get rid of the download
+
+	trash_our_files
+
+		# now we give up. We tried.
 	exit 1
 fi
 
@@ -286,14 +296,15 @@ fi
 echo "$NAME: Checking code signature of '$UNZIP_TO/$INSTALL_TO:t'"
 
 	# check the signature, but ignore the output, since it won't be meaningful to most people
-	# we just want to check the exit code
+	# we just want to check the exit code anyway
 codesign -dv --verbose=4 "$UNZIP_TO/$INSTALL_TO:t" 2>/dev/null
 
 CODE_SIGN_EXIT="$?"
 
 if [ "$CODE_SIGN_EXIT" = "0" ]
 then
-		# tell the user that code signature passed, and how to check it themselves, if they want
+		# tell the user that code signature passed, and how to check it themselves, if they want to
+		# because hey, maybe they'll learn something useful
 	echo "$NAME: $INSTALL_TO passed code signature check"
 	echo "	(to view the information again later, use 'codesign -dv --verbose=4 $INSTALL_TO' after installation finishes)"
 
@@ -326,7 +337,7 @@ fi
 
 # OK, if we have gotten here, we have passed all the hurdles except one:
 #
-# we need to deal with an existing / outdated installation, if any
+# we need to deal with an existing / outdated installation, if any,
 # before we can move the new version into its place
 
 if [[ -e "$INSTALL_TO" ]]
@@ -339,7 +350,7 @@ then
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& echo "$NAME: Asking '$INSTALL_TO:t:r' to quit..." \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit" \
 	&& sleep 5
 
 		# If the app is STILL running,
@@ -353,6 +364,8 @@ then
 		# Now we check to see if the server component of Printopia is running
 		# this is where the server portion is installed. We save it to a variable
 		# so we can refer to it without needing to enter the whole path each time
+		#
+		# that way, if it changes locations in the future, we only need to change this one line
 	PRINTOPIA_SERVER="/Library/Application Support/com.decisivetactics.printopia/Server/Printopia Server.app"
 
 		# if the server portion is running, ask it to quit nicely, via AppleScript
@@ -363,11 +376,11 @@ then
 	&& sleep 5
 
 		# if the server is still running, try to kill it with 'pkill'
-		# again, I'm not sure how much more aggressive we should be
+		# Again, I'm not sure how much more aggressive we should be
 		# I don't want to 'kill -9' it
 	pgrep -qf "$PRINTOPIA_SERVER" \
 	&& LAUNCH_SERVER='yes' \
-	&& echo "$NAME: Asking '$PRINTOPIA_SERVER:t' to quit (again)..."
+	&& echo "$NAME: Asking '$PRINTOPIA_SERVER:t' to quit (again)..." \
 	&& pkill -f "$PRINTOPIA_SERVER"
 
 		# tell the user we are trashing their old installation
@@ -376,23 +389,13 @@ then
 		# move the existing installation to the trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-			# make sure that the move was successful
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
-		exit 1
-	fi
-
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# if we get here and the app is still where it was, something went wrong
 			# so we alert the user, and then give up
 
-		echo "$NAME: We failed to remove the existing if version at '$INSTALL_TO'"
-		echo "$NAME: Please remove the file manually, and run this script again."
+		echo "$NAME: We failed to remove the existing version at '$INSTALL_TO'"
+		echo "$NAME: Please remove the file manually, and then run this script again."
 		exit 1
 	fi
 fi
@@ -413,7 +416,7 @@ then
 
 else
 		# if the move failed, tell the user, and give up
-	echo "$NAME: mv failed (Exit code = $MOVE_EXIT)"
+	echo "$NAME: mv failed ('mv' exit code = $MOVE_EXIT)"
 
 	exit 1
 fi
@@ -421,6 +424,7 @@ fi
 	# OK, if we get here, we have successfully installed or updated the software:
 	# HUZZAH. Have a drink. Or not, depending on the time of day and any
 	# other compelling reasons why that might be a bad idea.
+	# I'm sorry I mentioned it.
 
 if [[ "$FIRST_INSTALL" = "yes" ]]
 then
@@ -434,8 +438,10 @@ then
 fi
 
 	# If we get here, we have successfully upgraded an existing installation
-	# now the question is: do we need to launch the app and/or the server?
-	# the answer will depend on what we found out earlier about whether the app
+	#
+	# Now the question is: do we need to launch the app and/or the server?
+	#
+	# The answer will depend on what we found out earlier about whether the app
 	# or its server portion were running and we told them to stop.
 
 	# if the app was running when we installed the update, restart the app
