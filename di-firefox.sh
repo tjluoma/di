@@ -24,6 +24,8 @@ function do_nightly {
 	PRODUCT='nightly-latest'
 	SHORTNAME='FirefoxNightly'
 	INSTALL_TO="/Applications/Firefox Nightly.app"
+
+	[[ "$FF_LANG" != "en-US" ]] && echo "$NAME: Please note, the nightly builds may only be available in en-US."
 }
 
 function do_developer {
@@ -125,7 +127,6 @@ exit 0
 
 }
 
-
 LANGUAGE_FILE="$HOME/.config/di/prefers/firefox-language.txt"
 
 if [[ -e "$LANGUAGE_FILE" ]]
@@ -137,7 +138,8 @@ then
 
 
 case "${FF_LANG}" in
-	af|an|ar|ast|az|azz|be|bg|bn-BD|bn-IN|bs|ca|cak|cs|cy|da|de|dsb|el|en-CA|en-GB|en-US|eo|es-AR|es-CL|es-ES|es-MX|et|eu|fa|fi|fr|fy-NL|ga-IE|gn|gu-IN|he|hi-IN|hr|hsb|hu|hy-AM|ia|id|is|it|ja|ka|kab|kk|ko|lij|lt|ml|mr|ms|my|nb-NO|nl|nn-NO|pa-IN|pl|pt-BR|pt-PT|rm|ro|ru|sk|sl|sq|sr|sv-SE|ta|te|th|tr|trs|uk|uz|vi|zh-CN|zh-TW)
+
+en-GB|af|an|ar|ast|az|azz|be|bg|bn-BD|bn-IN|bs|ca|cak|cs|cy|da|de|dsb|el|en-CA|en-US|eo|es-AR|es-CL|es-ES|es-MX|et|eu|fa|fi|fr|fy-NL|ga-IE|gn|gu-IN|he|hi-IN|hr|hsb|hu|hy-AM|ia|id|is|it|ja|ka|kab|kk|ko|lij|lt|ml|mr|ms|my|nb-NO|nl|nn-NO|pa-IN|pl|pt-BR|pt-PT|rm|ro|ru|sk|sl|sq|sr|sv-SE|ta|te|th|tr|trs|uk|uz|vi|zh-CN|zh-TW)
 		:
 		# If we get here, we have a received a valid FF_LANG option
 		# To get a current list of countries/languages Firefox is available in, run this command:
@@ -151,6 +153,8 @@ case "${FF_LANG}" in
 
 	*)
 		GIVEN_LANG="${FF_LANG}"
+
+		echo "$NAME: [info] '$GIVEN_LANG' is not on my list of known countries/languages. Checking Mozilla.org..."
 
 			# The nice thing about doing this check is that it is case-INsenitive
 			# so if someone put in 'en-gb' instead of 'en-GB', this will find it
@@ -176,6 +180,15 @@ case "${FF_LANG}" in
 
 			exit 1
 		fi
+
+
+		if [[ "$GIVEN_LANG" == "$FF_LANG" ]]
+		then
+			echo "$NAME: [info] Mozilla added '$FF_LANG' support after this script was written. My developer should update me."
+		else
+			echo "$NAME: [info] Found '$FF_LANG'. You may want to update '$LANGUAGE_FILE' with your choice."
+		fi
+
 
 		# If we get here, then we were given a valid FF_LANG option, it just was not in our list of known-language/country-codes
 		# which was compiled on 2018-08-25 and should probably be updated periodically.
@@ -266,7 +279,9 @@ then
 	fi
 fi
 
-INFO=$(curl -sSfL --head "https://download.mozilla.org/?product=firefox-${PRODUCT}-ssl&os=osx&lang=${FF_LANG}" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+MY_CUSTOMIZED_URL="https://download.mozilla.org/?product=firefox-${PRODUCT}-ssl&os=osx&lang=${FF_LANG}"
+
+URL=$(curl -sSfL --head "$MY_CUSTOMIZED_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
 
 if [ "$PRODUCT" = "nightly-latest" ]
 then
@@ -275,12 +290,25 @@ else
 	LATEST_VERSION=$(echo "$URL" | sed 's#.*/releases/##g ; s#/.*##g')
 fi
 
+# echo "$NAME: [debug]
+#
+# MY_CUSTOMIZED_URL: $MY_CUSTOMIZED_URL
+# URL: $URL
+# LATEST_VERSION: $LATEST_VERSION
+#
+# "
+
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
+
+	MY_CUSTOMIZED_URL: $MY_CUSTOMIZED_URL
+	PRODUCT: $PRODUCT
+	FF_LANG: $FF_LANG
+	USER_SELECTED: $USER_SELECTED (Note: will always be empty, _unless_ an --arg was provided by the user)
 	"
 
 	exit 1
@@ -312,7 +340,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$SHORTNAME-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$SHORTNAME-${FF_LANG}-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
