@@ -104,6 +104,21 @@ If the script is called _without_ any arguments, it will check for _beta_ releas
 If it does not find that file, it assumes that you want to check for regular (non-beta) versions of Firefox.
 
 {end of usage info}
+
+## A Final Word About Language/Country Codes
+
+This script defaults to 'en-US' as a country/language choice, but you can override that by putting the
+appropriate language/country code into a plain-text file at:
+
+	"$HOME/.config/di/prefers/firefox-language.txt"
+
+Just the code, nothing else. For example, if you wanted to get the 'South Africa' version of Firefox,
+then the contents of the "$HOME/.config/di/prefers/firefox-language.txt" file should be:
+
+	za
+
+and nothing else.
+
 EOINPUT
 
 exit 0
@@ -111,14 +126,13 @@ exit 0
 }
 
 
-LANG_FILE="$HOME/.config/di/prefers/firefox-language.txt"
+LANGUAGE_FILE="$HOME/.config/di/prefers/firefox-language.txt"
 
-if [[ -e "$LANG_FILE" ]]
+if [[ -e "$LANGUAGE_FILE" ]]
 then
-		# if we find the file, use its contents as the language code, which can apparently
-		# cs de en-GB en eo es-AR es-CL es-ES fi fr gl in it ja ko nl pl pt-BR pt ru tr uk zh-TW zh
+		# if we find the file, use its contents as the language/country code, which can apparently be any one of a lot (see below)
 
-	FF_LANG=$((egrep -v "^[	 ]*#|^$|^[ 	]*$" "$LANG_FILE" 2>/dev/null || echo 'en-US') \
+	FF_LANG=$((egrep -v "^[	 ]*#|^$|^[ 	]*$" "$LANGUAGE_FILE" 2>/dev/null || echo 'en-US') \
 		| awk '{print $1}' | head -1 | tr -dc '[:alpha:]-')
 
 
@@ -126,7 +140,7 @@ case "${FF_LANG}" in
 	af|an|ar|ast|az|azz|be|bg|bn-BD|bn-IN|bs|ca|cak|cs|cy|da|de|dsb|el|en-CA|en-GB|en-US|eo|es-AR|es-CL|es-ES|es-MX|et|eu|fa|fi|fr|fy-NL|ga-IE|gn|gu-IN|he|hi-IN|hr|hsb|hu|hy-AM|ia|id|is|it|ja|ka|kab|kk|ko|lij|lt|ml|mr|ms|my|nb-NO|nl|nn-NO|pa-IN|pl|pt-BR|pt-PT|rm|ro|ru|sk|sl|sq|sr|sv-SE|ta|te|th|tr|trs|uk|uz|vi|zh-CN|zh-TW)
 		:
 		# If we get here, we have a received a valid FF_LANG option
-		# To get a current list of languages Firefox is available in, run this command:
+		# To get a current list of countries/languages Firefox is available in, run this command:
 		#
 		#	curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
 		#	| fgrep '<option lang=' \
@@ -145,27 +159,27 @@ case "${FF_LANG}" in
 
 		if [[ "${FF_LANG}" == "" ]]
 		then
-			echo "$NAME: '$GIVEN_LANG' is NOT a valid language for Firefox. Please choose from one of these options:\n"
+			echo "$NAME: '$GIVEN_LANG' is NOT a valid country/language code for Firefox. Please choose from one of these options:\n"
 
 			curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
 				| fgrep '<option lang=' \
 				| sed 's#.*<option lang="##g ; s#" .*##g' \
 				| tr -s '\012' ' '
 
-			echo "\n\n	and update the file '$LANG_FILE' with the appropriate language code."
+			echo "\n\n	and update the file '$LANGUAGE_FILE' with the appropriate country/language code."
 
 			exit 1
 
 		fi
 
-		# If we get here, then we were given a valid FF_LANG option, it just was not in our list of known-languages
+		# If we get here, then we were given a valid FF_LANG option, it just was not in our list of known-language/country-codes
 		# which was compiled on 2018-08-25 and should probably be updated periodically.
 	;;
 
 esac
 
 else
-		# If we get here, there was no language file, so we default to "en-US". Because America.
+		# If we get here, there was no language/country code file, so we default to "en-US". Because America.
 		#
 		# (Please note that “Because America” should be read ironically.)
 	FF_LANG='en-US'
