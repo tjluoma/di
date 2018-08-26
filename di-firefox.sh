@@ -1,11 +1,13 @@
 #!/bin/zsh -f
-# Purpose: Download and install/update the latest version of Firefox from <https://www.mozilla.org/en-US/firefox/new/>
+# Purpose: Download and install/update the latest version of Firefox from <https://www.mozilla.org/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-25
 
-OG_NAME="$0:t:r"
+NAME="$0:t:r"
+
+OG_NAME="$NAME"
 
 SCRIPT_NAME="$0:t"
 
@@ -18,7 +20,7 @@ fi
 
 function do_nightly {
 
-	NAME="$OG_NAME (nightly releases)"
+	NAME="$OG_NAME (nightly releases in ${FF_LANG})"
 	PRODUCT='nightly-latest'
 	SHORTNAME='FirefoxNightly'
 	INSTALL_TO="/Applications/Firefox Nightly.app"
@@ -26,7 +28,7 @@ function do_nightly {
 
 function do_developer {
 
-	NAME="$OG_NAME (developer releases)"
+	NAME="$OG_NAME (developer releases in ${FF_LANG})"
 	PRODUCT='devedition-latest'
 	SHORTNAME='FirefoxDeveloperEdition'
 	INSTALL_TO="/Applications/Firefox Developer Edition.app"
@@ -34,7 +36,7 @@ function do_developer {
 
 function do_beta {
 
-	NAME="$OG_NAME (beta releases)"
+	NAME="$OG_NAME (beta releases in ${FF_LANG})"
 	PRODUCT='beta-latest'
 	SHORTNAME='FirefoxBeta'
 	INSTALL_TO="/Applications/Firefox.app"
@@ -42,7 +44,7 @@ function do_beta {
 
 function do_regular {
 
-	NAME="$OG_NAME (regular releases)"
+	NAME="$OG_NAME (regular releases in ${FF_LANG})"
 	PRODUCT='latest'
 	SHORTNAME='Firefox'
 	INSTALL_TO="/Applications/Firefox.app"
@@ -107,6 +109,67 @@ EOINPUT
 exit 0
 
 }
+
+
+LANG_FILE="$HOME/.config/di/prefers/firefox-language.txt"
+
+if [[ -e "$LANG_FILE" ]]
+then
+		# if we find the file, use its contents as the language code, which can apparently
+		# cs de en-GB en eo es-AR es-CL es-ES fi fr gl in it ja ko nl pl pt-BR pt ru tr uk zh-TW zh
+
+	FF_LANG=$((egrep -v "^[	 ]*#|^$|^[ 	]*$" "$LANG_FILE" 2>/dev/null || echo 'en-US') \
+		| awk '{print $1}' | head -1 | tr -dc '[:alpha:]-')
+
+
+case "${FF_LANG}" in
+	af|an|ar|ast|az|azz|be|bg|bn-BD|bn-IN|bs|ca|cak|cs|cy|da|de|dsb|el|en-CA|en-GB|en-US|eo|es-AR|es-CL|es-ES|es-MX|et|eu|fa|fi|fr|fy-NL|ga-IE|gn|gu-IN|he|hi-IN|hr|hsb|hu|hy-AM|ia|id|is|it|ja|ka|kab|kk|ko|lij|lt|ml|mr|ms|my|nb-NO|nl|nn-NO|pa-IN|pl|pt-BR|pt-PT|rm|ro|ru|sk|sl|sq|sr|sv-SE|ta|te|th|tr|trs|uk|uz|vi|zh-CN|zh-TW)
+		:
+		# If we get here, we have a received a valid FF_LANG option
+		# To get a current list of languages Firefox is available in, run this command:
+		#
+		#	curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
+		#	| fgrep '<option lang=' \
+		#	| sed 's#.*<option lang="##g ; s#" .*##g'
+		#
+		# And it will output the entire list
+	;;
+
+	*)
+		GIVEN_LANG="${FF_LANG}"
+
+		FF_LANG=$(curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
+		| fgrep '<option lang=' \
+		| sed 's#.*<option lang="##g ; s#" .*##g' \
+		| egrep -i "^${FF_LANG}$")
+
+		if [[ "${FF_LANG}" == "" ]]
+		then
+			echo "$NAME: '$GIVEN_LANG' is NOT a valid language for Firefox. Please choose from one of these options:\n"
+
+			curl -sfLS "https://www.mozilla.org/en-US/firefox/all/"  \
+				| fgrep '<option lang=' \
+				| sed 's#.*<option lang="##g ; s#" .*##g' \
+				| tr -s '\012' ' '
+
+			echo "\n\n	and update the file '$LANG_FILE' with the appropriate language code."
+
+			exit 1
+
+		fi
+
+		# If we get here, then we were given a valid FF_LANG option, it just was not in our list of known-languages
+		# which was compiled on 2018-08-25 and should probably be updated periodically.
+	;;
+
+esac
+
+else
+		# If we get here, there was no language file, so we default to "en-US". Because America.
+		#
+		# (Please note that “Because America” should be read ironically.)
+	FF_LANG='en-US'
+fi
 
 
 
@@ -186,11 +249,11 @@ then
 	fi
 fi
 
-URL=$(curl -sSfL --head "https://download.mozilla.org/?product=firefox-${PRODUCT}-ssl&os=osx&lang=en-US" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+INFO=$(curl -sSfL --head "https://download.mozilla.org/?product=firefox-${PRODUCT}-ssl&os=osx&lang=${FF_LANG}" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
 
 if [ "$PRODUCT" = "nightly-latest" ]
 then
-	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#firefox-##g ; s#.en-US.mac##g')
+	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#firefox-##g ; s#.${FF_LANG}.mac##g')
 else
 	LATEST_VERSION=$(echo "$URL" | sed 's#.*/releases/##g ; s#/.*##g')
 fi
