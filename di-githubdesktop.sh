@@ -36,7 +36,6 @@ then
 	exit 1
 fi
 
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -143,9 +142,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-
 #   link "$INSTALL_TO/Contents/Resources/app/static/github.sh" to /usr/local/bin/ ? Maybe? @TODO
-
 
 exit 0
 #EOF
