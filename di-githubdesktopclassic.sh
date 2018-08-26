@@ -12,6 +12,7 @@ INSTALL_TO='/Applications/GitHub Desktop Classic.app'
 
 # Note: It's technically called “GitHub Desktop.app” but since the new version also uses that name
 # I've taken the liberty of renaming this to what GitHub seems to call it now.
+# See https://blog.github.com/2017-09-19-announcing-github-desktop-1-0/ for announcement of its replacement
 
 if [ -e "$HOME/.path" ]
 then
