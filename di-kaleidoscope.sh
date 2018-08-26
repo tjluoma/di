@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Kaleidoscope.app'
 
+HOMEPAGE="https://www.kaleidoscopeapp.com"
+
+DOWNLOAD_PAGE="https://www.kaleidoscopeapp.com/download"
+
+SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compare different text files, images, and folders on your Mac and iPad. Review and merge changes in a matter of seconds (merging available only on the Mac)."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

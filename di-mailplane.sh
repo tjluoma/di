@@ -8,6 +8,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://mailplaneapp.com"
+
+DOWNLOAD_PAGE="https://update.mailplaneapp.com/mailplane_4.php"
+
+SUMMARY="The best way to use Gmail on your Mac."
+
 V3_INSTALL_TO='/Applications/Mailplane 3.app'
 V4_INSTALL_TO='/Applications/Mailplane.app'
 

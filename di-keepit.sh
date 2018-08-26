@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Keep It.app"
 
+HOMEPAGE="https://reinventedsoftware.com/keepit/"
+
+DOWNLOAD_PAGE="https://reinventedsoftware.com/keepit/downloads/"
+
+SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes, keeping web links, storing documents, images or any kind of file, and finding them again. Available on Mac, and as a separate app for iPhone and iPad, Keep It is the destination for all those things you want to put somewhere, confident you will find them again later."
+
 XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
 
 if [[ -e "$HOME/.path" ]]

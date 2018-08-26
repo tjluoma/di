@@ -10,6 +10,13 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Coda 2.app'
 
+HOMEPAGE="https://www.panic.com/coda/"
+
+DOWNLOAD_PAGE="https://www.panic.com/coda/"
+
+SUMMARY="You code for the web. You demand a fast, clean, and powerful text editor. Pixel-perfect preview. A built-in way to open and manage your local and remote files. And maybe a dash of SSH. Say hello, Coda."
+
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Fission.app'
 
+HOMEPAGE="https://www.rogueamoeba.com/fission/"
+
+DOWNLOAD_PAGE="https://www.rogueamoeba.com/fission/download.php"
+
+SUMMARY=" Fast & lossless audio editing With Fission, audio editing is no longer a chore. You can join files, crop and trim audio, and rapidly split up long files. Fission is streamlined for fast editing, and it works without the quality loss other audio editors cause. If you need to convert between audio formats, Fission can do that too. Rapidly export or batch convert files to the MP3, AAC, Apple Lossless, FLAC, AIFF, and WAV formats. Fission has all your audio needs covered. Finally, simple audio editing has arrived."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

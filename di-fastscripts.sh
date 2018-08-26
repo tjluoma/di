@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/FastScripts.app"
 
+HOMEPAGE="https://red-sweater.com/fastscripts/"
+
+DOWNLOAD_PAGE="https://red-sweater.com/fastscripts/"
+
+SUMMARY="Powerful script management utility. Instant access to your scripts, by keyboard shortcut or menubar."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"

@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MailMate.app'
 
+HOMEPAGE="https://freron.com"
+
+DOWNLOAD_PAGE="https://freron.com/download/"
+
+SUMMARY="MailMate is an IMAP email client for macOS featuring extensive keyboard control, Markdown integrated email composition, advanced search conditions and drill-down search links, equally advanced smart mailboxes, automatic signature handling, cryptographic encryption/signing (OpenPGP and S/MIME), tagging, multiple notification methods, alternative message viewer layouts including a widescreen layout, flexible integration with third party applications, and much more."
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"

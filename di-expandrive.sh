@@ -10,6 +10,12 @@ NAME="$0:t:r"
 INSTALL_TO='/Applications/ExpanDrive.app'
 XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
+HOMEPAGE="https://www.expandrive.com"
+
+DOWNLOAD_PAGE="https://www.expandrive.com/download-expandrive/"
+
+SUMMARY="Access files in the cloud from Finder or Explorer without having to sync or use disk space. ExpanDrive mounts OneDrive, Google Drive, Dropbox, Box, Sharepoint, Amazon S3, FTP, SFTP and more as a Network Drive. Supports macOS and Windows."
+
 # Do Not Use: http://updates.expandrive.com/apps/expandrive.xml
 
 if [ -e "$HOME/.path" ]

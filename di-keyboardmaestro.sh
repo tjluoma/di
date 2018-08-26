@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Keyboard Maestro.app'
 
+HOMEPAGE="https://www.keyboardmaestro.com/"
+
+DOWNLOAD_PAGE="https://www.keyboardmaestro.com/action/download?km"
+
+SUMMARY="Whether you are a power user or a just getting started, your time is precious. So why waste it when Keyboard Maestro can help improve almost every aspect of using your Mac. Even the simplest things, like typing your email address, or going to Gmail or Facebook, launching Pages, or duplicating a line, all take time and add frustration. Let Keyboard Maestro help make your Mac life more pleasant and efficient."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

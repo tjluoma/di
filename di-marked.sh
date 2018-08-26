@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Marked 2.app'
 
+HOMEPAGE="http://marked2app.com"
+
+DOWNLOAD_PAGE="http://marked2app.com/download/Marked.dmg"
+
+SUMMARY="Marked is a previewer for Markdown files. Use it with your favorite text editor and it updates every time you save. With robust features for previewing, reviewing and exporting beautiful documents, you can work in plain text while reveling in rich formatting."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

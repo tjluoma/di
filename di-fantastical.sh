@@ -11,6 +11,12 @@ INSTALL_TO='/Applications/Fantastical 2.app'
 
 XML_FEED='https://flexibits.com/fantastical/appcast2.php'
 
+HOMEPAGE="https://flexibits.com/fantastical/"
+
+DOWNLOAD_PAGE="https://d60ism0l33mmr.cloudfront.net/Fantastical_2.5.2.zip"
+
+SUMMARY="The calendar app you won’t be able to live without."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

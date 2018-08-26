@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Fluid.app'
 
+HOMEPAGE="https://www.fluidapp.com"
+
+DOWNLOAD_PAGE="https://www.fluidapp.com"
+
+SUMMARY="Turn any website into a real Mac app with Fluid."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

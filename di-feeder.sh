@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Feeder 3.app'
 
+HOMEPAGE="https://reinventedsoftware.com/feeder"
+
+DOWNLOAD_PAGE="https://reinventedsoftware.com/feeder/downloads/"
+
+SUMMARY="Create edit and publish RSS and podcast feeds."
+
 XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder3.xml"
 
 if [ -e "$HOME/.path" ]

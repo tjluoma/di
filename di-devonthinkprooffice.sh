@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/DEVONthink Pro.app'
 
+HOMEPAGE="https://www.devontechnologies.com/products/devonthink/devonthink-pro-office.html"
+
+DOWNLOAD_PAGE="https://www.devontechnologies.com/download/thank-you-for-downloading.html?productid=300125739"
+
+SUMMARY="DEVONthink Pro Office is your Mac paperless office. It stores all your documents, helps you keep them organized, and presents you with what you need to get the job done."
+
 XML_FEED='https://www.devontechnologies.com/Sparkle/DEVONthinkProOffice2.xml'
 
 if [ -e "$HOME/.path" ]

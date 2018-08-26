@@ -9,6 +9,12 @@ NAME="$0:t:r"
 INSTALL_TO='/Applications/CheatSheet.app'
 XML_FEED='https://mediaatelier.com/CheatSheet/feed.php'
 
+HOMEPAGE="https://mediaatelier.com/CheatSheet/"
+
+DOWNLOAD_PAGE="https://mediaatelier.com/CheatSheet/"
+
+SUMMARY="Just hold the ⌘-Key a bit longer to get a list of all active short cuts of the current application. It's as simple as that."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"

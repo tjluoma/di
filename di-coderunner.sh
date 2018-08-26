@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/CodeRunner.app'
 
+HOMEPAGE="https://coderunnerapp.com"
+
+DOWNLOAD_PAGE="https://coderunnerapp.com/download"
+
+SUMMARY="An advanced, highly flexible, and easy-to-use programming editor for your Mac. CodeRunner supports a large number of languages, and delivers big IDE features while remaining lightweight and clutter-free."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
