@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MacUpdater.app'
 
+HOMEPAGE="https://www.corecode.io/macupdater/"
+
+DOWNLOAD_PAGE="https://www.corecode.io/downloads/macupdater_latest.zip"
+
+SUMMARY="MacUpdater can automatically track the latest updates of all applications installed on your Mac. "
+
 XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
 
 if [[ -e "$HOME/.path" ]]

@@ -9,6 +9,13 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BusyContacts.app'
 
+HOMEPAGE="https://www.busymac.com/busycontacts/"
+
+DOWNLOAD_PAGE="http://www.busymac.com/download/BusyContacts.zip"
+
+SUMMARY="BusyContacts makes managing contacts faster and more efficient. Offering the same power and flexibility that BusyCal users enjoy with their calendars, BusyContacts integrates seamlessly with BusyCal to form a flexible, easy to use CRM solution for managing calendars and contacts. BusyContacts syncs with the built-in Contacts app on macOS and iOS and supports all leading cloud services, including iCloud, Google, Exchange, Facebook, Twitter and LinkedIn."
+
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

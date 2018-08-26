@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BusyCal.app'
 
+HOMEPAGE="https://www.busymac.com/busycal/index.html"
+
+DOWNLOAD_PAGE="http://www.busymac.com/download/BusyCal.zip"
+
+SUMMARY="BusyCal 3 is the most powerful, flexible, reliable calendar app for macOS. It's packed with time-saving features and compatible with all leading cloud services including iCloud, Google, Exchange and more."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

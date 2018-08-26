@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Beamer.app'
 
+HOMEPAGE="https://beamer-app.com"
+
+DOWNLOAD_PAGE="https://beamer-app.com/download"
+
+SUMMARY="Stream directly from your Mac to Apple TV and Chromecast."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

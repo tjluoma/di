@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/CardHop.app'
 
+HOMEPAGE="https://flexibits.com/cardhop"
+
+DOWNLOAD_PAGE="https://flexibits.com/cardhop/download"
+
+SUMMARY="The contacts app you’ll actually want to use."
+
 XML_FEED='https://flexibits.com/cardhop/appcast.php'
 
 if [[ -e "$HOME/.path" ]]

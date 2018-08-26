@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/aText.app'
 
+HOMEPAGE="https://www.trankynam.com/atext"
+
+DOWNLOAD_PAGE="http://www.trankynam.com/atext/downloads/aText.dmg"
+
+SUMMARY="aText accelerates your typing by replacing abbreviations with frequently used phrases you define."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"

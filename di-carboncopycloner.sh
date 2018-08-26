@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Carbon Copy Cloner.app"
 
+HOMEPAGE="https://bombich.com"
+
+DOWNLOAD_PAGE="https://bombich.com/download"
+
+SUMMARY="The first bootable backup solution for the Mac is better than ever."
+
+
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

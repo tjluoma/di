@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Accordance.app'
 
+HOMEPAGE="https://www.accordancebible.com"
+
+DOWNLOAD_PAGE="https://www.accordancebible.com/Accordance-Installers"
+
+SUMMARY="Go deep into Bible study with Accordance 12. Access ancient wisdom and modern insights through an ever growing library of titles. Illuminate your research and teaching using intelligent tools in an easy-to-use, lightning-fast interface."
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"

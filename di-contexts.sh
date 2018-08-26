@@ -9,6 +9,13 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Contexts.app"
 
+HOMEPAGE="https://contexts.co"
+
+DOWNLOAD_PAGE="https://contexts.co"
+
+SUMMARY="Switch between application windows effortlessly — with Fast Search, a better Command-Tab, a Sidebar or even a quick gesture. Includes fantastic features for multiple spaces & multiple displays."
+
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"

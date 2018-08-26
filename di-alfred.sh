@@ -7,6 +7,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://www.alfredapp.com"
+
+DOWNLOAD_PAGE="https://www.alfredapp.com"
+
+SUMMARY="Alfred is an award-winning app for Mac OS X which boosts your efficiency with hotkeys, keywords, text expansion and more. Search your Mac and the web, and be more productive with custom actions to control your Mac."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

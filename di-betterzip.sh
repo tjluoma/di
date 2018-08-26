@@ -9,6 +9,19 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BetterZip.app'
 
+HOMEPAGE="https://macitbetter.com/"
+
+DOWNLOAD_PAGE="https://macitbetter.com/BetterZip.zip"
+
+SUMMARY="
+* BetterZip can create archives with these formats: ZIP, TAR, TGZ, TBZ, TXZ, 7-ZIP, XAR, and — using the external commandline utility — RAR.
+* Add files to or delete files from archives. Move and rename files inside archives.
+* Compatibility: Have BetterZip remove Mac specific files from archives for archives that look and behave well on Windows.
+* Edit archived files in an external application and BetterZip can update your archive.
+"
+
+
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"

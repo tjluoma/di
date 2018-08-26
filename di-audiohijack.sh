@@ -8,6 +8,14 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Audio Hijack.app'
+
+HOMEPAGE="https://www.rogueamoeba.com/audiohijack/"
+
+DOWNLOAD_PAGE="https://www.rogueamoeba.com/audiohijack/download.php"
+
+SUMMARY="Record any application's audio, including VoIP calls from Skype, web streams from Safari, and much more. Save audio from hardware devices like microphones and mixers as well. You can even record all the audio heard on your Mac at once! If you can hear it, Audio Hijack can record it."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -15,17 +23,24 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_TO='/Applications/Audio Hijack.app'
-
 zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
 XML_FEED="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
 
-# sparkle:version= is the only version information in feed
-
+	# sparkle:version= is the only version information in feed
 LATEST_VERSION=`curl -sfL "$XML_FEED" | awk -F'"' '/sparkle:version=/{print $2}'`
+
+	## 2018-07-10 this doesn't seem to work, so I'm just hard-coding in the URL in URL
+	# URL=`curl -sfL 'http://rogueamoeba.com/audiohijack/download.php' | awk -F'"' '/http.*zip/{print $2}'`
+	#
+	# if [[ "$URL" == "" ]]
+	# then
+	# 	echo "URL is empty"
+	# 	exit 1
+	# fi
+URL="https://rogueamoeba.com/audiohijack/download/AudioHijack.zip"
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$XML_FEED" = "" ]
@@ -37,7 +52,6 @@ then
 
 	exit 1
 fi
-
 
 if [ -d "$INSTALL_TO" ]
 then
@@ -76,18 +90,6 @@ then
 	echo "\nSouce: <${RELEASE_NOTES_URL}>"
 
 fi
-
-
-## 2018-07-10 this doesn't seem to work, so I'm just hard-coding in the URL in URL
-# URL=`curl -sfL 'http://rogueamoeba.com/audiohijack/download.php' | awk -F'"' '/http.*zip/{print $2}'`
-#
-# if [[ "$URL" == "" ]]
-# then
-# 	echo "URL is empty"
-# 	exit 1
-# fi
-
-URL="https://rogueamoeba.com/audiohijack/download/AudioHijack.zip"
 
 FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
 

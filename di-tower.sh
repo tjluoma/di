@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Tower.app'
 
+HOMEPAGE="https://www.git-tower.com/mac"
+
+DOWNLOAD_PAGE="https://www.git-tower.com/download/mac"
+
+SUMMARY="Tower helps you master version control with Git. (NOTE: Version information is for v2 because v3 is subcription that I haven’t signed up for.)"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
