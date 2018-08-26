@@ -56,6 +56,29 @@ else
 	fi
 fi
 
+
+URL_MAIN=$(curl -sfL --head 'https://www.keyboardmaestro.com/action/download?km-kmi-7-b3' | awk -F' |\r' '/^Location/{print $2}' | sed 's#http://#https://#g')
+
+URL_ALT=$(curl -sfL 'https://files.stairways.com' | awk -F'"' '/keyboardmaestro.*\.zip/{print "https://files.stairways.com/"$2}' | head -1)
+
+if [[ "$URL_ALT" == "$URL_MAIN" ]]
+then
+	URL="$URL_ALT"
+	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL (identical): $URL"
+else
+	URL_ALT_NUMBERS=$(echo  "$URL_ALT:t:r"  | tr -dc '[0-9]')
+	URL_MAIN_NUMBERS=$(echo "$URL_MAIN:t:r" | tr -dc '[0-9]')
+
+	if [ "$URL_MAIN_NUMBERS" -gt "$URL_ALT_NUMBERS" ]
+	then
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
+		URL="$URL_MAIN"
+	else
+		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
+		URL="$URL_ALT"
+	fi
+fi
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -83,27 +106,6 @@ fi
 
 # If we get here, we _are_ outdated. Now we just need to figure out which URL to use.
 
-URL_MAIN=$(curl -sfL --head 'https://www.keyboardmaestro.com/action/download?km-kmi-7-b3' | awk -F' |\r' '/^Location/{print $2}' | sed 's#http://#https://#g')
-
-URL_ALT=$(curl -sfL 'https://files.stairways.com' | awk -F'"' '/keyboardmaestro.*\.zip/{print "https://files.stairways.com/"$2}' | head -1)
-
-if [[ "$URL_ALT" == "$URL_MAIN" ]]
-then
-	URL="$URL_ALT"
-	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL (identical): $URL"
-else
-	URL_ALT_NUMBERS=$(echo  "$URL_ALT:t:r"  | tr -dc '[0-9]')
-	URL_MAIN_NUMBERS=$(echo "$URL_MAIN:t:r" | tr -dc '[0-9]')
-
-	if [ "$URL_MAIN_NUMBERS" -gt "$URL_ALT_NUMBERS" ]
-	then
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
-		URL="$URL_MAIN"
-	else
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
-		URL="$URL_ALT"
-	fi
-fi
 
 	# No RELEASE_NOTES_URL possible as far as I can tell ☹️
 echo "$NAME: No Release Notes available, but <https://wiki.keyboardmaestro.com/manual/Whats_New> eventually has summary updates."
