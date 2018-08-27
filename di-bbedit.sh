@@ -38,15 +38,31 @@ function use_v12 {
 		#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
 	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
+
 	INFO=($(curl -sfL "$XML_FEED" \
-			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadURL)</key>' \
-			| tail -5 \
-			| sort \
-			| awk -F'>|<' '/string/{print $3}'))
+			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
+			| tail -8 \
+			| tr -s '\t|\012' ' ' \
+			| perl -p -e 's/^ // ; s/ -- /\n/ ; s/ -- /\n/ ' \
+			| sed 's#<string>##g ; s#<\/string>##g ; s#<key>##g ; s#<\/key>##g' \
+			| sort))
 
-	LATEST_VERSION="$INFO[1]"
+	## ok, so with the 'sort' this guarantees that the items will always be in this order:
+	#
+	#	SUFeedEntryDownloadChecksum ef8795bee09830944b4018377280888c28cf26a0591c2994c50cd2837fef9f67
+	#	SUFeedEntryDownloadURL https://s3.amazonaws.com/BBSW-download/BBEdit_12.1.5.dmg
+	#	SUFeedEntryShortVersionString 12.1.5
 
-	URL="$INFO[2]"
+	SHA256_EXPECTED="$INFO[2]"
+	URL="$INFO[4]"
+	LATEST_VERSION="$INFO[6]"
+
+	#echo "
+	#SHA256_EXPECTED: $SHA256_EXPECTED
+	#URL: $URL
+	#LATEST_VERSION: $LATEST_VERSION
+	#"
+
 }
 
 function use_v11 {
@@ -178,6 +194,11 @@ fi
 ## ?
 ## So that's what I'm doing instead.
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
+RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.txt"
+
+SHA256_FILE="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.sha256"
 
 if [[ "$USE12" = "yes" ]]
 then
@@ -195,7 +216,6 @@ then
 	fi
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -209,6 +229,39 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+if [[ "$SHA256_EXPECTED" != "" ]]
+then
+		# if we get here, we have something to compare against
+		# put the expected value (which we got from the XML_FEED
+		# into a text file with the full path of the filename of the file we just downloaded
+		# and then we can check it with 'shasum --check'
+	echo "$SHA256_EXPECTED $FILENAME" >| "$SHA256_FILE"
+
+	echo	"$NAME: Verifying sha256 checksum of '$FILENAME':"
+
+	shasum --check "$SHA256_FILE"
+
+	SHASUM_EXIT="$?"
+
+	if [ "$SHASUM_EXIT" = "0" ]
+	then
+		echo "$NAME: '$FILENAME' matches the expected signature."
+
+	else
+		echo "$NAME: checksum failed (\$SHASUM_EXIT = $SHASUM_EXIT)"
+		echo "$NAME: Moving '$FILENAME' and related files to the Trash, as they may be unsafe."
+
+		[[ -e "$FILENAME" ]] && mv -vf "$FILENAME" "$HOME/.Trash/"
+
+		[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
+
+		[[ -e "$SHA256_FILE" ]] && mv -vf "$SHA256_FILE" "$HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
 
 if [ -e "$INSTALL_TO" ]
 then
