@@ -148,9 +148,8 @@ RELEASE_NOTES_FILE="$FILENAME:r.txt"
 	# This is the URL where release notes are published
 RELEASE_NOTES_URL="https://www.decisivetactics.com/products/printopia/release-notes-sparkle"
 
-	# store the value of the shasum along the with end portion (:t stands for 'tail' in zsh-parlance)
-	# of the filename
-	# note: use full-path of the filename, although the user may move it later
+	# store the value of the shasum along the the full-path of the filename,
+	# although the user may move it later.
 cat <<EOINPUT > "$SHASUM_FILENAME"
 $EXPECTED_SHASUM1  $FILENAME
 $EXPECTED_SHASUM256  $FILENAME
