@@ -8,10 +8,12 @@
 NAME="$0:t:r"
 
 	# Yes, they really put an '(R)' in the app name. 🙄
-INSTALL_TO="/Applications/Intel Power Gadget/Intel(R) Power Gadget.app"
+INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
 
 HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget-20"
 
+	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
+	# 			but I don't know if that '770353' will change over time
 DOWNLOAD_PAGE="https://software.intel.com/en-us/articles/intel-power-gadget-20"
 
 SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enabled for Intel Core processors (from 2nd Generation up to 7th Generation Intel Core processors)."
@@ -23,20 +25,46 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# Quoting “Patrick Konsor (Intel) said on Jul 25,2018” from $HOMEPAGE:
-# 	v3.5.3 removes support for macOS pre-10.13 due to stability concerns for a limited number of users.
-# 	If you would like to install on macOS 10.12 or earlier, you can try v3.5.2: https://software.intel.com/file/641033/download
-# https://software.intel.com/sites/default/files/managed/6c/0b/Intel%C2%AE%20Power%20Gadget.dmg
+	# this just gives the part after the '10.'
+	# i.e. 	for 10.11.6 it gives '11'
+	# 		for 10.14 it gives '14'
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+if [[ "$OS_VER" -ge "13" ]]
+then
 
-TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
-	| egrep "Intel® Power Gadget .* for Mac" \
-	| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
+	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
 
-URL=$(curl --head -sfL "$TEASER_URL" \
-	| awk -F' |\r' '/^.ocation/{print $2}' \
-	| tail -1)
+	TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
+		| egrep "Intel® Power Gadget .* for Mac" \
+		| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
+
+	URL=$(curl --head -sfL "$TEASER_URL" \
+		| awk -F' |\r' '/^.ocation/{print $2}' \
+		| tail -1)
+
+else
+		# Quoting “Patrick Konsor (Intel) said on Jul 25,2018” from $HOMEPAGE:
+		# 	v3.5.3 removes support for macOS pre-10.13 due to stability concerns for a limited number of users.
+		# 	If you would like to install on macOS 10.12 or earlier, you can try v3.5.2: https://software.intel.com/file/641033/download
+		# https://software.intel.com/sites/default/files/managed/6c/0b/Intel%C2%AE%20Power%20Gadget.dmg
+
+		# this is for 10.12 and earlier (although I think "earlier" is capped, at 10.7 maybe? Not sure) @todo - investigate
+	LATEST_VERSION="3.5.2"
+	URL='https://software.intel.com/sites/default/files/managed/6c/0b/Intel%C2%AE%20Power%20Gadget.dmg'
+
+fi
+
+	# If either of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
