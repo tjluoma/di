@@ -9,7 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Sourcetree.app"
 
-XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
+## This stops at versions 2.3.2 but the app is currently at 2.7.6 !
+# XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
