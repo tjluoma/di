@@ -35,7 +35,7 @@ function trash_our_files {
 	[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$HOME/.Trash/$FILENAME:t:r.Corrupted-Do-Not-Use.$ACTUAL_SHASUM256.zip"
 
 		# put the checksum file in the trash too
-	[[ -e "$SHA256_FILENAME" ]] && mv -vf "$SHA256_FILENAME" "$HOME/.Trash/"
+	[[ -e "$SHASUM_FILENAME" ]] && mv -vf "$SHASUM_FILENAME" "$HOME/.Trash/"
 
 		# if we created a $RELEASE_NOTES_FILE, then we move that to the trash also
 	[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
@@ -43,24 +43,28 @@ function trash_our_files {
 }
 
 IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
-					| egrep '"app_version"|"app_version_short"|"sha2"|"size"|"url"' \
-					| head -5 \
-					| sed 's#^[	 ]*##g' \
-					| tr -d '"|,' \
-					| sort \
-					| awk -F' ' '/:/{print $2}' ))
+			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"url"' \
+			| head -7 \
+			| sed 's#^[	 ]*##g' \
+			| tr -d '"|,' \
+			| sort \
+			| awk -F' ' '/:/{print $2}' ))
 
 LATEST_BUILD="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
-EXPECTED_SHASUM256="$INFO[3]"
-EXPECTED_BYTES="$INFO[4]"
-URL="$INFO[5]"
+EXPECTED_SHASUM1="$INFO[3]"
+EXPECTED_SHASUM256="$INFO[4]"
+EXPECTED_SHASUM512="$INFO[5]"
+EXPECTED_BYTES="$INFO[6]"
+URL="$INFO[7]"
 
 ## Useful for debugging, if needed
 # echo "
 # LATEST_BUILD: ${LATEST_BUILD}
 # LATEST_VERSION: ${LATEST_VERSION}
+# EXPECTED_SHASUM1: $EXPECTED_SHASUM1
 # EXPECTED_SHASUM256: ${EXPECTED_SHASUM256}
+# EXPECTED_SHASUM512: $EXPECTED_SHASUM512
 # EXPECTED_BYTES: ${EXPECTED_BYTES}
 # URL: ${URL}
 # "
@@ -107,7 +111,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 	# This is a file we will use to check the shasum of the .zip file after it is downloaded
 	# it will contain the shasum value that we received from the XML_FEED, above
-SHA256_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.sha256"
+SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum"
 
 	# this is a file we will use to share the release notes from the latest version
 	# so that the user can read them at their leisure (the app might have been updated
@@ -120,7 +124,12 @@ RELEASE_NOTES_URL="https://www.decisivetactics.com/products/printopia/release-no
 
 	# store the value of the shasum along the with end portion (:t stands for 'tail' in zsh-parlance)
 	# of the filename
-echo "$EXPECTED_SHASUM256  $FILENAME:t" > "$SHA256_FILENAME"
+cat <<EOINPUT > "$SHASUM_FILENAME"
+$EXPECTED_SHASUM1  $FILENAME:t
+$EXPECTED_SHASUM256  $FILENAME:t
+$EXPECTED_SHASUM512  $FILENAME:t
+EOINPUT
+
 
 	# if the user has 'lynx' installed, we will use that to show them the release notes for this version
 	# lynx does not come standard on macOS, but if the user is technically-savvy enough to be using
@@ -197,9 +206,18 @@ fi
 echo "$NAME: Verifying '$FILENAME' using 'shasum -a 256': "
 
 	# and now actually check it. Note that this is checking against the file we created earlier
-	# we should just compare against the shasum directly, but saving the shasum to a file
+	# we could just compare against the shasum directly, but saving the shasum to a file
 	# will allow the user to check it again later if they wish
-shasum -a 256 --check "$SHA256_FILENAME"
+	# Note that --check will verify all 3 of the shasums in the file at once, and report back for each,
+	# something like this:
+	#
+	#	Printopia-3.0.11_03001.17.50.zip: OK
+	# 	Printopia-3.0.11_03001.17.50.zip: OK
+	# 	Printopia-3.0.11_03001.17.50.zip: OK
+	#
+	# so we don't need to call 'shasum --check' 3 times
+	# which is what I was originally doing before I realized it was superfluous.
+shasum --check "$SHASUM_FILENAME"
 
 	# check to see what 'shasum' reported for an exit code
 	# note that 'shasum' will also produce some output telling the user what happened
@@ -214,19 +232,19 @@ then
 
 else
 		# we hope to never get here, but if we do, verification has failed.
-		# we should tell the user what we found vs what we expected to find
-
-		# save the actual (but incorrect) shasum to a variable
-	ACTUAL_SHASUM256=$(shasum -a 256 "$FILENAME" | awk '{print $1}')
-
-		# Show the user (if they are watching) what the difference is between them shasums
-	echo "$NAME: '$FILENAME' failed shasum verification (SHA_EXIT = $SHA_EXIT): \n\tExpected: $EXPECTED_SHASUM256\n\tReceived: $ACTUAL_SHASUM256"
+	echo "$NAME: '$FILENAME' failed shasum verification (SHA_EXIT = $SHA_EXIT)"
 
 		# and then tell the user we will not be continuing with the installation
 		# note that we purposefully have not touched their existing installation (if any)
 		# before this point, so if they have a working installation of an older version
 		# of the app, it will continue to function normally
-	echo "$NAME: Installation/Upgrade cancelled"
+
+		if [[ -e "$INSTALL_TO" ]]
+		then
+			echo "$NAME: Installation cancelled"
+		else
+			echo "$NAME: Upgrade cancelled"
+		fi
 
 		# if the downloaded file has failed validation, we probably shouldn't leave it sitting in their
 		# ~/Downloads/ directory.
