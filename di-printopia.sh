@@ -42,6 +42,18 @@ function trash_our_files {
 
 }
 
+	# OK, so here's where we do the very clever parsing of our XML_FEED
+	# which is fortunately very well-formed and easy to parse.
+	#
+	# So, we are creating a variable "$INFO" which will be split at newlines (IFS takes care of that)
+	# we use egrep to limit the output only to the 7 fields we care about
+	# we use 'head' to limit the output to the first 7 lines (7 fields of egrep, head -7, not a coincidence)
+	# sed removes any whitespace at the beginning of the lines (that's a tab and a space in the [brackets]
+	# tr gets rid of " and , characters (yes, 'sed' could do that, but I like using 'tr' as it seems more clear)
+	# we use 'sort' to make sure that the 7 lines are in a predictable order, even if the order in the XML_FEED
+	# 	changes at some point in the future
+	# lastly we use awk to split each line at the spaces and get the 2nd field after each :
+	# 	well-formed XML really makes things easier
 IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
 			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"url"' \
 			| head -7 \
@@ -50,6 +62,7 @@ IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
 			| sort \
 			| awk -F' ' '/:/{print $2}' ))
 
+	# we assign “friendly names” to each line of $INFO so we can more easily refer to them later in the script
 LATEST_BUILD="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
 EXPECTED_SHASUM1="$INFO[3]"
@@ -58,7 +71,7 @@ EXPECTED_SHASUM512="$INFO[5]"
 EXPECTED_BYTES="$INFO[6]"
 URL="$INFO[7]"
 
-## Useful for debugging, if needed
+## Useful for debugging, if needed. Uncomment and see if each of the values makes sense.
 # echo "
 # LATEST_BUILD: ${LATEST_BUILD}
 # LATEST_VERSION: ${LATEST_VERSION}
@@ -78,30 +91,42 @@ then
 
 	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
+		# zsh feature that is useful for comparing version / build numbers
 	autoload is-at-least
 
+		# make sure what we have is at least what is on the server by comparing version numbers
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
+		# store the result in a variable
 	VERSION_COMPARE="$?"
 
+		# make sure what we have is at least what is on the server by comparing build numbers
 	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
 
+		# store the result in a variable
 	BUILD_COMPARE="$?"
 
+		# now, check that both of the exit codes for both of the comparisons indicate we are up-to-date
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
+			# all's good, we are current
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
+		# if we get here, at least one (and probably both) of the version / build numbers
+		# indicates that the server version is newer than our installed version. Time to upgrade!
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+		# since we have found an existing installation, this clearly isn't the first time
+		# that the app has been installed. We use this at the very end of the script
+		# to determine some actions to take
 	FIRST_INSTALL='no'
 
 else
 
-		# Save a variable telling us this is the first install, which we'll use
-		# later on to tell us we should launch the app if installation is a success
+		# Save a variable telling us this _is_ the first time we have installed this app,
+		# which we'll use later on to tell us we should launch the app if installation is a success
 
 	FIRST_INSTALL='yes'
 fi
@@ -203,7 +228,7 @@ else
 fi
 
 	# tell the user that we are checking the shasum
-echo "$NAME: Verifying '$FILENAME' using 'shasum -a 256': "
+echo "$NAME: Verifying '$FILENAME' using 'shasum --check \"$SHASUM_FILENAME\"': "
 
 	# and now actually check it. Note that this is checking against the file we created earlier
 	# we could just compare against the shasum directly, but saving the shasum to a file
