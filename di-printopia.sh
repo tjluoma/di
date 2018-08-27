@@ -240,8 +240,12 @@ echo "$NAME: Verifying '$FILENAME' using 'shasum --check \"$SHASUM_FILENAME\"': 
 	# 	Printopia-3.0.11_03001.17.50.zip: OK
 	# 	Printopia-3.0.11_03001.17.50.zip: OK
 	#
-	# so we don't need to call 'shasum --check' 3 times
-	# which is what I was originally doing before I realized it was superfluous.
+	# so we don't need to call 'shasum --check' 3 times using each of the 3 shasums:
+	#	shasum -a 1 --check "$SHASUM_FILENAME"
+	#	shasum -a 256 --check "$SHASUM_FILENAME"
+	#	shasum -a 512 --check "$SHASUM_FILENAME"
+	# which is what I was originally doing before I realized it was superfluous
+	# and I ended up with NINE lines telling me it was OK instead of 3
 shasum --check "$SHASUM_FILENAME"
 
 	# check to see what 'shasum' reported for an exit code
@@ -380,7 +384,7 @@ fi
 
 # OK, if we have gotten here, we have passed all the hurdles except one:
 #
-# we need to deal with an existing / outdated installation, if any,
+# we need to deal with an existing & outdated installation, if any,
 # before we can move the new version into its place
 
 if [[ -e "$INSTALL_TO" ]]
