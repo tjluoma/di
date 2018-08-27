@@ -109,9 +109,10 @@ fi
 
 if (( $+commands[pkginstall.sh] ))
 then
-	pkginstall.sh "$PKG"
+	pkginstall.sh "$PKG" && diskutil eject "$MNTPNT"
 else
 	sudo /usr/sbin/installer -verbose -pkg "$PKG" -dumplog -target / -lang en 2>&1 \
+	&& diskutil eject "$MNTPNT" \
 	|| open -a 'Installer' "$PKG"
 fi
 
