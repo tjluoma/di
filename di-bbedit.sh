@@ -38,7 +38,6 @@ function use_v12 {
 		#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
 	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
-
 	INFO=($(curl -sfL "$XML_FEED" \
 			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
 			| tail -8 \
@@ -194,28 +193,33 @@ fi
 ## ?
 ## So that's what I'm doing instead.
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.txt"
+RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.ReleaseNotes.txt"
 
-SHA256_FILE="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.sha256"
+SHA256_FILE="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.sha256"
 
 if [[ "$USE12" = "yes" ]]
 then
+
+	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+
 	if (( $+commands[lynx] ))
 	then
 
-		RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
+		(echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions" ;
+		 lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+		 | sed '1,/^Additions$/d; /Newsflash(es)/,$d' ;
+		 echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$RELEASE_NOTES_FILE"
 
-		echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions"
+	else
 
-		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-		| sed '1,/^Additions$/d; /Newsflash(es)/,$d'
+		( echo "$NAME: 'lynx' is not installed, so release notes cannot be displayed, but you can find them at:" ;
+		  echo "$RELEASE_NOTES_URL" )  | tee "$RELEASE_NOTES_FILE"
 
-		echo "\nSource: <$RELEASE_NOTES_URL>"
 	fi
-fi
 
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -236,9 +240,12 @@ then
 		# put the expected value (which we got from the XML_FEED
 		# into a text file with the full path of the filename of the file we just downloaded
 		# and then we can check it with 'shasum --check'
-	echo "$SHA256_EXPECTED $FILENAME" >| "$SHA256_FILE"
+		##
+		## !! NOTE THERE MUST BE _TWO_ SPACES BETWEEN SHA AND FILENAME OR ELSE CHECKING WILL FAIL !! 
+		##
+	echo "$SHA256_EXPECTED  $FILENAME" >| "$SHA256_FILE"
 
-	echo	"$NAME: Verifying sha256 checksum of '$FILENAME':"
+	echo "$NAME: Verifying sha256 checksum of '$FILENAME':"
 
 	shasum --check "$SHA256_FILE"
 
