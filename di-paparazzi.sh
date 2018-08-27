@@ -84,7 +84,7 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 
-if (( $+commands[html2textXXX] ))
+if (( $+commands[html2text] ))
 then
 
 	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
