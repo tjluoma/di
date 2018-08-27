@@ -46,8 +46,8 @@ function trash_our_files {
 	# which is fortunately very well-formed and easy to parse.
 	#
 	# So, we are creating a variable "$INFO" which will be split at newlines (IFS takes care of that)
-	# we use egrep to limit the output only to the 7 fields we care about
-	# we use 'head' to limit the output to the first 7 lines (7 fields of egrep, head -7, not a coincidence)
+	# we use egrep to limit the output only to the 8 fields we care about
+	# we use 'head' to limit the output to the first 8 lines (8 fields of egrep, head -8, not a coincidence)
 	# sed removes any whitespace at the beginning of the lines (that's a tab and a space in the [brackets]
 	# tr gets rid of " and , characters (yes, 'sed' could do that, but I like using 'tr' as it seems more clear)
 	# we use 'sort' to make sure that the 7 lines are in a predictable order, even if the order in the XML_FEED
@@ -55,8 +55,8 @@ function trash_our_files {
 	# lastly we use awk to split each line at the spaces and get the 2nd field after each :
 	# 	well-formed XML really makes things easier
 IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
-			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"url"' \
-			| head -7 \
+			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"team"|"url"' \
+			| head -8 \
 			| sed 's#^[	 ]*##g' \
 			| tr -d '"|,' \
 			| sort \
@@ -69,7 +69,8 @@ EXPECTED_SHASUM1="$INFO[3]"
 EXPECTED_SHASUM256="$INFO[4]"
 EXPECTED_SHASUM512="$INFO[5]"
 EXPECTED_BYTES="$INFO[6]"
-URL="$INFO[7]"
+EXPECTED_CODESIGN_TEAM_ID="$INFO[6]"
+URL="$INFO[8]"
 
 ## Useful for debugging, if needed. Uncomment and see if each of the values makes sense.
 # echo "
@@ -381,6 +382,34 @@ else
 
 	exit 1
 fi
+
+# Ok, so the general code signature check is OK, but is the TEAM in the signature the same as the
+# TEAM in the XML_FEED? Let's check
+
+ACTUAL_CODESIGN_TEAM_ID=$(codesign -dv --verbose=4 "$UNZIP_TO/$INSTALL_TO:t" 2>&1 | awk -F'=' '/^TeamIdentifier/{print $NF}')
+
+if [[ "$ACTUAL_CODESIGN_TEAM_ID" == "$EXPECTED_CODESIGN_TEAM_ID"
+then
+		# the codes match. We are good to go.
+	echo "$NAME: Verified that the Team ID in the code signature matches (this is good)"
+else
+		# the teams do NOT match. Danger, Will Robinson.
+	echo "$NAME: The Team IDs in the XML_FEED and the downloaded app do _NOT_ match (this is bad)."
+	echo "$NAME: We cannot continue, and you should not use the downloaded files."
+
+
+	echo "$NAME: removing potentially hazardous files from '$UNZIP_TO'..."
+
+		# delete our temp directory and its contents
+	rm -rf "$UNZIP_TO"
+
+		# get rid of the downloaded file and related files
+	trash_our_files
+
+		# now we quit because we have no other choice, really
+	exit 1
+fi
+
 
 # OK, if we have gotten here, we have passed all the hurdles except one:
 #
