@@ -137,9 +137,17 @@ then
 	&& LAUNCH_ENGINE='yes' \
 	&& osascript -e 'tell application "Keyboard Maestro Engine" to quit'
 
+	pgrep -q 'Keyboard Maestro Engine' \
+	&& LAUNCH_ENGINE='yes' \
+	&& pkill -f 'Keyboard Maestro Engine'
+
 	pgrep -q 'Keyboard Maestro' \
 	&& LAUNCH_APP='yes' \
 	&& osascript -e 'tell application "Keyboard Maestro" to quit'
+
+	pgrep -q 'Keyboard Maestro' \
+	&& LAUNCH_ENGINE='yes' \
+	&& pkill -f 'Keyboard Maestro'
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
