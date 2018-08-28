@@ -7,6 +7,10 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: This isn't working right because 3.5.3 and 3.5.4 seem to be the same"
+
+exit 0
+
 	# Yes, they really put an '(R)' in the app name. 🙄
 INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
 
@@ -33,10 +37,11 @@ OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 if [[ "$OS_VER" -ge "13" ]]
 then
 
-	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" |head -1| sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
 
 	TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
 		| egrep "Intel® Power Gadget .* for Mac" \
+		| head -1 \
 		| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
 
 	URL=$(curl --head -sfL "$TEASER_URL" \
