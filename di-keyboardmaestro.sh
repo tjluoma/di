@@ -26,63 +26,28 @@ LAUNCH_APP="no"
 
 LAUNCH_ENGINE="yes"
 
-LATEST_VERSION_MAIN=$(curl -sfL "https://www.keyboardmaestro.com/main/" | fgrep -i '<title>' | tr -dc '[0-9]\.')
+	# This is not your normal XML_FEED, by a long-shot.
+FEED='https://www.keyboardmaestro.com/action/sivc?M&U&08248000&6ABF5EF7&xxxxxxxx&00000000&000010E0&KM&EN'
 
-LATEST_VERSION_ALT=$(curl -sL 'https://files.stairways.com' | awk -F'"| |<' '/keyboardmaestro.*zip/{print $8}' | head -1)
+TEMPFILE="${TMPDIR-/tmp}${NAME}.$$.$RANDOM.txt"
 
-[[ "$LATEST_VERSION_MAIN" = "" ]] && LATEST_VERSION_MAIN='0'
+curl -sfLS "$FEED" > "$TEMPFILE"
 
-[[ "$LATEST_VERSION_ALT" = ""  ]] && LATEST_VERSION_ALT='0'
+URL=$(awk -F' ' '/ReleaseURL:/{print $2}' "$TEMPFILE")
 
-if [[ "$LATEST_VERSION_MAIN" == "$LATEST_VERSION_ALT" ]]
+LATEST_VERSION=$(awk -F' ' '/^\]Changes in /{print $3}' "$TEMPFILE" | head -1)
+
+MD5_SUM_EXPECTED=$(awk -F' ' '/ReleaseMD5:/{print $2}' "$TEMPFILE")
+
+	# If either of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION (identical): $LATEST_VERSION_MAIN"
-	LATEST_VERSION="$LATEST_VERSION_MAIN"
-else
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
 
-	LATEST_VERSION_MAIN_SQUISHED=$(echo "$LATEST_VERSION_MAIN" | tr -dc '[0-9]')
-	LATEST_VERSION_ALT_SQUISHED=$(echo "$LATEST_VERSION_ALT" | tr -dc '[0-9]')
-
-	if [ "$LATEST_VERSION_MAIN_SQUISHED" -gt "$LATEST_VERSION_ALT_SQUISHED" ]
-	then
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is GREATER than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
-		LATEST_VERSION="$LATEST_VERSION_MAIN"
-
-	elif [[ "$LATEST_VERSION_MAIN_SQUISHED" -lt "$LATEST_VERSION_ALT_SQUISHED" ]]
-	then
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: LATEST_VERSION_MAIN '$LATEST_VERSION_MAIN' is LESS than LATEST_VERSION_ALT '$LATEST_VERSION_ALT'"
-		LATEST_VERSION="$LATEST_VERSION_ALT"
-
-	else
-		echo "$NAME: I don't know how we got here, but:
-			LATEST_VERSION_MAIN: $LATEST_VERSION_MAIN ($LATEST_VERSION_MAIN_SQUISHED)
-			LATEST_VERSION_ALT: $LATEST_VERSION_ALT ($LATEST_VERSION_ALT_SQUISHED)"
-
-		exit 1
-	fi
-fi
-
-
-URL_MAIN=$(curl -sfL --head 'https://www.keyboardmaestro.com/action/download?km-kmi-7-b3' | awk -F' |\r' '/^Location/{print $2}' | sed 's#http://#https://#g')
-
-URL_ALT=$(curl -sfL 'https://files.stairways.com' | awk -F'"' '/keyboardmaestro.*\.zip/{print "https://files.stairways.com/"$2}' | head -1)
-
-if [[ "$URL_ALT" == "$URL_MAIN" ]]
-then
-	URL="$URL_ALT"
-	[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL (identical): $URL"
-else
-	URL_ALT_NUMBERS=$(echo  "$URL_ALT:t:r"  | tr -dc '[0-9]')
-	URL_MAIN_NUMBERS=$(echo "$URL_MAIN:t:r" | tr -dc '[0-9]')
-
-	if [ "$URL_MAIN_NUMBERS" -gt "$URL_ALT_NUMBERS" ]
-	then
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_MAIN is greater ($URL_MAIN_NUMBERS vs $URL_ALT_NUMBERS)"
-		URL="$URL_MAIN"
-	else
-		[[ "$DEBUG" == "yes" ]] && echo "$NAME [debug]: URL_ALT is greater ($URL_ALT_NUMBERS vs $URL_MAIN_NUMBERS)"
-		URL="$URL_ALT"
-	fi
+	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -108,15 +73,21 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
+
 
 # If we get here, we _are_ outdated. Now we just need to figure out which URL to use.
 
-
-	# No RELEASE_NOTES_URL possible as far as I can tell ☹️
-echo "$NAME: No Release Notes available, but <https://wiki.keyboardmaestro.com/manual/Whats_New> eventually has summary updates."
-
 FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
+
+(echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ; \
+ awk '/\]Changes in/{i++}i==1' "$TEMPFILE" | sed 's#^\]##g') \
+| tee -a "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -130,6 +101,16 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+MD5_SUM_ACTUAL=$(md5 -q "$FILENAME")
+
+if [[ "$MD5_SUM_ACTUAL" == "$MD5_SUM_EXPECTED" ]]
+then
+	echo "$NAME: '$FILENAME' passed checksum validation"
+else
+	echo "$NAME: '$FILENAME' failed checksum validation (Expected '$MD5_SUM_EXPECTED' vs Actual: '$MD5_SUM_ACTUAL'.)"
+	exit 1
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -174,9 +155,6 @@ EXIT="$?"
 
 if [[ "$EXIT" = "0" ]]
 then
-	[[ "$LAUNCH_ENGINE" == "yes" ]]	&& open -a "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app"
-
-	[[ "$LAUNCH_APP" == "yes" ]] 		&& open -a "${INSTALL_TO}"
 
 	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
@@ -185,6 +163,14 @@ else
 
 	exit 1
 fi
+
+if [ "$FIRST_INSTALL" = "yes" -o "$LAUNCH_APP" ]
+then
+	echo "$NAME: Launching '$INSTALL_TO':"
+	open -a "$INSTALL_TO"
+fi
+
+[[ "$LAUNCH_ENGINE" == "yes" ]] && echo "$NAME: Launching 'Keyboard Maestro Engine.app':" && open -a "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app"
 
 exit 0
 #EOF
