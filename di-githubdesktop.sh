@@ -19,7 +19,7 @@ fi
 	# note: this is very much _not_ a Sparkle feed
 XML_FEED='https://github.com/desktop/desktop/releases.atom'
 
-LATEST_VERSION=$(curl -sfLS "$XML_FEED" | awk -F'release-|>|<' '/<title>release/{print $4}' | head -1)
+LATEST_VERSION=$(curl -sfLS "$XML_FEED" | awk -F'release-|>|<' '/<title>release/{print $4}' | fgrep -iv 'beta' | head -1)
 
 URL=$(curl -sSfL --head "https://central.github.com/deployments/desktop/desktop/latest/darwin" \
 		| awk -F' |\r' '/^.ocation:/{print $2}' \
