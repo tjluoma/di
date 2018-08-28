@@ -7,10 +7,6 @@
 
 NAME="$0:t:r"
 
-echo "$NAME: This isn't working right because 3.5.3 and 3.5.4 seem to be the same"
-
-exit 0
-
 	# Yes, they really put an '(R)' in the app name. 🙄
 INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
 
@@ -136,6 +132,53 @@ then
 	echo "$NAME: Failed to find a '.pkg' file in '$MNTPNT'."
 	exit 1
 fi
+
+
+
+
+
+####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
+#
+#		This is a temporary block of code to deal with 3.5.4 being
+#		used in the filename, but actually installing 3.5.3
+#
+
+if [ "$LATEST_VERSION" = "3.5.4" -a "$INSTALLED_VERSION" = "3.5.3" ]
+then
+
+	TEMP_DIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
+
+	echo "$NAME: Using '$TEMP_DIR' as 'TEMP_DIR'."
+
+	pkgutil --expand "$PKG" "$TEMP_DIR/pkgutil"
+
+	[[ ! -e "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg" ]] \
+	&& echo "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg does not exist" \
+	&& exit 1
+
+	cd "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg"
+
+	gunzip --force --stdout Payload | cpio -i
+
+	EXTRACTED_VERSION=$(defaults read "$PWD/Intel Power Gadget/Intel(R) Power Gadget.app/Contents/Info" CFBundleShortVersionString)
+
+	if [[ "$EXTRACTED_VERSION" = "3.5.3" ]]
+	then
+		echo "$NAME: I knew it. This is 3.5.3. Not installing."
+
+		mv -vf "$FILENAME" "$HOME/.Trash/"
+
+		diskutil eject "$MNTPNT"
+
+		exit 0
+	fi
+
+fi
+
+###
+
+
+
 
 	# IMO - this install is too complicated to do with 'unpkg.py'
 	# so we'll have to settle for /usr/sbin/installer
