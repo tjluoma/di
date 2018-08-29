@@ -81,34 +81,75 @@ function use_v7 {
 		USE_VERSION='7'
 		INSTALL_TO='/Applications/1Password 7.app'
 
-		PREFERS_BETAS_FILE="$HOME/.config/di/1Password-prefer-betas.txt"
+			# if we find the old prefer-beta file, move it to the new place
+		OLD_PREFERS_BETAS_FILE="$HOME/.config/di/1Password-prefer-betas.txt"
+		PREFERS_BETAS_FILE="$HOME/.config/di/prefers/1Password-prefer-betas.txt"
+
+		[[ ! -d "$PREFERS_BETAS_FILE:h" ]] && mkdir "$PREFERS_BETAS_FILE:h"
+
+		if [[ -e "$OLD_PREFERS_BETAS_FILE" ]]
+		then
+			if [[ -e "$PREFERS_BETAS_FILE" ]]
+			then
+					# if the new betas file exists, just delete the old one
+				rm -f "$OLD_PREFERS_BETAS_FILE"
+			else
+					# if the new betas file does NOT exist, move the old one to the new place.
+				mv -vf "$OLD_PREFERS_BETAS_FILE" "$PREFERS_BETAS_FILE"
+			fi
+		fi
+
+		DARWIN_VERSION=$(uname -r)
+
+		if [[ -e "$INSTALL_TO" ]]
+		then
+			INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+			INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+		else
+
+			INSTALLED_BUILD='70000000'
+		fi
+
+		CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
 
 		if [[ -e "$PREFERS_BETAS_FILE" ]]
 		then
-
-			URL=$(curl -sfL "https://app-updates.agilebits.com/product_history/OPM7" |\
-				fgrep .pkg |\
-				fgrep -i beta |\
-				head -1 |\
-				sed 's#.*a href="##g; s#">download</a>##g')
-
-			LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
-
+				# This is for betas
+			FEED_URL="https://app-updates.agilebits.com/check/1/${DARWIN_VERSION}/OPM7/en/${INSTALLED_BUILD}/YES"
 			NAME="$NAME (beta releases)"
 
-			BETAS='yes'
 		else
-			BETAS='no'
-
-			DL_URL='https://app-updates.agilebits.com/download/OPM7'
-
-			URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
-
-			LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*1Password-##g' )
+				# This is for non-beta releases
+			FEED_URL="https://app-updates.agilebits.com/check/1/${DARWIN_VERSION}/OPM7/en/${INSTALLED_BUILD}"
 		fi
+
+		ALL_INFO=($(curl -sS --location "$FEED_URL" \
+			-H "Accept: */*" \
+			-H "Accept-Language: en-us" \
+			-H "User-Agent: 1Password%20Updater/${INSTALLED_BUILD} CFNetwork/${CFNETWORK_VER} Darwin/${DARWIN_VERSION} (x86_64)"))
+
+		if [[ "$ALL_INFO" == '{"available":"0"}' ]]
+		then
+			echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+			exit 0
+		fi
+
+		INFO=($(echo "$ALL_INFO" \
+			| tr '{|}|,|\[|\]' '\012' \
+			| tr '"' ' ' \
+			| egrep '^ (version|relnotes|url) : ' \
+			| head -3 \
+			| sort))
+
+		RELEASE_NOTES_URL="$INFO[3]"
+
+		URL="$INFO[6]"
+
+		LATEST_VERSION="$INFO[9]"
+
 	fi
 }
-
 
         # if the user explicitly askes for version 6, use it, regardless of the above
 if [ "$1" = "--use6" -o "$1" = "-6" ]
