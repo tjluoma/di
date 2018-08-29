@@ -22,6 +22,16 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+# Keyboard%20Maestro%20Engine/8.2.4 CFNetwork/974.1 Darwin/18.0.0 (x86_64)
+
+ENGINE_VERSION=$(defaults read "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo 8.2.4)
+
+CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString 2>/dev/null)
+
+DARWIN_VER=$(uname -r)
+
+UA="Keyboard%20Maestro%20Engine/$ENGINE_VERSION CFNetwork/$CFNETWORK_VER Darwin/$DARWIN_VER (x86_64)"
+
 LAUNCH_APP="no"
 
 LAUNCH_ENGINE="yes"
@@ -31,7 +41,7 @@ FEED='https://www.keyboardmaestro.com/action/sivc?M&U&08248000&6ABF5EF7&xxxxxxxx
 
 TEMPFILE="${TMPDIR-/tmp}${NAME}.$$.$RANDOM.txt"
 
-curl -sfLS "$FEED" > "$TEMPFILE"
+curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" -sfLS "$FEED" > "$TEMPFILE"
 
 URL=$(awk -F' ' '/ReleaseURL:/{print $2}' "$TEMPFILE")
 
@@ -91,7 +101,7 @@ FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
