@@ -24,7 +24,25 @@ fi
 
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/defaultfolderx-prefer-betas.txt"
+
+
+	# if we find the old prefer-beta file, move it to the new place
+OLD_PREFERS_BETAS_FILE="$HOME/.config/di/defaultfolderx-prefer-betas.txt"
+PREFERS_BETAS_FILE="$HOME/.config/di/prefers/defaultfolderx-prefer-betas.txt"
+
+[[ ! -d "$PREFERS_BETAS_FILE:h" ]] && mkdir "$PREFERS_BETAS_FILE:h"
+
+if [[ -e "$OLD_PREFERS_BETAS_FILE" ]]
+then
+	if [[ -e "$PREFERS_BETAS_FILE" ]]
+	then
+			# if the new betas file exists, just delete the old one
+		rm -f "$OLD_PREFERS_BETAS_FILE"
+	else
+			# if the new betas file does NOT exist, move the old one to the new place.
+		mv -vf "$OLD_PREFERS_BETAS_FILE" "$PREFERS_BETAS_FILE"
+	fi
+fi
 
 if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
