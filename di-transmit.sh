@@ -16,64 +16,77 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# found via "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/transmit.rb"
-CHANGELOG="https://library.panic.com/releasenotes/transmit5"
-
-	# Web-Scraping. Obviously very fragile and prone to breaking if the format of the page changes,
-	# but there's no appcast, at least none that I can find
-
-if (( $+commands[lynx] ))
+if [[ -e "$INSTALL_TO" ]]
 then
-	# If we have lynx, use it
 
-	URL=$(lynx -nonumbers -listonly -dump -nomargins "https://www.panic.com/transmit/" \
-				| egrep -i 'https://.*Transmit.*\.zip' \
-				| head -1)
-
-	LATEST_VERSION=`echo "$URL:t:r" | sed 's#Transmit%20##g'`
-
-	if [[ "$LATEST_VERSION" == "" ]]
-	then
-		LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
-			| fgrep '<h2 id="' \
-			| head -1 \
-			| lynx -nonumbers -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
-	fi
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 else
-
-	URL=$(curl -sfL "https://www.panic.com/transmit/" \
-			| egrep -i '.*Transmit.*\.zip' \
-			| head -1 \
-			| sed 's#.*panic.com#https://panic.com#g ; s#\.zip.*#.zip#g')
-
-	LATEST_VERSION=`echo "$URL:t:r" | sed 's#Transmit%20##g'`
-
-	if [[ "$LATEST_VERSION" == "" ]]
-	then
-
-		LATEST_VERSION=$(curl --silent --fail --location "$CHANGELOG" \
-			| fgrep '<h2 id="' \
-			| head -1 \
-			| sed 's#</h2>##g ; s#.*>##g')
-	fi
+		# if it's not installed, fake a slightly older version
+	INSTALLED_VERSION='5.1.3'
+	INSTALLED_BUILD='88844'
 fi
 
-if [[ "$LATEST_VERSION" == "" ]]
-then
-		# check to see if the page still exists
-	HTTP_CODE=$(curl --silent --location --head "$CHANGELOG" \
-				| awk -F' ' '/^HTTP/{print $2}' \
-				| tail -1)
+MAC_TYPE=$(sysctl hw.model | awk -F' ' '/^hw.model/{print $NF}')
 
-	if [[ "$HTTP_CODE" == "200" ]]
-	then
-			# Page does exist
-		echo "$NAME: \$LATEST_VERSION is empty. Check '$CHANGELOG' for format changes."
-	else
-			# Page does NOT exist
-		echo "$NAME: $CHANGELOG not found: HTTP_CODE = $HTTP_CODE"
-	fi
+DARWIN_VERSION=$(uname -r)
+
+CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
+
+	# the feed reports itself as 'http://www.panic.com/updates/transmit/transmit-en.xml' but that URL is 404
+XML_FEED="https://www.panic.com/updates/update.php?osVersion=$OS_VER&cputype=7&cpu64bit=1&cpusubtype=8&model=${MAC_TYPE}&ncpu=4&lang=en-US&appName=Transmit&appVersion=${INSTALLED_BUILD}&cpuFreqMHz=1200&ramMB=8192"
+
+OS_VER=$(sw_vers -productVersion)
+
+MINIMUM_VERSION=$(curl -sfL "$XML_FEED" \
+		-H "Accept: application/rss+xml,*/*;q=0.1" \
+		-H "Accept-Language: en-us" \
+		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
+		| fgrep '<sparkle:minimumSystemVersion>' \
+		| head -1 \
+		| sed 's#.*<sparkle:minimumSystemVersion>##g ; s#</sparkle:minimumSystemVersion>##g')
+
+autoload is-at-least
+
+is-at-least "$MINIMUM_VERSION" "$OS_VER"
+
+VER_TEST="$?"
+
+if [ "$VER_TEST" = "1" ]
+then
+	echo "$NAME: Transmit requires at least '$MINIMUM_VERSION' of Mac OS. You have $OS_VER. Cannot continue."
+	exit 1
+fi
+
+IFS=$'\n' INFO=($(curl -sSfL "${XML_FEED}" \
+		-H "Accept: application/rss+xml,*/*;q=0.1" \
+		-H "Accept-Language: en-us" \
+		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
+		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+		| head -3 \
+		| sort \
+		| sed 's#"$##g ; s#.*"##g'))
+
+	# "Sparkle" will always come before "url" because of "sort"
+LATEST_VERSION="$INFO[1]"
+LATEST_BUILD="$INFO[2]"
+URL="$INFO[3]"
+
+	# Replace a space in the URL with '%20'
+	# WHO PUTS SPACES IN URLs?!?!
+URL=$(echo "$URL" | sed 's# #%20#g' )
+
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"
 
 	exit 1
 fi
@@ -81,15 +94,12 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
-
-	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
@@ -112,40 +122,42 @@ fi
 	# 302 ->
 	# "Location: https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
 
-[[ "$URL" == "" ]] && URL="https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
+[[ "$URL" == "" ]] && echo "$NAME: '$URL' was empty. Using backup URL" &&  URL="https://download.panic.com/transmit/Transmit%20${LATEST_VERSION}.zip"
 
-	# So let's quickly test to make sure it's valid
-HTTP_CODE=$(curl --silent --location --head "$URL" \
-			| awk -F' ' '/^HTTP/{print $2}' \
-			| tail -1)
+# 	# So let's quickly test to make sure it's valid
+# HTTP_CODE=$(curl --silent --location --head "$URL" \
+# 			| awk -F' ' '/^HTTP/{print $2}' \
+# 			| tail -1)
+#
+# if [[ "$HTTP_CODE" != "200" ]]
+# then
+# 		# Download URL does NOT exist
+# 	echo "$NAME: '$URL' not valid: HTTP_CODE = $HTTP_CODE"
+# 	exit 1
+# fi
 
-if [[ "$HTTP_CODE" != "200" ]]
-then
-		# Download URL does NOT exist
-	echo "$NAME: '$URL' not valid: HTTP_CODE = $HTTP_CODE"
-	exit 1
-fi
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL='https://library.panic.com/releasenotes/transmit5'
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		-H "Accept: application/rss+xml,*/*;q=0.1" \
+		-H "Accept-Language: en-us" \
+		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
+		| fgrep '<sparkle:releaseNotesLink>' \
+		| head -1 \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r: "
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<article class="postBody">/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+	 lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" ;
+	 echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+echo "$NAME: Downloading '$URL' to '$FILENAME':" | cat -v
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
-
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -A "Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
