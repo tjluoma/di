@@ -80,9 +80,9 @@ function check_install_location {
 	## DO NOT SET TO ZERO
 INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
-APPCAST_URL="https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION"
+XML_FEED="https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION"
 
-INFO=($(curl -sfL "$APPCAST_URL" \
+INFO=($(curl -sfL "$XML_FEED" \
 			| tr -s ' ' '\012' \
 			| egrep '^(sparkle:version|url)=' \
 			| head -2 \
