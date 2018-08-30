@@ -99,8 +99,6 @@ function use_v7 {
 			fi
 		fi
 
-		DARWIN_VERSION=$(uname -r)
-
 		if [[ -e "$INSTALL_TO" ]]
 		then
 			INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
@@ -110,6 +108,8 @@ function use_v7 {
 
 			INSTALLED_BUILD='70000000'
 		fi
+
+		DARWIN_VERSION=$(uname -r)
 
 		CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
 
