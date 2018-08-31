@@ -9,9 +9,9 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/MachineProfile.app"
 
-	# This is outdated:
-	# XML_FEED='https://www.micromat.com/updates/machineprofile/appcast.xml'
-XML_FEED='http://www.micromat.com/updates/MacProfile/appcast.xml'
+	# These two seem to be alternately updated. It's rather confusing.
+XML_FEED='https://www.micromat.com/updates/machineprofile/appcast.xml'
+#XML_FEED='http://www.micromat.com/updates/MacProfile/appcast.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
