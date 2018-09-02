@@ -33,7 +33,7 @@ INFO=($(curl -sfL "$XML_FEED" \
 
 LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL=$(echo "$INFO[3]" | sed 's#amp;##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
