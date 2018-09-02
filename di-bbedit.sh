@@ -34,9 +34,21 @@ function use_v12 {
 
 	USE12='yes'
 
+	PREFERS_BETAS_FILE="$HOME/.config/di/prefers/BBEdit-prefer-betas.txt"
+
+	if [[ -e "$PREFERS_BETAS_FILE" ]]
+	then
+		XML_FEED='https://versioncheck.barebones.com/BBEdit-410.xml'
+
+		NAME="$NAME (beta releases)"
+
+	else
+
 		## 2018-07-17 Found new URL via find_appcast
 		#  XML_FEED='https://versioncheck.barebones.com/BBEdit.cgi'
-	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+		XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+
+	fi
 
 	INFO=($(curl -sfL "$XML_FEED" \
 			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
@@ -241,7 +253,7 @@ then
 		# into a text file with the full path of the filename of the file we just downloaded
 		# and then we can check it with 'shasum --check'
 		##
-		## !! NOTE THERE MUST BE _TWO_ SPACES BETWEEN SHA AND FILENAME OR ELSE CHECKING WILL FAIL !! 
+		## !! NOTE THERE MUST BE _TWO_ SPACES BETWEEN SHA AND FILENAME OR ELSE CHECKING WILL FAIL !!
 		##
 	echo "$SHA256_EXPECTED  $FILENAME" >| "$SHA256_FILE"
 
