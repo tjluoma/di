@@ -10,6 +10,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://www.xquartz.org"
+
+DOWNLOAD_PAGE="https://www.xquartz.org/releases/"
+
+SUMMARY="The XQuartz project is an open-source effort to develop a version of the X.Org X Window System that runs on OS X. Together with supporting libraries and applications, it forms the X11.app that Apple shipped with OS X versions 10.5 through 10.7."
+
 INSTALL_TO='/Applications/Utilities/XQuartz.app'
 
 if [ -e "$HOME/.path" ]
@@ -132,6 +138,8 @@ fi
 
 ########################################################################################################################
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -140,18 +148,14 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
-
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/launchctl/d; /id="credit"/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| fgrep -v 'file:///var/folders/'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| fgrep -v 'file:///var/folders/' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

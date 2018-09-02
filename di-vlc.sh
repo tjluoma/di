@@ -9,6 +9,12 @@ NAME="$0:t"
 
 INSTALL_TO='/Applications/VLC.app'
 
+HOMEPAGE="http://www.videolan.org/vlc/"
+
+DOWNLOAD_PAGE="http://www.videolan.org/vlc/"
+
+SUMMARY="VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols."
+
 XML_FEED='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
 
 if [ -e "$HOME/.path" ]
@@ -67,6 +73,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -75,21 +83,17 @@ then
 	| tail -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
 
-	echo "$NAME: Release Notes: "
-
-	(curl -sfL "${RELEASE_NOTES_URL}" \
-	 | sed '1,/<td valign="top">/d; /<\/ul>/,$d' \
-	 | sed  '1,/<td valign="top">/d;' \
-	 ; echo '</ul>') \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	(echo "$NAME: Release Notes: " ;
+		(curl -sfL "${RELEASE_NOTES_URL}" \
+		 | sed '1,/<td valign="top">/d; /<\/ul>/,$d' \
+		 | sed  '1,/<td valign="top">/d;' \
+		 ; echo '</ul>') \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 

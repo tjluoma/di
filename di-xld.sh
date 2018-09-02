@@ -6,7 +6,16 @@
 # Date:	2018-08-11
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/XLD.app"
+
+HOMEPAGE="https://tmkk.undo.jp/xld/index_e.html"
+
+DOWNLOAD_PAGE="https://tmkk.undo.jp/xld/index_e.html"
+
+SUMMARY="X Lossless Decoder(XLD) is a tool for Mac OS X that is able to decode/convert/play various ‘lossless’ audio files. The supported audio files can be split into some tracks with cue sheet when decoding. It works on Mac OS X 10.4 and later."
+
+XML_FEED='https://svn.code.sf.net/p/xld/code/appcast/xld-appcast_e.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -14,8 +23,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED='https://svn.code.sf.net/p/xld/code/appcast/xld-appcast_e.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr ' ' '\012' \
@@ -73,21 +80,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="https://svn.code.sf.net/p/xld/code/appcast/releasenotes_e.html"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-	(curl -sfL $RELEASE_NOTES_URL | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='80' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		(curl -sfL $RELEASE_NOTES_URL | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='80' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

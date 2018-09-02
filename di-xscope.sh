@@ -7,6 +7,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://xscopeapp.com"
+
+DOWNLOAD_PAGE="https://xscopeapp.com"
+
+SUMMARY="xScope is a powerful set of tools that are ideal for measuring, inspecting & testing on-screen graphics and layouts in both Mac OS X and iOS."
+
 INSTALL_TO='/Applications/xScope.app'
 
 if [ -e "$HOME/.path" ]
@@ -85,6 +91,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -93,19 +101,14 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for "
-
+	(echo -n "$NAME: Release Notes for " ;
 	curl -sfl "$RELEASE_NOTES_URL" \
 	| sed '1,/xScope 4.0 is a paid upgrade/d; /<\/div>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	# removes blank lines from top of document
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| sed '/./,/^$/!d' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

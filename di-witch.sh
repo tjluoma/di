@@ -11,6 +11,12 @@ INSTALL_TO="$HOME/Library/PreferencePanes/Witch.PrefPane"
 
 XML_FEED='https://manytricks.com/witch/appcast.xml'
 
+HOMEPAGE="https://manytricks.com/witch/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/witch"
+
+SUMMARY="The built-in macOS app switcher is great if all you use are one-window applications. But you probably have many windows open in many apps, possibly with many tabs, and navigating them all is a pain. Enter Witch, with which you can switch everything.."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -75,6 +81,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -83,18 +91,15 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for "
+	( echo -n "$NAME: Release Notes for " ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
+		 | sed '1,/paidupgradenote/d; /<\/ul>/,$d' ; echo '</ul>' ) \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
-	(curl -sfL "$RELEASE_NOTES_URL" \
-	 | sed '1,/paidupgradenote/d; /<\/ul>/,$d' ; echo '</ul>' ) \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
-
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
