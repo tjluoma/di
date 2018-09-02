@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/VPN Unlimited.app'
 
+HOMEPAGE="https://www.vpnunlimitedapp.com/"
+
+DOWNLOAD_PAGE="https://www.vpnunlimitedapp.com/en/downloads/mac"
+
+SUMMARY="VPN Unlimited allows you to protect your privacy and get unlimited access to your favorite Web sites worldwide."
+
 ## 2018-08-09 - RELEASE_NOTES_URL ☹️ cannot find a change log or release notes page anywhere.
 
 if [[ -e "$HOME/.path" ]]
