@@ -9,8 +9,17 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Sourcetree.app"
 
+HOMEPAGE="https://www.sourcetreeapp.com"
+
+DOWNLOAD_PAGE="https://www.sourcetreeapp.com"
+
+SUMMARY="Sourcetree simplifies how you interact with your Git repositories so you can focus on coding. Visualize and manage your repositories through Sourcetree's simple Git GUI."
+
 ## This stops at versions 2.3.2 but the app is currently at 2.7.6 !
-XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
+#XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
+
+# 2018-09-02 - This feed seems to have the current info
+XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcastGroup3.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
