@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/SuperDuper!.app'
 
+HOMEPAGE="https://www.shirt-pocket.com/SuperDuper/SuperDuperDescription.html"
+
+DOWNLOAD_PAGE="https://www.shirt-pocket.com/downloads/SuperDuper%21.dmg"
+
+SUMMARY="SuperDuper is the wildly acclaimed program that makes recovery painless, because it makes creating a fully bootable backup painless. Its incredibly clear, friendly interface is understandable, easy to use, and SuperDuper's built-in scheduler makes it trivial to back up automatically. It's the perfect complement to Time Machine, allowing you to store a bootable backup alongside your Time Machine volume—and it runs beautifully on your Mac!"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -83,6 +89,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/SuperDuper-${LATEST_VERSION}.tar.gz"
+
 ## Release Notes BEGIN
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
@@ -90,17 +98,13 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| fgrep 'http' \
 		| sed 's#.*<string>## ; s#</string>##g')
 
-echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):"
-
-curl -sfL "$RELEASE_NOTES_URL" \
-	| textutil -convert txt -stdin -stdout \
-	| sed 's#	•	# * #g ; s#  # #g'
-
-echo "\nSource: <${RELEASE_NOTES_URL}>"
+( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ;
+	curl -sfL "$RELEASE_NOTES_URL" \
+		| textutil -convert txt -stdin -stdout \
+		| sed 's#	•	# * #g ; s#  # #g' ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 ## Release Notes END
-
-FILENAME="$HOME/Downloads/SuperDuper-${LATEST_VERSION}.tar.gz"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -166,6 +170,9 @@ then
 	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	mv -vf "$FILENAME" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.tar.gz"
+
+	mv -vf "$FILENAME:r.txt" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.txt"
+
 fi
 
 exit 0
