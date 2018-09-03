@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/SpamSieve.app"
 
+HOMEPAGE="https://c-command.com/spamsieve/"
+
+DOWNLOAD_PAGE="https://c-command.com/downloads/SpamSieve-current.dmg"
+
+SUMMARY="Save time by adding powerful spam filtering to the e-mail client on your Mac."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,8 +22,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# https://c-command.com/spamsieve/
-# https://c-command.com/downloads/SpamSieve-current.dmg
+# @Todo - look for appcast
 
 URL=$(curl -sfL --head "https://c-command.com/downloads/SpamSieve-current.dmg" \
 	| awk -F' |\r' '/^.ocation/{print $2}')
@@ -61,6 +66,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -68,16 +75,14 @@ then
 
 	VERSION_HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | egrep -i "<dt>$LATEST_VERSION.*<\/dt>" | sed 's#<dt>## ; s#<\/dt>##g')
 
-	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r $VERSION_HEADER:\n" ;
+	( (echo -n "$NAME: Release Notes for $INSTALL_TO:t:r $VERSION_HEADER:\n" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" \
 		| sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee -a "$FILENAME:r.txt"
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
