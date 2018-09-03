@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Transmit.app'
 
+HOMEPAGE="https://panic.com/transmit/"
+
+DOWNLOAD_PAGE="https://download.panic.com/transmit/?C=M;O=D"
+
+SUMMARY="The gold standard of macOS file transfer apps just drove into the future. Upload, download, and manage files on tons of servers with an easy, familiar, and powerful UI. It’s quite good."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -136,7 +142,7 @@ fi
 # 	exit 1
 # fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
