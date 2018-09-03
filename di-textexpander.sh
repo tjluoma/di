@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/TextExpander.app"
 
+HOMEPAGE="https://textexpander.com"
+
+DOWNLOAD_PAGE="https://textexpander.com/cgi-bin/redirect.pl?cmd=download&platform=osx"
+
+SUMMARY="TextExpander lets you instantly insert snippets of text from a repository of emails, boilerplate and other content, as you type – using a quick search or abbreviation. Older versions at https://textexpander.com/textexpander-standalone-apps/"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -101,6 +107,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 	# Only show release notes for current version
 if [[ "$USE_VERSION" == "6" ]]
 then
@@ -109,16 +117,12 @@ then
 
 		RELEASE_NOTES_URL="$XML_FEED"
 
-		echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/CDATA/d; /<\/ul>/,$d' ;echo '</ul>') \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+			(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/CDATA/d; /<\/ul>/,$d' ;echo '</ul>') \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+			echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 	fi
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
