@@ -133,10 +133,6 @@ then
 	exit 1
 fi
 
-
-
-
-
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
 #		This is a temporary block of code to deal with 3.5.4 being
@@ -158,7 +154,7 @@ then
 
 	cd "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg"
 
-	gunzip --force --stdout Payload | cpio -i
+	gunzip --force --stdout Payload | cpio -i --quiet
 
 	EXTRACTED_VERSION=$(defaults read "$PWD/Intel Power Gadget/Intel(R) Power Gadget.app/Contents/Info" CFBundleShortVersionString)
 
