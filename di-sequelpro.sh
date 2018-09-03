@@ -6,7 +6,17 @@
 # Date:	2015-11-14
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/Sequel Pro.app"
+
+HOMEPAGE="https://www.sequelpro.com"
+
+# DOWNLOAD_PAGE="https://sequelpro.com/download"
+
+DOWNLOAD_PAGE="https://sequelpro.com/release?do=download-latest"
+
+SUMMARY="Sequel Pro is a fast, easy-to-use Mac database management application for working with MySQL databases."
+
 XML_FEED="https://www.sequelpro.com/appcast/app-releases.xml"
 
 if [ -e "$HOME/.path" ]
@@ -72,22 +82,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/SequelPro-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="https://www.sequelpro.com/appcast/app-releases.xml"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/CDATA/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/CDATA/d; /<\/description>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/SequelPro-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

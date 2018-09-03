@@ -8,7 +8,22 @@
 
 NAME="$0:t:r"
 
+	# 2018-07-17 - alt feed:
+	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
+XML_FEED='https://shortcatapp.com/updates/appcast.xml'
+
 INSTALL_TO='/Applications/Shortcat.app'
+
+HOMEPAGE="https://shortcatapp.com"
+
+DOWNLOAD_PAGE="https://shortcatapp.com/download"
+
+SUMMARY="Shortcat is a keyboard tool for Mac OS X that lets you "click" buttons and control your apps with a few keystrokes. Think of it as Spotlight for the user interface."
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [ -e "$HOME/.path" ]
 then
@@ -16,10 +31,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-	# 2018-07-17 - alt feed:
-	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
-XML_FEED='https://shortcatapp.com/updates/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -82,26 +93,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version "
-
-	(curl -sfL "$RELEASE_NOTES_URL" \
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version " ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<body>/d ; /<\/ul>/,$d' \
 		| fgrep -vi '<h3';echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

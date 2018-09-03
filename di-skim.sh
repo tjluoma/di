@@ -6,7 +6,15 @@
 # Date:	2016-06-02
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/Skim.app"
+
+HOMEPAGE="https://skim-app.sourceforge.io"
+
+DOWNLOAD_PAGE="https://skim-app.sourceforge.io"
+
+SUMMARY="Skim is a PDF reader and note-taker for OS X. It is designed to help you read and annotate scientific papers in PDF, but is also great for viewing any PDF file. Stop printing and start skimming."
+
 XML_FEED="http://skim-app.sourceforge.net/skim.xml"
 
 if [ -e "$HOME/.path" ]
@@ -72,21 +80,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="http://skim-app.sourceforge.net/skim.xml"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
 	curl -sSfL "$RELEASE_NOTES_URL" \
 	| sed '1,/CDATA/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

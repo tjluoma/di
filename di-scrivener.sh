@@ -10,12 +10,19 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Scrivener.app'
 
+HOMEPAGE="https://www.literatureandlatte.com/scrivener/overview"
+
+DOWNLOAD_PAGE="https://www.literatureandlatte.com/scrivener/download"
+
+SUMMARY="Typewriter. Ring-binder. Scrapbook. Scrivener combines all the tools you need to craft your first draft, from nascent notion to final full stop."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
+
 
 function use_v2 {
 	XML_FEED='https://www.literatureandlatte.com/downloads/scrivener-2.xml'
@@ -26,11 +33,20 @@ function use_v2 {
 
 	ASTERISK='(Note that version 3 is also available.)'
 
-	}
+	unset RELEASE_NOTES_URL
+
+}
 
 function use_v3 {
 	XML_FEED='https://www.literatureandlatte.com/downloads/scrivener-3.xml'
 	ITUNES_URL="itunes.apple.com/us/app/scrivener-3/id1310686187"
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep    '<sparkle:releaseNotesLink>' \
+	| fgrep -v 'http://www.literatureandlatte.com/downloads/scriv3update.html' \
+	| tail -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 }
 
 if [[ -e "$INSTALL_TO" ]]
@@ -65,6 +81,8 @@ INFO=($(curl -sSfL "${XML_FEED}" \
 LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
 URL="$INFO[3]"
+
+
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -125,24 +143,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep    '<sparkle:releaseNotesLink>' \
-		| fgrep -v 'http://www.literatureandlatte.com/downloads/scriv3update.html' \
-		| tail -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<body>/d; /<\/body>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
-fi
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
+if [[ "$RELEASE_NOTES_URL" != "" ]]
+then
+	if (( $+commands[lynx] ))
+	then
+
+		( curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/body>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+	fi
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

@@ -9,7 +9,19 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Sharpshooter.app'
 
+HOMEPAGE="http://www.kerlmax.com/products/sharpshooter/"
+
+DOWNLOAD_PAGE="http://www.kerlmax.com/products/sharpshooter/"
+
+SUMMARY="Sharpshooter lets you manipulate and process the screenshot while it is still fresh on your mind."
+
 XML_FEED='http://www.kerlmax.com/products/sharpshooter/sharpshooter_v2_appcast.php'
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 
 if [ -e "$HOME/.path" ]
 then
@@ -69,23 +81,17 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<div>/d; /<div>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
+		curl -sfL "${RELEASE_NOTES_URL}" \
+		| sed '1,/<div>/d; /<div>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Simon.app"
 
+HOMEPAGE="http://www.dejal.com/simon/"
+
+DOWNLOAD_PAGE="http://www.dejal.com/simon/"
+
+SUMMARY="Dejal Simon is the essential site monitoring tool for macOS. It checks servers for changes or failures, and notifies you via email, sound, speech, Twitter, or other means. You can use it to track updated sites, and to alert you when an important server goes down or recovers."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -25,12 +31,13 @@ INFO=($(curl -sfL "${XML_FEED}" \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
+RELEASE_NOTES_URL=$(curl -sfL "${XML_FEED}" \
+	| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#amp;##g ; s#.*http#http#g')
+
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
 LATEST_BUILD="$INFO[2]"
-URL_RAW="$INFO[3]"
-
-URL=$(echo "$URL_RAW" | sed 's#&amp\;#\&#g')
+URL=$(echo "$INFO[3]" | sed 's#amp\;##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -77,29 +84,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL=""
-
-fi
-
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL=$(curl -sfL "${XML_FEED}" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#\&amp;#\&#g ; s#.*http#http#g')
-
-	echo -n "$NAME: Release Notes for "
-
-	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body /d; /<\/ul>/,$d' ; echo '</ul>' ) \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
-fi
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	( echo -n "$NAME: Release Notes for " ;
+		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body /d; /<\/ul>/,$d' ; echo '</ul>' ) \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

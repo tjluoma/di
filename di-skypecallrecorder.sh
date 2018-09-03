@@ -16,9 +16,15 @@
 	## 	https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF
 	##
 	#### Replace that with your actual URL
-PRIVATE="$HOME/.config/di/private/di-skypecallrecorder.txt"
+PRIVATE_FILE="$HOME/.config/di/private/di-skypecallrecorder.txt"
 
 XML_FEED='https://www.ecamm.com/appcasts/callrecorder.xml'
+
+HOMEPAGE="https://www.ecamm.com/mac/callrecorder/"
+
+DOWNLOAD_PAGE="http://downloads.ecamm.com/CallRecorder.zip"
+
+SUMMARY="Call Recorder records Skype audio and video calls directly to your Mac. (Note: Download page is for demo version.)"
 
 	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo
 	# But we can get the version number from it.
@@ -87,7 +93,7 @@ else
 	then
 			# no PRIVATE_FILE exists.
 
-		echo "$NAME: Fatal Error. '$PRIVATE_FILE' does not exist. Cannot continue. See '$0' for details on how to create it."
+		echo "$NAME: Fatal Error. '\$PRIVATE_FILE' does not exist at '$PRIVATE_FILE'. Cannot continue. See '$0' for details on how to create it."
 
 	elif [ "$PRIVATE_URL" = "" ]
 	then
