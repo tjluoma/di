@@ -18,6 +18,11 @@ PRIVATE_FILE="$HOME/.config/di/private/di-phoneview.txt"
 #		You shouldn't have to change anything below this line
 #
 
+HOMEPAGE="https://www.ecamm.com/mac/phoneview/"
+
+DOWNLOAD_PAGE="https://www.ecamm.com/mac/phoneview/"
+
+SUMMARY="Get your iOS messages, voicemail and data on your Mac. Just connect your device to browse, search and archive. (Note: you must login to download a non-demo version.)"
 
 INSTALL_TO='/Applications/PhoneView.app'
 
