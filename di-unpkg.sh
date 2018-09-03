@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/unpkg.app'
 
+HOMEPAGE="https://www.timdoug.com/unpkg/"
+
+DOWNLOAD_PAGE="https://github.com/timdoug/unpkg/releases"
+
+SUMMARY="a Mac OS X .[m]pkg unarchiver"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -32,7 +38,7 @@ else
 	LATEST_VERSION="4.5"
 fi
 
-URL="https://github.com/downloads/timdoug/unpkg/unpkg-${LATEST_VERSION}.zip"
+URL="https://www.timdoug.com/unpkg/unpkg-${LATEST_VERSION}.zip"
 
 if [[ -e "$INSTALL_TO" ]]
 then
