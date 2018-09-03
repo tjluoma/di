@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/StretchLink.app"
 
+HOMEPAGE="http://brettterpstra.com/2015/04/28/stretchlink-1-dot-0/"
+
+DOWNLOAD_PAGE=""
+
+SUMMARY="An easy-to-use tool for expanding shortened links, fixing redirects, and cleaning out referrer junk from Google Analytics and others."
+
 XML_FEED='http://abyss.designheresy.com/stretchlink/stretchlink.xml'
 
 if [[ -e "$HOME/.path" ]]
@@ -75,23 +81,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$XML_FEED" \
 	| sed '1,/<item>/d; /<\/item>/,$d ; s#\<\!\[CDATA\[##g ; s#\]\]##g ; s#<\/p>>#</p>#g' \
 	| egrep -vi '(<pubDate>|<enclosure url=|<guid isPermaLink=)' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -165,11 +169,6 @@ else
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-
-exit 0
-
-
 
 exit 0
 #EOF
