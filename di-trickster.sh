@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Trickster.app"
 
+HOMEPAGE="https://www.apparentsoft.com/trickster"
+
+DOWNLOAD_PAGE="https://www.apparentsoft.com/trickster/download"
+
+SUMMARY="Trickster keeps track of recent files you’ve been using on your Mac and gives you super easy and lightning fast access to them. Requires macOS 10.11."
+
 XML_FEED='https://dl.apparentsoft.com/trickster.rss'
 
 if [[ -e "$HOME/.path" ]]
@@ -83,22 +89,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='https://dl.apparentsoft.com/notes/Trickster.html'
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<h1>/d; /<h1>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<h1>/d; /<h1>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
