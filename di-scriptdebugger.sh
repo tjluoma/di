@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Script Debugger.app'
 
+HOMEPAGE="http://latenightsw.com/"
+
+DOWNLOAD_PAGE="http://latenightsw.com/sd7/download/"
+
+SUMMARY="You want your computer systems to be simple, reliable and automatic. Script Debugger is the integrated development environment that makes that happen by making your AppleScript coding easier, faster, and more transparent. And now, for the first time, it is available in a free “lite” mode that offers you a taste of the full power of Script Debugger."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -69,6 +75,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/ScriptDebugger-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -76,17 +84,14 @@ then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<\/style>/d; /<h2 id="toc_1">/,$d' \
+	( curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<\/style>/d; /<h2 id="toc_1">/,$d' \
 	| sed '1,/<\/style>/d'  \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| egrep -v 'FIXED NEW UPDATE' \
-	| uniq
-
-	echo "\nSource: XML_FEED: <$RELEASE_NOTES_URL>"
+	| uniq ;
+	echo "\nSource: XML_FEED: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/ScriptDebugger-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

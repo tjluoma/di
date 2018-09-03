@@ -7,6 +7,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://edovia.com/screens-mac/"
+
+DOWNLOAD_PAGE="https://dl.devmate.com/com.edovia.screens4.mac/Screens4.dmg"
+
+SUMMARY="Control any computer from your Mac from anywhere in the world."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -131,6 +137,16 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+	####################################################################################
+	####################################################################################
+	##
+	## Hard-coding 'Screens' into $FILENAME because otherwise we end up with filenames like:
+	## 		~/Downloads/Screens 4-4.5.7.zip
+	## instead of
+	## 		~/Downloads/Screens-4.5.7.zip
+	## which is clearly superior.
+	##
+FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if [[ "$USE_VERSION" == "4" ]]
 then
@@ -142,20 +158,10 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to display, but can be found at:\n\t<${RELEASE_NOTES_URL}>"
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to display, but can be found at:\n\t<${RELEASE_NOTES_URL}>") \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-	####################################################################################
-	####################################################################################
-	##
-	## Hard-coding 'Screens' into $FILENAME because otherwise we end up with filenames like:
-	## 		~/Downloads/Screens 4-4.5.7.zip
-	## instead of
-	## 		~/Downloads/Screens-4.5.7.zip
-	## which is clearly superior.
-	##
-FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Screens Connect.app'
 
+HOMEPAGE="http://screensconnect.com/en/"
+
+DOWNLOAD_PAGE="https://edovia.com/screens-connect/"
+
+SUMMARY="Screens Connect is a free utility that lets you connect back to your Mac or Windows PC from anywhere in the world."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -17,6 +23,11 @@ else
 fi
 
 XML_FEED="https://updates.devmate.com/com.edovia.Screens-Connect.xml"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 INFO=($(curl -sfL $XML_FEED \
 		| egrep '<enclosure url="https://.*/ScreensConnect-.*.zip"' \
@@ -76,27 +87,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/ScreensConnect-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| fgrep -v 'dm-rn-head-title-fixed' \
 	| fgrep -v '</ul><hr /><ul>' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| tr -s '_' '_'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| tr -s '_' '_'  ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/ScreensConnect-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
