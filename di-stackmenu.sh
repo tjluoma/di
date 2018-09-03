@@ -7,6 +7,18 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO="/Applications/StackMenu.app"
+
+HOMEPAGE="http://basilsalad.com/os-x/stack-menu"
+
+DOWNLOAD_PAGE="http://shine.basilsalad.com/download.php?id=1"
+
+SUMMARY="Stack Menu stays in your menu bar that gives you instant access to Stack Overflow. Say hello to speedy solutions and goodbye to search engine seductions."
+
+DOWNLOAD="http://shine.basilsalad.com/download.php?id=1"
+
+XML_FEED="https://shine.basilsalad.com/appcast.php?id=1"
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -20,18 +32,6 @@ function do_exit {
 
 	exit "$@"
 }
-
-INSTALL_TO="/Applications/StackMenu.app"
-
-HOMEPAGE=""
-
-DOWNLOAD_PAGE=""
-
-SUMMARY=""
-
-DOWNLOAD="http://shine.basilsalad.com/download.php?id=1"
-
-XML_FEED="https://shine.basilsalad.com/appcast.php?id=1"
 
 zmodload zsh/datetime
 
