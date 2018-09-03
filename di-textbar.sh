@@ -14,7 +14,7 @@ HOMEPAGE='http://richsomerfield.com/apps/textbar/'
 
 DOWNLOAD_PAGE='http://richsomerfield.com/apps/textbar/'
 
-SUMMARY='TextBar is a tiny but powerful app that lets you add any text to your MenuBar.'
+SUMMARY='TextBar is a tiny but powerful app that lets you add any text to your menu bar.'
 
 if [ -e "$HOME/.path" ]
 then
@@ -79,21 +79,19 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='http://www.richsomerfield.com/apps/textbar/releasenotes_textbar.html'
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
-
-	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r" ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
