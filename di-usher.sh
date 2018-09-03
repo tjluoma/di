@@ -9,6 +9,12 @@ NAME="$0:t:r"
 INSTALL_TO='/Applications/Usher.app'
 XML_FEED='https://manytricks.com/usher/appcast.xml'
 
+HOMEPAGE="https://manytricks.com/usher/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/usher"
+
+SUMMARY="Wouldn’t it be great if there were a tool that could manage your videos and movies as well as Apple’s iTunes and iPhoto manage your music and your photographs? Now there is. Meet Usher, your personal movie assistant."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
