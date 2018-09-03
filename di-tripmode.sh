@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/TripMode.app'
 
+HOMEPAGE="https://www.tripmode.ch"
+
+DOWNLOAD_PAGE="https://www.tripmode.ch/thank-you-for-downloading-tripmode/"
+
+SUMMARY="Easily block unwanted apps from accessing the Internet the second you connect to a hotspot. Save data. Save money."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -77,21 +83,19 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
-
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}"
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
+		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 	# Download the latest version
 echo "$NAME: Downloading $URL to $FILENAME"
