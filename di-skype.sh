@@ -9,13 +9,18 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Skype.app"
 
+HOMEPAGE="https://www.skype.com/"
+
+DOWNLOAD_PAGE="https://get.skype.com/go/getskype-skypeformac"
+
+SUMMARY="Enjoy free voice and video calls on Skype or discover some of the many features to help you stay connected with the people you care about."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
 
 function use_v7 {
 
