@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Spotdox.app"
 
+HOMEPAGE="https://spotdox.com"
+
+DOWNLOAD_PAGE="https://spotdox.herokuapp.com/downloads/Spotdox.zip"
+
+SUMMARY="Spotdox is the ultimate Dropbox companion application. By pairing Spotdox with Dropbox you will be able to view any file, on any of your computers, from anywhere."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
