@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/SSH Tunnel Manager.app'
 
+HOMEPAGE="https://www.tynsoe.org/v2/stm/"
+
+DOWNLOAD_PAGE="https://www.tynsoe.org/v2/stm/"
+
+SUMMARY="SSH Tunnel Manager is a macOS application to manage your SSH tunnels. If you don't know what that is, quite honestly, maybe you don't need SSH Tunnel Manager, but if you appreciate the power of connecting together two networks using the SSH protocol, then STM is for you."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -68,6 +74,8 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_BUILD)"
 fi
 
+FILENAME="$HOME/Downloads/SSHTunnelManager-${LATEST_VERSION}-${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -76,17 +84,13 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-		| fgrep -v 'dm-rn-head-title-fixed' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-		| tr -s '_' '_'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for " ;
+		curl -sfL "${RELEASE_NOTES_URL}" \
+			| fgrep -v 'dm-rn-head-title-fixed' \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+			| tr -s '_' '_' ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/SSHTunnelManager-${LATEST_VERSION}-${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
