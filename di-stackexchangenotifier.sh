@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Stack Exchange Notifier.app"
 
+HOMEPAGE="https://hewgill.com/senotifier/"
+
+DOWNLOAD_PAGE="https://hewgill.com/senotifier/"
+
+SUMMARY="A Stack Exchange inbox notifier for Mac OS X."
+
 XML_FEED='http://hewgill.com/senotifier/appcast.xml'
 
 if [[ -e "$HOME/.path" ]]
@@ -67,22 +73,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/StackExchangeNotifier-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/\<\!\[CDATA\[/d; /\]\]\>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/StackExchangeNotifier-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
