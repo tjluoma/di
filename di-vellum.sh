@@ -8,11 +8,15 @@
 
 NAME="$0:t:r"
 
-DIR="$HOME/Downloads"
-
 INSTALL_TO='/Applications/Vellum.app'
 
 XML_FEED="https://get.180g.co/updates/vellum/"
+
+HOMEPAGE="https://vellum.pub"
+
+DOWNLOAD_PAGE="https://get.180g.co/download/Vellum-Installer.zip"
+
+SUMMARY="Create beautiful eBooks for iBooks, Kindle, and Nook."
 
 if [ -e "$HOME/.path" ]
 then
@@ -32,7 +36,7 @@ LATEST_VERSION="$INFO[1]"
 
 LATEST_BUILD="$INFO[2]"
 
-URL="$INFO[3]"
+URL=$(echo "$INFO[3]" | sed 's#https:/180g#https://180g#g' )
 
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
@@ -78,6 +82,7 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
@@ -89,11 +94,9 @@ then
 
 	RELEASE_NOTES_URL=$(echo "$RELEASE_NOTES_URL" | sed 's#https:/180g#https://180g#g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL";
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
@@ -102,7 +105,7 @@ fi
 #		This is where we do the actual download
 #
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 
 	# Download the latest zip
 echo "$NAME: Downloading $URL to $FILENAME"
