@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Slack.app'
 
+HOMEPAGE="https://slack.com/"
+
+DOWNLOAD_PAGE="https://slack.com/ssb/download-osx"
+
+SUMMARY="Slack brings all your communication together — a single place for messaging, tools and files — helping everyone save time and collaborate together."
+
+RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -66,24 +74,19 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
-	RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
 
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "${RELEASE_NOTES_URL}" \
 	| sed '1,/<a name="/d; /<a name="/,$d' \
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	# last line: sed remove blank lines from start
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| sed '/./,/^$/!d' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

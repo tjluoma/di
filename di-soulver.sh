@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Soulver.app'
 
+HOMEPAGE="https://www.acqualia.com/soulver/"
+
+DOWNLOAD_PAGE="https://www.acqualia.com/soulver/download"
+
+SUMMARY="Soulver helps you work things out. It's quicker to use than a spreadsheet, and smarter and clearer than a traditional calculator. Use Soulver to play around with numbers, do 'back of the envelope' quick calculations, and solve day-to-day problems."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -16,7 +22,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED="http://www.acqualia.com/soulver/appcast/soulver2.xml"
+XML_FEED="https://www.acqualia.com/soulver/appcast/soulver2.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
@@ -85,21 +91,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" | fgrep -A1 '<sparkle:releaseNotesLink>' | tail -1)
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

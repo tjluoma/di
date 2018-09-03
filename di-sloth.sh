@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Sloth.app"
 
+HOMEPAGE="https://sveinbjorn.org/sloth"
+
+DOWNLOAD_PAGE="https://sveinbjorn.org/files/software/sloth.zip"
+
+SUMMARY="Sloth displays a list of all open files and sockets in use by all running applications on your system. This makes it easy to inspect which apps are using which files and sockets. Sloth is essentially a friendly GUI built on top of the powerful 'lsof' command line tool, whose output is parsed and shown in a searchable, filterable table view with some convenient user-friendly functions such as revealing files in the Finder, killing a file’s owning process, displaying file info, filtering by volumes, and so on."
+
 XML_FEED="https://sveinbjorn.org/files/appcasts/SlothAppcast.xml"
 
 if [[ -e "$HOME/.path" ]]
@@ -75,21 +81,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( curl -sfL "$RELEASE_NOTES_URL" \
 	| fgrep -v '<description>Most recent Sloth releases, with links to signed updates.</description>' \
 	| sed '1,/<description>/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

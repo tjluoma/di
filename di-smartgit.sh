@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/SmartGit.app"
 
+RELEASE_NOTES_URL='https://www.syntevo.com/smartgit/changelog.txt'
+
+HOMEPAGE="https://www.syntevo.com/smartgit/"
+
+DOWNLOAD_PAGE="https://www.syntevo.com/smartgit/download/"
+
+SUMMARY="SmartGit is a graphical Git client with support for SVN and Pull Requests for GitHub and Bitbucket. SmartGit runs on Windows, macOS and Linux."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,14 +24,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-RELEASE_NOTES_URL='https://www.syntevo.com/smartgit/changelog.txt'
-
 ## This is another way of doing it:
 # 	LATEST_VERSION=$(curl -sfLS "${RELEASE_NOTES_URL}" | egrep '^SmartGit [0-9]' | head -1 | awk '{print $2}')
 # 	LV_FOR_URL=$(echo "$LATEST_VERSION" | tr '\.' '_')
 # 	URL="https://www.syntevo.com/downloads/smartgit/smartgit-macosx-${LV_FOR_URL}.dmg"
 
-URL=$(curl -sfLS "https://www.syntevo.com/smartgit/download/" | awk -F'"' '/\/downloads\/smartgit.*\.dmg/{print "https://www.syntevo.com"$2}')
+URL=$(curl -sfLS "https://www.syntevo.com/smartgit/download/" \
+	| awk -F'"' '/\/downloads\/smartgit.*\.dmg/{print "https://www.syntevo.com"$2}')
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]_' | tr '_' '.')
 
@@ -55,8 +62,9 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-(curl -sfLS ${RELEASE_NOTES_URL} | awk '/SmartGit /{i++}i==1' ; echo "\nSource: <$RELEASE_NOTES_URL>") \
-| tee -a "$FILENAME:r.txt"
+( curl -sfLS ${RELEASE_NOTES_URL} \
+	| awk '/SmartGit /{i++}i==1' ; \
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Soundnode.app"
 
+HOMEPAGE="http://www.soundnodeapp.com/"
+
+DOWNLOAD_PAGE="http://www.soundnodeapp.com/downloads/mac/Soundnode.zip"
+
+SUMMARY="An opensource SoundCloud app for desktop."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -60,9 +66,21 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 #		Here’s the download section
 #
 
-# RELEASE_NOTES_URL = ? Couldn't find a clear place for release notes.
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL="https://github.com/Soundnode/soundnode-app/releases/tag/$LATEST_VERSION"
+
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+	curl -sfLS "$RELEASE_NOTES_URL" \
+	| sed '1,/release-header/d; /release-body/,$d' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| LC_ALL=C sed 's#file:///#https://github.com/#g' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
