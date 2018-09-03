@@ -168,7 +168,21 @@ then
 
 		mv -vf "$FILENAME" "$HOME/.Trash/"
 
-		diskutil eject "$MNTPNT"
+		MAX_ATTEMPTS="10"
+		SECONDS_BETWEEN_ATTEMPTS="1"
+		COUNT=0
+
+		while [ "$COUNT" -lt "$MAX_ATTEMPTS" ]
+		do
+			# Do whatever you want to do in the 'while' loop here
+			diskutil eject "$MNTPNT" && break
+
+			((COUNT++))
+
+				# don't sleep the first time through the loop
+			[[ "$COUNT" != "1" ]] && sleep ${SECONDS_BETWEEN_ATTEMPTS}
+
+		done
 
 		exit 0
 	fi
@@ -176,9 +190,6 @@ then
 fi
 
 ###
-
-
-
 
 	# IMO - this install is too complicated to do with 'unpkg.py'
 	# so we'll have to settle for /usr/sbin/installer
