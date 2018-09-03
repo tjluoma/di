@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Startupizer2.app'
 
+HOMEPAGE="http://gentlebytes.com/startupizer/"
+
+DOWNLOAD_PAGE="http://gentlebytes.com/startupizer-download"
+
+SUMMARY="Startupizer is advanced yet simple to use login items handler. It greatly enhanches System Preferences login items by offering conditional startup based on several criteria. This can dramatically reduce required startup time and hence make you more productive."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -66,6 +72,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -74,18 +82,14 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| fgrep -vi '<div class="dm-rn-head-title-fixed">' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin\
-	| tr -s '_' '_'
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	| tr -s '_' '_' ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
