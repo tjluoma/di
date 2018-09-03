@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Spectacle.app'
 
+HOMEPAGE="https://www.spectacleapp.com"
+
+DOWNLOAD_PAGE="https://www.spectacleapp.com"
+
+SUMMARY="Move and resize windows with ease. Window control with simple and customizable keyboard shortcuts."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -75,6 +81,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -83,17 +91,13 @@ then
 		| tail -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD)\n"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD)\n" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| egrep -v '<h1>Spectacle .*</h1>' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
