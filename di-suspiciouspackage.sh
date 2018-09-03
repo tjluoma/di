@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Suspicious Package.app'
 
+HOMEPAGE="https://www.mothersruin.com/software/SuspiciousPackage/"
+
+DOWNLOAD_PAGE="https://www.mothersruin.com/software/downloads/SuspiciousPackage.dmg"
+
+SUMMARY="An Application for Inspecting macOS Installer Packages."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -57,22 +63,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
-
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<tbody>/d; /<\/tr>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed G
-
-	echo "Source: <$RELEASE_NOTES_URL>"
+	| sed G ;
+	echo "Source: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
