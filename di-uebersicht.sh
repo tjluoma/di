@@ -8,6 +8,12 @@
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Übersicht.app"
 
+HOMEPAGE="http://tracesof.net/uebersicht/"
+
+DOWNLOAD_PAGE="https://github.com/felixhageloh/uebersicht/releases"
+
+SUMMARY="Übersicht lets you run system commands and display their output on your desktop in little containers, called widgets. Widgets are written using HTML5, which means they: are easy to write and customize, can show data in tables, charts, graphs ... you name it, can react to different screen sizes."
+
 LAUNCH='no'
 
 # CONVERTED_APPNAME="$(iconv -t MAC <<< $INSTALL_TO:t:r)"		# See note below
