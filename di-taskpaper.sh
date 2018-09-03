@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/TaskPaper.app'
 
+HOMEPAGE="https://www.taskpaper.com"
+
+DOWNLOAD_PAGE="https://www.taskpaper.com/assets/app/TaskPaper.dmg"
+
+SUMMARY="Plain text to-do lists for Mac"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -85,24 +91,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r\n"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r\n" ;
 	curl -sfl "$RELEASE_NOTES_URL" \
 	| sed '1,/<item>/d; /<sparkle:version>/,$d' \
 	| sed 's#\<\!\[CDATA\[##g ; s#\]\]\>##g' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| tr -s '_' '_'
-
-	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>"
+	| tr -s '_' '_' ;
+	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
