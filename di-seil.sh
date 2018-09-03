@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Seil.app'
 
+HOMEPAGE="https://pqrs.org/osx/karabiner/seil.html"
+
+DOWNLOAD_PAGE="https://pqrs.org/osx/karabiner/seil.html"
+
+SUMMARY="Utility for the caps lock key and some international keys in PC keyboards. (macOS Sierra users: Seil functions are integraded to Karabiner-Elements. Please use Karabiner-Elements.)"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
