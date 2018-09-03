@@ -7,16 +7,22 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Transmission.app'
+
+XML_FEED='https://update.transmissionbt.com/appcast.xml'
+
+HOMEPAGE="https://transmissionbt.com"
+
+DOWNLOAD_PAGE="https://transmissionbt.com/download/"
+
+SUMMARY="Transmission is a cross-platform BitTorrent client."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-INSTALL_TO='/Applications/Transmission.app'
-
-XML_FEED='https://update.transmissionbt.com/appcast.xml'
 
 # sparkle:version exists, but isn't what's used to determine a "new version"
 
@@ -76,6 +82,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -84,18 +92,14 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<body>/d; /<\/table>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/table>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed '/./,/^$/!d' ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
