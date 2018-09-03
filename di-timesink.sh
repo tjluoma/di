@@ -6,8 +6,16 @@
 # Date:	2016-05-22
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/Time Sink.app'
+
 XML_FEED='https://manytricks.com/timesink/appcast.xml'
+
+HOMEPAGE="https://manytricks.com/timesink/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/timesink"
+
+SUMMARY="Have you ever wondered exactly where all your time goes while you're sitting there at your Mac? You sit down to work at 8am, and suddenly it's lunchtime…where did the time go? Wonder no longer: Time Sink tracks your activity, and reveals exactly what you've been working on—or not working on—throughout the day."
 
 if [ -e "$HOME/.path" ]
 then
@@ -82,23 +90,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+	# note we have hard-coded the name in order to remove the space from the app name
+FILENAME="$HOME/Downloads/TimeSink-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='https://manytricks.com/timesink/releasenotes/'
 
-	echo -n "$NAME: Release Notes for "
-
-	(curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<!-- BODY STARTS HERE -->/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
+	( echo -n "$NAME: Release Notes for " ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
+			| sed '1,/<!-- BODY STARTS HERE -->/d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-	# note we have hard-coded the name in order to remove the space from the app name
-FILENAME="$HOME/Downloads/TimeSink-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
