@@ -7,6 +7,14 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO="/Applications/Textual.app"
+
+HOMEPAGE="https://codeux.com/textual/"
+
+DOWNLOAD_PAGE="https://codeux.com/textual/downloads/Textual7.dmg"
+
+SUMMARY="Textual is the world's most popular application for interacting with Internet Relay Chat (IRC) chatrooms on macOS."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -14,13 +22,38 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/Textual.app"
+XML_FEED="https://textual-updates-backend.codeux.com/sparkle/feeds/v7/feed-one.xml"
 
-IFS=$'\n' INFO=($(curl -sfL https://help.codeux.com/textual/Direct-Download-Links.kb | egrep -A1 '^<h2>' | head -2))
+INFO=($(curl -sSfL "${XML_FEED}" \
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+		| head -3 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
-LATEST_VERSION=$(echo "$INFO[1]" | sed 's#<h2>##g; s#<\/h2>##g')
+	# "Sparkle" will always come before "url" because of "sort"
+LATEST_VERSION="$INFO[1]"
+LATEST_BUILD="$INFO[2]"
+URL="$INFO[3]"
 
-URL=$(echo "$INFO[2]" | sed 's#\.zip.*#.zip#g ; s#.*http#http#g')
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"
+
+	exit 1
+fi
+
+# IFS=$'\n' INFO=($(curl -sfL https://help.codeux.com/textual/Direct-Download-Links.kb | egrep -A1 '^<h2>' | head -2))
+#
+# LATEST_VERSION=$(echo "$INFO[1]" | sed 's#<h2>##g; s#<\/h2>##g')
+#
+# URL=$(echo "$INFO[2]" | sed 's#\.zip.*#.zip#g ; s#.*http#http#g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -69,8 +102,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
+if (( $+commands[lynx] ))
+then
+
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+	( curl -sfLS "$RELEASE_NOTES_URL" \
+	  | awk '/<section class="header">/{i++}i==1' \
+	  | lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	  echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
