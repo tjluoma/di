@@ -6,8 +6,16 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/Texpad.app"
+
 XML_FEED="https://www.texpadapp.com/static-collected/upgrades/texpadappcast.xml"
+
+HOMEPAGE="https://www.texpadapp.com"
+
+DOWNLOAD_PAGE="https://www.texpad.com/osx"
+
+SUMMARY="Texpad is a LaTeX editor designed for fast navigation around projects of all sizes. Given a single LaTeX root file, it will read through the LaTeX source, and that of all included files to present you with an outline of your project. Similarly Texpad reads the LaTeX console output, finding errors, and presenting them in a table you can use to jump straight to the errors in the LaTeX source."
 
 if [ -e "$HOME/.path" ]
 then
@@ -97,6 +105,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -105,17 +115,13 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| fgrep -vi 'Auto-update from within Texpad or download' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| fgrep -vi 'Auto-update from within Texpad or download' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
