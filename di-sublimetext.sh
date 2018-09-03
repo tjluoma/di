@@ -6,7 +6,14 @@
 # Date:	2018-08-04
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/Sublime Text.app'
+
+HOMEPAGE="https://www.sublimetext.com"
+
+DOWNLOAD_PAGE="https://www.sublimetext.com/3"
+
+SUMMARY="A sophisticated text editor for code, markup and prose."
 
 XML_FEED="https://www.sublimetext.com/updates/3/stable/appcast_osx.xml"
 
@@ -19,6 +26,7 @@ fi
 
 # WATCH FOR SPACES IN URL!
 # n.b. That's the only version info in feed
+# No other version info in feed
 IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
 	| egrep "<enclosure url=|sparkle:version=" \
 	| sort \
@@ -66,6 +74,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/SublimeText-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
@@ -73,16 +83,12 @@ then
 
 	RELEASE_NOTES_URL='https://www.sublimetext.com/3'
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<article class="current">/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+		curl -sfL "${RELEASE_NOTES_URL}" \
+		| sed '1,/<article class="current">/d; /<\/article>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/SublimeText-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
