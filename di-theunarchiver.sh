@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/The Unarchiver.app'
 
+HOMEPAGE="https://macpaw.com/the-unarchiver"
+
+DOWNLOAD_PAGE="https://dl.devmate.com/cx.c3.theunarchiver/TheUnarchiver.zip"
+
+SUMMARY="Unpack any archive, in no time. The Unarchiver is the world’s favorite RAR opener for Mac. Unlike Mac’s native tool it’s sleeker and supports all known archive types."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -85,6 +91,8 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -93,18 +101,14 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<div class="dm-rn-head-title-fixed">/d; /<\/body>/,$d;' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| LC_ALL=C tr -s '_' '_'
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	| LC_ALL=C tr -s '_' '_' ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/TheUnarchiver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
