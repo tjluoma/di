@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Ubar.app"
 
+HOMEPAGE="https://brawersoftware.com/products/ubar"
+
+DOWNLOAD_PAGE="http://www.brawersoftware.com/downloads/ubar/ubar.zip"
+
+SUMMARY="The Dock replacement for the Mac. Boost your productivity with the most advanced and versatile app and window manager for the Mac. Requires macOS 10.10+."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -68,23 +74,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| fgrep '<sparkle:releaseNotesLink>' \
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}"
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
