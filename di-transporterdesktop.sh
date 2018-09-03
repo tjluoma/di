@@ -6,8 +6,16 @@
 # Date:	2016-06-02
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/Transporter Desktop.app"
+
 XML_FEED="http://appsoftware.connecteddata.com/mac/2.5/Appcast.xml"
+
+HOMEPAGE=""
+
+DOWNLOAD_PAGE=""
+
+SUMMARY="Transporter Desktop is no longer developed, but it is still available for download."
 
 if [ -e "$HOME/.path" ]
 then
