@@ -6,8 +6,16 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/TeX/TeXShop.app"
+
 XML_FEED="http://pages.uoregon.edu/koch/texshop/texshop-64/texshopappcast.xml"
+
+HOMEPAGE="http://pages.uoregon.edu/koch/texshop/"
+
+DOWNLOAD_PAGE="https://pages.uoregon.edu/koch/texshop/texshop-64/texshop.zip"
+
+SUMMARY="TeXShop is a TeX previewer for Mac OS X, written in Cocoa. Since pdf is a native file format on OS X, TeXShop uses 'pdftex' and 'pdflatex' rather than 'tex' and 'latex' to typeset in its default configuration; these programs in the standard TeX Live distribution of TeX produce pdf output instead of dvi output."
 
 if [ -e "$HOME/.path" ]
 then
@@ -30,7 +38,10 @@ function die
 	# (if one exists). This has the benefit of meaning that if we have an old
 	# version and the new one fails to unzip (via ditto) for some reason,
 	# we will still have the old version. Life is a series of trade-offs.
-[[ ! -d "$INSTALL_TO:h" ]] && mkdir -p "$INSTALL_TO:h" || die "Failed to create '$INSTALL_TO:h'!"
+if [[ ! -d "$INSTALL_TO:h" ]]
+then
+	mkdir -p "$INSTALL_TO:h" || die "Failed to create '$INSTALL_TO:h'!"
+fi
 
 	# sparkle:version= is the only version information in the feed,
 	# CFBundleShortVersionString and CFBundleVersion are identical in the app itself
@@ -83,23 +94,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
 		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-	curl -sfL $RELEASE_NOTES_URL \
-	| sed '1,/<h3>/d; /<h3>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL $RELEASE_NOTES_URL \
+		| sed '1,/<h3>/d; /<h3>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
