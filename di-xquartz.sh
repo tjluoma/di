@@ -157,9 +157,9 @@ then
 
 fi
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at -  --max-time 3600 --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "${URL}"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -169,7 +169,6 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
 
 MNTPNT=$(echo -n "Y" \
 	| hdid -plist "$FILENAME" 2>/dev/null \
