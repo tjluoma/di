@@ -7,7 +7,24 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="$HOME/Library/PreferencePanes/Witch.PrefPane"
+if [ -e "/Library/PreferencePanes/Witch.prefPane" -a -e "$HOME/Library/PreferencePanes/Witch.prefPane" ]
+then
+
+	echo "$NAME: Witch.prefPane is installed at _BOTH_ '/Library/PreferencePanes/Witch.prefPane' and '$HOME/Library/PreferencePanes/Witch.prefPane'.
+	Please remove one."
+
+	exit 1
+
+elif [[ -e "/Library/PreferencePanes/Witch.prefPane" ]]
+then
+
+	INSTALL_TO="/Library/PreferencePanes/Witch.prefPane"
+
+else
+
+	INSTALL_TO="$HOME/Library/PreferencePanes/Witch.prefPane"
+
+fi
 
 XML_FEED='https://manytricks.com/witch/appcast.xml'
 

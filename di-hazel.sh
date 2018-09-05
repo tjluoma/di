@@ -12,7 +12,6 @@ NAME="$0:t:r"
 
 	## If you want to install Hazel for all users, replace 'INSTALL_TO=' with this line
 	# INSTALL_TO='/Library/PreferencePanes/Hazel.prefPane'
-INSTALL_TO="$HOME/Library/PreferencePanes/Hazel.prefPane"
 
 if [ -e "$HOME/.path" ]
 then
@@ -28,6 +27,16 @@ then
 	Please remove one."
 
 	exit 1
+
+elif [[ -e "/Library/PreferencePanes/Hazel.prefPane" ]]
+then
+
+	INSTALL_TO="/Library/PreferencePanes/Hazel.prefPane"
+
+else
+
+	INSTALL_TO="$HOME/Library/PreferencePanes/Hazel.prefPane"
+
 fi
 
 function check_install_location {

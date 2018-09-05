@@ -14,7 +14,24 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_TO="$HOME/Library/PreferencePanes/Choosy.prefPane"
+if [ -e "/Library/PreferencePanes/Choosy.prefPane" -a -e "$HOME/Library/PreferencePanes/Choosy.prefPane" ]
+then
+
+	echo "$NAME: Choosy.prefPane is installed at _BOTH_ '/Library/PreferencePanes/Choosy.prefPane' and '$HOME/Library/PreferencePanes/Choosy.prefPane'.
+	Please remove one."
+
+	exit 1
+
+elif [[ -e "/Library/PreferencePanes/Choosy.prefPane" ]]
+then
+
+	INSTALL_TO="/Library/PreferencePanes/Choosy.prefPane"
+
+else
+
+	INSTALL_TO="$HOME/Library/PreferencePanes/Choosy.prefPane"
+
+fi
 
 	# sparkle:version= is the only version information available
 INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
