@@ -20,9 +20,9 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-V1_INSTALL_TO="/Applications/Bartender.app"
-V2_INSTALL_TO="/Applications/Bartender 2.app"
-V3_INSTALL_TO='/Applications/Bartender 3.app'
+INSTALL_V1_TO="/Applications/Bartender.app"
+INSTALL_V2_TO="/Applications/Bartender 2.app"
+INSTALL_V3_TO='/Applications/Bartender 3.app'
 
 OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
@@ -147,13 +147,13 @@ else
 fi
 
 
-if [[ -e "$V3_INSTALL_TO" ]]
+if [[ -e "$INSTALL_V3_TO" ]]
 then
 	use_v3
-elif [[ -e "$V2_INSTALL_TO" ]]
+elif [[ -e "$INSTALL_V2_TO" ]]
 then
 	use_v2
-elif [[ -e "$V1_INSTALL_TO" ]]
+elif [[ -e "$INSTALL_V1_TO" ]]
 then
 	use_v1
 else
