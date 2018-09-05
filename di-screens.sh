@@ -20,9 +20,9 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-V3_INSTALL_TO='/Applications/Screens.app'
+INSTALL_V3_TO='/Applications/Screens.app'
 
-V4_INSTALL_TO='/Applications/Screens 4.app'
+INSTALL_V4_TO='/Applications/Screens 4.app'
 
 function use_v3 {
 
@@ -50,7 +50,7 @@ elif [ "$1" = "--use4" -o "$1" = "-4" ]
 then
         use_v4
 else
-        if [ -e "$V3_INSTALL_TO" -a -e "$V4_INSTALL_TO" ]
+        if [ -e "$INSTALL_V3_TO" -a -e "$INSTALL_V4_TO" ]
         then
                 echo "$NAME: Both versions 3 and 4 of Screens are installed. I will _only_ check for updates for version 4 in this situation."
                 echo "  If you want to check for updates for version 3, add the argument '--use3' i.e. '$0:t --use3' "
@@ -58,11 +58,11 @@ else
 
                 use_v4
 
-        elif [ ! -e "$V3_INSTALL_TO" -a -e "$V4_INSTALL_TO" ]
+        elif [ ! -e "$INSTALL_V3_TO" -a -e "$INSTALL_V4_TO" ]
         then
                         # version 3 is not installed but version 4 is
                 use_v4
-        elif [ -e "$V3_INSTALL_TO" -a ! -e "$V4_INSTALL_TO" ]
+        elif [ -e "$INSTALL_V3_TO" -a ! -e "$INSTALL_V4_TO" ]
         then
                         # version 3 is installed but version 4 is not
                 use_v3
