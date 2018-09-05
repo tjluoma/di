@@ -16,7 +16,22 @@ fi
 
 # http://www.klieme.com/Downloads/ScreenSharingMenulet/appcast.xml exists, but the download URL is 404
 
-INSTALL_TO='/Applications/ScreenSharingMenulet 2.2.app'
+if [[ -d "/Applications/ScreenSharingMenulet 2.2.app" ]]
+then
+
+	INSTALL_TO="/Applications/ScreenSharingMenulet 2.2.app"
+
+elif [[ -d "/Applications/ScreenSharingMenulet.app" ]]
+then
+
+	INSTALL_TO='/Applications/ScreenSharingMenulet.app'
+
+else
+
+	INSTALL_TO="/Applications/ScreenSharingMenulet 2.2.app"
+
+fi
+
 URL='https://www.dropbox.com/s/2nasflslxhrz3lt/ScreenSharingMenulet-2.2_200.dmg?dl=0'
 LATEST_VERSION="2.2"
 LATEST_BUILD="200"
@@ -26,8 +41,6 @@ ITUNES_URL='itunes.apple.com/us/app/screensharingmenulet/id578078659'
 DOWNLOAD_PAGE="https://itunes.apple.com/us/app/screensharingmenulet/id578078659?mt=12"
 MAS_URL='macappstore://itunes.apple.com/us/app/screensharingmenulet/id578078659'
 SUMMARY="Connect to local, Back to My Mac, and custom hosts via Screen Sharing from the menu bar. (Note: a newer version is available in the Mac App Store.)"
-
-ALT_INSTALL_TO='/Applications/ScreenSharingMenulet.app'
 
 cat <<EOINPUT
 
@@ -71,34 +84,6 @@ then
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
-
-fi
-
-if [[ -e "$ALT_INSTALL_TO" ]]
-then
-
-	INSTALLED_VERSION=$(defaults read "${ALT_INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
-
-	INSTALLED_BUILD=$(defaults read "${ALT_INSTALL_TO}/Contents/Info" CFBundleVersion)
-
-	autoload is-at-least
-
-	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-	VERSION_COMPARE="$?"
-
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-		echo "$NAME: See <$DOWNLOAD_PAGE> for newer, Mac App Store-only version."
-		exit 0
-	fi
-
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
@@ -114,13 +99,6 @@ then
 	fi
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
-
-	# if we get here, we have found the app at $ALT_INSTALL_TO but it is NOT the Mac App Store version
-	# so we want to update the app at $ALT_INSTALL_TO instead of installing it at the original $INSTALL_TO
-
-	INSTALL_TO="$ALT_INSTALL_TO"
-
-	echo "$NAME: Note! We are using '$INSTALL_TO' since we found an existing (non-Mac App Store) installation there."
 
 fi
 
@@ -168,7 +146,7 @@ fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/ScreenSharingMenulet 2.2.app" "$INSTALL_TO"
 
 EXIT="$?"
 
