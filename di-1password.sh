@@ -20,8 +20,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-V6_INSTALL_TO='/Applications/1Password 6.app'
-V7_INSTALL_TO='/Applications/1Password 7.app'
+INSTALL_V6_TO='/Applications/1Password 6.app'
+INSTALL_V7_TO='/Applications/1Password 7.app'
 
 function do_os_check {
 
@@ -51,9 +51,9 @@ function do_os_check {
 
 function use_v6 {
 
-	if [[ -e "$V7_INSTALL_TO" ]]
+	if [[ -e "$INSTALL_V7_TO" ]]
 	then
-		echo "$NAME: $V7_INSTALL_TO is installed. Cannot have both installed at the same time. To install 1Password 6, please remove 1Password 7."
+		echo "$NAME: $INSTALL_V7_TO is installed. Cannot have both installed at the same time. To install 1Password 6, please remove 1Password 7."
 		exit 0
 	fi
 
@@ -159,7 +159,7 @@ elif [ "$1" = "--use7" -o "$1" = "-7" ]
 then
 	use_v7
 else
-	if [ -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+	if [ -e "$INSTALL_V6_TO" -a -e "$INSTALL_V7_TO" ]
 	then
 		# Technically this should never happen, as the installers for v6 and v7 will remove the other version
 		# if found during installation. But if it _does_ happen, we should be ready for it.
@@ -169,11 +169,11 @@ else
 
 			use_v7
 
-	elif [ ! -e "$V6_INSTALL_TO" -a -e "$V7_INSTALL_TO" ]
+	elif [ ! -e "$INSTALL_V6_TO" -a -e "$INSTALL_V7_TO" ]
 	then
 			# version 6 is not installed but version 7 is
 		use_v7
-	elif [ -e "$V6_INSTALL_TO" -a ! -e "$V7_INSTALL_TO" ]
+	elif [ -e "$INSTALL_V6_TO" -a ! -e "$INSTALL_V7_TO" ]
 	then
 		# version 6 is installed but version 7 is not
 		use_v6
