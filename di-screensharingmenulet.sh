@@ -33,24 +33,51 @@ else
 fi
 
 URL='https://www.dropbox.com/s/2nasflslxhrz3lt/ScreenSharingMenulet-2.2_200.dmg?dl=0'
+SUMMARY="Connect to local, Back to My Mac, and custom hosts via Screen Sharing from the menu bar. (Note: a newer version is available in the Mac App Store.)"
 LATEST_VERSION="2.2"
 LATEST_BUILD="200"
 RELEASE_NOTES_URL='http://www.klieme.com/ScreenSharingMenulet.html'
 HOMEPAGE="http://www.klieme.com/ScreenSharingMenulet.html"
 ITUNES_URL='itunes.apple.com/us/app/screensharingmenulet/id578078659'
-DOWNLOAD_PAGE="https://itunes.apple.com/us/app/screensharingmenulet/id578078659?mt=12"
-MAS_URL='macappstore://itunes.apple.com/us/app/screensharingmenulet/id578078659'
-SUMMARY="Connect to local, Back to My Mac, and custom hosts via Screen Sharing from the menu bar. (Note: a newer version is available in the Mac App Store.)"
+	DOWNLOAD_PAGE="https://$ITUNES_URL?mt=12"
+	MAS_URL="macappstore://$ITUNES_URL"
+
+if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+then
+
+	LATEST_VERSION=$(curl -sfLS "https://$ITUNES_URL?mt=12" \
+				| fgrep 'version-history__item__version-number' \
+				| head -1 \
+				| sed 's#</h4>##g; s#.*>##g')
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	if [ "$?" = "0" ]
+	then
+
+		echo "$NAME: Up-To-Date ($LATEST_VERSION/MAS install)"
+		exit 0
+
+	fi
+
+	echo "$NAME: '$INSTALL_TO' is outdated, but was installed from the Mac App Store, and therefore cannot be updated by this script."
+	echo "	See <https://$ITUNES_URL?mt=12> or <macappstore://$ITUNES_URL> for more information, or "
+	echo "	use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+
+	exit 0
+fi
 
 cat <<EOINPUT
 
 $NAME: NOTE!
 
 This script can only install version 2.2.
-
-The newest version of this app is 2.8, and is available only from the Mac App Store.
-
-See <$DOWNLOAD_PAGE> or <$MAS_URL> for more information.
+Since version 2.5, ScreenSharingMenulet has been available exclusively from the Mac App Store.
+See <$DOWNLOAD_PAGE> or <$MAS_URL> for more information about getting the latest version.
 
 EOINPUT
 
@@ -80,21 +107,6 @@ then
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-		echo "$NAME: See <$DOWNLOAD_PAGE> for newer, Mac App Store-only version."
-		exit 0
-	fi
-
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-
-		if [[ "$ITUNES_URL" != "" ]]
-		then
-			echo "	See <https://$ITUNES_URL?mt=12> or"
-			echo "	<macappstore://$ITUNES_URL>"
-		fi
-
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
 
