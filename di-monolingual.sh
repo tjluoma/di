@@ -6,8 +6,16 @@
 # Date:	2016-05-29
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/Monolingual.app'
+
 XML_FEED='https://ingmarstein.github.io/Monolingual/appcast.xml'
+
+HOMEPAGE="https://ingmarstein.github.io/Monolingual/"
+
+DOWNLOAD_PAGE="https://github.com/IngmarStein/Monolingual/releases"
+
+SUMMARY="Monolingual is a program for removing unnecessary language resources from macOS, in order to reclaim several hundred megabytes of disk space."
 
 if [ -e "$HOME/.path" ]
 then
@@ -66,13 +74,11 @@ then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
+	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 	curl -sfLS $XML_FEED \
 	| sed '1,/<description>/d; /<\/description>/,$d ; s###g ;s###g ; s#<\!\[CDATA\[##; s#\]\]>##g' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
