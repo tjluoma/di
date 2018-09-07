@@ -5,16 +5,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-25
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/Paparazzi!.app"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/Paparazzi!.app"
+
+HOMEPAGE="https://derailer.org/paparazzi/"
+
+DOWNLOAD_PAGE="https://derailer.org/paparazzi/download"
+
+SUMMARY="Paparazzi! is a small utility for macOS that makes screenshots of webpages."
 
 XML_FEED='https://derailer.org/paparazzi/appcast/'
 
@@ -82,7 +88,6 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| tail -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
 
 if (( $+commands[html2text] ))
 then
