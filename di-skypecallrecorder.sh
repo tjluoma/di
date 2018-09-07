@@ -26,6 +26,13 @@ DOWNLOAD_PAGE="http://downloads.ecamm.com/CallRecorder.zip"
 
 SUMMARY="Call Recorder records Skype audio and video calls directly to your Mac. (Note: Download page is for demo version.)"
 
+if [[ -e "$HOME/.path" ]]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
+
 	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo
 	# But we can get the version number from it.
 LATEST_VERSION=$(curl -sfLS "$XML_FEED" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
@@ -37,7 +44,6 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-
 if [[ "$LATEST_VERSION" = "" ]]
 then
 	echo "$NAME [Fatal Error]: \$LATEST_VERSION is empty. Cannot continue."
@@ -47,13 +53,6 @@ fi
 NAME="$0:t:r"
 
 INSTALL_TO="/Library/Audio/Plug-Ins/HAL/EcammAudioLoader.plugin/Contents/Plugins/CallRecorder.plugin"
-
-if [ -e "$HOME/.path" ]
-then
-	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
-fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
