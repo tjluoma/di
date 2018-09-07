@@ -18,6 +18,14 @@ fi
 
 XML_FEED="https://marco.org/appcasts/quitter.xml"
 
+RELEASE_NOTES_URL="https://marco.org/appcasts/quitter.xml"
+
+HOMEPAGE="https://marco.org/apps"
+
+DOWNLOAD_PAGE="http://marco.org/appcasts/Quitter.zip"
+
+SUMMARY="Quitter is a Mac app that automatically hides or quits apps after periods of inactivity."
+
 # sparkle:version is the one to check, it seems to change even when the major version didn't
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -68,22 +76,18 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://marco.org/appcasts/quitter.xml"
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-	(curl -sfL "$RELEASE_NOTES_URL" \
-	 | sed '1,/<description>/d; /<\/description>/,$d' ; echo '</ul>' ) \
-	 | lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
+		 | sed '1,/<description>/d; /<\/description>/,$d' ; echo '</ul>' ) \
+		 | lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
+		 echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
