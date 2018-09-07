@@ -5,19 +5,29 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-17
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Phoenix.app'
-# Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
-
-XML_FEED="https://iconfactory.com/appcasts/Phoenix/appcast.xml"
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Phoenix.app'
+# Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
+
+HOMEPAGE="https://twitterrific.com/mac"
+
+DOWNLOAD_PAGE="https://itunes.apple.com/us/app/twitterrific-5-for-twitter/id1289378661?mt=12"
+
+SUMMARY="The Twitter app for people who actually use Twitter. Now all-new for macOS."
+
+XML_FEED="https://iconfactory.com/appcasts/Phoenix/appcast.xml"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;')
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr '[:blank:]' '\012' \
@@ -86,25 +96,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;')
-
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/Use Help to view this list with /d ; /<\/div>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	( echo -n "$NAME: Release Notes for " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/Use Help to view this list with /d ; /<\/div>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed '/./,/^$/!d' ;
+ 		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
