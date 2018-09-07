@@ -6,7 +6,6 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2018-08-25
 
-
 ## This is the file that has your private URL in it, like this:
 # 	http://www.ecamm.com/cgi-bin/customercenter?u=YOU%40EXAMPLE%2ECOM&c=YOURCODE
 ## but replace with your email address and code from Ecamm
@@ -56,6 +55,40 @@ then
 	exit 1
 fi
 
+[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^http.*//www.ecamm.com/.*' "$PRIVATE_FILE")
+
+if [ "$PRIVATE_URL" != "" ]
+then
+		# This is what we hope for:
+		# if we get to this point, we know we need to do either an install or an update
+		# AND we have an URL to work with.
+
+	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/PhoneView.*\.zip')
+
+else
+	# These are the less-desirable options. All of these end with 'exit 1'
+
+	if [ ! -e "$PRIVATE_FILE" ]
+	then
+			# no PRIVATE_FILE exists.
+
+		echo "$NAME: Fatal Error. '$PRIVATE_FILE' does not exist. Cannot continue. See '$0' for details on how to create it."
+
+	elif [ "$PRIVATE_URL" = "" ]
+	then
+			# the PRIVATE_FILE exists
+			# but the PRIVATE_URL is empty
+		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain a URL. Cannot continue."
+	else
+			# I'm not sure how we'd ever get here, but just in case we do, we should say something, at least
+		echo "$NAME: Fatal Error. Cannot continue. (For unclear reasons, sorry.)"
+	fi
+
+	echo "$NAME: If you just want to download the demo version, you can do that here: <https://downloads.ecamm.com/PhoneView.zip>"
+
+	exit 1
+fi
+
 if [[ -e "$INSTALL_TO" ]]
 then
 		# Get the installed version, if any, otherwise set it to zero
@@ -82,41 +115,6 @@ then
 	IS_INSTALLED='yes'
 else
 	IS_INSTALLED='no'
-fi
-
-[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^http.*//www.ecamm.com/.*' "$PRIVATE_FILE")
-
-if [ "$PRIVATE_URL" != "" ]
-then
-		# This is what we hope for:
-		# if we get to this point, we know we need to do either an install or an update
-		# AND we have an URL to work with.
-
-
-	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/PhoneView.*\.zip')
-
-else
-	# These are the less-desirable options. All of these end with 'exit 1'
-
-	if [ ! -e "$PRIVATE_FILE" ]
-	then
-			# no PRIVATE_FILE exists.
-
-		echo "$NAME: Fatal Error. '$PRIVATE_FILE' does not exist. Cannot continue. See '$0' for details on how to create it."
-
-	elif [ "$PRIVATE_URL" = "" ]
-	then
-			# the PRIVATE_FILE exists
-			# but the PRIVATE_URL is empty
-		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain a URL. Cannot continue."
-	else
-			# I'm not sure how we'd ever get here, but just in case we do, we should say something, at least
-		echo "$NAME: Fatal Error. Cannot continue. (For unclear reasons, sorry.)"
-	fi
-
-	echo "$NAME: If you just want to download the demo version, you can do that here: <https://downloads.ecamm.com/PhoneView.zip>"
-
-	exit 1
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
