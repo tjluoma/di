@@ -5,16 +5,27 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-15
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/RapidWeaver 8.app"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/RapidWeaver 8.app"
+
+HOMEPAGE="https://www.realmacsoftware.com/rapidweaver/"
+
+DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+SUMMARY="RapidWeaver for Mac is a powerful and easy to use web design app that puts you back in control. Build your own beautiful, responsive, websites without having to write a line of code."
 
 XML_FEED='https://updates.devmate.com/com.realmacsoftware.rapidweaver8.xml'
 
@@ -75,24 +86,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/RapidWeaver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n" ;
+		curl -sfL "${RELEASE_NOTES_URL}" \
+		| egrep -v '<div class="dm-rn-head-title-fixed">|<div class="dm-rn-head-title">' \
+		| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| egrep -v '<div class="dm-rn-head-title-fixed">|<div class="dm-rn-head-title">' \
-	| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
-
-FILENAME="$HOME/Downloads/RapidWeaver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
