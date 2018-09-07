@@ -5,6 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-19
 
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+fi
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BetterZip.app'
@@ -20,20 +27,11 @@ SUMMARY="
 * Edit archived files in an external application and BetterZip can update your archive.
 "
 
-
-
-if [ -e "$HOME/.path" ]
-then
-	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
-fi
-
-# https://macitbetter.com/BetterZip.zip
-
-# Thanks to /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/betterzip.rb
-
 XML_FEED="https://macitbetter.com/BetterZip4.rss"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
@@ -92,23 +90,17 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<body>/d ; /<hr noshade size=/,$d' \
-		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
 
@@ -125,9 +117,9 @@ EXIT="$?"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-echo "$NAME: Unzipping $FILENAME to $UNZIP_TO:"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-ditto --noqtn -xk "$FILENAME" "$UNZIP_TO"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
@@ -136,16 +128,19 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# failed
-	echo "$NAME failed (ditto --noqtn -xkv \"$FILENAME\" \"$UNZIP_TO\")"
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	FIRST_INSTALL='no'
 
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -158,37 +153,27 @@ then
 
 		exit 1
 	fi
-else
-
-	FIRST_INSTALL='yes'
 fi
 
-echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" = "0" ]]
 then
-	echo "$NAME: Successfully installed \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
 
-	# We need to launch the app at least once in order to use its QuickLook plugins
-if [[ "$FIRST_INSTALL" == 'yes' ]]
-then
-
-	echo "$NAME: This is the first time we have installed $INSTALL_TO. Launching app to force it to register its QuickLook plugins."
-
-	open -a "$INSTALL_TO"
-
-fi
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
