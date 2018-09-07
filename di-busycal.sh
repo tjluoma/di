@@ -115,7 +115,6 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-
 cd "$FILENAME:h"
 
 # This is where we
@@ -132,7 +131,6 @@ mv -vf "BusyCal Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 if (( $+commands[unpkg.py] ))
 then
 	# Get unpkg.py from https://github.com/tjluoma/unpkg/blob/master/unpkg.py
-
 
 	echo "$NAME: running 'unpkg.py' on '$PKG':"
 
