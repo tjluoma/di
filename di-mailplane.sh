@@ -130,17 +130,6 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
-
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/MailPlane.$INSTALLED_VERSION.$INSTALLED_BUILD.app"
-fi
-
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping $FILENAME to $UNZIP_TO"
@@ -153,6 +142,17 @@ if [[ "$EXIT" != "0" ]]
 then
 	echo "$NAME: 'tar' failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 	exit 1
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/MailPlane.$INSTALLED_VERSION.$INSTALLED_BUILD.app"
 fi
 
 mv -vf "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
