@@ -6,8 +6,19 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
+
 INSTALL_TO="/Applications/Monodraw.app"
+
 XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"        # There does not seem to be a non-beta appcast URL
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
+
+HOMEPAGE="https://monodraw.helftone.com"
+
+DOWNLOAD_PAGE="https://updates.helftone.com/monodraw/downloads/monodraw-latest.dmg"
+
+SUMMARY="Powerful ASCII art editor designed for the Mac."
 
 if [ -e "$HOME/.path" ]
 then
@@ -85,16 +96,11 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
-
-	(curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<body>/d; /<\/table>/,$d' ;
-		echo '</table>') \
+	((curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<body>/d; /<\/table>/,$d' ; echo '</table>') \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin	\
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| sed '/./,/^$/!d' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
