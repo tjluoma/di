@@ -5,10 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-19
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/nvALT.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -16,11 +12,26 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/nvALT.app'
+
+HOMEPAGE="http://brettterpstra.com/projects/nvalt/"
+
+DOWNLOAD_PAGE="http://brettterpstra.com/projects/nvalt/#dl"
+
+SUMMARY="nvALT is a way to take notes quickly and effortlessly using just your keyboard. You press a shortcut to bring up the window and just start typing. "
+
 # this is old
 # XML_FEED='http://abyss.designheresy.com/nvalt2/nvalt2main.xml'
 
 # This is new, current as of 2018-07-10 at least
 XML_FEED='https://updates.designheresy.com/nvalt/updates.xml'
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -72,26 +83,19 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for "
-
+	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body/d; /<\/body>/,$d' \
 	| fgrep -v 'If you have any trouble with the download, you can grab the direct download here:' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
