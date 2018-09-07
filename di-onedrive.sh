@@ -9,7 +9,13 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/OneDrive.app"
 
-#   https://rink.hockeyapp.net/api/2/apps/58bdcef2b1db4db38e0c2fb8a84ac168 -- outdated?
+HOMEPAGE="https://onedrive.live.com/about/en-us/"
+
+DOWNLOAD_PAGE='https://go.microsoft.com/fwlink/?LinkId=823060'
+
+SUMMARY="Save your files and photos to OneDrive and get them from any device, anywhere."
+
+# https://rink.hockeyapp.net/api/2/apps/58bdcef2b1db4db38e0c2fb8a84ac168 -- outdated?
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -69,8 +75,6 @@ else
 
 	FIRST_INSTALL='yes'
 fi
-
-echo "$LATEST_VERSION"
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.pkg"
 
