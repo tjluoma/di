@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Path Finder.app'
 
+HOMEPAGE="https://cocoatech.com/"
+
+DOWNLOAD_PAGE="https://get.cocoatech.com/PF8.zip"
+
+SUMMARY="File manager for macOS."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -98,6 +104,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/PathFinder-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if [[ "$USE_VERSION" == "8" ]]
 then
 	if (( $+commands[lynx] ))
@@ -105,17 +113,14 @@ then
 
 		RELEASE_NOTES_URL="$XML_FEED"
 
-		curl -sfLS "$RELEASE_NOTES_URL" \
+		( curl -sfLS "$RELEASE_NOTES_URL" \
 			| sed '1,/<\!\[CDATA\[/d; /\]\]>/,$d' \
 			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 			| sed '/./,/^$/!d' \
-			| sed 's#^ *##g'
-
-		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+			| sed 's#^ *##g' ;
+			echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 	fi
 fi
-
-FILENAME="$HOME/Downloads/PathFinder-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -193,5 +198,3 @@ fi
 exit 0
 
 #EOF
-
-
