@@ -145,8 +145,6 @@ else
 	exit 1
 fi
 
-echo "$NAME: Unmounting $MNTPNT:"
-
-diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
