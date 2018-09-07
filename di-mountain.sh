@@ -9,14 +9,20 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Mountain.app'
 
+XML_FEED='https://appgineers.de/mountain/files/mountaincast.xml'
+
+HOMEPAGE="https://appgineers.de/mountain/"
+
+DOWNLOAD_PAGE="https://appgineers.de/mountain/files/Mountain.zip"
+
+SUMMARY="Manage your external volumes with Mountain."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED='https://appgineers.de/mountain/files/mountaincast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
