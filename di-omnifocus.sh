@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/OmniFocus.app'
 
+HOMEPAGE="https://www.omnigroup.com/omnifocus"
+
+DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnifocus/"
+
+SUMMARY="Live a productive, contextual life with OmniFocus. Keep work and play separated with contexts, perspectives, and Focus. Ignore the irrelevant, focus on what you can do now, and accomplish more. And do it all much faster than before."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -106,20 +112,18 @@ then
 	fi
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
+
 if (( $+commands[lynx] ))
 then
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r $LATEST_VERSION:\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<article>/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r $LATEST_VERSION:\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<article>/d; /<\/article>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
