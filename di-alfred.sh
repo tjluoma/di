@@ -123,21 +123,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/Alfred-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if [[ "$USE_VERSION" == "3" ]]
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/^## Alfred $LATEST_VERSION/d; /^## /,\$d"
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| sed "1,/^## Alfred $LATEST_VERSION/d; /^## /,\$d" ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/Alfred-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
