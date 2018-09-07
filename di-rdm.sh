@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/RDM.app"
 
+RELEASE_NOTES_URL='https://github.com/avibrazil/RDM/'
+
+HOMEPAGE="https://github.com/avibrazil/RDM/"
+
+DOWNLOAD_PAGE="http://avi.alkalay.net/software/RDM/"
+
+SUMMARY='(Retina Display Menu) This is a tool that lets you use MacBook Pro Retina’s highest and unsupported resolutions. As an example, a Retina MacBook Pro 13" can be set to 3360×2100 maximum resolution, as opposed to Apple’s max supported 1680×1050. It is accessible from the menu bar.'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -65,8 +73,6 @@ else
 
 	FIRST_INSTALL='yes'
 fi
-
-RELEASE_NOTES_URL='https://github.com/avibrazil/RDM/'
 
 echo "$NAME: Release notes are not available, but checkout ${RELEASE_NOTES_URL} for details."
 
