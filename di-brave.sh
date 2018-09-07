@@ -14,6 +14,12 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+HOMEPAGE="https://brave.com"
+
+DOWNLOAD_PAGE="https://brave.com/download/"
+
+SUMMARY="Much more than a browser, Brave is a new way of thinking about how the web works."
+
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
 PREFERS_BETAS_FILE="$HOME/.config/di/brave-prefer-betas.txt"
@@ -107,6 +113,8 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -135,9 +143,9 @@ else
 	exit 1
 fi
 
-echo "$NAME: Unmounting $MNTPNT:"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
