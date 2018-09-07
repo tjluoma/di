@@ -13,6 +13,8 @@ DOWNLOAD_PAGE="https://1password.com/downloads/"
 
 SUMMARY="Go ahead. Forget your passwords. 1Password remembers them all for you. Save your passwords and log in to sites with a single click. It's that simple."
 
+URL=$(curl -sfLS --head 'https://app-updates.agilebits.com/download/OPM7' | awk -F' |\r' '/^.ocation:/{print $2}')
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -222,6 +224,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
+
 if [[ "$USE_VERSION" == "7" ]]
 then
 	if (( $+commands[lynx] ))
@@ -232,35 +236,30 @@ then
 
 			RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
 
-			echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION)"
-
+			( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION)" ;
 			curl -sfL "$RELEASE_NOTES_URL" \
 				| sed "1,/class='beta'/d; /<article /,\$d" \
 				| sed '1,/<\/h3>/d' \
-				| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-			echo "\nSource: <$RELEASE_NOTES_URL>"
+				| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 		else
 
 			RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
 
-			echo -n "$NAME: Release Notes for $INSTALL_TO:t:r"
-
+			( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r" ;
 			curl -sfL "$RELEASE_NOTES_URL" \
 			| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
 			| egrep -vi 'never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
 			| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-			| sed '/./,/^$/!d'
-			# sed delete blank lines at start of file
+			| sed '/./,/^$/!d' ;
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
-			echo "\nSource: <$RELEASE_NOTES_URL>"
 		fi
 
 	fi
 fi
 
-FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
