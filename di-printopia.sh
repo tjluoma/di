@@ -69,7 +69,7 @@ EXPECTED_SHASUM1="$INFO[3]"
 EXPECTED_SHASUM256="$INFO[4]"
 EXPECTED_SHASUM512="$INFO[5]"
 EXPECTED_BYTES="$INFO[6]"
-EXPECTED_CODESIGN_TEAM_ID="$INFO[6]"
+EXPECTED_CODESIGN_TEAM_ID="$INFO[7]"
 URL="$INFO[8]"
 
 ## Useful for debugging, if needed. Uncomment and see if each of the values makes sense.
@@ -155,7 +155,6 @@ $EXPECTED_SHASUM1  $FILENAME
 $EXPECTED_SHASUM256  $FILENAME
 $EXPECTED_SHASUM512  $FILENAME
 EOINPUT
-
 
 	# if the user has 'lynx' installed, we will use that to show them the release notes for this version
 	# lynx does not come standard on macOS, but if the user is technically-savvy enough to be using
@@ -388,15 +387,17 @@ fi
 
 ACTUAL_CODESIGN_TEAM_ID=$(codesign -dv --verbose=4 "$UNZIP_TO/$INSTALL_TO:t" 2>&1 | awk -F'=' '/^TeamIdentifier/{print $NF}')
 
-if [[ "$ACTUAL_CODESIGN_TEAM_ID" == "$EXPECTED_CODESIGN_TEAM_ID"
+if [[ "$ACTUAL_CODESIGN_TEAM_ID" == "$EXPECTED_CODESIGN_TEAM_ID" ]]
 then
 		# the codes match. We are good to go.
 	echo "$NAME: Verified that the Team ID in the code signature matches (this is good)"
-else
-		# the teams do NOT match. Danger, Will Robinson.
-	echo "$NAME: The Team IDs in the XML_FEED and the downloaded app do _NOT_ match (this is bad)."
-	echo "$NAME: We cannot continue, and you should not use the downloaded files."
 
+else
+
+		# the teams do NOT match. Danger, Will Robinson.
+	echo "$NAME: The Team IDs in the XML_FEED ($EXPECTED_CODESIGN_TEAM_ID) and the downloaded app ($ACTUAL_CODESIGN_TEAM_ID) do _NOT_ match (this is bad)."
+
+	echo "$NAME: We cannot continue, and you should not use the downloaded files."
 
 	echo "$NAME: removing potentially hazardous files from '$UNZIP_TO'..."
 
