@@ -18,6 +18,14 @@ fi
 
 SOURCE='https://github.com/rsyncOSX/RsyncOSX/releases/latest'
 
+RELEASE_NOTES_URL="https://rsyncosx.github.io/Changelog"
+
+HOMEPAGE="https://rsyncosx.github.io/"
+
+DOWNLOAD_PAGE="https://github.com/rsyncOSX/RsyncOSX/releases/"
+
+SUMMARY="Rsync is a file-based synchronization and backup tool. There is no custom solution for the backup archive. You can quit utilizing RsyncOSX (and rsync) at any time and still have access to all synchronized files. "
+
 URL=$(curl -sfL "$SOURCE" \
 		| egrep -vi 'rsync[0-9]*.dmg' \
 		| egrep -i 'RsyncOSX.*\.dmg' \
@@ -36,7 +44,6 @@ then
 
 	exit 1
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -64,26 +71,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
-	
-	RELEASE_NOTES_URL="https://rsyncosx.github.io/Changelog"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<h2 /d; /<h2 /,$d ; s#<a href="/#<a href="https://rsyncosx.github.io/#g' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
-
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -105,6 +108,8 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -135,9 +140,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-echo "$NAME: Unmounting $MNTPNT:"
-
-diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
