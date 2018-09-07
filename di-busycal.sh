@@ -15,6 +15,8 @@ DOWNLOAD_PAGE="http://www.busymac.com/download/BusyCal.zip"
 
 SUMMARY="BusyCal 3 is the most powerful, flexible, reliable calendar app for macOS. It's packed with time-saving features and compatible with all leading cloud services including iCloud, Google, Exchange and more."
 
+RELEASE_NOTES_URL='https://www.busymac.com/busycal/releasenotes.html'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -84,25 +86,21 @@ then
 
 fi
 
-if (( $+commands[lynx] ))
-then
-	RELEASE_NOTES_URL='https://www.busymac.com/busycal/releasenotes.html'
-
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-fi
-
-# What we download is a .zip file with a .pkg file inside of it,
-# so we first need to unzip the .zip file and then install the .pkg file
-
+	# What we download is a .zip file with a .pkg file inside of it,
+	# so we first need to unzip the .zip file and then install the .pkg file
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 	PKG="$FILENAME:h/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
 
+if (( $+commands[lynx] ))
+then
+
+	( echo -n "$NAME: Release Notes for " ;
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
+	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
