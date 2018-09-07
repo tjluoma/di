@@ -9,6 +9,18 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Revisions.app'
 
+HOMEPAGE="https://www.revisionsapp.com/"
+
+DOWNLOAD_PAGE="https://www.revisionsapp.com/#extraContainer5"
+
+SUMMARY="The Mac OS X app that displays all your Dropbox edits, shows exactly what changes were made, and provides unlimited undo going back 30 days (or more)."
+
+RELEASE_NOTES_URL='https://www.revisionsapp.com/releases'
+
+URL=$(curl -sfL https://www.revisionsapp.com | fgrep '.dmg' | sed "s#.*downloads/#https://www.revisionsapp.com/downloads/#g ; s#'\;##g ; s# ##g")
+
+FILENAME="$HOME/Downloads/$URL:t"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -103,14 +115,6 @@ then
 
 	FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-else
-
-		# If we get here then Revisions is not installed
-
-	URL=$(curl -sfL https://www.revisionsapp.com | fgrep '.dmg' | sed "s#.*downloads/#https://www.revisionsapp.com/downloads/#g ; s#'\;##g ; s# ##g")
-
-	FILENAME="$HOME/Downloads/$URL:t"
-
 fi
 # IF installed
 
@@ -122,8 +126,6 @@ then
 		--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
 		--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes'
 
-	RELEASE_NOTES_URL='https://www.revisionsapp.com/releases'
-
 	SECOND_VERSION=$(curl -sfL "${RELEASE_NOTES_URL}" \
 	| mytidy \
 	| egrep '<h5>.*</h5>' \
@@ -134,7 +136,7 @@ then
 
 	# For some reason, trying to use 'mytidy' below did not work, so I just copied it again. ¯\_(ツ)_/¯
 
-	curl -sfL "${RELEASE_NOTES_URL}" \
+	( curl -sfL "${RELEASE_NOTES_URL}" \
 		| tidy --char-encoding utf8 --wrap 0 --show-errors 0 --indent no \
 			--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
 			--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
@@ -144,7 +146,7 @@ then
 		| sed '1,/<br \/>/d ; s#<hr \/>##g' \
 		| egrep -i '.' \
 		| uniq \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee -a "$FILENAME:r.txt"
 
 fi
 
