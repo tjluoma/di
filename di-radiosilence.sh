@@ -6,16 +6,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-04
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Radio Silence.app'
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Radio Silence.app'
+
+HOMEPAGE="http://radiosilenceapp.com"
+
+DOWNLOAD_PAGE="http://radiosilenceapp.com/download"
+
+SUMMARY="The easiest network monitor and firewall for Mac."
 
 URL=$(curl -sfL "https://radiosilenceapp.com/download" \
 	| awk -F'"' '/\/downloads\//{print "https://radiosilenceapp.com"$2}' \
