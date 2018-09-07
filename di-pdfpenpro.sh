@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/PDFpenPro.app'
 
+HOMEPAGE="https://smilesoftware.com/PDFpenPro"
+
+DOWNLOAD_PAGE="https://dl.smilesoftware.com/com.smileonmymac.PDFpenPro/PDFpenPro.dmg"
+
+SUMMARY="Powerful PDF Editing On Your Mac. Add signatures, text, and images. Make changes and correct typos. OCR scanned docs. Fill out and create forms. Export to Microsoft Word, Excel, PowerPoint."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -154,31 +160,31 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if [[ "$USE_VERSION" == "10" ]]
 then
 
 	if (( $+commands[lynx] ))
 	then
 
-		RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-			| fgrep '<sparkle:releaseNotesLink>' \
-			| head -1 \
-			| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-		echo -n "$NAME: Release Notes for "
-
+		( echo -n "$NAME: Release Notes for " ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| fgrep -v 'please note: PDFpenPro 10 is a paid upgrade' \
 		| sed '1,/<div class="dm-rn-head-title-fixed">/d' \
 		| sed '/<\/ul><\/li>/,$d' \
-		| lynx -dump -nomargins -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin
+		| lynx -dump -nomargins -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
-		echo "\nSource: <$RELEASE_NOTES_URL>"
 	fi
 fi
 
 ## Download it
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
