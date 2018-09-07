@@ -11,6 +11,14 @@ INSTALL_TO='/Applications/Moom.app'
 
 XML_FEED="https://manytricks.com/moom/appcast.xml"
 
+HOMEPAGE="https://manytricks.com/moom/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/moom"
+
+SUMMARY="Moom makes window management as easy as clicking a mouse button—or using a keyboard shortcut, if you're one of those types of people."
+
+RELEASE_NOTES_URL="https://manytricks.com/moom/releasenotes/"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -19,11 +27,11 @@ else
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
-| head -3 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
+		| head -3 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
@@ -84,22 +92,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://manytricks.com/moom/releasenotes/"
-
-	echo -n "$NAME: Release Notes for "
-
 	H2=`curl -sfL "$RELEASE_NOTES_URL" | sed '1,/BODY STARTS HERE/d' | sed '1d' | fgrep -i '<h2>' | head -1 | sed 's#<\/h2>##g'`
 
-	(echo "$H2" ; curl -sfL "$RELEASE_NOTES_URL" | sed "1,/$H2/d" | sed '/<h2>/,$d') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	( echo -n "$NAME: Release Notes for " ;
+		(echo "$H2" ; curl -sfL "$RELEASE_NOTES_URL" | sed "1,/$H2/d" | sed '/<h2>/,$d') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
