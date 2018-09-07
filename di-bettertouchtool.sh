@@ -5,15 +5,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-01-19
 
-NAME="$0:t:r"
-INSTALL_TO="/Applications/BetterTouchTool.app"
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+HOMEPAGE="https://folivora.ai"
+
+DOWNLOAD_PAGE="https://bettertouchtool.net/releases/BetterTouchTool.zip"
+
+SUMMARY="BetterTouchTool is a great, feature packed app that allows you to customize various input devices on your Mac."
+
+INSTALL_TO="/Applications/BetterTouchTool.app"
 
 RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
 
@@ -61,12 +68,16 @@ HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | fgrep "$URL")
 BODY=$(curl -sfL "$RELEASE_NOTES_URL" \
 | sed '1,/<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//d; /<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//,$d')
 
-echo "$NAME: Release Notes for $HEADER\n$BODY" \
-| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-echo "\nSource: <$RELEASE_NOTES_URL>"
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	(  echo "$NAME: Release Notes for $HEADER\n$BODY" \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -80,12 +91,6 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-if [ -e "$INSTALL_TO" ]
-then
-	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -107,7 +112,12 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -139,6 +149,8 @@ else
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 EOF
