@@ -5,10 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-14
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/OmniDiskSweeper.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -16,7 +12,22 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/OmniDiskSweeper.app'
+
+HOMEPAGE="https://www.omnigroup.com/more"
+
+DOWNLOAD_PAGE="https://www.omnigroup.com/more"
+
+SUMMARY="OmniDiskSweeper is really great at what it does: showing you the files on your drive, in descending order by size, and letting you decide what to do with them. Delete away, but exercise caution: OmniDiskSweeper does not perform any safety checks before deleting files!"
+
 XML_FEED='http://update.omnigroup.com/appcast/com.omnigroup.OmniDiskSweeper/'
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| fgrep '<omniappcast:releaseNotesLink>' \
+		| sed 's#.*<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g' \
+		| head -1)
 
 	# No other version information available in feed
 INFO=($(curl -sfL "$XML_FEED" \
@@ -67,25 +78,18 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<omniappcast:releaseNotesLink>' \
-		| sed 's#.*<omniappcast:releaseNotesLink>##g ; s#<\/omniappcast:releaseNotesLink>##g' \
-		| head -1)
-
-		echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<article>/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
