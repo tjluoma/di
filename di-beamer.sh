@@ -15,6 +15,11 @@ DOWNLOAD_PAGE="https://beamer-app.com/download"
 
 SUMMARY="Stream directly from your Mac to Apple TV and Chromecast."
 
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| egrep "<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>" \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>##g')
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -80,24 +85,16 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
-
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| egrep "<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>" \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>##g')
-
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
-	| sed 's#[ 	]*Release Notes for Beamer#Release Notes for Beamer#g'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
+	| sed 's#[ 	]*Release Notes for Beamer#Release Notes for Beamer#g' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -132,7 +129,12 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -165,6 +167,7 @@ else
 	exit 1
 fi
 
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #
