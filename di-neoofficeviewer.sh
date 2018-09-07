@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/NeoOffice.app'
 
+HOMEPAGE="http://www.neooffice.org/"
+
+DOWNLOAD_PAGE="http://www.neooffice.org/neojava/en/download.php#download"
+
+SUMMARY="NeoOffice is an office suite for Mac that is based on OpenOffice and LibreOffice. With NeoOffice, you can view, edit, and save OpenOffice documents, LibreOffice documents, and simple Microsoft Word, Excel, and PowerPoint documents."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -24,16 +30,18 @@ function die
 
 UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15"
 
+RELEASE_NOTES_URL='https://neowiki.neooffice.org/index.php/NeoOffice_Release_Notes'
+
 ########################################################################################################################
 
-URL1=$(curl -A "$UA" -sfL "https://www.neooffice.org/neojava/en/download.php" 2>&1 \
+URL_PREFLIGHT=$(curl -A "$UA" -sfL "https://www.neooffice.org/neojava/en/download.php" 2>&1 \
 		| egrep 'href=".*NeoOffice-.*_Viewer-Intel.dmg' \
 		| head -1 \
 		| sed 's#.*mirrors.php#https://www.neooffice.org/neojava/en/mirrors.php#g ; s#">.*##g')
 
-[[ "$URL1" == "" ]] && echo "$NAME: Failed to find value for \$URL1" && exit 1
+[[ "$URL_PREFLIGHT" == "" ]] && echo "$NAME: Failed to find value for \$URL_PREFLIGHT" && exit 1
 
-SHORT_FILE=$(echo "$URL1:t" | sed 's#mirrors.php?file=##g')
+SHORT_FILE=$(echo "$URL_PREFLIGHT:t" | sed 's#mirrors.php?file=##g')
 
 [[ "$SHORT_FILE" == "" ]] && echo "$NAME: Failed to find value for \$SHORT_FILE" && exit 1
 
@@ -41,14 +49,14 @@ LATEST_VERSION=`echo "$SHORT_FILE:t:r" | tr -dc '[0-9]\.'`
 
 [[ "$LATEST_VERSION" == "" ]] && echo "$NAME: Failed to find value for \$LATEST_VERSION" && exit 1
 
-URL2="https://www.neooffice.org/neojava/en/mirrors.php?curl=${SHORT_FILE}&file=${SHORT_FILE}&mirror=0"
+URL="https://www.neooffice.org/neojava/en/mirrors.php?curl=${SHORT_FILE}&file=${SHORT_FILE}&mirror=0"
 
 FILENAME="$HOME/Downloads/NeoOfficeViewer-$LATEST_VERSION.dmg"
 
 	## Useful debugging info if something isn't working:
 	# echo "
-	# URL1: $URL1
-	# URL2: $URL2
+	# URL_PREFLIGHT: $URL_PREFLIGHT
+	# URL: $URL
 	# SHORT_FILE: $SHORT_FILE
 	# LATEST_VERSION: $LATEST_VERSION
 	# FILENAME: $FILENAME
@@ -94,16 +102,12 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL='https://neowiki.neooffice.org/index.php/NeoOffice_Release_Notes'
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-	(curl -sfL $RELEASE_NOTES_URL \
-	| sed '1,/http:\/\/twitter.com\/NeoOffice/d;' \
-	| sed '1d ; /<\/li><\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		(curl -sfL $RELEASE_NOTES_URL \
+		| sed '1,/http:\/\/twitter.com\/NeoOffice/d;' \
+		| sed '1d ; /<\/li><\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
@@ -115,14 +119,14 @@ then
 	echo "$NAME: $FILENAME already exists. Skipping download. If you want to force a re-download, delete it."
 else
 
-	echo "$NAME: Downloading \"$URL2\" to \"$FILENAME\":"
+	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	curl --progress-bar --location -A "$UA" --output "$FILENAME" "$URL2"
+	curl --progress-bar --location -A "$UA" --output "$FILENAME" "$URL"
 
 	EXIT="$?"
 
 		## exit 22 means 'the file was already fully downloaded'
-	[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of \"$URL2\" failed (EXIT = $EXIT)" && exit 0
+	[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of '$URL' failed (EXIT = $EXIT)" && exit 0
 
 	[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
@@ -138,10 +142,10 @@ fi
 
 TYPE=`file -b "$FILENAME"`
 
-if [ "$TYPE" != "zlib compressed data" ]
+if [ "$TYPE" != "zlib compressed data" -a "$TYPE" != "data" ]
 then
 	echo "$NAME: $FILENAME downloaded, but does not appear to be the right file type.
-	Expected 'zlib compressed data' but received \"$TYPE\" instead."
+	Expected 'zlib compressed data' but instead received '$TYPE'."
 
 	exit 1
 fi
