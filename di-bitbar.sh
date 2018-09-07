@@ -5,10 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-10
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/BitBar.app"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,11 +12,26 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/BitBar.app"
+
+HOMEPAGE="https://getbitbar.com"
+
+DOWNLOAD_PAGE="https://github.com/matryer/bitbar/releases/latest"
+
+SUMMARY="Put the output from any script or program in your Mac OS X Menu Bar."
+
 STATIC_URL="https://github.com/matryer/bitbar/releases/latest"
 
 LATEST_URL=$(curl -sfL --head "$STATIC_URL" | awk -F': |\r' '/.ocation/{print $2}' | tail -1)
 
 LATEST_VERSION=$(echo "$LATEST_URL:t" | tr -dc '[0-9]\.')
+
+URL=$(curl -sfL "$LATEST_URL" \
+		| egrep -i '/matryer/bitbar/releases/download/.*\.zip' \
+		| fgrep -vi "bitbardistro" \
+		| awk -F'"' '//{print "https://github.com"$2}')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -47,12 +58,6 @@ else
 
 	FIRST_INSTALL='yes'
 fi
-
-	# No need to calculate this unless we need to because we're going to install
-URL=$(curl -sfL "$LATEST_URL" \
-		| egrep -i '/matryer/bitbar/releases/download/.*\.zip' \
-		| fgrep -vi "bitbardistro" \
-		| awk -F'"' '//{print "https://github.com"$2}')
 
 #echo "
 #LATEST_URL: $LATEST_URL
