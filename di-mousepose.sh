@@ -10,6 +10,12 @@ NAME="$0:t:r"
 	# Note: it appears in Finder as Mouseposé but in Terminal as Mousepose
 INSTALL_TO='/Applications/Mousepose.app'
 
+HOMEPAGE="https://boinx.com/mousepose/overview/"
+
+DOWNLOAD_PAGE="http://itunes.apple.com/app/mousepose/id405904955?mt=12"
+
+SUMMARY="Mouseposé 3 is an essential tool for everyone doing presentations or demos. When turned on, it dims the screen and puts a spotlight on the area around the mouse pointer, easily guiding the audience‘s attention to an area of interest."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
