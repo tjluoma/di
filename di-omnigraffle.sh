@@ -5,16 +5,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-10
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/OmniGraffle.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/OmniGraffle.app'
+
+HOMEPAGE="https://www.omnigroup.com/omnigraffle"
+
+DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnigraffle/"
+
+SUMMARY="OmniGraffle is for creating precise, beautiful graphics: website wireframes, electrical systems, family trees and maps of software classes come to life in OmniGraffle 7. "
 
 function use_v6 {
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniGraffle6"
@@ -99,18 +105,17 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/OmniGraffle-$LATEST_VERSION.tbz2"
+
 if (( $+commands[lynx] ))
 then
 
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( curl -sfL "$RELEASE_NOTES_URL" \
 	| sed "1,/<section class='latest'>/d; /<\/section>/,\$d" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/OmniGraffle-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
