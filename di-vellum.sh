@@ -105,8 +105,6 @@ fi
 #		This is where we do the actual download
 #
 
-
-
 	# Download the latest zip
 echo "$NAME: Downloading $URL to $FILENAME"
 
