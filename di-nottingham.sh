@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Nottingham 3
+# Purpose: Download and install the latest version of Nottingham
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Nottingham.app'
 
+HOMEPAGE="https://clickontyler.com/nottingham/"
+
+DOWNLOAD_PAGE="https://downloads-clickonideas.netdna-ssl.com/nottingham/nottingham4_7.zip"
+
+SUMMARY="Nottingham is your very own personal, plain-text wiki. It's a simple and elegant place to store all of your notes, thoughts, and ideas - and then link them together with [[WikiLinks]]. Insanely fast full-text search across even the largest of libraries plus @tags and cross-references means you can organize your notes in any way that suits your own particular preferences."
+
+XML_FEED="http://shine.clickontyler.com/appcast.php?id=39"
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,11 +24,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED="https://shine.clickontyler.com/appcast.php?id=35"
-
-	## 2018-08-03 - need '--insecure' because the https cert is currently expired. Not a great sign for the future of the app?
-	## The actual download URLs _are_ from a secure https site, so that's good, at least.
-INFO=($(curl --insecure --location --fail --silent "$XML_FEED" \
+INFO=($(curl --location --fail --silent "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep -i '^(url|sparkle:shortVersionString|sparkle:version)=' \
 		| head -3 \
@@ -75,9 +79,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-# No RELEASE_NOTES_URL since the future of the app is in question
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	# initial RELEASE_NOTES_URL support for v4
+
+	(curl -sfLS "$XML_FEED" \
+ 	| awk '/<description/{i++}i==2' \
+	| sed -e '/<pubDate>/,$d' -e 's#\<\!\[CDATA\[##g' -e 's#\]\]\>##g' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| sed -e '/./,/^$/!d' -e 's#^ *##g') \
+	| tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -153,4 +169,8 @@ fi
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
+
+	## This feed was for v3
+	# XML_FEED="https://shine.clickontyler.com/appcast.php?id=35"
+
 #EOF
