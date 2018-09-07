@@ -81,22 +81,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='https://www.trankynam.com/atext/releasenotes.html'
 
-	echo -n "$NAME: Release Notes for: "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="release" id="/d; /<div class="release" id="/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: $RELEASE_NOTES_URL"
+	( echo -n "$NAME: Release Notes for: " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<div class="release" id="/d; /<div class="release" id="/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: $RELEASE_NOTES_URL" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -122,6 +120,8 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -150,11 +150,9 @@ else
 	exit 1
 fi
 
-echo "$NAME: Unmounting $MNTPNT:"
-
-diskutil eject "$MNTPNT"
-
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
