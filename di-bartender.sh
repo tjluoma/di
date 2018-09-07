@@ -115,6 +115,7 @@ function use_v3 {
 	fi
 }
 
+RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}' | tail -1`
 
 if [ "$OS_VER" -lt "10" ]
 then
@@ -205,35 +206,30 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if [[ "$USE_VERSION" == "3" ]]
 then
 
-	RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}' | tail -1`
 
 		# lynx can parse the HTML just fine, but its output is sort of ugly,
 		# so we'll use html2text if it's available
 	if (( $+commands[html2text] ))
 	then
 
-		echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-		curl -sfL "${RELEASE_NOTES_URL}" | html2text
-
-		echo "\nSource: ${RELEASE_NOTES_URL}"
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL "${RELEASE_NOTES_URL}" | html2text ;
+		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee -a "$FILENAME:r.txt"
 
 	elif (( $+commands[lynx] ))
 	then
 
-		echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
+		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee -a "$FILENAME:r.txt"
 
-		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
-
-		echo "\nSource: ${RELEASE_NOTES_URL}"
 	fi
 fi
-
-FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
-
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
