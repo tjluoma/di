@@ -9,16 +9,18 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Arq.app'
 
+HOMEPAGE="https://www.arqbackup.com"
+
+DOWNLOAD_PAGE="https://www.arqbackup.com/download/Arq.dmg"
+
+SUMMARY="Arq automatically backs up all your Macs and Windows PCs. Your files are stored securely, readable only by you."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-## These are old:
-# XML_FEED='https://www.arqbackup.com/download/arq4.xml'
-# URL="https://www.arqbackup.com/download/Arq.dmg"
 
 XML_FEED="https://www.arqbackup.com/download/arq5.xml"
 
@@ -72,24 +74,22 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='https://www.arqbackup.com/download/arq5_release_notes.html'
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<h1>/d; /<h1>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<h1>/d; /<h1>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
-
-echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
@@ -98,12 +98,16 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-###
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-echo "$NAME: Unzipping $FILENAME to $UNZIP_TO:"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-ditto --noqtn -xk "$FILENAME" "$UNZIP_TO"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
@@ -112,14 +116,19 @@ then
 	echo "$NAME: Unzip successful"
 else
 		# failed
-	echo "$NAME failed (ditto --noqtn -xkv \"$FILENAME\" \"$UNZIP_TO\")"
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
@@ -134,7 +143,7 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of \"$INSTALL_TO:t\" (from \"$UNZIP_TO\") to \"$INSTALL_TO\"."
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
 mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
@@ -144,13 +153,16 @@ EXIT="$?"
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move \"$UNZIP_TO/$INSTALL_TO:t\" to \"$INSTALL_TO\"."
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
 
 exit 0
 
@@ -233,4 +245,8 @@ fi
 
 
 exit 0
+
+## These are old:
+# XML_FEED='https://www.arqbackup.com/download/arq4.xml'
+
 #EOF
