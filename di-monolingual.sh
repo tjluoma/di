@@ -69,6 +69,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
+
 if (( $+commands[lynx] ))
 then
 
@@ -81,8 +83,6 @@ then
 	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
