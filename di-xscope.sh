@@ -7,6 +7,8 @@
 
 NAME="$0:t:r"
 
+XML_FEED="https://iconfactory.com/appcasts/xScope/appcast.xml"
+
 HOMEPAGE="https://xscopeapp.com"
 
 DOWNLOAD_PAGE="https://xscopeapp.com"
@@ -21,8 +23,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED="https://iconfactory.com/appcasts/xScope/appcast.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
