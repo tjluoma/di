@@ -6,10 +6,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-19
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/Pretzel.app"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -17,7 +13,19 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/Pretzel.app"
+
+HOMEPAGE="https://www.amie-chen.com/pretzel/"
+
+DOWNLOAD_PAGE="https://github.com/amiechen/pretzel/releases"
+
+SUMMARY="Pretzel is Mac desktop app that shows and find keyboard shortcuts based on your current app."
+
 LATEST_VERSION_URL=$(curl -sfLS --head 'https://github.com/amiechen/pretzel/releases/latest' | awk -F' |\r' '/^.ocation:/{print $2}')
+
+RELEASE_NOTES_URL="$LATEST_VERSION_URL"
 
 LATEST_VERSION=$(echo "$LATEST_VERSION_URL:t" | tr -dc '[0-9]\.')
 
@@ -62,22 +70,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-	RELEASE_NOTES_URL="$LATEST_VERSION_URL"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="markdown-body">/d; /<\/div>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<div class="markdown-body">/d; /<\/div>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -153,8 +157,6 @@ fi
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
-
-
 
 # https://github.com/amiechen/pretzel/releases/download/v0.6.1/Pretzel-0.6.1.dmg
 #
