@@ -17,6 +17,8 @@ SUMMARY="Trickster keeps track of recent files you’ve been using on your Mac a
 
 XML_FEED='https://dl.apparentsoft.com/trickster.rss'
 
+RELEASE_NOTES_URL='https://dl.apparentsoft.com/notes/Trickster.html'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -93,8 +95,6 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
-
-	RELEASE_NOTES_URL='https://dl.apparentsoft.com/notes/Trickster.html'
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
