@@ -9,14 +9,25 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Rocket.app"
 
+HOMEPAGE="https://matthewpalmer.net/rocket/"
+
+DOWNLOAD_PAGE="https://matthewpalmer.net/rocket/"
+
+SUMMARY="The fastest, smoothest Slack-style emoji picker for your Mac."
+
+XML_FEED='https://updates.devmate.com/net.matthewpalmer.Rocket.xml'
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED='https://updates.devmate.com/net.matthewpalmer.Rocket.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '(<enclosure url="https://.*\.zip")' \
@@ -74,11 +85,6 @@ else
 
 	FIRST_INSTALL='yes'
 fi
-
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to show here, but you can find them at:\n\t<$RELEASE_NOTES_URL>"
 
@@ -153,7 +159,6 @@ else
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
 
 exit 0
 #EOF
