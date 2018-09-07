@@ -7,7 +7,20 @@
 
 NAME="$0:t:r"
 
+XML_FEED='https://www.netspotapp.com/updates/netspot2-appcast.xml'
+
 INSTALL_TO='/Applications/NetSpot.app'
+
+HOMEPAGE="https://www.netspotapp.com"
+
+DOWNLOAD_PAGE="https://www.netspotapp.com/download-mac.html"
+
+SUMMARY="NetSpot is the only professional app for wireless site surveys, Wi-Fi analysis, and troubleshooting on Mac OS X and Windows."
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
+	| sed 's# *##g' \
+	| tr -d '[:cntrl:]')
 
 if [ -e "$HOME/.path" ]
 then
@@ -15,8 +28,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED='https://www.netspotapp.com/updates/netspot2-appcast.xml'
 
 	# CFBundleVersion and CFBundleShortVersionString are identical
 
@@ -77,25 +88,18 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
-		| sed 's# *##g' \
-		| tr -d '[:cntrl:]')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="content">/d; /<\/div>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<div class="content">/d; /<\/div>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
