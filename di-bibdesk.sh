@@ -16,7 +16,15 @@ fi
 
 INSTALL_TO="/Applications/TeX/BibDesk.app"
 
+HOMEPAGE="https://bibdesk.sourceforge.io"
+
+DOWNLOAD_PAGE="https://bibdesk.sourceforge.io"
+
+SUMMARY="Use BibDesk to edit and manage your bibliography. It will keep track of both the bibliographic information and the associated files or web links for you. BibDesk’s services will simplify using your bibliography in other applications and are particularly well suited for LATEX users."
+
 XML_FEED="http://bibdesk.sourceforge.net/bibdesk.xml"
+
+RELEASE_NOTES_URL="$XML_FEED"
 
 	# sparkle:version="4603"
 	# sparkle:shortVersionString="1.6.16"
@@ -75,6 +83,17 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
+if (( $+commands[lynx] ))
+then
+
+	( curl -sfLS "$XML_FEED" \
+	| sed '1,/<description>/d; /<\/description>/,$d ; s#\<\!\[CDATA\[##g' \
+	| fgrep -v '<title>' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin | sed 's#^ *##g' ;
+	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee -a "$FILENAME:r.txt"
+
+fi
+
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
@@ -99,12 +118,19 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -122,9 +148,9 @@ else
 	exit 1
 fi
 
-echo "$NAME: Unmounting $MNTPNT:"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 EOF
