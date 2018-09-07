@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MarsEdit.app'
 
+HOMEPAGE="https://www.red-sweater.com/marsedit/"
+
+DOWNLOAD_PAGE="https://www.red-sweater.com/marsedit/MarsEditLatest.zip"
+
+SUMMARY="Write, preview, publish, and archive your blog from a Mac."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -22,6 +28,8 @@ function use_v3 {
 }
 
 function use_v4 { XML_FEED='https://www.red-sweater.com/marsedit/appcast4.php' }
+
+RELEASE_NOTES_URL="$XML_FEED"
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -107,23 +115,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+	# This is where the latest version will be saved to
+FILENAME="$HOME/Downloads/MarsEdit-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="$XML_FEED"
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
-	curl -sfL "$XML_FEED" \
-	| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+		curl -sfL "$XML_FEED" \
+		| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-	# This is where the latest version will be saved to
-FILENAME="$HOME/Downloads/MarsEdit-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
