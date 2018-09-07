@@ -18,6 +18,14 @@ fi
 
 XML_FEED='https://manytricks.com/namemangler/appcast/?version=3'
 
+RELEASE_NOTES_URL="https://manytricks.com/namemangler/releasenotes/"
+
+HOMEPAGE="https://manytricks.com/namemangler/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/namemangler"
+
+SUMMARY="All Name Mangler wants to do is help you tame your filenames. Whether you’re a photographer with thousands of “IMG_” files, or someone who needs to Windows-proof filenames, or someone who works with tons of clients and wants to use filenames to help sort client files properly, Name Mangler will help you safely—and very speedily—rename your files."
+
 UA='Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_7; en-us) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1'
 
 INFO=($(curl -A "$UA" -sfL "$XML_FEED" \
@@ -85,21 +93,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/NameMangler-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://manytricks.com/namemangler/releasenotes/?rref=appcast"
-
-	echo -n "$NAME: Release Notes for "
-
-	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/ BODY STARTS HERE /d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for " ;
+		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/ BODY STARTS HERE /d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" \
+	) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/NameMangler-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
