@@ -14,7 +14,7 @@ HOMEPAGE="https://www.rogueamoeba.com/audiohijack/"
 
 DOWNLOAD_PAGE="https://www.rogueamoeba.com/audiohijack/download.php"
 
-SUMMARY="Record any application's audio, including VoIP calls from Skype, web streams from Safari, and much more. Save audio from hardware devices like microphones and mixers as well. You can even record all the audio heard on your Mac at once! If you can hear it, Audio Hijack can record it."
+SUMMARY="Record any application’s audio, including VoIP calls from Skype, web streams from Safari, and much more. Save audio from hardware devices like microphones and mixers as well. You can even record all the audio heard on your Mac at once! If you can hear it, Audio Hijack can record it."
 
 if [ -e "$HOME/.path" ]
 then
@@ -76,22 +76,20 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
+FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<body>/d; /<\/body>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSouce: <${RELEASE_NOTES_URL}>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/body>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSouce: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
