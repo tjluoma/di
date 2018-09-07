@@ -5,18 +5,24 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-21
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/OmniOutliner.app'
-
-LAUNCH='no'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
+
+NAME="$0:t:r"
+
+HOMEPAGE="https://www.omnigroup.com/omnioutliner"
+
+DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnioutliner/"
+
+SUMMARY="Create perfect outlines with a powerful, productive app. This is your all-purpose tool for Mac with smart columns, scriptability, custom styles, templates, and more."
+
+INSTALL_TO='/Applications/OmniOutliner.app'
+
+LAUNCH='no'
 
 function use_v4 {
 	XML_FEED='http://update.omnigroup.com/appcast/com.omnigroup.OmniOutliner4/'
@@ -112,20 +118,18 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/OmniOutliner-$LATEST_VERSION.tbz2"
+
 if (( $+commands[lynx] ))
 then
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<article>/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<article>/d; /<\/article>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/OmniOutliner-$LATEST_VERSION.tbz2"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
