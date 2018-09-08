@@ -8,6 +8,16 @@
 
 NAME="$0:t:r"
 
+INSTALL_TO='/Applications/Kindle.app'
+
+HOMEPAGE="https://www.amazon.com/kindle-dbs/fd/kcp"
+
+DOWNLOAD_PAGE="https://www.amazon.com/kindlemacdownload"
+
+SUMMARY="Read Kindle books on your Mac."
+
+# No RELEASE_NOTES_URL available
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -20,8 +30,6 @@ function die
 	echo "$NAME: $@"
 	exit 1
 }
-
-INSTALL_TO='/Applications/Kindle.app'
 
 	# NOTE: We do not want to use 'curl --location' here because that will not give us the information we need
 	# We _want_ to get the basic HTML redirection page, because that has the actual, current URL in it
