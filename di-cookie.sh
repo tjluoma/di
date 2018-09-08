@@ -9,7 +9,15 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Cookie.app"
 
+HOMEPAGE="https://cookie5app.com"
+
+DOWNLOAD_PAGE="https://sweetpproductions.com/products/cookie5/Cookie5.dmg"
+
+SUMMARY="Tired of targeted ads that mysteriously know what products you’ve been shopping for online? Protect your privacy with Cookie 5."
+
 XML_FEED="https://sweetpproductions.com/products/cookie5/appcast.xml"
+
+RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookie5/updates.htm"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -76,20 +84,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
-	RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookie5/updates.htm"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ;
+		curl -sfL ${RELEASE_NOTES_URL} \
+		| sed '1,/<h3>/d; /<h3>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
-	curl -sfL ${RELEASE_NOTES_URL} \
-	| sed '1,/<h3>/d; /<h3>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
