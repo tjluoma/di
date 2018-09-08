@@ -16,7 +16,6 @@ DOWNLOAD_PAGE="https://www.panic.com/coda/"
 
 SUMMARY="You code for the web. You demand a fast, clean, and powerful text editor. Pixel-perfect preview. A built-in way to open and manage your local and remote files. And maybe a dash of SSH. Say hello, Coda."
 
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -29,6 +28,11 @@ OS_VER=`sw_vers -productVersion`
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
 XML_FEED="https://www.panic.com/updates/update.php?osVersion=${OS_VER}&lang=en&appName=Coda%202&appVersion=$INSTALLED_VERSION"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g ; s#\?.*##g')
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
@@ -92,24 +96,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/Coda-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g ; s#\?.*##g')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n"
-
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-		| sed "/You will need to manually update from our website. We're sorry for the inconvenience./,\$d"
-
-	echo "Source: <$RELEASE_NOTES_URL>"
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n" ;
+		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+		| sed "/You will need to manually update from our website. We're sorry for the inconvenience./,\$d" ;
+		echo "Source: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/Coda-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
