@@ -5,9 +5,17 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-02
 
+# @TODO - add RELEASE_NOTES_URL support - https://www.charlesproxy.com/documentation/version-history/
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Charles.app'
+
+HOMEPAGE="https://www.charlesproxy.com"
+
+DOWNLOAD_PAGE="https://www.charlesproxy.com/download/"
+
+SUMMARY="Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information)."
 
 if [ -e "$HOME/.path" ]
 then
@@ -71,9 +79,6 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
-
-# @TODO - add RELEASE_NOTES_URL support - https://www.charlesproxy.com/documentation/version-history/
-
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
