@@ -12,6 +12,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MacPilot.app'
 
+HOMEPAGE="https://www.koingosw.com/products/macpilot/"
+
+DOWNLOAD_PAGE="https://www.koingosw.com/products/macpilot/#download"
+
+SUMMARY="Scared of the terminal or can’t be bothered to remember those commands to customize your system the way you want? MacPilot is your digital savior. Easily enable and disable hidden features in Mac OS X."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -133,24 +139,23 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
 		# have to call lynx twice because the release notes are encoded as HTML characters. Weird.
+
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 	curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<macpilot>/d ; /<\/macpilot>/,$d' \
 	| egrep -vi "<version|minimumSystemVersion|macpath>" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
