@@ -9,7 +9,15 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Delicious Library 3.app"
 
+HOMEPAGE="https://www.delicious-monster.com/"
+
+DOWNLOAD_PAGE="https://www.delicious-monster.com/get"
+
+SUMMARY="Delicious Library allows you to import, browse, and share all your books, movies, music, and video games."
+
 XML_FEED="https://www.delicious-monster.com/downloads/DeliciousLibrary3.xml"
+
+RELEASE_NOTES_URL='https://www.delicious-monster.com/release-notes/'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -78,6 +86,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/DeliciousLibrary-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -86,17 +96,15 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-	echo -n "$NAME: Release Notes for Delicious Library "
-
 		# lynx can't seem to make a secure connect directly, so we use 'curl'
-	curl -sfL "https://www.delicious-monster.com/release-notes/v3.7.2.html" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for Delicious Library " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>") \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/DeliciousLibrary-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
