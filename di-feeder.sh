@@ -18,6 +18,11 @@ SUMMARY="Create edit and publish RSS and podcast feeds."
 
 XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder3.xml"
 
+RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
+	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -85,27 +90,20 @@ then
 
 fi
 
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
-	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION / $LATEST_BUILD: "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<h2>/d; /<h2>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines  -stdin
-
-	echo "Source: <$RELEASE_NOTES_URL>"
-fi
-
 	# Note that we include 'Feeder' because we don't want 'Feeder 3'
 FILENAME="$HOME/Downloads/Feeder-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+if (( $+commands[lynx] ))
+then
+
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION / $LATEST_BUILD: " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<h2>/d; /<h2>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines  -stdin ;
+		echo "Source: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+fi
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 	# Download it
 curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL"
