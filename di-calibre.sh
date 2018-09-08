@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/calibre.app'
 
+HOMEPAGE="https://calibre-ebook.com"
+
+DOWNLOAD_PAGE="https://calibre-ebook.com/download_osx"
+
+SUMMARY="calibre is a powerful and easy to use e-book manager."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
