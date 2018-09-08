@@ -148,23 +148,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/LingonX-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( curl -sfL "$RELEASE_NOTES_URL" \
 	| tr '\r' '\n' \
 	| perl -pe 's/<!\[CDATA\[/\n/g ; s/\]\]>/\n/g' \
 	| fgrep -v '<description>Lingon X</description>' \
 	| sed '1,/<description>/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
-
-FILENAME="$HOME/Downloads/LingonX-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
