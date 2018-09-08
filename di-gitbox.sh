@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Gitbox.app"
 
+HOMEPAGE="http://gitboxapp.com/"
+
+DOWNLOAD_PAGE="http://gitboxapp.com"
+
+SUMMARY="Version control as easy as Mail. One-click commit, push and pull. Unique search in history and undo for Git commands. Powerful commands like rebase, branch reset and cherry picking. And now it works with submodules."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
