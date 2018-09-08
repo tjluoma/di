@@ -3,11 +3,19 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-05-07
+# Date:	2016-05-07, 2018-09-08
 
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Downie.app'
+
+HOMEPAGE="https://software.charliemonroe.net/downie.php"
+
+DOWNLOAD_PAGE="https://trial.charliemonroe.net/downie/download.php"
+
+SUMMARY="Ever wished you could save a video from the Internet? Search no more, Downie is what you're looking for. Easily download videos from thousands of different sites."
+
+RELEASE_NOTES_URL='https://trial.charliemonroe.net/downie/rnotes_3.html'
 
 if [ -e "$HOME/.path" ]
 then
@@ -18,60 +26,76 @@ fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 
-XML_FEED="http://trial.charliemonroe.net/downie/updates_2.3.xml"
+XML_FEED="https://trial.charliemonroe.net/downie/updates_3.xml"
 
-INFO=($(curl -sfL "$XML_FEED" \
+INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
-		| egrep 'sparkle:shortVersionString=|url=' \
-		| head -2 \
+		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+		| head -3 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_BUILD="$INFO[2]"
+URL="$INFO[3]"
 
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
 	exit 1
 fi
 
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+if (( $+commands[lynx] ))
+then
+
+	( curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<div class="release"/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -86,42 +110,65 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
-if [ -e "$INSTALL_TO" ]
-then
-		# Quit app, if running
-	pgrep -xq "Downie" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Downie" to quit'
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Downie.$INSTALLED_VERSION.app"
-fi
-
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
-
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
-
-	# Extract from the .zip file and install (this will leave the .zip file in place)
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
-
-	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (ditto \$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
+if [[ -e "$INSTALL_TO" ]]
+then
 
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
