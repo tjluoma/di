@@ -15,6 +15,7 @@ DOWNLOAD_PAGE="http://www.busymac.com/download/BusyContacts.zip"
 
 SUMMARY="BusyContacts makes managing contacts faster and more efficient. Offering the same power and flexibility that BusyCal users enjoy with their calendars, BusyContacts integrates seamlessly with BusyCal to form a flexible, easy to use CRM solution for managing calendars and contacts. BusyContacts syncs with the built-in Contacts app on macOS and iOS and supports all leading cloud services, including iCloud, Google, Exchange, Facebook, Twitter and LinkedIn."
 
+RELEASE_NOTES_URL='https://www.busymac.com/busycontacts/releasenotes.html'
 
 if [ -e "$HOME/.path" ]
 then
@@ -23,11 +24,17 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+function die
+{
+	echo "$NAME: $@"
+	exit 1
+}
+
 URL='http://www.busymac.com/download/BusyContacts.zip'
 
 # if this ever stops working, try https://www.busymac.com/busycontacts/releasenotes.html
 
-LATEST_VERSION=`curl -sfL http://versioncheck.busymac.com/busycontacts/news.plist \
+LATEST_VERSION=`curl -sfL 'http://versioncheck.busymac.com/busycontacts/news.plist' \
 				| fgrep -A1 '<key>current</key>' \
 				| fgrep '<string>' \
 				| head -1 \
@@ -78,21 +85,20 @@ then
 
 fi
 
-if (( $+commands[lynx] ))
-then
-	RELEASE_NOTES_URL='https://www.busymac.com/busycontacts/releasenotes.html'
-
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-fi
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 	PKG="$FILENAME:h/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
+
+if (( $+commands[lynx] ))
+then
+
+	( echo -n "$NAME: Release Notes for " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<div class="release-notes">/d; /<div class="release-notes">/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -118,7 +124,6 @@ mv -vf "BusyContacts Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 if (( $+commands[unpkg.py] ))
 then
 	# Get unpkg.py from https://github.com/tjluoma/unpkg/blob/master/unpkg.py
-
 
 	echo "$NAME: running 'unpkg.py' on '$PKG':"
 
