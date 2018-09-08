@@ -13,7 +13,7 @@ HOMEPAGE="https://www.kaleidoscopeapp.com"
 
 DOWNLOAD_PAGE="https://www.kaleidoscopeapp.com/download"
 
-SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compare different text files, images, and folders on your Mac and iPad. Review and merge changes in a matter of seconds (merging available only on the Mac)."
+SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compare different text files, images, and folders. Review and merge changes in a matter of seconds."
 
 if [ -e "$HOME/.path" ]
 then
@@ -90,23 +90,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for "
-
+	(echo -n "$NAME: Release Notes for " ;
 	curl -sfL "$XML_FEED" \
 	| sed '1,/<item>/d; /<\/description>/,$d ; s#<!\[CDATA\[##g ; s#\]\]>##g' \
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: XML_FEED <$XML_FEED>"
+	| sed '/./,/^$/!d' ;
+	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
