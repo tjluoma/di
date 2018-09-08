@@ -17,30 +17,23 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-XML_FEED='https://pqrs.org/osx/karabiner/files/appcast.xml'
+##
+## 2018-09-08 - the XML Feed does not show the latest version. Since it is EOL
+## I will just hard-code the values in.
+##
+# XML_FEED='https://pqrs.org/osx/karabiner/files/appcast.xml'
+#
+# INFO=($(curl -sfL "$XML_FEED" \
+# 		| tr -s ' ' '\012' \
+# 		| egrep 'sparkle:version=|url=' \
+# 		| head -2 \
+# 		| sort \
+# 		| awk -F'"' '/^/{print $2}'))
+## "Sparkle" will always come before "url" because of "sort"
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version=|url=' \
-		| head -2 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
-
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
-
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-then
-	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
-
-	exit 1
-fi
+LATEST_VERSION="10.22.0"
+URL="https://pqrs.org/osx/karabiner/files/Karabiner-10.22.0.dmg"
+RELEASE_NOTES_URL='https://pqrs.org/osx/karabiner/history.html#history'
 
 if [[ -e "$INSTALL_TO" ]]
 then
