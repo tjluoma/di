@@ -36,43 +36,48 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
+	# for Mac OS X '10.11.6' this will give us '11' since we need to test the major version
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-autoload is-at-least
-
-is-at-least "10.12" "$OS_VER"
-
-EXIT="$?"
-
-if [ "$EXIT" != "0" ]
+if [ "$OS_VER" -ge "12" ]
 then
 
-	echo "$NAME: '$INSTALL_TO:t' cannot be installed on Mac OS version '$OS_VER'. Must be at least version 10.12."
+	INFO=($(curl -sfL "$XML_FEED" \
+		| tr -s ' |\t' '\012' \
+		| egrep -i '^(sparkle:version|url)=' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '//{print $2}'))
 
-	exit 1
-fi
+	LATEST_VERSION="$INFO[1]"
 
-INFO=($(curl -sfL "$XML_FEED" \
-	| tr -s ' |\t' '\012' \
-	| egrep -i '^(sparkle:version|url)=' \
-	| head -2 \
-	| sort \
-	| awk -F'"' '//{print $2}'))
+	URL="$INFO[2]"
 
-LATEST_VERSION="$INFO[1]"
+		# If any of these are blank, we should not continue
+	if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	then
+		echo "$NAME: Error: bad data received:
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		URL: $URL
+		"
 
-URL="$INFO[2]"
+		exit 1
+	fi
 
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+elif [ "$OS_VER" -lt "12" ]
 then
-	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
+		# n.b. Not sure how far back Karabiner version 10.22 supports.
+	LATEST_VERSION="10.22.0"
+	URL="https://pqrs.org/osx/karabiner/files/Karabiner-10.22.0.dmg"
+	INSTALL_TO="/Applications/Karabiner.app"
 
+	echo "$NAME [info]: Using Karabiner version 10.22.0 for $OS_VER"
+
+else
+	echo "$NAME: Don't know what to do for OS_VER = '$OS_VER'."
 	exit 1
+
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -101,20 +106,23 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL="$XML_FEED"
-
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-	curl -sfL "$XML_FEED" \
-	| sed '1,/ update-description-begin /d; / update-description-end /,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
-
-fi
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
+if [[ "$XML_FEED" != "" ]]
+then
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES_URL="$XML_FEED"
+
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL "$XML_FEED" \
+		| sed '1,/ update-description-begin /d; / update-description-end /,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+	fi
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
