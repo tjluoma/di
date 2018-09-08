@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Clarify.app'
 
+HOMEPAGE="http://www.clarify-it.com/"
+
+DOWNLOAD_PAGE="http://www.clarify-it.com/download/mac"
+
+SUMMARY="Clarify 2 _was_ a Faster, Simpler Alternative to Screen Recording."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -112,7 +118,6 @@ else
 
 	exit 1
 fi
-
 
 exit 0
 #EOF
