@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/KnockKnock.app'
 
+HOMEPAGE="https://objective-see.com/products/knockknock.html"
+
+DOWNLOAD_PAGE="https://objective-see.com/products/knockknock.html"
+
+SUMMARY="See what‘s persistently installed on your Mac. Malware installs itself persistently, to ensure it is automatically executed each time a computer is restarted. KnockKnock uncovers persistently installed software in order to generically reveal such malware."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -18,7 +24,9 @@ fi
 
 CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/knockknock.rb"
 
-LATEST_VERSION=$(curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail "https://objective-see.com/products/changelogs/KnockKnock.txt" \
+RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/KnockKnock.txt'
+
+LATEST_VERSION=$(curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail "$RELEASE_NOTES_URL" \
 				| gunzip \
 				| awk -F' ' '/^VERSION/{print $2}' \
 				| head -1 )
@@ -66,6 +74,17 @@ fi
 URL="https://bitbucket.org/objective-see/deploy/downloads/KnockKnock_$LATEST_VERSION.zip"
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
+## RELEASE_NOTES_URL - begin
+
+(echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
+ curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail \
+	"$RELEASE_NOTES_URL" \
+	| gunzip \
+	| awk '/^VERSION/{i++}i==1' ;
+ echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+## RELEASE_NOTES_URL - end
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
