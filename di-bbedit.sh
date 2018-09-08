@@ -5,6 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-10-28
 
+if [ -e "/Users/luomat/.path" ]
+then
+	source "/Users/luomat/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/BBEdit.app'
@@ -14,13 +21,6 @@ SUMMARY='BBEdit is the leading professional HTML and text editor for macOS. It d
 HOMEPAGE="https://www.barebones.com/products/bbedit/"
 
 DOWNLOAD_PAGE="https://www.barebones.com/support/bbedit/updates.html"
-
-if [ -e "/Users/luomat/.path" ]
-then
-	source "/Users/luomat/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
-fi
 
 ARGS_GIVEN='no'
 
@@ -280,7 +280,6 @@ then
 		exit 1
 	fi
 fi
-
 
 if [ -e "$INSTALL_TO" ]
 then
