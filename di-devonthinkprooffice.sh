@@ -18,6 +18,11 @@ SUMMARY="DEVONthink Pro Office is your Mac paperless office. It stores all your 
 
 XML_FEED='https://www.devontechnologies.com/Sparkle/DEVONthinkProOffice2.xml'
 
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep -i '<description>' \
+	| tail -1 \
+	| sed 's#.*<description>##g; s#&amp;.*</description>.*#\&format=html#g')
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -74,23 +79,16 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/DevonThinkProOffice-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep -i '<description>' \
-	| tail -1 \
-	| sed 's#.*<description>##g; s#&amp;.*</description>.*#\&format=html#g')
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
-
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:" ;
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/DevonThinkProOffice-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
