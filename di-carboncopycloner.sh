@@ -15,8 +15,6 @@ DOWNLOAD_PAGE="https://bombich.com/download"
 
 SUMMARY="The first bootable backup solution for the Mac is better than ever."
 
-
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -403,21 +401,20 @@ else
 		echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 	fi
 
+	FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 	if (( $+commands[lynx] ))
 	then
 
 		RELEASE_NOTES_URL=$(curl -sfLS "$XML_FEED" | awk -F'"' '/releaseNotes/{print $4}' | ${HEAD_OR_TAIL} -1)
 
-		curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
+		( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
 			| gunzip \
 			| sed '1,/<details open id="primary">/d; /<details>/,$d' \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-		echo "\nSource: <$RELEASE_NOTES_URL>"
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 	fi
-
-	FILENAME="$HOME/Downloads/CarbonCopyCloner-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -487,11 +484,6 @@ else
 	fi
 
 fi # Use version 3 or 4, else 5
-
-
-
-
-
 
 exit 0
 #
