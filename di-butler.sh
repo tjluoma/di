@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Butler.app'
 
+HOMEPAGE="https://manytricks.com/butler/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/butler"
+
+SUMMARY="Butler's purpose is to ease all those routine tasks you do every day: controlling iTunes, opening programs and documents, switching users, searching for stuff on the web, and more."
+
 XML_FEED='https://manytricks.com/butler/butlercast.xml'
 
 if [[ -e "$HOME/.path" ]]
@@ -62,22 +68,22 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
   RELEASE_NOTES_URL="https://manytricks.com/butler/guide/releasenotes.html"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
 
-	(curl -sfl "$RELEASE_NOTES_URL" | sed '1,/<body/d; /<\/ul>/,$d' ; echo '</ul>') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+		(curl -sfl "$RELEASE_NOTES_URL" | sed '1,/<body/d; /<\/ul>/,$d' ; echo '</ul>') \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed '/./,/^$/!d' ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
