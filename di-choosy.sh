@@ -33,12 +33,24 @@ else
 
 fi
 
+XML_FEED='http://www.choosyosx.com/sparkle/feed'
+
+HOMEPAGE="https://www.choosyosx.com"
+
+DOWNLOAD_PAGE="https://www.choosyosx.com"
+
+SUMMARY="Instead of opening links in the default browser, Choosy sends them to the right browser. Every time."
+
 	# sparkle:version= is the only version information available
-INFO=($(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
+INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep "sparkle:version=|url=" \
 		| head -2 \
 		| awk -F'"' '/^/{print $2}'))
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed '1,/<description><\!\[CDATA\[/d; /<\/description>/,$d' \
+	| awk -F'"' '/http/{print $2}')
 
 URL="$INFO[2]"
 
@@ -84,17 +96,13 @@ fi
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL 'http://www.choosyosx.com/sparkle/feed' \
-		| sed '1,/<description><\!\[CDATA\[/d; /<\/description>/,$d' \
-		| awk -F'"' '/http/{print $2}')
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<h3>Release notes<\/h3>/d; /<h3>Download<\/h3>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<h3>Release notes<\/h3>/d; /<h3>Download<\/h3>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 	# Where to save new download
@@ -113,8 +121,6 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-
 
 # Move old version to trash
 if [ -e "$INSTALL_TO" ]
@@ -167,7 +173,7 @@ fi
 	# Launch Helper
 echo "$NAME: Launching Choosy Helper app"
 
-open "$INSTALL_TO/Contents/Resources/Choosy.app/Contents/MacOS/Choosy"
+open -a "$INSTALL_TO/Contents/Resources/Choosy.app"
 
 	# If this is the first time it has been installed, open the preference pane so it can be configured
 if [[ "$FIRST_INSTALL" == "yes" ]]
