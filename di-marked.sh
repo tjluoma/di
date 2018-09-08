@@ -15,6 +15,8 @@ DOWNLOAD_PAGE="http://marked2app.com/download/Marked.dmg"
 
 SUMMARY="Marked is a previewer for Markdown files. Use it with your favorite text editor and it updates every time you save. With robust features for previewing, reviewing and exporting beautiful documents, you can work in plain text while reveling in rich formatting."
 
+XML_FEED="https://updates.marked2app.com/marked.xml"
+
 RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
 	| head -1 \
@@ -26,8 +28,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-XML_FEED="https://updates.marked2app.com/marked.xml"
 
 	# sparkle:version also exists, but seems unimportant
 INFO=($(curl -sfL "$XML_FEED" \
