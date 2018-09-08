@@ -16,29 +16,17 @@ fi
 
 INSTALL_TO='/Applications/File Juicer.app'
 
+HOMEPAGE="https://echoone.com/filejuicer/"
 
-## of course now it's updated but the cask isn't. So let's try web-scraping !
-LATEST_VERSION=`curl -sfL https://echoone.com/filejuicer/ \
-| tidy --show-warnings no --force-output yes --quiet yes --wrap 0 \
-| egrep -i -A1 '^<h2>Get File Juicer</h2>' \
-| awk -F' ' '/^[0-9]/{print $1}'`
+DOWNLOAD_PAGE="https://echoone.com/filejuicer/download"
 
-## AFAICT this app isn't updated very often, and there's no good appcast, for it, so we'll try the Homebrew cask
-#
-# CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/file-juicer.rb"
-#
-# if [[ -e "$CASK_FILE" ]]
-# then
-# 		# get the latest
-# 	LATEST_VERSION=$(awk -F"'" '/version /{print $2}' "$CASK_FILE" 2>/dev/null)
-#
-# 		# If we didn't find anything in the $CASK_FILE, then use '4.66 as a known version
-# 	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="4.66"
-# else
-# 	LATEST_VERSION="4.66"
-# fi
+SUMMARY="File Juicer doesn’t care what type file you drop onto it; it searches the entire file byte by byte. If it finds a JPEG, JP2, PNG, GIF, PDF, BMP, WMF, EMF, PICT, TIFF, Flash, Zip, HTML, WAV, MP3, AVI, MOV, MPG, WMV, MP4, AU, AIFF or text file inside, it can save it to your desktop or to another folder you choose."
 
-URL="https://echoone.com/filejuicer/FileJuicer-$LATEST_VERSION.zip"
+URL=$(curl -sfLS --head 'https://echoone.com/filejuicer/latestversion?f=unknown' \
+		| awk -F' |\r' '/^.ocation/{print $2}' \
+		| tail -1)
+
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -66,7 +54,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/FileJuicer-$LATEST_VERSION.zip"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
 
