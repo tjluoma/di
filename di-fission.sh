@@ -15,24 +15,14 @@ DOWNLOAD_PAGE="https://www.rogueamoeba.com/fission/download.php"
 
 SUMMARY=" Fast & lossless audio editing With Fission, audio editing is no longer a chore. You can join files, crop and trim audio, and rapidly split up long files. Fission is streamlined for fast editing, and it works without the quality loss other audio editors cause. If you need to convert between audio formats, Fission can do that too. Rapidly export or batch convert files to the MP3, AAC, Apple Lossless, FLAC, AIFF, and WAV formats. Fission has all your audio needs covered. Finally, simple audio editing has arrived."
 
+RELEASE_NOTES_URL="https://www.rogueamoeba.com/fission/releasenotes.php"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-# INSTALLED_VERSION_RAW=`echo "$INSTALLED_VERSION" | tr -dc '[0-9]'`
-#
-# OS=`sw_vers -productVersion | tr -dc '[0-9]'`
-#
-# XML="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS}&platform=osx&arch=x86_64&version=${INSTALLED_VERSION_RAW}8000"
-#
-# LATEST_VERSION=`curl -sfL "$XML" | awk -F'"' '/sparkle:version=/{print $2}'`
-
-## Cask uses 'https://rogueamoeba.com/fission/releasenotes.php'
-## This seems to pull the version number out quite well:
-# 	curl -sfL 'https://rogueamoeba.com/fission/releasenotes.php' | egrep -i '<h1>.*</h1>' | head -1 | sed 's#.*<h1>Fission ##g; s#</h1>##g'
 
 LATEST_VERSION=$(curl -sfL 'https://rogueamoeba.com/fission/releasenotes.php' \
 				| egrep -i '<h1>.*</h1>' \
@@ -93,20 +83,16 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 if (( $+commands[lynx] ))
 then
-		# We require lynx for this optional feature because we don't want to have to parse HTML
-		# That's what computers are for.
 
-	RELEASE_NOTES_URL="https://www.rogueamoeba.com/fission/releasenotes.php"
+	( echo -n "$NAME: Latest Release Notes for:" ;
+		curl -sfL "${RELEASE_NOTES_URL}" \
+		| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
+		| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=1000 -stdin \
+		| sed '/^[[:space:]]*$/d' \
+		| tr -s ' ' ' ' ;
+		echo "Source: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
-	echo -n "$NAME: Latest Release Notes for:"
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
-	| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=1000 -stdin \
-	| sed '/^[[:space:]]*$/d' \
-	| tr -s ' ' ' '
-
-	echo "Source: <$RELEASE_NOTES_URL>"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -176,4 +162,17 @@ else
 fi
 
 exit 0
+
+# INSTALLED_VERSION_RAW=`echo "$INSTALLED_VERSION" | tr -dc '[0-9]'`
+#
+# OS=`sw_vers -productVersion | tr -dc '[0-9]'`
+#
+# XML="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS}&platform=osx&arch=x86_64&version=${INSTALLED_VERSION_RAW}8000"
+#
+# LATEST_VERSION=`curl -sfL "$XML" | awk -F'"' '/sparkle:version=/{print $2}'`
+
+## Cask uses 'https://rogueamoeba.com/fission/releasenotes.php'
+## This seems to pull the version number out quite well:
+# 	curl -sfL 'https://rogueamoeba.com/fission/releasenotes.php' | egrep -i '<h1>.*</h1>' | head -1 | sed 's#.*<h1>Fission ##g; s#</h1>##g'
+#
 #EOF
