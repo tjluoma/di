@@ -5,18 +5,30 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-17
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/CloudPull.app'
-
-XML_FEED="https://downloads.goldenhillsoftware.com/cloudpull/appcast.xml"
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/CloudPull.app'
+
+HOMEPAGE="https://goldenhillsoftware.com/cloudpull/"
+
+DOWNLOAD_PAGE="https://downloads.goldenhillsoftware.com/cloudpull/CloudPull.zip"
+
+SUMMARY="CloudPull seamlessly backs up your Google account to your Mac. It supports Gmail, Google Contacts, Google Calendar, and Google Drive (formerly Docs). By default, the app backs up your accounts every hour and maintains old point-in-time snapshots of your accounts for 90 days."
+
+XML_FEED="https://downloads.goldenhillsoftware.com/cloudpull/appcast.xml"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -76,24 +88,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n"
-
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-	| egrep -v "$INSTALL_TO:t:r $LATEST_VERSION"
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n" ;
+	  lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+	  | egrep -v "$INSTALL_TO:t:r $LATEST_VERSION" ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
