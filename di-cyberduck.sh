@@ -8,6 +8,12 @@
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
 
+HOMEPAGE="https://cyberduck.io"
+
+DOWNLOAD_PAGE="https://cyberduck.io"
+
+SUMMARY="Cyberduck is a libre server and cloud storage browser with support for FTP, SFTP, WebDAV, Amazon S3, OpenStack Swift, Backblaze B2, Microsoft Azure & OneDrive, Google Drive, and Dropbox."
+
 ## This is a more complicated case than usual, because Cyberduck
 ## has THREE feeds:
 ##	one for _nightly_ releases
@@ -47,6 +53,11 @@ else
 		XML_FEED="https://version.cyberduck.io/changelog.rss"
 	fi
 fi
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [ -e "$HOME/.path" ]
 then
@@ -114,27 +125,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
-	(echo '<ul>';
-		curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<ul>/d; /<\/ul>/,$d' ;
-		echo '</ul>' ) \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+		(echo '<ul>';
+			curl -sfL "${RELEASE_NOTES_URL}" | sed '1,/<ul>/d; /<\/ul>/,$d' ;
+			echo '</ul>' ) \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
