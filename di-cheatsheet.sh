@@ -6,7 +6,9 @@
 # Date:	2018-08-04
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/CheatSheet.app'
+
 XML_FEED='https://mediaatelier.com/CheatSheet/feed.php'
 
 HOMEPAGE="https://mediaatelier.com/CheatSheet/"
@@ -14,6 +16,9 @@ HOMEPAGE="https://mediaatelier.com/CheatSheet/"
 DOWNLOAD_PAGE="https://mediaatelier.com/CheatSheet/"
 
 SUMMARY="Just hold the ⌘-Key a bit longer to get a list of all active short cuts of the current application. It's as simple as that."
+
+	# Feed is a mess and development is not very active. Not worrying about this for now.
+RELEASE_NOTES_URL='http://mediaatelier.com/CheatSheet/feedNotes.php'
 
 if [[ -e "$HOME/.path" ]]
 then
