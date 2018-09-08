@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/CocoaPacketAnalyzer.app'
 
+HOMEPAGE="http://www.tastycocoabytes.com/cpa/"
+
+DOWNLOAD_PAGE="http://www.tastycocoabytes.com/cpa/"
+
+SUMMARY="Cocoa Packet Analyzer is a native Mac OS X implementation of a network protocol analyzer and packet sniffer. CPA supports the industry-standard PCAP packet capture format for reading, capturing and writing packet trace files."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -75,6 +81,8 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
+echp "$NAME: See <http://www.tastycocoabytes.com/cpa/history.php> for changelog information."
+
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
@@ -91,20 +99,47 @@ EXIT="$?"
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t:r" "$INSTALL_TO" \
-&& echo "$NAME: Installation success. Ejecting $MNTPNT:" \
-&& diskutil eject "$MNTPNT"
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
+	echo "$NAME: ditto failed"
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
