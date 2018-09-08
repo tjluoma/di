@@ -22,10 +22,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# @TODO - integrate new testing code at bottom of script
-
 	# Default to iStat Menus 6 unless we're told to use v5
 USE_VERSION='6'
+
+# https://download.bjango.com/istatmenus/updater/ also redirects the latest version
 
 URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus6/ \
 		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
@@ -102,6 +102,7 @@ then
 	if (( $+commands[lynx] ))
 	then
 
+		# "https://updates.bjango.com/istatmenus6/releasenotes.php"
 		RELEASE_NOTES_URL='https://bjango.com/mac/istatmenus/versionhistory/'
 
 		( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
@@ -181,66 +182,4 @@ fi
 
 exit 0
 #
-
-
-
-
-
-
-
-
-if [[ -e "$INSTALL_TO" ]]
-then
-
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
-
-else
-	INSTALLED_VERSION='6.10'
-	INSTALLED_BUILD='964'
-fi
-
-CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
-DARWIN_VERSION=$(uname -r)
-OS_VER=$(sw_vers -productVersion)
-MAC_MODEL=$(sysctl hw.model | awk -F' ' '/^hw.model/{print $NF}')
-
-INFO=($(curl --silent --location --fail "https://updates.bjango.com/istatmenus6/version-json.php" \
-	-X POST \
-	-H "Accept: */*" \
-	-H "User-Agent: iStat%20Menus/1025 CFNetwork/${CFNETWORK_VER} Darwin/${DARWIN_VERSION} (x86_64)" \
-	-H "Accept-Language: en-us" \
-	--data-urlencode "version=${INSTALLED_VERSION}" \
-	--data-urlencode "build=${INSTALLED_BUILD}" \
-	--data-urlencode "platform=${OS_VER}" \
-	--data-urlencode "model=${MAC_MODEL}" \
-	--data-urlencode "language=en-US" \
-	--data-urlencode "ui=1" \
-	| tr ',' '\012' \
-	| egrep '"(build|version)":' \
-	| tr -dc '[0-9]\.\n'))
-
-LATEST_BUILD="$INFO[1]"
-LATEST_VERSION="$INFO[2]"
-
-URL=$(curl --silent --location --fail --head 'https://download.bjango.com/istatmenus6/' \
-		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
-		| tail -1)
-
-echo "
-URL: $URL
-LATEST_VERSION: $LATEST_VERSION
-LATEST_BUILD: $LATEST_BUILD
-"
-
-
-
-
-
-
-
-
-
-
-
 #EOF
