@@ -10,7 +10,7 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/GitHub Desktop Classic.app'
 
-HOMEPAGE="https://blog.github.com/2015-08-12-github-desktop-is-now-available/"
+# HOMEPAGE="https://blog.github.com/2015-08-12-github-desktop-is-now-available/"
 
 DOWNLOAD_PAGE="https://github-central.s3.amazonaws.com/mac/GitHub%20Desktop%20224.zip"
 
