@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Duet.app'
 
+HOMEPAGE="https://www.duetdisplay.com"
+
+DOWNLOAD_PAGE="https://www.duetdisplay.com/#download"
+
+SUMMARY="Turn your iPad into an extra display."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -67,6 +73,19 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ${LATEST_VERSION}: " ;
+		curl -sfLS "$XML_FEED" \
+		| sed 	-e '1,/<item>/d; /<\/item>/,$d' \
+				-e '1,/<description>/d; /<\/description>/,$d' \
+				-e 's#\]\]\>##g ; s#<\!\[CDATA\[##g' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
+	| tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
