@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Little Snitch Configuration.app'
 
+HOMEPAGE="https://www.obdev.at/products/littlesnitch/index.html"
+
+DOWNLOAD_PAGE="https://www.obdev.at/products/littlesnitch/download.html"
+
+SUMMARY="As soon as you’re connected to the Internet, applications can potentially send whatever they want to wherever they want. Most often they do this to your benefit. But sometimes, like in case of tracking software, trojans or other malware, they don’t. But you don’t notice anything, because all of this happens invisibly under the hood. Little Snitch makes these Internet connections visible and puts you back in control."
+
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
 PREFERS_BETAS_FILE="$HOME/.config/di/littlesnitch-prefer-betas.txt"
@@ -31,6 +37,11 @@ else
 fi
 
 XML_FEED="https://sw-update.obdev.at/update-feeds/littlesnitch4.plist"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep -A1 "<key>ReleaseNotesURL</key>" \
+	| awk -F'>|<' '/string/{print $3}' \
+	| ${HEAD_OR_TAIL} -1)
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep -A1 'BundleVersion|DownloadURL' \
@@ -79,22 +90,16 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/LittleSnitch-$LATEST_VERSION.dmg"
 
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep -A1 "<key>ReleaseNotesURL</key>" \
-		| awk -F'>|<' '/string/{print $3}' \
-		| ${HEAD_OR_TAIL} -1)
-
-	echo "$NAME: Release Notes:"
-
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
+	( echo "$NAME: Release Notes:" ;
+	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/LittleSnitch-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
