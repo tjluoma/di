@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/iTerm.app"
 
+HOMEPAGE="https://iterm2.com/"
+
+DOWNLOAD_PAGE="https://iterm2.com/downloads.html"
+
+SUMMARY="iTerm2 brings the terminal into the modern age with features you never knew you always wanted."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -41,6 +47,11 @@ else
 	HEAD_OR_TAIL='tail'
 	XML_FEED="https://iterm2.com/appcasts/final.xml"
 fi
+
+# This always seems to be a plain-text file, but the filename itself changes
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
+	| awk -F' ' '/https/{print $1}')
 
 	# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
 INFO=($(curl -sfL "$XML_FEED" \
@@ -90,20 +101,15 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
-## Release Notes - start
-# This always seems to be a plain-text file, but the filename itself changes
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
-	| awk -F' ' '/https/{print $1}')
-
-echo -n "$NAME: Release Notes for "
-
-curl -sfL "$RELEASE_NOTES_URL"
-
-echo "\nSource: <$RELEASE_NOTES_URL>"
-## Release Notes - end
-
 FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"
+
+## Release Notes - start
+
+( echo -n "$NAME: Release Notes for " ;
+  curl -sfL "$RELEASE_NOTES_URL" ;
+  echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+## Release Notes - end
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
