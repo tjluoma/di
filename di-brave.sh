@@ -30,13 +30,13 @@ then
 
 	INSTALL_TO='/Applications/Brave-Beta.app'
 
-	URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
+	URL_PREVIEW=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
 	| fgrep '/browser-laptop/releases/tag/' \
 	| fgrep -i 'beta' \
 	| head -1 \
 	| sed 's#.*https#https#g; s#"/>##g'`
 
-	URL2=`curl -sfL "$URL1" \
+	URL=`curl -sfL "$URL_PREVIEW" \
 	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
 	| fgrep -i 'beta' \
 	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
@@ -46,20 +46,20 @@ else
 
 	INSTALL_TO='/Applications/Brave.app'
 
-	URL1=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
+	URL_PREVIEW=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
 	| fgrep '/browser-laptop/releases/tag/' \
 	| fgrep -vi 'beta' \
 	| head -1 \
 	| sed 's#.*https#https#g; s#"/>##g'`
 
-	URL2=`curl -sfL "$URL1" \
+	URL=`curl -sfL "$URL_PREVIEW" \
 	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
 	| fgrep -vi 'beta' \
 	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
 
 fi
 
-LATEST_VERSION=`echo "$URL2:t:r" | tr -dc '[0-9]\.'`
+LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]\.'`
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -87,11 +87,11 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$URL2:t"
+FILENAME="$HOME/Downloads/$URL:t"
 
-echo "$NAME: Downloading '$URL2' to '$FILENAME':"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL2"
+curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
