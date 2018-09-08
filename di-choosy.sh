@@ -93,6 +93,9 @@ then
 
 fi
 
+	# Where to save new download
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
 if (( $+commands[lynx] ))
 then
 
@@ -104,9 +107,6 @@ then
 	| tee -a "$FILENAME:r.txt"
 
 fi
-
-	# Where to save new download
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 	# Do the download
 echo "$NAME: Downloading $URL to $FILENAME"
