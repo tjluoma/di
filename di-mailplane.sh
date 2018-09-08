@@ -17,6 +17,8 @@ SUMMARY="The best way to use Gmail on your Mac."
 INSTALL_V3_TO='/Applications/Mailplane 3.app'
 INSTALL_V4_TO='/Applications/Mailplane.app'
 
+# no RELEASE_NOTES_URL found
+
 function use_v3 {
 
 	INSTALL_TO="/Applications/Mailplane 3.app"
