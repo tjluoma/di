@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/GitHub Desktop Classic.app'
 
+HOMEPAGE="https://blog.github.com/2015-08-12-github-desktop-is-now-available/"
+
+DOWNLOAD_PAGE="https://github-central.s3.amazonaws.com/mac/GitHub%20Desktop%20224.zip"
+
+SUMMARY="The older, non-Electron, version of GitHub Desktop (sometimes known as “GitHub for Mac”)."
+
 # Note: It's technically called “GitHub Desktop.app” but since the new version also uses that name
 # I've taken the liberty of renaming this to what GitHub seems to call it now.
 # See https://blog.github.com/2017-09-19-announcing-github-desktop-1-0/ for announcement of its replacement
@@ -54,7 +60,6 @@ else
 
 	FIRST_INSTALL='yes'
 fi
-
 
 FILENAME="$HOME/Downloads/GitHubDesktopClassic-$LATEST_VERSION.zip"
 
@@ -132,8 +137,6 @@ else
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-
 
 exit 0
 #
