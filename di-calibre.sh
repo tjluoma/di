@@ -22,6 +22,8 @@ CURRENT_VERSION=`curl -sfL 'http://status.calibre-ebook.com/latest'`
 	# curent version is empty, something went wrong
 [[ "$CURRENT_VERSION" = "" ]] && exit 0
 
+URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -48,28 +50,27 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-##
+########################################################################################################################
+
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
+
+########################################################################################################################
 
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="https://calibre-ebook.com/whats-new"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r\n"
-
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<div class="release">/d; /<div class="release">/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r\n" ;
+		curl -sfL "${RELEASE_NOTES_URL}" \
+		| sed '1,/<div class="release">/d; /<div class="release">/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
 
 ########################################################################################################################
-
-URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
