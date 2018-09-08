@@ -8,6 +8,12 @@
 NAME="$0:t:r"
 INSTALL_TO='/Applications/Dash.app'
 
+HOMEPAGE="https://kapeli.com/dash"
+
+DOWNLOAD_PAGE="https://newyork.kapeli.com/downloads/v4/Dash.zip"
+
+SUMMARY="Dash is an API Documentation Browser and Code Snippet Manager. Dash stores snippets of code and instantly searches offline documentation sets for 200+ APIs, 100+ cheat sheets and more. You can even generate your own docsets or request docsets to be included."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -106,22 +112,21 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>") \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
