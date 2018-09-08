@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install latest version of DetectX
+# Purpose: Download and install latest version of DetectX Swift
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -7,15 +7,13 @@
 
 NAME="$0:t:r"
 
-# INSTALL_TO='/Applications/DetectX.app'
-
 INSTALL_TO='/Applications/DetectX Swift.app'
 
 HOMEPAGE="https://sqwarq.com/detectx/"
 
 DOWNLOAD_PAGE="https://sqwarq.com/detectx/"
 
-SUMMARY="DetectX is a lightweight, on-demand dedicated search and troubleshooting tool that can identify malware, adware, keyloggers, potentially unwanted apps and potentially destabilising apps on a Mac."
+SUMMARY="DetectX Swift is a lightweight, on-demand dedicated search and troubleshooting tool that can identify malware, adware, keyloggers, potentially unwanted apps and potentially destabilising apps on a Mac."
 
 RELEASE_NOTES_URL='https://s3.amazonaws.com/sqwarq.com/AppCasts/dtxswift_release_notes.html'
 
@@ -26,11 +24,9 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-## DetectX (non-Swift)
-# XML_FEED='https://s3.amazonaws.com/sqwarq.com/AppCasts/detectx.xml'
-
 XML_FEED='https://s3.amazonaws.com/sqwarq.com/AppCasts/dtxswift.xml'
 
+	# no other version info in feed
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version=|url=' \
@@ -79,14 +75,17 @@ then
 
 fi
 
-echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
+if (( $+commands[lynx] ))
+then
 
-curl -sfLS "$RELEASE_NOTES_URL" \
-| awk '/<p id="version">/{i++}i==1' \
-| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
+	curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<p id="version">/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>") \
+	| tee -a "$FILENAME:r.txt"
 
-echo "\nSource: <$RELEASE_NOTES_URL>"
-
+fi
 
 FILENAME="$HOME/Downloads/DetectXSwift-${LATEST_VERSION}.zip"
 
