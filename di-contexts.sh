@@ -15,7 +15,6 @@ DOWNLOAD_PAGE="https://contexts.co"
 
 SUMMARY="Switch between application windows effortlessly — with Fast Search, a better Command-Tab, a Sidebar or even a quick gesture. Includes fantastic features for multiple spaces & multiple displays."
 
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -35,6 +34,11 @@ else
 	# This is for non-beta
 	XML_FEED='https://contexts.co/appcasts/stable.xml'
 fi
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 INFO=($(curl -sfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -93,26 +97,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "$RELEASE_NOTES_URL"  \
-	| tidy -quiet -asxhtml -utf8 --force-output yes -wrap 0 2>/dev/null \
-	| sed '1,/<div class="section--history__item__header">/d; /<div class="section--history__item__header">/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo -n "$NAME: Release Notes for " ;
+		curl -sfL "$RELEASE_NOTES_URL"  \
+		| tidy -quiet -asxhtml -utf8 --force-output yes -wrap 0 2>/dev/null \
+		| sed '1,/<div class="section--history__item__header">/d; /<div class="section--history__item__header">/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
