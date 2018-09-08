@@ -28,6 +28,10 @@ function use_v2 {
 }
 
 function use_v3 {
+
+	echo "$NAME: Not ready to check/update OmniFocus 3 yet. Sorry."
+	exit 0
+
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniFocus3/"
 	ITUNES_URL="itunes.apple.com/us/app/omnifocus-3/idXXXXXXXXXX"
 }
