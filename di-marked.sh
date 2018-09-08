@@ -15,6 +15,11 @@ DOWNLOAD_PAGE="http://marked2app.com/download/Marked.dmg"
 
 SUMMARY="Marked is a previewer for Markdown files. Use it with your favorite text editor and it updates every time you save. With robust features for previewing, reviewing and exporting beautiful documents, you can work in plain text while reveling in rich formatting."
 
+RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
+	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -83,26 +88,19 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/Marked-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
-		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	echo -n "$NAME: Release Notes for "
-
+	(echo -n "$NAME: Release Notes for " ;
 	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" \
 	| fgrep -v 'Follow @markedapp on Twitter' \
 	| tr -s '_' '_' \
-	| uniq
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	| uniq ;
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/Marked-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
