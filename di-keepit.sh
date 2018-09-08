@@ -17,6 +17,11 @@ SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes
 
 XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
 
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -97,11 +102,6 @@ FILENAME="$HOME/Downloads/KeepIt-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 if (( $+commands[lynx] ))
 then
-
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ; \
 		(curl -sfLS "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
