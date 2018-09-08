@@ -10,6 +10,12 @@
 
 NAME="$0:t:r"
 
+HOMEPAGE="https://www.noodlesoft.com"
+
+DOWNLOAD_PAGE="https://www.noodlesoft.com/Products/Hazel/download"
+
+SUMMARY="Hazel watches whatever folders you tell it to, automatically organizing your files according to the rules you create. Have Hazel move files around based on name, date, type, what site it came from and much more. Automatically sort your movies or file your bills. Keep your files off the desktop and put them where they belong."
+
 	## If you want to install Hazel for all users, replace 'INSTALL_TO=' with this line
 	# INSTALL_TO='/Library/PreferencePanes/Hazel.prefPane'
 
@@ -47,11 +53,11 @@ function check_install_location {
 		mkdir -p "$INSTALL_TO:h" 2>&1
 	fi
 
-	if [ -d "$INSTALL_TO:h" -a -w "$INSTALL_TO" ]
+	if [ -d "$INSTALL_TO:h" -a -w "$INSTALL_TO:h" ]
 	then
 			# This is what we want/hope/expect
 		echo "$NAME: '$INSTALL_TO:h' exists as a directory and is writable."
-	elif [ -d "$INSTALL_TO:h" -a ! -w "$INSTALL_TO" ]
+	elif [ -d "$INSTALL_TO:h" -a ! -w "$INSTALL_TO:h" ]
 	then
 		echo "$NAME: '$INSTALL_TO:h' exists as a directory but it is NOT writable. Cannot continue."
 		exit 1
@@ -136,20 +142,18 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='https://www.noodlesoft.com/release_notes'
 
-	echo -n "$NAME: Release Notes for Hazel "
-
-	(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
-	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <${RELEASE_NOTES_URL}>"
+	( echo -n "$NAME: Release Notes for Hazel " ;
+		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
+		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
 	# Server does not support continued downloads, so assume that this is incomplete and try again
 [[ -f "$FILENAME" ]] && rm -f "$FILENAME"
