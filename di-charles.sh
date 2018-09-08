@@ -5,8 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-02
 
-# @TODO - add RELEASE_NOTES_URL support - https://www.charlesproxy.com/documentation/version-history/
-
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Charles.app'
