@@ -6,8 +6,21 @@
 # Date:	2018-08-05
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/GeekTool.app'
+
 XML_FEED='https://updates.devmate.com/org.tynsoe.GeekTool.xml'
+
+HOMEPAGE="https://www.tynsoe.org/v2/geektool/"
+
+DOWNLOAD_PAGE="https://www.tynsoe.org/v2/geektool/"
+
+SUMMARY="GeekTool is a macOS application that lets you customize your desktop with great flexibility. There are four modules available that you can use for different types of information."
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -68,6 +81,12 @@ else
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r_${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
+RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r_${LATEST_VERSION}_${LATEST_BUILD}.html"
+
+echo "$NAME: Saving <$RELEASE_NOTES_URL> to '$RELEASE_NOTES_FILE'. (Too long to display here.)"
+
+curl --continue-at - --progress-bar --fail --location --output "$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
