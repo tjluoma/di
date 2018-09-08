@@ -5,17 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-20
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Logos.app'
-
-if [ -e "$HOME/.path" ]
-then
-	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
-fi
-
 	# Default to this unless we're told otherwise
 USE_VERSION='7'
 XML_FEED='https://clientservices.logos.com/update/v1/feed/logos7-mac/stable.xml'
@@ -24,6 +13,26 @@ function use_v6 {
 	XML_FEED='https://clientservices.logos.com/update/v1/feed/logos6-mac/stable.xml'
 	ASTERISK='(Note that version 7 is now available.)'
 	}
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Logos.app'
+
+HOMEPAGE="https://www.logos.com"
+
+DOWNLOAD_PAGE=$(curl -sfLS "$XML_FEED" \
+| sed 's#\.dmg.*#.dmg# ; s#.*https://downloads.logoscdn.com#https://downloads.logoscdn.com#g')
+
+SUMMARY="Logos helps you discover, understand, and share more of the biblical insights you crave."
+
+# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
+
+if [ -e "$HOME/.path" ]
+then
+	source "$HOME/.path"
+else
+	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
