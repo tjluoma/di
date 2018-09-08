@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Interarchy.app"
 
+HOMEPAGE="https://nolobe.com/interarchy/"
+
+DOWNLOAD_PAGE="https://nolobe.com/interarchy/download"
+
+SUMMARY="Professional Mac FTP."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
