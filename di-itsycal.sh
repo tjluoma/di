@@ -26,29 +26,46 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INFO=($(curl -sSfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
-
-	# If any of these are blank, we cannot continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$OS_VER" -ge "12" ]
 then
-	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
-	URL: $URL
-	"
 
-	exit 1
+	INFO=($(curl -sSfL "${XML_FEED}" \
+			| tr -s ' ' '\012' \
+			| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+			| head -3 \
+			| sort \
+			| awk -F'"' '/^/{print $2}'))
+
+		# "Sparkle" will always come before "url" because of "sort"
+	LATEST_VERSION="$INFO[1]"
+	LATEST_BUILD="$INFO[2]"
+	URL="$INFO[3]"
+
+		# If any of these are blank, we cannot continue
+	if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	then
+		echo "$NAME: Error: bad data received:
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		LATEST_BUILD: $LATEST_BUILD
+		URL: $URL
+		"
+
+		exit 1
+	fi
+
+elif [ "$OS_VER" -lt "12" ]
+then
+
+	# I'm not sure how far back 0.10.16 supports.
+	# Check https://www.mowglii.com/itsycal/versionhistory.html
+	# for more details
+	echo "$NAME [info]: Using Itsycal version 0.10.16 for Mac OS X 10.$OS_VER."
+	URL='https://s3.amazonaws.com/itsycal/Itsycal-0.10.16.zip'
+	LATEST_VERSION="0.10.16"
+	LATEST_BUILD="0.10.16"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
