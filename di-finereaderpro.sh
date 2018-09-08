@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/FineReader.app'
 
+HOMEPAGE="https://www.abbyy.com/en-us/finereader/pro-for-mac/"
+
+DOWNLOAD_PAGE="https://www.abbyy.com/en-us/lp/finereader-mac-download-free-trial/"
+
+SUMMARY="Easily transform paper documents, PDFs and digital photos of text into editable and searchable files. No more manual retyping or reformatting. Instead you can search, share, archive, and copy information from documents for reuse and quotation — saving you time, effort and hassles."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
