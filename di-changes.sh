@@ -11,6 +11,7 @@ HOMEPAGE="http://bitbq.com/changes/"
 
 DOWNLOAD_PAGE="http://bitbq_changes.s3.amazonaws.com/changes.zip"
 
+	# no RELEASE_NOTES_URL as the app is EOL
 SUMMARY="Compares two files. (Note that homepage is dead.)"
 
 INSTALL_TO="/Applications/Changes.app"
