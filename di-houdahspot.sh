@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/HoudahSpot.app"
 
+HOMEPAGE="https://www.houdah.com/houdahSpot/"
+
+DOWNLOAD_PAGE="https://www.houdah.com/houdahSpot/download.html"
+
+SUMMARY="Use HoudahSpot to find important documents, mail messages, photos, image files and more."
+
+RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes4.html"
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -78,33 +86,19 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes4.html"
-
-		# we need to find this so we know where to 'cut' the Release Notes info
-		# otherwise we risk overwhelming the user. If they want more information,
-		# we'll show them the URL and they can check it out themselves.
-	GET_SECOND_H2=$(curl -H "Accept-Encoding: gzip,deflate" -sfL "${RELEASE_NOTES_URL}" \
-	| gunzip \
-	| fgrep '<h2>HoudahSpot' \
-	| head -2 \
-	| tail -1 \
-	| sed 's#<\/h2>##g')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
-	curl -H "Accept-Encoding: gzip,deflate" -sfL "${RELEASE_NOTES_URL}" \
-	| gunzip \
-	| sed "1,/<body/d ; /$GET_SECOND_H2/,\$d" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):" ;
+		curl -H "Accept-Encoding: gzip,deflate" -sfL "${RELEASE_NOTES_URL}" \
+		| gunzip \
+		| awk '/<h2>/{i++}i==3' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
