@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Flux.app'
 
+HOMEPAGE="https://justgetflux.com"
+
+DOWNLOAD_PAGE="https://justgetflux.com/dlmac.html"
+
+SUMMARY="f.lux makes the color of your computer's display adapt to the time of day, warm at night and like sunlight during the day."
+
+XML_FEED='https://justgetflux.com/mac/macflux.xml'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -18,7 +26,7 @@ fi
 
 LAUNCH='no'
 
-INFO=($(curl -sfL 'https://justgetflux.com/mac/macflux.xml' \
+INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep '^(url|sparkle:version)=' \
 		| head -2 \
@@ -66,6 +74,18 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+
+if (( $+commands[lynx] ))
+then
+
+	(curl -sfLS "$XML_FEED" \
+	| fgrep -v '<description>Most recent changes with links to updates.</description>' \
+	| sed -e '1,/<description>/d; /<\/description>/,$d' -e 's#\]\]\>##g' -e 's#\<\!\[CDATA\[##g' \
+	| awk '/<p>/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
+	| tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
