@@ -84,6 +84,10 @@ fi
 
 ########################################################################################################################
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
+########################################################################################################################
+
 if (( $+commands[lynx] ))
 then
 
@@ -91,20 +95,14 @@ then
 
 	SECOND_VERSION=$(curl -sfL "${RELEASE_NOTES_URL}" | egrep '<li>MakeMKV v.* \(.* \)</li>' | sed -n '2p' | sed 's#</li>##g')
 
-	echo -n "$NAME: Release Notes for"
-
+	( echo -n "$NAME: Release Notes for" ;
 	curl -sfL 'http://www.makemkv.com/download/' \
 	| sed "1,/<h4>Revision history<\/h4>/d ; /$SECOND_VERSION/,\$d" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed 's#^ ##g'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| sed 's#^ ##g' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-########################################################################################################################
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 ########################################################################################################################
 
