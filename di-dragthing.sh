@@ -9,6 +9,14 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/DragThing.app"
 
+HOMEPAGE="https://www.dragthing.com"
+
+DOWNLOAD_PAGE="https://www.dragthing.com/english/download.html"
+
+SUMMARY="DragThing is the original dock designed to tidy up your Macintosh desktop. It puts all your documents, folders, and applications just a single click away. Highly flexible, it allows multiple docks, each customised to suit your exact needs."
+
+# RELEASE_NOTES_URL = ? https://www.dragthing.com/english/history.html ?
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
