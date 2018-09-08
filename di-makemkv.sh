@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MakeMKV.app'
 
+HOMEPAGE="http://www.makemkv.com/"
+
+DOWNLOAD_PAGE="http://www.makemkv.com/download/"
+
+SUMMARY="MakeMKV is your one-click solution to convert video that you own into free and patents-unencumbered format that can be played everywhere. MakeMKV is a format converter, otherwise called “transcoder”."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
