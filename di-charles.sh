@@ -17,6 +17,8 @@ DOWNLOAD_PAGE="https://www.charlesproxy.com/download/"
 
 SUMMARY="Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information)."
 
+RELEASE_NOTES_URL='https://www.charlesproxy.com/documentation/version-history/'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -81,6 +83,17 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
+if (( $+commands[lynx] ))
+then
+
+	(curl -sfLS $RELEASE_NOTES_URL \
+	| awk '/<h4>/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>") \
+	| tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
