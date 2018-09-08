@@ -68,11 +68,11 @@ then
 elif [ "$OS_VER" -lt "12" ]
 then
 		# n.b. Not sure how far back Karabiner version 10.22 supports.
+	INSTALL_TO="/Applications/Karabiner.app"
 	LATEST_VERSION="10.22.0"
 	URL="https://pqrs.org/osx/karabiner/files/Karabiner-10.22.0.dmg"
-	INSTALL_TO="/Applications/Karabiner.app"
 
-	echo "$NAME [info]: Using Karabiner version 10.22.0 for $OS_VER"
+	echo "$NAME [info]: Using Karabiner version 10.22.0 for Mac OS X 10.$OS_VER."
 
 else
 	echo "$NAME: Don't know what to do for OS_VER = '$OS_VER'."
