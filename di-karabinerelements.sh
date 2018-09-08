@@ -36,6 +36,22 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
+
+autoload is-at-least
+
+is-at-least "10.12" "$OS_VER"
+
+EXIT="$?"
+
+if [ "$EXIT" != "0" ]
+then
+
+	echo "$NAME: '$INSTALL_TO:t' cannot be installed on Mac OS version '$OS_VER'. Must be at least version 10.12."
+
+	exit 1
+fi
+
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr -s ' |\t' '\012' \
 	| egrep -i '^(sparkle:version|url)=' \
