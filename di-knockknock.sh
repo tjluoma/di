@@ -39,6 +39,8 @@ then
 	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="1.9.3"
 fi
 
+URL="https://bitbucket.org/objective-see/deploy/downloads/KnockKnock_$LATEST_VERSION.zip"
+
 if [[ "$LATEST_VERSION" == "" ]]
 then
 	echo "$NAME: Cannot determine LATEST_VERSION for $INSTALL_TO."
@@ -71,7 +73,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-URL="https://bitbucket.org/objective-see/deploy/downloads/KnockKnock_$LATEST_VERSION.zip"
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
