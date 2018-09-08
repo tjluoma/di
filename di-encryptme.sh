@@ -73,22 +73,22 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo -n "$NAME: Release Notes for "
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/<title>Encrypt.me $LATEST_VERSION<\/title>/d ; /<pubDate>/,\$d ; s#<description><\!\[CDATA\[##g ; s#\]\]>##g" \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>"
+	( echo -n "$NAME: Release Notes for ";
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed 	-e "1,/<title>Encrypt.me $LATEST_VERSION<\/title>/d" \
+				-e '/<pubDate>/,$d' \
+				-e "s#<description><\!\[CDATA\[##g ; s#\]\]>##g" \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
