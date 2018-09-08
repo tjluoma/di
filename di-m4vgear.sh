@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/M4VGear.app'
 
+HOMEPAGE="http://www.m4vgear.com/"
+
+DOWNLOAD_PAGE="https://www.m4vgear.com/m4vgear.dmg"
+
+SUMMARY="Strip DRM from purchased iTunes movies and TV shows."
+
 XML_FEED="http://www.m4vgear.com/feed-m4vgear.xml"
 
 if [ -e "/Users/luomat/.path" ]
@@ -63,15 +69,13 @@ fi
 
 RELEASE_NOTES_URL="$XML_FEED"
 
-echo -n "$NAME: Release Notes for "
-
-curl -sfL "$RELEASE_NOTES_URL" \
-| perl -p -e 's/<description>/\n<description>\n/ ; s/<\/description>/\n<\/description>\n/' \
-| sed '1,/<description>/d; /<\/description>/,$d'
-
-echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+
+(echo -n "$NAME: Release Notes for " ;
+	curl -sfL "$RELEASE_NOTES_URL" \
+	| perl -p -e 's/<description>/\n<description>\n/ ; s/<\/description>/\n<\/description>\n/' \
+	| sed '1,/<description>/d; /<\/description>/,$d' ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -85,7 +89,6 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
