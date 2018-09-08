@@ -17,6 +17,8 @@ SUMMARY="MacUpdater can automatically track the latest updates of all applicatio
 
 XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
 
+RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -77,22 +79,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html'
-
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: "
-
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: " ;
 	curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<br>/d; /<br>/,$d' \
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| egrep --colour=never -i '[a-z0-9]'
-
-	echo "Source: <$RELEASE_NOTES_URL>"
+	| egrep --colour=never -i '[a-z0-9]' ;
+	echo "Source: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
