@@ -7,14 +7,20 @@
 # Date:	2015-07-30
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/ExpanDrive.app'
+
 XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
 HOMEPAGE="https://www.expandrive.com"
 
 DOWNLOAD_PAGE="https://www.expandrive.com/download-expandrive/"
 
-SUMMARY="Access files in the cloud from Finder or Explorer without having to sync or use disk space. ExpanDrive mounts OneDrive, Google Drive, Dropbox, Box, Sharepoint, Amazon S3, FTP, SFTP and more as a Network Drive. Supports macOS and Windows."
+SUMMARY="Access files in the cloud from Finder or Explorer without having to sync or use disk space. ExpanDrive mounts OneDrive, Google Drive, Dropbox, Box, Sharepoint, Amazon S3, FTP, SFTP and more as a Network Drive."
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
+	| awk -F' ' '/http/{print $1}')
 
 # Do Not Use: http://updates.expandrive.com/apps/expandrive.xml
 
@@ -84,26 +90,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d' \
-		| awk -F' ' '/http/{print $1}')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\body>/,$d ; s#</span><span>#: #g' \
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| fgrep -v 'ExpanDrive 6 is a paid upgrade and costs $24.95 if you purchased before April 1, 2017.' \
-	| fgrep -v '  * Improvements in ExpanDrive '
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| fgrep -v '  * Improvements in ExpanDrive ' ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
