@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Endurance.app'
 
+HOMEPAGE="http://enduranceapp.com/"
+
+DOWNLOAD_PAGE="http://enduranceapp.com/download"
+
+SUMMARY="Endurance is actually a set of different tools all bundled together in one app, which can work together or separately to help you to lower your energy usage."
+
 XML_FEED='http://enduranceapp.com/appcast'
 
 if [[ -e "$HOME/.path" ]]
@@ -75,24 +81,22 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):"
-
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):";
 	curl -sfL "$XML_FEED" \
 	| sed '1,/<item>/d; /<\/item>/,$d' \
 	| perl -pe 's/<!\[CDATA\[/\n/g ; s/\]\]>/\n/g' \
 	| sed '1,/<description>/d; /<\/description>/,$d ; s#^ ##g' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
