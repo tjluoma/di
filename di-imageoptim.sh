@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/ImageOptim.app'
 
+HOMEPAGE="https://imageoptim.com/mac"
+
+DOWNLOAD_PAGE="https://imageoptim.com/ImageOptim.tbz2"
+
+SUMMARY="ImageOptim makes images load faster. Removes bloated metadata. Saves disk space & bandwidth by compressing images without losing quality."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -29,6 +35,8 @@ else
 		## This is for official, non-beta versions
 	XML_FEED='https://imageoptim.com/appcast.xml'
 fi
+
+RELEASE_NOTES_URL="$XML_FEED"
 
 	# FYI - CFBundleShortVersionString and CFBundleVersion are identical in the app
 INFO=($(curl -sfL "$XML_FEED" \
@@ -85,15 +93,11 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="$XML_FEED"
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n"
-
-	curl -sSfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>"
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sSfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
