@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/iStat Menus.app"
 
+HOMEPAGE="https://bjango.com/mac/istatmenus/"
+
+DOWNLOAD_PAGE="http://download.bjango.com/istatmenus/"
+
+SUMMARY="An advanced Mac system monitor for your menu bar."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -89,6 +95,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/iStatMenus-${LATEST_VERSION}.zip"
+
 if [ "$USE_VERSION" = "6" ]
 then
 	if (( $+commands[lynx] ))
@@ -96,17 +104,14 @@ then
 
 		RELEASE_NOTES_URL='https://bjango.com/mac/istatmenus/versionhistory/'
 
-		echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version "
-
-		(curl -sfL $RELEASE_NOTES_URL | sed '1,/<div class="button-moreinfo">/d; /<\/p>/,$d' ; echo '</p>') \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-		echo "\nSource: <$RELEASE_NOTES_URL>"
+		( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
+			(curl -sfL "$RELEASE_NOTES_URL" \
+			| sed '1,/<div class="button-moreinfo">/d; /<\/p>/,$d' ; echo '</p>') \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 	fi
 fi
-
-FILENAME="$HOME/Downloads/iStatMenus-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading \"$URL\" to \"$FILENAME\":"
 
