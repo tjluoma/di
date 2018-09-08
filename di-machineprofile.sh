@@ -9,9 +9,20 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/MachineProfile.app"
 
+HOMEPAGE="https://www.micromat.com/products/machineprofile"
+
+DOWNLOAD_PAGE="http://itunes.apple.com/us/app/machineprofile/id530194517?mt=12"
+
+SUMMARY="MachineProfile collects key technical hardware information about your Mac that’s not easily found elsewhere or by clicking through the tabs in “About This Mac…”."
+
 	# These two seem to be alternately updated. It's rather confusing.
 XML_FEED='https://www.micromat.com/updates/machineprofile/appcast.xml'
 #XML_FEED='http://www.micromat.com/updates/MacProfile/appcast.xml'
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -86,21 +97,15 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
-
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}"
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
