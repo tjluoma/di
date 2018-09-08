@@ -91,6 +91,12 @@ else
 
 fi
 
+HOMEPAGE="https://www.peterborgapps.com/lingon/"
+
+DOWNLOAD_PAGE="https://www.peterborgapps.com/lingon/#otherversions"
+
+SUMMARY="Lingon can start an app, a script or run a command automatically whenever you want it to. You can schedule it to run at a specific time, regularly or when something special happens."
+
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr '\r' '\n' \
 		| tr -s ' ' '\012' \
