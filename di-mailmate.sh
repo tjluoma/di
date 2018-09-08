@@ -15,6 +15,9 @@ DOWNLOAD_PAGE="https://freron.com/download/"
 
 SUMMARY="MailMate is an IMAP email client for macOS featuring extensive keyboard control, Markdown integrated email composition, advanced search conditions and drill-down search links, equally advanced smart mailboxes, automatic signature handling, cryptographic encryption/signing (OpenPGP and S/MIME), tagging, multiple notification methods, alternative message viewer layouts including a widescreen layout, flexible integration with third party applications, and much more."
 
+	# 2018-08-08 - This says that it's for betas, but I can't find a non-beta version at the moment
+RELEASE_NOTES_URL='https://updates.mailmate-app.com/beta_release_notes'
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"
@@ -92,24 +95,18 @@ then
 		--title "$NAME"
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 
 if (( $+commands[lynx] ))
 then
-		# 2018-08-08 - This says that it's for betas, but I can't find a non-beta version at the moment
-	RELEASE_NOTES_URL='https://updates.mailmate-app.com/beta_release_notes'
 
-	echo -n "$NAME: Release Notes for $INSTALL_TO:t:r "
-
-	(curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<body>/d; /<\/ul>/,$d' \
-	;echo '</ul>') \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
+	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+		(curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<body>/d; /<\/ul>/,$d' \
+		;echo '</ul>') \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
