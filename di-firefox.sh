@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 OG_NAME="$NAME"
 
+HOMEPAGE="https://www.mozilla.org/en-US/firefox"
+
+DOWNLOAD_PAGE="https://www.mozilla.org/en-US/firefox/download/thanks/"
+
+SUMMARY="Firefox offers a fast, safe Web browsing experience. Browse quickly, securely, and effortlessly. With its industry-leading features, Firefox is the choice of Web development professionals and casual users alike."
+
 SCRIPT_NAME="$0:t"
 
 if [[ -e "$HOME/.path" ]]
