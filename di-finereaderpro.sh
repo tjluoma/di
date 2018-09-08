@@ -11,9 +11,11 @@ INSTALL_TO='/Applications/FineReader.app'
 
 HOMEPAGE="https://www.abbyy.com/en-us/finereader/pro-for-mac/"
 
-DOWNLOAD_PAGE="https://www.abbyy.com/en-us/lp/finereader-mac-download-free-trial/"
+DOWNLOAD_PAGE="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
 
 SUMMARY="Easily transform paper documents, PDFs and digital photos of text into editable and searchable files. No more manual retyping or reformatting. Instead you can search, share, archive, and copy information from documents for reuse and quotation — saving you time, effort and hassles."
+
+URL="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
 
 if [ -e "$HOME/.path" ]
 then
@@ -63,7 +65,6 @@ fi
 
 ## If we get here, either an update is available or the app isn't installed at all
 
-URL="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
 
 if [[ "$CURRENT_PART_NUMBER" != "" ]]
 then
