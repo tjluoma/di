@@ -9,6 +9,16 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Keymo.app'
 
+HOMEPAGE="https://manytricks.com/keymo/"
+
+DOWNLOAD_PAGE="https://manytricks.com/download/keymo"
+
+SUMMARY="Sometimes using the keyboard is just more convenient than a mouse or trackpad: Keymo gives you full control over your mouse pointer via keyboard shortcuts."
+
+XML_FEED='https://manytricks.com/keymo/appcast.xml'
+
+RELEASE_NOTES_URL='https://manytricks.com/keymo/releasenotes/'
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -17,8 +27,6 @@ else
 fi
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-XML_FEED='https://manytricks.com/keymo/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -80,6 +88,17 @@ else
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
+if (( $+commands[lynx] ))
+then
+
+	( curl -sfLS "$RELEASE_NOTES_URL" \
+	| sed '1,/BODY STARTS HERE/d' \
+	| awk '/<h2>/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
