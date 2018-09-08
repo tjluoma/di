@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/GitKraken.app"
 
+HOMEPAGE="https://www.gitkraken.com"
+
+DOWNLOAD_PAGE="https://www.gitkraken.com/download/mac"
+
+SUMMARY="The legendary Git GUI client for Windows, Mac and Linux."
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
