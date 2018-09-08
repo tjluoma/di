@@ -10,6 +10,12 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/HandBrake.app'
 
+HOMEPAGE="https://handbrake.fr"
+
+DOWNLOAD_PAGE="https://handbrake.fr/downloads.php"
+
+SUMMARY="HandBrake is a tool for converting video from nearly any format to a selection of modern, widely supported codecs."
+
 RELEASE_NOTES_URL='https://handbrake.fr/appcast/stable.html'
 
 if [ -e "$HOME/.path" ]
@@ -131,18 +137,18 @@ then
 
 		RELEASE_NOTES_URL='https://handbrake.fr/appcast/stable.html'
 
-		echo -n "$NAME: Release Notes for "
-
-		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL"
-
-		echo "\nSource: <$RELEASE_NOTES_URL>"
+		( echo -n "$NAME: Release Notes for " ;
+		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+		| tee -a "$FILENAME:r.txt"
 
 	fi
 else
 		# This _is_ a beta / nightly
 
-	echo "$NAME: No release notes available for nightly builds, but you can see recent changes at:"
-	echo "<https://github.com/HandBrake/HandBrake/commits/master>"
+	(echo "$NAME: No release notes available for nightly builds, but you can see recent changes at:";
+	echo "<https://github.com/HandBrake/HandBrake/commits/master>") \
+	| tee -a "$FILENAME:r.txt"
 
 fi
 
