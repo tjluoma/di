@@ -15,7 +15,7 @@ HOMEPAGE="http://www.freemacsoft.net/liteicon/"
 
 DOWNLOAD_PAGE="http://freemacsoft.net/liteicon/"
 
-SUMMARY="LiteIcon is a simple app which allows you to change your system icons quickly and easily."
+SUMMARY="LiteIcon is a simple app which allows you to change your system icons quickly and easily. (see README.html for important caveat.)"
 
 RELEASE_NOTES_URL="https://freemacsoft.net/liteicon/releasenotes.html"
 
