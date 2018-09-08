@@ -38,6 +38,8 @@ do
 	#check to ignore di-all.sh and di-auto.sh
 	if ! [[ "$i:t" =~ "di-(all|auto)\.sh" ]]
 	then
+		# echo "\n\n---: [Debug] Starting $i: \n"
+
 			# get the full path to $i
 		i=($i(:A))
 
