@@ -9,6 +9,12 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Delibar.app"
 
+HOMEPAGE="http://www.delibarapp.com"
+
+DOWNLOAD_PAGE=""
+
+SUMMARY="Delibar was a Delicious and Pinboard client for Mac."
+
 	# we don't really need this, since the app is EOL, but why not?
 XML_FEED='http://apps.shinynode.com/apps/delibar_appcast.xml'
 
