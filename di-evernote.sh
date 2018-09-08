@@ -10,7 +10,20 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Evernote.app'
 
+HOMEPAGE="https://evernote.com"
+
+DOWNLOAD_PAGE="https://evernote.com/download"
+
+SUMMARY="Evernote helps you capture and prioritize ideas, projects, and to-do lists, so nothing falls through the cracks."
+
 XML_FEED='https://update.evernote.com/public/ENMacSMD/EvernoteMacUpdate.xml'
+
+	#RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	#	| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
+	#	| head -1 \
+	#	| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
+
+RELEASE_NOTES_URL="https://update.evernote.com/public/ENMacSMD/releaseNotes-en.html"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -85,25 +98,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-		#RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	#	| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
-	#	| head -1 \
-	#	| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
-
-	RELEASE_NOTES_URL="https://update.evernote.com/public/ENMacSMD/releaseNotes-en.html"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
+	( curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<!-- Version -->/d; /<!-- Version -->/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
