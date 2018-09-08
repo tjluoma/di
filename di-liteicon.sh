@@ -11,6 +11,14 @@ INSTALL_TO='/Applications/LiteIcon.app'
 
 XML_FEED='http://www.freemacsoft.net/liteicon/updates.xml'
 
+HOMEPAGE="http://www.freemacsoft.net/liteicon/"
+
+DOWNLOAD_PAGE="http://freemacsoft.net/liteicon/"
+
+SUMMARY="LiteIcon is a simple app which allows you to change your system icons quickly and easily."
+
+RELEASE_NOTES_URL="https://freemacsoft.net/liteicon/releasenotes.html"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -21,7 +29,7 @@ fi
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString=|url=' \
-		| head -2 \
+		| tail -2 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
@@ -66,20 +74,17 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://freemacsoft.net/liteicon/releasenotes.html"
-
-	curl -sfL $RELEASE_NOTES_URL \
+	( curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<div class="releasenotes">/d; /<\/ul>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
