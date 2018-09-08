@@ -5,16 +5,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-24
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/DaisyDisk.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/DaisyDisk.app'
+
+HOMEPAGE="https://daisydiskapp.com"
+
+DOWNLOAD_PAGE="https://daisydiskapp.com/downloads/DaisyDisk.zip"
+
+SUMMARY="DaisyDisk also gives you a great overview of all connected disks, be it Macintosh HD, Thunderbolt disk, flash, network storage, you name it."
 
 OS_VER=`sw_vers -productVersion`
 
@@ -23,16 +29,23 @@ INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersio
 
 XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=${INSTALLED_VERSION}&appEdition=Standard"
 
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink>' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g ; s#\&amp;#\&#g')
+
 INFO=($(curl -sfL "$XML_FEED" \
-| tr -s ' ' '\012' \
-| egrep 'sparkle:version=|url=' \
-| head -2 \
-| sort \
-| awk -F'"' '/^/{print $2}'))
+		| tr -s ' ' '\012' \
+		| egrep 'sparkle:version=|url=' \
+		| head -2 \
+		| sort \
+		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+# URL="$INFO[2]"
+
+URL='https://daisydiskapp.com/downloads/DaisyDisk.zip'
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -72,26 +85,21 @@ then
 
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g ; s#\&amp;#\&#g')
-
-	echo "$NAME: Release Notes for $INSTALL_TO:t:r:"
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/<div class='version'>/d; /<div class='version'>/,\$d" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d'
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed "1,/<div class='version'>/d; /<div class='version'>/,\$d" \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| tr -s '\t| ' ' ' \
+		| sed '/./,/^$/!d' ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
