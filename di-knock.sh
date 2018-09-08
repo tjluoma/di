@@ -9,6 +9,15 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Knock.app'
 
+XML_FEED='https://knock-updates.s3.amazonaws.com/Knock.xml'
+
+HOMEPAGE="http://www.knocktounlock.com"
+
+# aka http://knock-updates.s3.amazonaws.com/Knock.zip
+DOWNLOAD_PAGE="http://knocktounlock.com/download"
+
+SUMMARY="You keep your iPhone with you all the time. Now you can use it as a password. You never have to open the app — just knock on your phone twice, even when it’s in your pocket, and you're in."
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -35,7 +44,6 @@ do
 	esac
 
 done # for args
-
 
 ####################################################################################################
 ##
@@ -74,10 +82,7 @@ then
 
 fi # if not bypassed by --force
 
-
 ####################################################################################################
-
-XML_FEED='https://knock-updates.s3.amazonaws.com/Knock.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -128,6 +133,8 @@ then
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+
+# No RELEASE_NOTES_URL. The app is basically EOL as far as I can tell.
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
