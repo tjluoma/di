@@ -5,10 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-17
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/Clipy.app"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -16,7 +12,23 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/Clipy.app"
+
+HOMEPAGE="https://clipy-app.com/"
+
+DOWNLOAD_PAGE="https://clipy-app.com"
+
+SUMMARY="Clipy is a Clipboard extension app for macOS."
+
 XML_FEED="https://clipy-app.com/appcast.xml"
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
+	| head -1 \
+	| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
+
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -65,23 +77,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| fgrep '<sparkle:releaseNotesLink xml:lang="en">' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>##g')
-
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| fgrep -v '<hr size="1">' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
+	( curl -sfL "$RELEASE_NOTES_URL" \
+		| fgrep -v '<hr size="1">' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
