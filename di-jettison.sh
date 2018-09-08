@@ -8,8 +8,6 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Jettison.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -24,6 +22,16 @@ fi
 ## so that's what I'm using
 
 XML_FEED='http://www.stclairsoft.com/updates/Jettison.xml'
+
+INSTALL_TO='/Applications/Jettison.app'
+
+HOMEPAGE="https://www.stclairsoft.com/Jettison/"
+
+DOWNLOAD_PAGE="https://www.stclairsoft.com/cgi-bin/dl.cgi?JT"
+
+RELEASE_NOTES_URL='https://www.stclairsoft.com/Jettison/release_notes.html'
+
+SUMMARY="Jettison eliminates the hassle of manually ejecting external drives before you put your MacBook to sleep. With Jettison, you just close your MacBook, unplug and go!"
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -84,6 +92,17 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
 
+if (( $+commands[lynx] ))
+then
+
+	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
+	curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<h3>/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
+
+fi
+
 echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
@@ -129,39 +148,6 @@ then
 	unmount.sh "$MNTPNT"
 else
 	diskutil eject "$MNTPNT"
-fi
-
-IS_REGISTERED=`defaults read com.stclairsoft.Jettison.plist registrationLicense 2>/dev/null`
-
-if [[ "$IS_REGISTERED" == "" ]]
-then
-
-	REG_FILE="$HOME/Dropbox/dotfiles/licenses/jettison/com.stclairsoft.Jettison.plist"
-
-	PREF_FILE="$HOME/Library/Preferences/com.stclairsoft.Jettison.plist"
-
-	if [ -e "$REG_FILE" ]
-	then
-			if [ -e "$PREF_FILE" ]
-			then
-
-				echo "$NAME: $PREF_FILE already exists but does not have registration information."
-				echo "	Do you want to overwrite that file with $REG_FILE? "
-
-				command cp -iv "$REG_FILE" "$PREF_FILE"
-
-			else
-				# No Preferences file found so use the default one
-
-				echo "$NAME: Copying $REG_FILE to $PREF_FILE"
-
-				command cp -vn "$REG_FILE" "$PREF_FILE"
-			fi
-
-	else
-		echo "$NAME: No REG_FILE found at $REG_FILE"
-	fi
-
 fi
 
 exit 0
