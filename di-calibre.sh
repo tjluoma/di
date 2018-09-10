@@ -6,6 +6,8 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2014-07-25
 
+# @TODO - does not seem to tell when it needs to be updated, i.e. when the installed version is out of date.
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/calibre.app'
