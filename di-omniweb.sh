@@ -33,7 +33,7 @@ INFO=($(curl -sfLS 'https://omnistaging.omnigroup.com/omniweb/' \
 
 URL="$INFO[1]"
 
-RELEASE_NOTES_URL="$INFO[2]"
+# RELEASE_NOTES_URL="$INFO[2]" -- @todo - this URL seems outdated
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]')
 
@@ -76,16 +76,16 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-if (( $+commands[lynx] ))
-then
-
-	(echo "$NAME: Release notes for OmniWeb:\n\n"
-	curl -sfLS "$RELEASE_NOTES_URL" \
-	| awk '/<h3/{i++}i==2' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
-	| tee -a "$FILENAME:r.txt"
-
-fi
+# if (( $+commands[lynx] ))
+# then
+#
+# 	(echo "$NAME: Release notes for OmniWeb:\n\n"
+# 	curl -sfLS "$RELEASE_NOTES_URL" \
+# 	| awk '/<h3/{i++}i==2' \
+# 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
+# 	| tee -a "$FILENAME:r.txt"
+#
+# fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
