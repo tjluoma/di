@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of NoteBurner M4V Converter Plus (removes iTunes Video DRM)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -28,14 +28,6 @@ SUMMARY="
 * Keep AD & AC3 Dolby 5.1 Audio & All Subtitles/Audio Tracks.
 * Support macOS Sierra 10.12 & iTunes 12.8.
 "
-
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
-
-if [ "$OS_VER" -gt "12" ]
-then
-	echo "$NAME: '$INSTALL_TO:t' is not compatible with macOS versions 10.13 and higher (you are using 10.$OS_VER)."
-	echo "$NAME: Installation will continue, but the app might not function properly."
-fi
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -82,6 +74,14 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -gt "12" ]
+then
+	echo "$NAME: '$INSTALL_TO:t' is not compatible with macOS versions 10.13 and higher (you are using 10.$OS_VER)."
+	echo "$NAME: Installation will continue, but the app might not function properly."
 fi
 
 FILENAME="$HOME/Downloads/NoteBurner-M4V-Converter-Plus-${LATEST_VERSION}.dmg"
