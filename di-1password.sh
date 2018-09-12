@@ -5,8 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-19
 
-# @todo - 2018-09-12 - starting today the download is a .zip not a pkg and the zip just has the app inside
-
 NAME="$0:t:r"
 
 HOMEPAGE="https://1password.com"
