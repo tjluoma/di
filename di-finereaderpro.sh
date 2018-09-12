@@ -107,7 +107,7 @@ then
 	echo "	See <$DYNAMIC_URL> for release notes."
 fi
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

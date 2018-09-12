@@ -85,7 +85,7 @@ echp "$NAME: See <http://www.tastycocoabytes.com/cpa/history.php> for changelog 
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

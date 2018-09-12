@@ -86,11 +86,11 @@ RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r_${LATEST_VERSION}_${LATEST_B
 
 echo "$NAME: Saving <$RELEASE_NOTES_URL> to '$RELEASE_NOTES_FILE'. (Too long to display here.)"
 
-curl --continue-at - --progress-bar --fail --location --output "$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
+curl --continue-at - --fail --location --output "$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

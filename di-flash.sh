@@ -166,11 +166,11 @@ function do_download
 	then
 		log "Continuing download of $PKG_URL to $FILENAME"
 			# if the file is already there, continue download
-		curl -fL --progress-bar --continue-at - --output "$FILENAME" "$PKG_URL"
+		curl -fL --continue-at - --output "$FILENAME" "$PKG_URL"
 	else
 		log "Downloading $PKG_URL to $FILENAME"
 			# if the file is NOT there, don't try to continue
-		curl -fL --progress-bar --output "$FILENAME" "$PKG_URL"
+		curl -fL --output "$FILENAME" "$PKG_URL"
 	fi
 
 	SIZE=$(zstat -L +size "$FILENAME")

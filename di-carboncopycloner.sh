@@ -117,7 +117,7 @@ then
 
 		echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-		curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+		curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 		EXIT="$?"
 
@@ -173,7 +173,7 @@ then
 
 		echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-		curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+		curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 		EXIT="$?"
 
@@ -267,7 +267,7 @@ then
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+	curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 	EXIT="$?"
 
@@ -418,7 +418,7 @@ else
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+	curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 	EXIT="$?"
 

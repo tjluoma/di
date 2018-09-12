@@ -121,7 +121,7 @@ else
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	curl --progress-bar --location -A "$UA" --output "$FILENAME" "$URL"
+	curl --location -A "$UA" --output "$FILENAME" "$URL"
 
 	EXIT="$?"
 

@@ -107,7 +107,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --progress-bar --continue-at - --fail --location --output  "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output  "$FILENAME" "$URL"
 
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 

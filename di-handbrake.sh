@@ -155,7 +155,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl -A "$UA" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

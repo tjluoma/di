@@ -205,7 +205,7 @@ do
 	# "
 
 		# here is where we do the actual downloading, if all goes well
-	curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+	curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 		# after 'curl' exits, we check the local size of the file again
 	check_bytes

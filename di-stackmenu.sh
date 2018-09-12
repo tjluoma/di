@@ -143,7 +143,7 @@ curl -H "Accept: application/rss+xml,*/*;q=0.1" \
 	-H "Cookie: spfs=k20dg6vsd4mgdb21b0e3pvher1" \
 	-H "User-Agent: Stack Menu/1.0 Sparkle/1.20.0" \
 	-H "Accept-Language: en-us" \
-	--continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+	--continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

@@ -106,7 +106,7 @@ fi
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 	# Download it
-curl --continue-at - --fail --location --referer ";auto" --progress-bar --output "${FILENAME}" "$URL"
+curl --continue-at - --fail --location --referer ";auto" --output "${FILENAME}" "$URL"
 
 EXIT="$?"
 

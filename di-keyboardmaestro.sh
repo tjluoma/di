@@ -101,7 +101,7 @@ FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

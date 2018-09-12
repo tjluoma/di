@@ -105,7 +105,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 echo "$NAME: Downloading $URL to $FILENAME:"
 
 curl --fail \
-   --progress-bar \
+   \
    --continue-at - \
    --location \
    --output "$FILENAME" \

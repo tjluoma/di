@@ -90,7 +90,7 @@ fi
 echo "$NAME: Downloading $URL to $FILENAME"
 
 	# Note the special '-H "Accept-Encoding: gzip,deflate"' otherwise you'll get a 404
-curl -H "Accept-Encoding: gzip,deflate" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -H "Accept-Encoding: gzip,deflate" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 [[ ! -e "$FILENAME" ]] && echo "$NAME: No file found at $FILENAME" && exit 0
 

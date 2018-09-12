@@ -100,7 +100,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL" 
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -154,7 +154,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO" 
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 

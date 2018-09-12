@@ -163,7 +163,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':" | cat -v
 
-curl -A "Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl -A "Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 

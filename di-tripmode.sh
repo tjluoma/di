@@ -100,7 +100,7 @@ fi
 	# Download the latest version
 echo "$NAME: Downloading $URL to $FILENAME"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
