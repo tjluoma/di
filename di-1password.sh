@@ -226,7 +226,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
+URL_EXTENSION="$URL:e:l"
+
+if [ "$URL_EXTENSION" = "pkg" ]
+then
+
+	FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.pkg"
+
+elif [ "$URL_EXTENSION" = "zip" ]
+then
+	FILENAME="$HOME/Downloads/1Password-${LATEST_VERSION}.zip"
+else
+	echo "$NAME: Don't know what to do with URLs that end with '$URL_EXTENSION'. Can't download '$URL'."
+	exit 1
+fi
 
 if [[ "$USE_VERSION" == "7" ]]
 then
@@ -242,7 +255,7 @@ then
 			curl -sfL "$RELEASE_NOTES_URL" \
 				| sed "1,/class='beta'/d; /<article /,\$d" \
 				| sed '1,/<\/h3>/d' \
-				| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+				| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin ;
 			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 		else
@@ -253,7 +266,7 @@ then
 			curl -sfL "$RELEASE_NOTES_URL" \
 			| sed '1,/<article id="v[0-9]*"[ ]*>/d; /<\/article>/,$d' \
 			| egrep -vi 'never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
-			| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin \
 			| sed '/./,/^$/!d' ;
 			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
@@ -276,17 +289,113 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-if (( $+commands[pkginstall.sh] ))
+if [[ "$URL_EXTENSION" == "pkg" ]]
 then
-	pkginstall.sh "$FILENAME"
-else
-		##
-		## The requirement for 'sudo' means that this script can't be run unattended, which stinks.
-		## If 'sudo 'fails for some reason, we'll just show the .pkg file to the user
-		##
 
-	sudo /usr/sbin/installer -pkg "$FILENAME" -target / -lang en 2>&1 \
-	|| open -R "$FILENAME"
+	if (( $+commands[pkginstall.sh] ))
+	then
+		pkginstall.sh "$FILENAME"
+	else
+			##
+			## The requirement for 'sudo' means that this script can't be run unattended, which stinks.
+			## If 'sudo 'fails for some reason, we'll just show the .pkg file to the user
+			##
+
+		sudo /usr/sbin/installer -pkg "$FILENAME" -target / -lang en 2>&1 \
+		|| open -R "$FILENAME"
+
+	fi
+
+else
+
+	# if we get here, it must be a .zip file
+
+	UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+	echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+	ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" == "0" ]]
+	then
+		echo "$NAME: Unzip successful"
+	else
+			# failed
+		echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+		exit 1
+	fi
+
+	if [[ -e "$INSTALL_TO" ]]
+	then
+
+		pgrep -xq "$INSTALL_TO:t:r" \
+		&& LAUNCH='yes' \
+		&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+
+		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+		EXIT="$?"
+
+		if [[ "$EXIT" != "0" ]]
+		then
+
+			echo "$NAME: failed to move existing '$INSTALL_TO' to $HOME/.Trash/"
+
+			read -t 30 "?Do you want to use ’sudo’ to try to move the outdated ‘$INSTALL_TO’? [y/N] " ANSWER
+
+			case "$ANSWER" in
+
+				Y*|y*)
+						sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+						EXIT="$?"
+
+						if [ "$EXIT" = "0" ]
+						then
+							echo "$NAME: Successfully moved outdated '$INSTALL_TO' to the trash."
+
+						else
+							echo "$NAME: failed to move outdated '$INSTALL_TO' to the trash. Giving up."
+
+							exit 1
+						fi
+
+				;;
+
+				*)
+						echo "$NAME: Ok, not using 'sudo'. Giving up now."
+						exit 1
+				;;
+
+			esac
+
+		fi
+	fi
+
+	echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+		# Move the file out of the folder
+	mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" = "0" ]]
+	then
+
+		echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	else
+		echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+		exit 1
+	fi
+
+	[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 fi
 
