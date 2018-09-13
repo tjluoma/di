@@ -38,12 +38,13 @@ EXPECTED_SHA1="$INFO[2]"
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
-	# If either of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
+	EXPECTED_SHA1: $EXPECTED_SHA1
 	"
 
 	exit 1
@@ -110,6 +111,8 @@ EXIT="$?"
 ##
 
 echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
+
+cd "$FILENAME:h"
 
 shasum -c "$SHA_FILE"
 
