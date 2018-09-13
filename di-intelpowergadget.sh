@@ -93,6 +93,36 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+
+### Temporary (I hope) block to deal with the fact that Intel is _still_ serving the wrong file as 'version 3.5.4'
+
+if [[ "$URL" == "https://software.intel.com/sites/default/files/managed/ca/40/Intel%C2%AE%20Power%20Gadget%203.5.4.dmg" ]]
+then
+
+	IFS=$'\n' HEADERS=($(curl -sfLS --head "$URL" \
+				| egrep -i '^(etag|Content-Length|Last-Modified):' \
+				| sort \
+				| tr '\r' '\n'))
+
+	if 	[ 	"$HEADERS[1]" = "Content-Length: 5242880" \
+		-a 	"$HEADERS[2]" = 'ETag: "5b806694-500000"' \
+		-a 	"$HEADERS[3]" = "Last-Modified: Fri, 24 Aug 2018 20:12:04 GMT" \
+		]
+	then
+
+		echo "$NAME: Intel is still serving the wrong file as version 3.5.4"
+
+		exit 0
+
+	fi
+
+fi
+
+### END TEMPORARY BLOCK ####
+
+
+
+
 FILENAME="$HOME/Downloads/IntelPowerGadget-${LATEST_VERSION}.dmg"
 
 # no RELEASE_NOTES_URL
