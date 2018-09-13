@@ -128,7 +128,7 @@ else
 	exit 1
 fi
 
-echo "$NAME: launching custom installer/updater from: '$UNZIP_TO/Do Not Disturb Installer.app'"
+echo "$NAME: launching custom installer/updater: '$UNZIP_TO/Do Not Disturb Installer.app'"
 
 	# launch the custom installer app and wait for it to finish.
 open -W -a "$UNZIP_TO/Do Not Disturb Installer.app"
