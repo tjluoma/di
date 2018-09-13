@@ -190,6 +190,12 @@ fi
 	# IMO - this install is too complicated to do with 'unpkg.py'
 	# so we'll have to settle for /usr/sbin/installer
 
+cat <<EOINPUT
+
+*** NOTE: This .pkg can take an absurdly long time to install. This is is “normal”. Do not panic.
+
+EOINPUT
+
 if (( $+commands[pkginstall.sh] ))
 then
 	pkginstall.sh "$PKG" && diskutil eject "$MNTPNT"
