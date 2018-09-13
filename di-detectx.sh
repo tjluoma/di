@@ -5,16 +5,22 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-15
 
-NAME="$0:t:r"
-
-INSTALL_TO='/Applications/DetectX.app'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO='/Applications/DetectX.app'
+
+HOMEPAGE="https://sqwarq.com/detectx/"
+
+DOWNLOAD_PAGE="https://s3.amazonaws.com/sqwarq.com/PublicZips/DetectX.app.zip"
+
+SUMMARY="DetectX is, rather, a lightweight, on-demand dedicated search and troubleshooting tool that can identify malware, adware, keyloggers, potentially unwanted apps and potentially destabilising apps on a mac. It can also help you (or us, if you consult us), to identify unknown and novel threats through its Profiler and History functions."
 
 XML_FEED='https://s3.amazonaws.com/sqwarq.com/AppCasts/detectx.xml'
 
