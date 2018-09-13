@@ -5,18 +5,24 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-18
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/Catch.app"
-
-XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+NAME="$0:t:r"
+
+INSTALL_TO="/Applications/Catch.app"
+
+XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
+
+HOMEPAGE="http://giorgiocalderolla.com/catch.html"
+
+DOWNLOAD_PAGE="https://github.com/mipstian/catch/releases/latest"
+
+SUMMARY="Catch is the easiest way to use ShowRSS on the Mac. It’ll take care of everything. New shows will be downloaded as they are released."
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
