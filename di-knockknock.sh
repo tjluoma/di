@@ -13,7 +13,9 @@ HOMEPAGE="https://objective-see.com/products/knockknock.html"
 
 DOWNLOAD_PAGE="https://objective-see.com/products/knockknock.html"
 
-SUMMARY="See what‘s persistently installed on your Mac. Malware installs itself persistently, to ensure it is automatically executed each time a computer is restarted. KnockKnock uncovers persistently installed software in order to generically reveal such malware."
+SUMMARY="See what’s persistently installed on your Mac. Malware installs itself persistently, to ensure it is automatically executed each time a computer is restarted. KnockKnock uncovers persistently installed software in order to generically reveal such malware."
+
+RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/KnockKnock.txt'
 
 if [ -e "$HOME/.path" ]
 then
@@ -22,24 +24,30 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/knockknock.rb"
+INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
+		| gunzip -f -c \
+		| tr -s '"|\047' '\012' \
+		| egrep '^http.*\.zip|sha-1:' \
+		| awk '{print $NF}' \
+		| head -2))
 
-RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/KnockKnock.txt'
+URL="$INFO[1]"
 
-LATEST_VERSION=$(curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail "$RELEASE_NOTES_URL" \
-				| gunzip \
-				| awk -F' ' '/^VERSION/{print $2}' \
-				| head -1 )
+EXPECTED_SHA1="$INFO[2]"
 
-if [ "$LATEST_VERSION" = "" -a -s "$CASK_FILE" ]
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
 then
-	LATEST_VERSION=$(awk -F"'" '/version /{print $2}' "$CASK_FILE" 2>/dev/null)
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	EXPECTED_SHA1: $EXPECTED_SHA1
+	"
 
-		# If we didn't find anything in the $CASK_FILE, then use '1.9.3 as a known version
-	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="1.9.3"
+	exit 1
 fi
-
-URL="https://bitbucket.org/objective-see/deploy/downloads/KnockKnock_$LATEST_VERSION.zip"
 
 if [[ "$LATEST_VERSION" == "" ]]
 then
@@ -73,17 +81,27 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -lt "8" ]
+then
+	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.8 and higher (you are using 10.$OS_VER)."
+	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
+fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
+SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.sha1.txt"
+
+	echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+
 ## RELEASE_NOTES_URL - begin
 
-(echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
- curl -H "Accept-Encoding: gzip,deflate" --silent --location --fail \
-	"$RELEASE_NOTES_URL" \
-	| gunzip \
-	| awk '/^VERSION/{i++}i==1' ;
- echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	(echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
+	 curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
+	 | gunzip -f -c \
+	 | awk '/^VERSION/{i++}i==1' ;
+	 echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
 ## RELEASE_NOTES_URL - end
 
@@ -99,6 +117,28 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+##
+
+echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
+
+cd "$FILENAME:h"
+
+shasum -c "$SHA_FILE"
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: SHA-1 verification passed"
+
+else
+	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
+
+##
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
