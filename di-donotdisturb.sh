@@ -18,38 +18,24 @@ HOMEPAGE="https://objective-see.com/products/dnd.html"
 
 DOWNLOAD_PAGE="https://objective-see.com/products/dnd.html"
 
+RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/DoNotDisturb.txt'
+
 SUMMARY="Physical access (or “evil maid”) attacks are some of the most insidious threats faced by those of us who travel with our Macs. Do Not Disturb (DND) is a free, open-source utility that aims to detect and alert you of such attacks."
 
 INSTALL_TO='/Applications/Do Not Disturb.app'
 
-DARWIN=$(uname -r)
+INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS 'https://objective-see.com/products/dnd.html' \
+		| gunzip \
+		| tr -s '"|\047' '\012' \
+		| egrep '^http.*\.zip|sha-1:' \
+		| awk '{print $NF}' \
+		| head -2))
 
-CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
+URL="$INFO[1]"
 
-APP_NAME_FOR_UA=$(echo "$INSTALL_TO:t:r" | sed 's# #%20#g')
+EXPECTED_SHA1="$INFO[2]"
 
-INFO=($(curl -sfLS "https://objective-see.com/products.json" \
-  -H "Accept: */*" \
-  -H "Accept-Language: en-us" \
-  -H "User-Agent: ${APP_NAME_FOR_UA}/1.2.2 CFNetwork/${CFNETWORK_VER} Darwin/${DARWIN} (x86_64)" \
-  | sed -e '1,/"Do Not Disturb":/d; /}/,$d' -e 's#,##g' -e 's#"##g' \
-  | egrep '(version|zip)' \
-  | sort \
-  | awk '{print $NF}'))
-
-	# the app uses the same version number for both CFBundleShortVersionString and CFBundleVersion
-LATEST_VERSION="$INFO[1]"
-
-URL="$INFO[2]"
-
-	# 2018-09-13 - Temporary workaround for incorrect version/URL info in 'products.json'
-if [ "$LATEST_VERSION" = "1.2.1" -o "$URL" = "https://bitbucket.org/objective-see/deploy/downloads/DND_1.2.1.zip" ]
-then
-
-	URL=$(curl -sfLS 'https://objective-see.com/products/dnd.html' | gunzip | tr -s '"|\047' '\012' | egrep '^http.*\.zip' | head -1)
-	LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
-
-fi
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -90,12 +76,22 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.zip"
 
-RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/DoNotDisturb.txt'
+SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.sha1.txt"
+
+	echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 
 ( curl -sfLS "$RELEASE_NOTES_URL" \
 	| gunzip \
 	| awk '/^VERSION/{i++}i==1' ;
 	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -lt "12" ]
+then
+	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.12 and higher (you are using 10.$OS_VER)."
+	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -109,6 +105,26 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+##
+
+echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
+
+shasum -c "$SHA_FILE"
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: SHA-1 verification passed"
+
+else
+	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+
+	exit 1
+fi
+
+##
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -128,23 +144,28 @@ else
 	exit 1
 fi
 
-echo "$NAME: launching custom installer/updater: '$UNZIP_TO/Do Not Disturb Installer.app'"
+INSTALLER="$UNZIP_TO/Do Not Disturb Installer.app"
+
+echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
 	# launch the custom installer app and wait for it to finish.
-open -W -a "$UNZIP_TO/Do Not Disturb Installer.app"
+open -W -a "$INSTALLER"
 
 EXIT="$?"
 
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: Successfully installed/updated '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: '$INSTALLER' failed."
+
+	open -R "$INSTALLER"
 
 	exit 1
 fi
+
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
