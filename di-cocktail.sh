@@ -58,28 +58,23 @@ then
 
 elif [ "$OS_VER" = "10.12" ]
 then
-	LATEST_VERSION='10.8'
-	EXPECTED_SHASUM='54fb6665cd43f4fb1a536e475fe71d6f1ca12ff547948a35e6625f2fb7997578'
+	LATEST_VERSION='10.9.1'
+	EXPECTED_SHASUM='c41bdcff4e0a1bdf3b0b1dfa11e12de71acf64010c7dccfd337ec2f42ca7bd4f'
 	XML_FEED='https://www.maintain.se/downloads/sparkle/sierra/sierra.xml'
 	URL='https://www.maintain.se/downloads/sparkle/sierra/Cocktail_10.9.1.zip'
 
 elif [ "$OS_VER" = "10.13" ]
 then
 
-	#LATEST_VERSION='11.6.2'
-	#EXPECTED_SHASUM='3ebb51b302a16dabefe54a434b9d114d64627e30c6681b8c9ac8d8f6185b8f6c'
 	XML_FEED='https://www.maintain.se/downloads/sparkle/highsierra/highsierra.xml'
 	RELEASE_NOTES_URL='https://www.maintain.se/downloads/sparkle/highsierra/ReleaseNotes.html'
-
-# sparkle:version="11.6.3"
 
 elif [ "$OS_VER" = "10.14" ]
 then
 
-	#LATEST_VERSION='11.6.2'
-	#EXPECTED_SHASUM='3ebb51b302a16dabefe54a434b9d114d64627e30c6681b8c9ac8d8f6185b8f6c'
 	XML_FEED='https://www.maintain.se/downloads/sparkle/mojave/mojave.xml'
 	RELEASE_NOTES_URL='https://www.maintain.se/downloads/sparkle/mojave/ReleaseNotes.html'
+
 else
 
 	echo "$NAME: Don't know what to do for $OS_VER."
@@ -87,16 +82,71 @@ else
 
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
-
-if (( $+commands[lynx] ))
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 
-	( curl -sfLS "${RELEASE_NOTES_URL}" \
-		| sed '1,/^Release notes$/d; /^System Requirements$/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	INFO=($(curl -sSfL "${XML_FEED}" \
+			| tr -s ' ' '\012' \
+			| egrep 'sparkle:version|url=' \
+			| head -2 \
+			| sort \
+			| awk -F'"' '/^/{print $2}'))
 
+		# "Sparkle" will always come before "url" because of "sort"
+	LATEST_VERSION="$INFO[1]"
+	URL="$INFO[2]"
+
+		# If any of these are blank, we should not continue
+	if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+	then
+		echo "$NAME: Error: bad data received:
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		URL: $URL"
+		exit 1
+	fi
+
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	autoload is-at-least
+
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
+fi
+
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}-for-OS-${OS_VER}.zip"
+
+if [[ "$RELEASE_NOTES_URL" != "" ]]
+then
+	if (( $+commands[lynx] ))
+	then
+
+		( curl -sfLS "${RELEASE_NOTES_URL}" \
+			| sed '1,/^Release notes$/d; /^System Requirements$/,$d' \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -111,6 +161,31 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+if [[ "$EXPECTED_SHASUM" != "" ]]
+then
+
+	cd "$FILENAME:h"
+
+	echo "$EXPECTED_SHASUM ?$FILENAME:t" > "$FILENAME:r.sha256.txt"
+
+	echo -n "$NAME: Verifying shasum of '$FILENAME:t': "
+
+	shasum -c "$FILENAME:r.sha256.txt"
+
+	EXIT="$?"
+
+	if [ "$EXIT" = "0" ]
+	then
+		echo "$NAME: Verification of '$FILENAME' was successful"
+
+	else
+		echo "$NAME: Verification of '$FILENAME' FAILED (\$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
