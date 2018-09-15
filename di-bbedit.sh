@@ -51,10 +51,10 @@ function use_v12 {
 	fi
 
 	INFO=($(curl -sfL "$XML_FEED" \
-			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
-			| tail -8 \
+			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryVersion|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
+			| tail -11 \
 			| tr -s '\t|\012' ' ' \
-			| perl -p -e 's/^ // ; s/ -- /\n/ ; s/ -- /\n/ ' \
+			| perl -p -e 's/^ // ; s/ -- /\n/ ; s/ -- /\n/  ; s/ -- /\n/ ' \
 			| sed 's#<string>##g ; s#<\/string>##g ; s#<key>##g ; s#<\/key>##g' \
 			| sort))
 
@@ -67,6 +67,7 @@ function use_v12 {
 	SHA256_EXPECTED="$INFO[2]"
 	URL="$INFO[4]"
 	LATEST_VERSION="$INFO[6]"
+	LATEST_BUILD="$INFO[8]"
 
 	#echo "
 	#SHA256_EXPECTED: $SHA256_EXPECTED
@@ -161,25 +162,52 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	if [[ "$LATEST_BUILD" == "" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
+		INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+
+		if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+		then
+			echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+			exit 0
+		fi
+
+		autoload is-at-least
+
+		is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+		if [ "$?" = "0" ]
+		then
+			echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+			exit 0
+		fi
+
+		echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	else
+
+		INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+		INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+		autoload is-at-least
+
+		is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+		VERSION_COMPARE="$?"
+
+		is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+		BUILD_COMPARE="$?"
+
+		if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+		then
+			echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+			exit 0
+		fi
+
+		echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
 	fi
-
-	autoload is-at-least
-
-	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-	if [ "$?" = "0" ]
-	then
-		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-		exit 0
-	fi
-
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 fi
 
@@ -205,11 +233,16 @@ fi
 ## ?
 ## So that's what I'm doing instead.
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+if [[ "$LATEST_BUILD" == "" ]]
+then
+	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+else
+	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+fi
 
-RELEASE_NOTES_FILE="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.ReleaseNotes.txt"
+	RELEASE_NOTES_FILE="$FILENAME:r.ReleaseNotes.txt"
 
-SHA256_FILE="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.sha256"
+	SHA256_FILE="$FILENAME:r.sha256.txt"
 
 if [[ "$USE12" = "yes" ]]
 then
@@ -253,11 +286,11 @@ then
 		# into a text file with the full path of the filename of the file we just downloaded
 		# and then we can check it with 'shasum --check'
 		##
-		## !! NOTE THERE MUST BE _TWO_ SPACES BETWEEN SHA AND FILENAME OR ELSE CHECKING WILL FAIL !!
-		##
-	echo "$SHA256_EXPECTED  $FILENAME" >| "$SHA256_FILE"
+	echo "$SHA256_EXPECTED ?$FILENAME:t" >| "$SHA256_FILE"
 
-	echo "$NAME: Verifying sha256 checksum of '$FILENAME':"
+	echo -n "$NAME: Verifying sha256 checksum of '$FILENAME': "
+
+	cd "$FILENAME:h"
 
 	shasum --check "$SHA256_FILE"
 
@@ -288,6 +321,8 @@ then
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
+echo "$NAME: Mounting '$FILENAME':"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
 		| tail -1 \
@@ -297,9 +332,11 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO':"
 
 ditto --noqtn "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
@@ -315,6 +352,8 @@ else
 
 	exit 1
 fi
+
+echo -n "$NAME: Ejecting '$MNTPNT': "
 
 diskutil eject "$MNTPNT"
 
