@@ -16,14 +16,14 @@ fi
 
 INSTALL_TO="/Applications/OmniFocus.app"
 
-URL=$(echo -n 'https://omnistaging.omnigroup.com/omnifocus/';  curl -sfLS https://omnistaging.omnigroup.com/omnifocus/ | tr '"|\047' '\012' | egrep '\.dmg$' | head -1)
+URL=$(echo -n 'https://omnistaging.omnigroup.com/omnifocus/'; curl -sfLS https://omnistaging.omnigroup.com/omnifocus/ | tr '"|\047' '\012' | egrep '\.dmg$' | head -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*OmniFocus-3.0.x-r##g ; s#-Test##g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | cut -d. -f3)
+	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | awk -F'.' '{print $NF}')
 
 	autoload is-at-least
 
