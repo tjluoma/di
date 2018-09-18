@@ -110,7 +110,7 @@ then
 
 	if [ "$?" = "0" ]
 	then
-		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version ($LATEST_VERSION)"
 		exit 0
 	fi
 
