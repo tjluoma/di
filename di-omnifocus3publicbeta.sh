@@ -24,7 +24,6 @@ then
 	exit 1
 fi
 
-
 URL=$(echo -n 'https://omnistaging.omnigroup.com/omnifocus/'; curl -sfLS https://omnistaging.omnigroup.com/omnifocus/ | tr '"|\047' '\012' | egrep '\.dmg$' | head -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*OmniFocus-3.0.x-r##g ; s#-Test##g')
