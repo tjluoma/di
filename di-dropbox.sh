@@ -28,7 +28,6 @@ function msg {
 
 function die {
 	msg "[die] $@"
-	po.sh "[die] $@"
 	exit 1
 }
 
