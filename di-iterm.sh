@@ -42,39 +42,47 @@ then
 	HEAD_OR_TAIL='tail'
 	NAME="$NAME (beta releases)"
 	XML_FEED="https://iterm2.com/appcasts/nightly.xml"
+
+	URL=$(curl -sfLS --head 'https://iterm2.com/nightly/latest' | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+
+	LATEST_VERSION=$(echo "$URL:t:r" | sed -e 's#iTerm2-##g' -e 's#_#.#g')
+
+	RELEASE_NOTES_URL='https://iterm2.com/appcasts/nightly_changes.txt'
+
 else
 		## This is for official, non-beta versions
 	HEAD_OR_TAIL='tail'
 	XML_FEED="https://iterm2.com/appcasts/final.xml"
-fi
 
-	# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
-INFO=($(curl -sfL "$XML_FEED" \
-		| tr ' ' '\012' \
-		| egrep '^(url|sparkle:version)=' \
-		| ${HEAD_OR_TAIL} -2 \
-		| sort \
-		| awk -F'"' '//{print $2}'))
+		# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
+	INFO=($(curl -sfL "$XML_FEED" \
+			| tr ' ' '\012' \
+			| egrep '^(url|sparkle:version)=' \
+			| ${HEAD_OR_TAIL} -2 \
+			| sort \
+			| awk -F'"' '//{print $2}'))
 
-LATEST_VERSION="$INFO[1]"
+	LATEST_VERSION="$INFO[1]"
 
-URL="$INFO[2]"
+	URL="$INFO[2]"
 
-# This always seems to be a plain-text file, but the filename itself changes
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
-	| awk -F' ' '/https/{print $1}')
+	# This always seems to be a plain-text file, but the filename itself changes
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+		| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
+		| awk -F' ' '/https/{print $1}')
 
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
-then
-	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
-	"
+		# If any of these are blank, we should not continue
+	if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	then
+		echo "$NAME: Error: bad data received:
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		URL: $URL
+		"
 
-	die
+		die
+	fi
+
 fi
 
 if [[ -e "$INSTALL_TO" ]]
