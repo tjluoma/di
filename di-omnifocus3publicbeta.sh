@@ -16,6 +16,15 @@ fi
 
 INSTALL_TO="/Applications/OmniFocus.app"
 
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -lt "13" ]
+then
+	echo "$NAME: Sorry, you must be running at least version 10.13 of Mac OS in order to use OmniFocus 3."
+	exit 1
+fi
+
+
 URL=$(echo -n 'https://omnistaging.omnigroup.com/omnifocus/'; curl -sfLS https://omnistaging.omnigroup.com/omnifocus/ | tr '"|\047' '\012' | egrep '\.dmg$' | head -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*OmniFocus-3.0.x-r##g ; s#-Test##g')
@@ -47,6 +56,8 @@ else
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+
+echo "\n\n$NAME: Be sure to read the warnings at <https://omnistaging.omnigroup.com/omnifocus/> before using these builds!\n"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
