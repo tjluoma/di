@@ -97,7 +97,7 @@ then
 		# This is intended to allow users to have their own 'di-'
 		# scripts which are not part of the official repo
 		# but which are triggered as part of 'di-auto.sh'
-	echo "$NAME: Found 'di-local.sh'. Running it:"
+	log "Found 'di-local.sh'. Running it"
 
 	di-local.sh
 
