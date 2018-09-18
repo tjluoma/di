@@ -27,7 +27,9 @@ zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
-XML_FEED="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=1011&platform=osx&arch=x86_64&version=21098000"
+OS_VER=$(sw_vers -productVersion | tr -d '.')
+
+XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=$OS_VER&platform=osx&arch=x86_64&version=3548000"
 
 	# sparkle:version= is the only version information in feed
 LATEST_VERSION=`curl -sfL "$XML_FEED" | awk -F'"' '/sparkle:version=/{print $2}'`
