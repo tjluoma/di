@@ -89,15 +89,14 @@ then
 
 	RELEASE_NOTES_URL="https://www.stclairsoft.com/DefaultFolderX/beta.html"
 
-	echo "$NAME: Release Notes for Default Folder X:"
+	FILENAME="$HOME/Downloads/DefaultFolderX-beta-${LATEST_VERSION}.dmg"
 
+	( echo "$NAME: Release Notes for Default Folder X:" ;
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<!-- InstanceBeginEditable name="main editable" -->/d; /<H3>How to be a beta tester:<\/H3>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
 
-	echo "\nSource: <$RELEASE_NOTES_URL>"
-
-	FILENAME="$HOME/Downloads/DefaultFolderX-beta-${LATEST_VERSION}.dmg"
 
 else
 
@@ -172,6 +171,8 @@ else
 
 	fi
 
+	FILENAME="$HOME/Downloads/DefaultFolderX-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
 	if (( $+commands[lynx] ))
 	then
 
@@ -179,17 +180,13 @@ else
 		| sed '1,/<sparkle:releaseNotesLink xml:lang="en">/d; /<\/sparkle:releaseNotesLink>/,$d' \
 		| tr -d '[:blank:]')
 
-		echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD: \n"
-
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD: \n" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<h3>/d; /<h3>/,$d' \
-		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin
-
-		echo "\nSource: <${RELEASE_NOTES_URL}>"
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
 
 	fi
-
-	FILENAME="$HOME/Downloads/DefaultFolderX-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 fi
 
@@ -260,7 +257,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && echo "$NAME: Re-Launching '$INSTALL_TO':"  && open -a "$INSTALL_TO"
 
-echo "$NAME: Unmounting $MNTPNT:"
+echo -n "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
 
@@ -272,7 +269,6 @@ then
 	--message "Updated to $LATEST_VERSION" \
 	--title "$NAME"
 fi
-
 
 exit 0
 #EOF
