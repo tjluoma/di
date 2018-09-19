@@ -17,6 +17,8 @@ SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes
 
 XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
 
+ITUNES_URL='itunes.apple.com/us/app/keep-it/id1272768911'
+
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| head -1 \
@@ -76,11 +78,24 @@ then
 
 	FIRST_INSTALL='no'
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+
+		if [[ "$ITUNES_URL" != "" ]]
+		then
+			echo "	See <https://$ITUNES_URL?mt=12> or"
+			echo "	<macappstore://$ITUNES_URL>"
+		fi
+
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
+
 else
 
 	FIRST_INSTALL='yes'
 fi
-
 
 FILENAME="$HOME/Downloads/KeepIt-${LATEST_VERSION}.dmg"
 
