@@ -257,7 +257,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && echo "$NAME: Re-Launching '$INSTALL_TO':"  && open -a "$INSTALL_TO"
 
-echo -n "$NAME: Unmounting $MNTPNT:"
+echo -n "$NAME: Unmounting $MNTPNT: "
 
 diskutil eject "$MNTPNT"
 
