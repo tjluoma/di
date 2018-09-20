@@ -11,7 +11,7 @@ INSTALL_TO='/Applications/BitTorrent Sync.app'
 
 HOMEPAGE="https://www.resilio.com"
 
-DOWNLOAD_PAGE="https://www.resilio.com/individuals/"
+DOWNLOAD_PAGE="https://download-cdn.resilio.com/stable/osx/Resilio-Sync.dmg"
 
 SUMMARY="Sync any folder to all your devices. Sync photos, videos, music, PDFs, docs or any other file types to/from your mobile phone, laptop, or NAS."
 
@@ -28,7 +28,45 @@ zmodload zsh/datetime
 
 	# I cannot figure out where the '33685507' comes from
 	# but I'll use it until it breaks
-URL="http://update.getsync.com/cfu.php?cl=BitTorrent%20Sync&pl=osx&v=33685507&cmp=0&lang=en&sysver=10.11.0"
+# URL="http://update.getsync.com/cfu.php?cl=BitTorrent%20Sync&pl=osx&v=33685507&cmp=0&lang=en&sysver=10.13.0"
+
+URL="https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33882125"
+
+# curl "https://update.resilio.com/cfu.php?b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33947648" \
+#   -H "Accept: application/rss+xml,*/*;q=0.1" \
+#   -H "Accept-Language: en-us" \
+#   -H "User-Agent: Resilio Sync/2.6.0 Sparkle/1.16.0"
+#
+# got '<rss></rss>'
+#
+# Is that just because we're up to date?
+
+#
+# out of date
+#
+# first sent this
+#
+#
+# curl "https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33882125" \
+#   -H "Accept: application/rss+xml,*/*;q=0.1" \
+#   -H "Accept-Language: en-us" \
+#   -H "User-Agent: Resilio Sync/2.5.13 Sparkle/1.16.0"
+#
+# which gave me the non-changelog information -- URL, versions, etc
+#
+# Then sent this
+#
+# curl "https://update.resilio.com/cfu.php?v=33882125&pl=osx&relnotes=1&forced=1&beta=0" \
+#   -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+#   -H "Accept-Language: en-us" \
+#   -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+#
+# which gave me the changelog
+#
+#
+# when mounted, it's /Volumes/Resilio\ Sync/Resilio\ Sync.app/
+#
+
 
 LOG="$HOME/Library/Logs/${NAME}.log"
 
