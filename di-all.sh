@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-13
 
+## This keeps running on its own, so I have to do this to stop it
+exit 0
+
 NAME="$0:t:r"
 
 if [ -e "$HOME/.path" ]
