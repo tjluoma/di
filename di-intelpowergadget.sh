@@ -33,7 +33,9 @@ OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 if [[ "$OS_VER" -ge "13" ]]
 then
 
-	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" |head -1| sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+	# LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" |head -1| sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+
+	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | head -2 | tail -1 | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
 
 	TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
 		| egrep "Intel® Power Gadget .* for Mac" \
