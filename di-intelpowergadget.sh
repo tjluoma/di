@@ -39,7 +39,8 @@ then
 
 	TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
 		| egrep "Intel® Power Gadget .* for Mac" \
-		| head -1 \
+		| head -2 \
+		| tail -1 \
 		| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
 
 	URL=$(curl --head -sfL "$TEASER_URL" \
