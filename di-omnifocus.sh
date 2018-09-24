@@ -25,12 +25,14 @@ fi
 function use_v2 {
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniFocus2/"
 	ITUNES_URL="itunes.apple.com/us/app/omnifocus-2/id867299399"
+	ASTERISK=' Note: version 3 is now available from: <https://www.omnigroup.com/omnifocus>'
 }
 
 function use_v3 {
 
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniFocus3/"
 	ITUNES_URL="itunes.apple.com/us/app/omnifocus-3/id1346203938"
+	ASTERISK=''
 }
 
 if [[ -e "$INSTALL_TO" ]]
@@ -102,7 +104,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD) ${ASTERISK}"
 		exit 0
 	fi
 
