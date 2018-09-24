@@ -120,7 +120,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.tbz2
 if (( $+commands[lynx] ))
 then
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r $LATEST_VERSION:\n" ;
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r $LATEST_VERSION/$LATEST_BUILD:\n" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<article>/d; /<\/article>/,$d' \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
