@@ -40,9 +40,11 @@ RELEASE_NOTES_URL="$XML_FEED"
 
 	# FYI - CFBundleShortVersionString and CFBundleVersion are identical in the app
 INFO=($(curl -sfL "$XML_FEED" \
+		| egrep 'sparkle:version=|url=' \
+		| fgrep -vi 'delta' \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version=|url=' \
-		| head -2 \
+		| tail -2 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
@@ -88,7 +90,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tar.bz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz2"
 
 if (( $+commands[lynx] ))
 then
