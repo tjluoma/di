@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest OmniFocus 2 or 3 (which is due soon)
+# Purpose: Download and install the latest OmniFocus 2 or 3 (depending on which is installed)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
