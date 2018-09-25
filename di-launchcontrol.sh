@@ -74,7 +74,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tar.bz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
 
 if (( $+commands[lynx] ))
 then
@@ -102,7 +102,7 @@ then
 	mv -vn "$INSTALL_TO" "$HOME/.Trash/LaunchControl-$INSTALLED_VERSION.app"
 fi
 
-	# Unpack and Install the .tar.bz2 file to /Applications/
+	# Unpack and Install the .tbz2 file to /Applications/
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO..."
 
