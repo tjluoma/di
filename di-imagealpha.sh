@@ -71,8 +71,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-# .tar.bz2
-
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.tbz2"
 
 if (( $+commands[lynx] ))
