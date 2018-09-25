@@ -5,6 +5,8 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-10
 
+# @TODO - figure out limits for what version numbers work with which OSes
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/VMware Fusion.app"
