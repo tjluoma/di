@@ -22,6 +22,12 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+zmodload zsh/datetime
+
+TIME=$(strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS")
+
+function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -136,6 +142,8 @@ then
 
 	exit 0
 fi
+
+pgrep -q -x 'SuperDuper!'  && (echo "$NAME: SuperDuper! is running, cannot install." | tee -a "$HOME/Desktop/$NAME.log" ) && exit 0
 
 echo "$NAME: Preparing to install $PKG"
 
