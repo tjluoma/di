@@ -7,7 +7,9 @@
 # Date:	2014-10-11
 
 	# 2018-08-02 - this is what the newest version available calls itself
-INSTALL_TO='/Applications/BitTorrent Sync.app'
+#INSTALL_TO='/Applications/BitTorrent Sync.app'
+
+INSTALL_TO='/Applications/Resilio Sync.app'
 
 HOMEPAGE="https://www.resilio.com"
 
