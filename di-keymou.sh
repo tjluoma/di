@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Keymo
+# Purpose: Download and install the latest version of Keymou
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -7,17 +7,17 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Keymo.app'
+INSTALL_TO='/Applications/Keymou.app'
 
-HOMEPAGE="https://manytricks.com/keymo/"
+HOMEPAGE="https://manytricks.com/keymou/"
 
-DOWNLOAD_PAGE="https://manytricks.com/download/keymo"
+DOWNLOAD_PAGE="https://manytricks.com/download/keymou"
 
-SUMMARY="Sometimes using the keyboard is just more convenient than a mouse or trackpad: Keymo gives you full control over your mouse pointer via keyboard shortcuts."
+SUMMARY="Sometimes using the keyboard is just more convenient than a mouse or trackpad: Keymou gives you full control over your mouse pointer via keyboard shortcuts."
 
-XML_FEED='https://manytricks.com/keymo/appcast.xml'
+XML_FEED='https://manytricks.com/keymou/appcast.xml'
 
-RELEASE_NOTES_URL='https://manytricks.com/keymo/releasenotes/'
+RELEASE_NOTES_URL='https://manytricks.com/keymou/releasenotes/'
 
 if [ -e "$HOME/.path" ]
 then
@@ -76,8 +76,8 @@ then
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://itunes.apple.com/us/app/keymo/id449863619?mt=12> or"
-		echo "	<macappstore://itunes.apple.com/us/app/keymo/id449863619>"
+		echo "	See <https://itunes.apple.com/us/app/keymou/id449863619?mt=12> or"
+		echo "	<macappstore://itunes.apple.com/us/app/keymou/id449863619>"
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
