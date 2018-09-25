@@ -22,6 +22,10 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+echo "$NAME: @TODO - web page has changed and this script needs to be updated."
+
+exit 0
+
 URL=$(curl -sfL --head 'https://nolobe.com/interarchy/download' \
 		| awk -F' |\r' '/^.ocation/{print $2}')
 
