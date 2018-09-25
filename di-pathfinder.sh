@@ -162,7 +162,17 @@ then
 
 	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	local TRASH="$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	COUNT='0'
+
+	while [ -e "$TRASH" ]
+	do
+		((COUNT++))
+		TRASH="$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.($COUNT).app"
+	done
+
+	mv -vf "$INSTALL_TO" "$TRASH"
 
 	EXIT="$?"
 
