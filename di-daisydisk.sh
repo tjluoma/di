@@ -5,6 +5,8 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-24
 
+# @TODO - if you are up to date, it appears that you get an empty XML_FEED
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -23,6 +25,8 @@ DOWNLOAD_PAGE="https://daisydiskapp.com/downloads/DaisyDisk.zip"
 SUMMARY="DaisyDisk also gives you a great overview of all connected disks, be it Macintosh HD, Thunderbolt disk, flash, network storage, you name it."
 
 OS_VER=`sw_vers -productVersion`
+
+# OS_VER='10.13.6'
 
 	# If we don't tell it we are using at least version 4, we get an empty feed
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4'`
