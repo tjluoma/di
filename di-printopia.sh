@@ -5,6 +5,8 @@
 # Mail: luomat at gmail dot com
 # Date: 2018-08-26
 
+# @TODO - the version number in this script seems to be terribly broken
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Printopia.app"
@@ -56,6 +58,7 @@ function trash_our_files {
 	# 	well-formed XML really makes things easier
 IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
 			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"team"|"url"' \
+			| egrep -v '(https://www.decisivetactics.com/products/printopia/maintenance-expired|https://www.decisivetactics.com/products/printopia/release-notes-sparkle)' \
 			| head -8 \
 			| sed 's#^[	 ]*##g' \
 			| tr -d '"|,' \
