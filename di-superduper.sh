@@ -95,7 +95,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/SuperDuper-${LATEST_VERSION}.tar.gz"
+FILENAME="$HOME/Downloads/SuperDuper-${LATEST_VERSION}.tgz"
 
 ## Release Notes BEGIN
 
@@ -177,7 +177,7 @@ then
 
 	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
-	mv -vf "$FILENAME" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.tar.gz"
+	mv -vf "$FILENAME" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.tgz"
 
 	mv -vf "$FILENAME:r.txt" "$FILENAME:h/SuperDuper-${INSTALLED_VERSION}_${INSTALLED_BUILD}.txt"
 
