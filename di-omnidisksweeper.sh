@@ -32,13 +32,14 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	# No other version information available in feed
 INFO=($(curl -sfL "$XML_FEED" \
 	| tidy --input-xml yes --output-xml yes --show-warnings no --force-output yes --quiet yes --wrap 0 \
-	| egrep '<omniappcast:marketingVersion>|<enclosure .*\.tbz2' \
+	| egrep '<omniappcast:marketingVersion>|<enclosure .*\.dmg' \
 	| head -2 \
-	| sed 's#<omniappcast:marketingVersion>##g; s#<\/omniappcast:marketingVersion>##g ; s#.*https#https#g ; s#\.tbz2.*#.tbz2#g' \
+	| sed 's#<omniappcast:marketingVersion>##g; s#<\/omniappcast:marketingVersion>##g ; s#.*https#https#g ; s#\.dmg.*#.dmg#g' \
 	| sort))
 
 LATEST_VERSION="$INFO[1]"
 
+	# https://www.omnigroup.com/download/latest/OmniDiskSweeper
 URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
@@ -52,6 +53,35 @@ then
 
 	exit 1
 fi
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
+
+case "$OS_VER" in
+	'10.12')
+		URL='http://downloads.omnigroup.com/software/MacOSX/10.12/OmniDiskSweeper-1.10.dmg'
+		LATEST_VERSION="1.10"
+		RELEASE_NOTES_URL=''
+	;;
+
+	'10.8'|'10.9'|'10.10'|'10.11')
+		URL='http://downloads.omnigroup.com/software/MacOSX/10.8/OmniDiskSweeper-1.9.dmg'
+		LATEST_VERSION="1.9"
+		RELEASE_NOTES_URL=''
+	;;
+
+	'10.6'|'10.7')
+		URL='http://downloads.omnigroup.com/software/MacOSX/10.6/OmniDiskSweeper-1.8.dmg'
+		LATEST_VERSION="1.8"
+		RELEASE_NOTES_URL=''
+	;;
+
+	'10.5'|'10.4')
+		URL='http://downloads.omnigroup.com/software/MacOSX/10.4/OmniDiskSweeper-1.7.2.dmg'
+		LATEST_VERSION="1.7.2"
+		RELEASE_NOTES_URL=''
+	;;
+
+esac
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -78,17 +108,21 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 
 if (( $+commands[lynx] ))
 then
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<article>/d; /<\/article>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	if [[ "$RELEASE_NOTES_URL" != "" ]]
+	then
 
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<article>/d; /<\/article>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -104,20 +138,16 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+echo "$NAME: Accepting EULA and mounting $FILENAME: (sorry if this opens a Finder window)"
 
-echo "$NAME: Unpacking '$FILENAME' to '$UNZIP_TO':"
+MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
-tar -x -C "${UNZIP_TO}" -j -f "$FILENAME"
-
-EXIT="$?"
-
-if [ "$EXIT" != "0" ]
+if [[ "$MNTPNT" == "" ]]
 then
-
-	echo "$NAME: 'tar' failed (\$EXIT = $EXIT)"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -128,10 +158,27 @@ then
 	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
-mv -vf "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
+	echo "$NAME: ditto failed"
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
