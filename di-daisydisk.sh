@@ -29,9 +29,9 @@ OS_VER=`sw_vers -productVersion`
 # OS_VER='10.13.6'
 
 	# If we don't tell it we are using at least version 4, we get an empty feed
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4'`
+MAJOR_VERSION='4'
 
-XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=${INSTALLED_VERSION}&appEdition=Standard"
+XML_FEED="http://www.daisydiskapp.com/downloads/appcastFeed.php?osVersion=${OS_VER}&appVersion=${MAJOR_VERSION}&appEdition=Standard"
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
@@ -67,6 +67,8 @@ if [[ -e "$INSTALL_TO" ]]
 then
 
 	autoload is-at-least
+
+	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4'`
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
