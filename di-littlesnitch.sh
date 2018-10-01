@@ -17,7 +17,7 @@ SUMMARY="As soon as you’re connected to the Internet, applications can potenti
 
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/littlesnitch-prefer-betas.txt"
+PREFERS_BETAS_FILE="$HOME/.config/di/prefers/littlesnitch-betas.txt"
 
 if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
@@ -44,21 +44,25 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| ${HEAD_OR_TAIL} -1)
 
 INFO=($(curl -sfL "$XML_FEED" \
-		| egrep -A1 'BundleVersion|DownloadURL' \
+		| egrep -A1 'BundleShortVersionString|BundleVersion|DownloadURL' \
 		| fgrep '<string>' \
-		| ${HEAD_OR_TAIL} -2 \
+		| ${HEAD_OR_TAIL} -3 \
+		| sort \
 		| sed 's#.*<string>##g; s#</string>##g'))
 
 LATEST_VERSION="$INFO[1]"
 
-URL="$INFO[2]"
+LATEST_BUILD="$INFO[2]"
 
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+URL="$INFO[3]"
+
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -68,29 +72,36 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/LittleSnitch-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/LittleSnitch-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -101,7 +112,7 @@ then
 
 fi
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -109,6 +120,10 @@ EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| fgrep -A 1 '<key>mount-point</key>' \
@@ -120,7 +135,6 @@ then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
 fi
-
 
 	# Unfortunately, the installer _requires_ human interaction, so we can't automate that part.
 	# ¯\_(ツ)_/¯
