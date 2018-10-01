@@ -74,7 +74,7 @@ then
 
 	if [ "$?" = "0" ]
 	then
-		echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+		echo "$NAME: Up-To-Date ($LATEST_VERSION)"
 		exit 0
 	fi
 
