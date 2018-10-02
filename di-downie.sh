@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Downie.app'
+INSTALL_TO='/Applications/Downie 3.app'
 
 HOMEPAGE="https://software.charliemonroe.net/downie.php"
 
@@ -85,7 +85,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/Downie-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
