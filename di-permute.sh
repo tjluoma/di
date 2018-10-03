@@ -88,7 +88,7 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	(lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin "$RELEASE_NOTES_URL" \
+	(lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
 	| awk '/^Permute /{i++}i==1') \
 	| tee -a "$FILENAME:r.txt"
 
