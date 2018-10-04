@@ -5,8 +5,6 @@
 # Mail: luomat at gmail dot com
 # Date: 2018-08-26
 
-# @TODO - the version number in this script seems to be terribly broken
-
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Printopia.app"
@@ -56,8 +54,13 @@ function trash_our_files {
 	# 	changes at some point in the future
 	# lastly we use awk to split each line at the spaces and get the 2nd field after each :
 	# 	well-formed XML really makes things easier
+
+	## 2018-10-03 - there's now a 'sha2_512' and 'sha3_512'.
+	## 'sha2_512' can be calculated on a Mac with `shasum -a 256`
+	## I am not sure how to calculate 'sha3_512'
+
 IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
-			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha5"|"size"|"team"|"url"' \
+			| egrep '"app_version"|"app_version_short"|"sha1"|"sha2"|"sha2_512"|"size"|"team"|"url"' \
 			| egrep -v '(https://www.decisivetactics.com/products/printopia/maintenance-expired|https://www.decisivetactics.com/products/printopia/release-notes-sparkle)' \
 			| head -8 \
 			| sed 's#^[	 ]*##g' \
@@ -68,9 +71,11 @@ IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
 	# we assign “friendly names” to each line of $INFO so we can more easily refer to them later in the script
 LATEST_BUILD="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
+
 EXPECTED_SHASUM1="$INFO[3]"
 EXPECTED_SHASUM256="$INFO[4]"
 EXPECTED_SHASUM512="$INFO[5]"
+
 EXPECTED_BYTES="$INFO[6]"
 EXPECTED_CODESIGN_TEAM_ID="$INFO[7]"
 URL="$INFO[8]"
@@ -85,6 +90,30 @@ URL="$INFO[8]"
 # EXPECTED_BYTES: ${EXPECTED_BYTES}
 # URL: ${URL}
 # "
+
+if [   "$LATEST_BUILD" = "" \
+	-o "$LATEST_VERSION" = "" \
+	-o "$EXPECTED_SHASUM1" = "" \
+	-o "$EXPECTED_SHASUM256" = "" \
+	-o "$EXPECTED_SHASUM512" = "" \
+	-o "$EXPECTED_BYTES" = "" \
+	-o "$EXPECTED_CODESIGN_TEAM_ID" = "" \
+	-o "$URL" = "" ]
+then
+
+	echo "$NAME: Fatal Error! Bad data received:
+
+	LATEST_BUILD: ${LATEST_BUILD}
+	LATEST_VERSION: ${LATEST_VERSION}
+	EXPECTED_SHASUM1: $EXPECTED_SHASUM1
+	EXPECTED_SHASUM256: ${EXPECTED_SHASUM256}
+	EXPECTED_SHASUM512: $EXPECTED_SHASUM512
+	EXPECTED_BYTES: ${EXPECTED_BYTES}
+	URL: ${URL}"
+
+	exit 1
+
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
