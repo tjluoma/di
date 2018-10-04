@@ -140,7 +140,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 	# This is a file we will use to check the shasum of the .zip file after it is downloaded
 	# it will contain the shasum value that we received from the XML_FEED, above
-SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum"
+SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum.txt"
 
 	# this is a file we will use to share the release notes from the latest version
 	# so that the user can read them at their leisure (the app might have been updated
