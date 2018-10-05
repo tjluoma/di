@@ -34,7 +34,7 @@ fi
 
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/iterm-prefer-betas.txt"
+PREFERS_BETAS_FILE="$HOME/.config/di/prefers/iterm-prefer-betas.txt"
 
 if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
