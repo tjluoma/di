@@ -30,7 +30,9 @@ LATEST_RELEASE_URL=$(curl -sfLS --head https://github.com/JohnCoates/Aerial/rele
 
 LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-URL="https://github.com/JohnCoates/Aerial/releases/download/v${LATEST_VERSION}/Aerial.zip"
+#URL="https://github.com/JohnCoates/Aerial/releases/download/v${LATEST_VERSION}/Aerial.zip"
+
+URL="https://github.com/JohnCoates/Aerial/releases/download/${LATEST_VERSION}/Aerial.saver.zip"
 
 if [[ -e "$INSTALL_TO" ]]
 then
