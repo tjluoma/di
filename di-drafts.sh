@@ -48,9 +48,12 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}}-${LATEST_BUILD}.zip"
 if (( $+commands[lynx] ))
 then
 
-	( curl -sfLS 'https://getdrafts.com/mac/beta/changelog' \
+	RELEASE_NOTES_URL='https://getdrafts.com/mac/beta/changelog'
+
+	( curl -sfLS "$RELEASE_NOTES_URL" \
 	| awk '/<h4 id="/{i++}i==1'\
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ) \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin; \
+	  echo "\nSource: <$RELEASE_NOTES_URL>" ) \
 	| tee -a "$FILENAME:r.txt"
 
 fi
