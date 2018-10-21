@@ -90,7 +90,7 @@ then
 
 	( echo -n "$NAME: Release Notes for: " ;
 		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<div class="release" id="/d; /<div class="release" id="/,$d' \
+		| awk '/<h2>/{i++}i==2' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 		echo "\nSource: $RELEASE_NOTES_URL" ) | tee -a "$FILENAME:r.txt"
 
