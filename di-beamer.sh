@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Beamer.app'
 
+XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
+
 HOMEPAGE="https://beamer-app.com"
 
 DOWNLOAD_PAGE="https://beamer-app.com/download"
@@ -26,8 +28,6 @@ then
 else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
-
-XML_FEED='https://beamer-app.com/beamer3-appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
