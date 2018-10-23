@@ -102,10 +102,8 @@ then
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 	(echo -n "$NAME: Release Notes for " ;
-	curl -sfl "$RELEASE_NOTES_URL" \
-	| sed '1,/xScope 4.0 is a paid upgrade/d; /<\/div>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d' ;
+	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL" \
+	| awk '/^xScope /{i++}i==1' ;
 	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
 
 fi
