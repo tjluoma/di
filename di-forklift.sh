@@ -25,8 +25,9 @@ DOWNLOAD_PAGE="https://binarynights.com"
 SUMMARY="Connect to SFTP, FTP, WebDAV, Amazon S3, Backblaze B2, Google Drive, Rackspace CloudFiles, SMB, AFP, and NFS remote volumes and easily manage your files quickly across networks. You can connect to multiple servers at a time and even copy between them with drag and drop."
 
 RELEASE_NOTES_URL=$(curl -sfL "${XML_FEED}" \
-        | tr '\012' ' ' \
-        | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g ; s#  ##g')
+		| tr '\012' ' ' \
+		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g' \
+		| tr -d '[:blank:]')
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
