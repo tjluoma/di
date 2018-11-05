@@ -50,7 +50,7 @@ else
 	INSTALLED_VERSION="1.0"
 fi
 
-TEMPFILE="$HOME/.$NAME.$TIME.xml"
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
 curl -sSfL "${XML_FEED}" \
 		-H "Accept: application/rss+xml,*/*;q=0.1" \
