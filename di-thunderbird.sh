@@ -16,11 +16,6 @@ fi
 
 INSTALL_TO='/Applications/Thunderbird.app'
 
-# https://www.thunderbird.net/en-US/thunderbird/releases/
-
-	# https://ftp.mozilla.org/pub/thunderbird/releases/60.3.1/mac/en-US/Thunderbird%2060.3.1.dmg
-	# https://www.thunderbird.net/en-US/thunderbird/60.3.1/releasenotes/
-
 	# LATEST_BUILD is identical to LATEST_VERSION
 LATEST_VERSION=$(curl -sfLS 'https://www.thunderbird.net/en-US/thunderbird/releases/' \
 				| egrep -i 'en-US/thunderbird/.*/releasenotes/' \
