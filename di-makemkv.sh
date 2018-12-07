@@ -148,7 +148,6 @@ EXIT="$?"
 if [[ "$EXIT" == "0" ]]
 then
 	echo "$NAME: Installation of $INSTALL_TO was successful."
-	exit 0
 else
 	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 	exit 1
