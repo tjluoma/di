@@ -14,9 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/Permute.app"
+## ver 2:
+# INSTALL_TO="/Applications/Permute.app"
+INSTALL_TO="/Applications/Permute 3.app"
 
-XML_FEED='https://trial.charliemonroe.net/permute/updates.xml'
+## ver 2:
+# XML_FEED='https://trial.charliemonroe.net/permute/updates.xml'
+XML_FEED='https://trial.charliemonroe.net/permute/updates_3.xml'
 
 RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes.html'
 
