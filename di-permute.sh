@@ -22,7 +22,8 @@ INSTALL_TO="/Applications/Permute 3.app"
 # XML_FEED='https://trial.charliemonroe.net/permute/updates.xml'
 XML_FEED='https://trial.charliemonroe.net/permute/updates_3.xml'
 
-RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes.html'
+# RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes.html'
+RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes_3.html'
 
 HOMEPAGE="https://software.charliemonroe.net/permute.php"
 
