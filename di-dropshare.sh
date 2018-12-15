@@ -14,7 +14,10 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://getdropsha.re/sparkle/Dropshare5.xml'
+### XML_FEED='https://getdropsha.re/sparkle/Dropshare5.xml'
+## 2018-12-15 - SSL certificate not valid for 'getdropsha.re'
+
+XML_FEED='https://dropshare.app/sparkle/Dropshare5.xml'
 
 HOMEPAGE="https://dropshare.app"
 
