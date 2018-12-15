@@ -22,7 +22,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	#   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml' 	# This one seems outdated
+## This one is even older
+#   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml'
+#
+## 2018-12-15 - this feed does not seem to have the latest version either. It ends with '1.7.1.4'
+## 				Actual latest version is 2.0.3.8
 XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
 
 INFO=($(curl -sfL "$XML_FEED" \
