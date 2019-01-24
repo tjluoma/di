@@ -31,6 +31,12 @@ function die
 	exit 1
 }
 
+if [ -d "$INSTALL_TO" -a ! -w "$INSTALL_TO" ]
+then
+	echo "$NAME: Although $INSTALL_TO exists, it is not writable."
+	exit 0
+fi 
+
 	# NOTE: We do not want to use 'curl --location' here because that will not give us the information we need
 	# We _want_ to get the basic HTML redirection page, because that has the actual, current URL in it
 	#
