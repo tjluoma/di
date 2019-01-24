@@ -100,12 +100,14 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 if (( $+commands[lynx] ))
 then
 
+	RELEASE_NOTES_TXT="$HOME/Downloads/$FILENAME:r.txt"
+
 	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 		(curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<body>/d; /<\/ul>/,$d' \
 		;echo '</ul>') \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$RELEASE_NOTES_TXT"
 fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
@@ -157,7 +159,11 @@ then
 	DIRNAME="$FILENAME:h"
 	EXT="$FILENAME:e"
 
+		# rename the download to show full version info
 	mv -vf "$FILENAME" "$DIRNAME/$INSTALL_TO:t:r-${INSTALLED_VERSION}_${INSTALLED_BUILD}.$EXT"
+
+		# rename the release notes to show full version info
+	mv -vf "$RELEASE_NOTES_TXT" "$DIRNAME/$INSTALL_TO:t:r-${INSTALLED_VERSION}_${INSTALLED_BUILD}.txt"
 
 fi
 
