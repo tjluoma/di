@@ -25,12 +25,12 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-CURRENT_VERSION=`curl -sfL 'http://status.calibre-ebook.com/latest'`
+LATEST_VERSION=`curl -sfL 'http://status.calibre-ebook.com/latest'`
 
 	# curent version is empty, something went wrong
-[[ "$CURRENT_VERSION" = "" ]] && exit 0
+[[ "$LATEST_VERSION" = "" ]] && exit 0
 
-URL="http://download.calibre-ebook.com/${CURRENT_VERSION}/calibre-${CURRENT_VERSION}.dmg"
+URL="http://download.calibre-ebook.com/${LATEST_VERSION}/calibre-${LATEST_VERSION}.dmg"
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -45,7 +45,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION / $LATEST_VERSION)"
 		exit 0
 	fi
 
@@ -60,7 +60,7 @@ fi
 
 ########################################################################################################################
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${CURRENT_VERSION}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 ########################################################################################################################
 
