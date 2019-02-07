@@ -100,7 +100,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.tbz"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_TXT="$HOME/Downloads/$FILENAME:r.txt"
+	RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
 	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 		(curl -sfL "$RELEASE_NOTES_URL" \
