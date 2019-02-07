@@ -28,71 +28,83 @@ URL="http://www.splasm.com/downloads/audiobookbuilder/Audiobook%20Builder.dmg"
 INSTALL_TO='/Applications/Audiobook Builder.app'
 
 	## if installed, get current version. If not, put in 1.0.0
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '1.0'`
+INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0')
+
+INSTALLED_BUILD=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '200')
 
 	## Use installed version in User Agent when requesting Sparkle feed
 UA="Audiobook Builder/$INSTALLED_VERSION Sparkle/1.5"
 
 	## This is the 'regular' (non-beta) feed
 	## The feed does not include an 'enclosure url'
-XML_FEED='http://www.splasm.com/versions/audiobookbuilder.xml'
+#XML_FEED='http://www.splasm.com/versions/audiobookbuilder.xml'
+
+## This is the feed for version 2
+## Note that version 1 feed did not have build info
+XML_FEED='https://www.splasm.com/versions/audiobookbuilder2x.xml'
 
 	# n.b. there is a beta feed but I'm not sure if it is used often and its format is different
 	#XML_FEED='http://www.splasm.com/special/audiobookbuilder/audiobookbuilderprerelease_sparkle.xml'
 
-LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
-| egrep '<version>.*</version>' \
-| head -1 \
-| sed 's#</version>##g; s#.*<version>##g;' `
+INFO=($(curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
+| egrep '(<version>.*</version>|<bundleVersion>.*</bundleVersion>)' \
+| sort \
+| head -2 \
+| sed 's#</version>##g; s#.*<version>##g; s#</bundleVersion>##g ; s#.*<bundleVersion>##g'))
 
-if [[ "$LATEST_VERSION" == "" ]]
-then
-		## if we didn't get a version string that way, try another way to check if maybe the XML/RSS feed is different
-		## This should work for the beta feed, but untested
-	LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
-	| tr -s ' ' '\012' \
-	| egrep '^sparkle:shortVersionString' \
-	| head -1 \
-	| tr -dc '[0-9].' `
+LATEST_BUILD="$INFO[1]"
 
-fi
+LATEST_VERSION="$INFO[2]"
 
-if [[ "$LATEST_VERSION" == "" ]]
-then
 
-		## if neither of those two worked, make an incredibly clumsy attempt to check raw HTML of update page
-		## this is extremely fragile and should never be used.
-
-	LATEST_VERSION=`curl --connect-timeout 10 -A Safari -sfL http://www.splasm.com/audiobookbuilder/update.html \
-			| fgrep -A1 'id="productdesc"' \
-			| sed 's#<br>##g; s#.*>##g' \
-			| tr -dc '[0-9].'`
-fi
+# if [[ "$LATEST_VERSION" == "" ]]
+# then
+# 		## if we didn't get a version string that way, try another way to check if maybe the XML/RSS feed is different
+# 		## This should work for the beta feed, but untested
+# 	LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
+# 	| tr -s ' ' '\012' \
+# 	| egrep '^sparkle:shortVersionString' \
+# 	| head -1 \
+# 	| tr -dc '[0-9].' `
+#
+# fi
+#
+# if [[ "$LATEST_VERSION" == "" ]]
+# then
+#
+# 		## if neither of those two worked, make an incredibly clumsy attempt to check raw HTML of update page
+# 		## this is extremely fragile and should never be used.
+#
+# 	LATEST_VERSION=`curl --connect-timeout 10 -A Safari -sfL http://www.splasm.com/audiobookbuilder/update.html \
+# 			| fgrep -A1 'id="productdesc"' \
+# 			| sed 's#<br>##g; s#.*>##g' \
+# 			| tr -dc '[0-9].'`
+# fi
 
 	## If none of that worked, give up
-if [[ "$LATEST_VERSION" == "" ]]
+if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
 then
-	echo "$NAME: Failed to find LATEST_VERSION from $XML_FEED"
+	echo "$NAME: Failed to find LATEST_VERSION or LATEST_BUILD from $XML_FEED ($LATEST_VERSION/$LATEST_BUILD)"
 	exit 0
 fi
 
 	# If we get here, we got at least _something_ for LATEST_VERSION
 	# so compare that against installed version
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 	exit 0
 fi
 
-autoload is-at-least
-
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-	exit 0
-fi
+# autoload is-at-least
+#
+# is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+#
+# if [ "$?" = "0" ]
+# then
+# 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+# 	exit 0
+# fi
 
 	## If we get here, we need to update
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
@@ -108,14 +120,14 @@ fi
 
 	## Save the DMG but put the version number in the filename
 	## so I'll know what version it is later
-FILENAME="$HOME/Downloads/AudioBookBuilder-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/AudioBookBuilder-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:" ;
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION / $LATEST_BUILD:" ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<message>/d; /<\/message>/,$d ; s#\]\]\>##g ; s#<\!\[CDATA\[##g' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
