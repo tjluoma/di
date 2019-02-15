@@ -22,8 +22,12 @@ DOWNLOAD_PAGE="https://echoone.com/filejuicer/download"
 
 SUMMARY="File Juicer doesn’t care what type file you drop onto it; it searches the entire file byte by byte. If it finds a JPEG, JP2, PNG, GIF, PDF, BMP, WMF, EMF, PICT, TIFF, Flash, Zip, HTML, WAV, MP3, AVI, MOV, MPG, WMV, MP4, AU, AIFF or text file inside, it can save it to your desktop or to another folder you choose."
 
+# URL=$(curl -sfLS --head 'https://echoone.com/filejuicer/latestversion?f=unknown' \
+# 		| awk -F' |\r' '/^.ocation/{print $2}' \
+# 		| tail -1)
+
 URL=$(curl -sfLS --head 'https://echoone.com/filejuicer/latestversion?f=unknown' \
-		| awk -F' |\r' '/^.ocation/{print $2}' \
+		| awk -F' |\r' '/^.ocation/{print "https://echoone.com"$2}' \
 		| tail -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
