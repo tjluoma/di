@@ -22,28 +22,46 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+# XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
+### 2018-12-15 - this feed does not seem to have the latest version either. It ends with '1.7.1.4'
+## 				 Actual latest version is 2.0.3.8
 ## This one is even older
-#   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml'
+##   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml'
+##
+# INFO=($(curl -sfL "$XML_FEED" \
+# 		| tr -s ' ' '\012' \
+# 		| egrep 'sparkle:version=|url=' \
+# 		| head -2 \
+# 		| sort \
+# 		| awk -F'"' '/^/{print $2}'))
+
+## https://duet.nyc3.cdn.digitaloceanspaces.com/Mac/2_0/duet-2-0-5-0.zip
+
+URL=$(curl --fail --silent --location --head "https://www.duetdisplay.com/mac/" \
+		| awk -F' ' '/^Location: /{print $2}' \
+		| tail -1 \
+		| tr -d '\r')
+
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
+
+	## "Sparkle" will always come before "url" because of "sort"
+# LATEST_VERSION="$INFO[1]"
+# URL="$INFO[2]"
 #
-## 2018-12-15 - this feed does not seem to have the latest version either. It ends with '1.7.1.4'
-## 				Actual latest version is 2.0.3.8
-XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
+# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+# then
+# 	echo "$NAME: Error: bad data received:
+# 	INFO: $INFO
+# 	LATEST_VERSION: $LATEST_VERSION
+# 	URL: $URL
+# 	"
+#
+# 	exit 1
+# fi
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version=|url=' \
-		| head -2 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
-
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
-
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
 	"
@@ -78,18 +96,18 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-if (( $+commands[lynx] ))
-then
-
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ${LATEST_VERSION}: " ;
-		curl -sfLS "$XML_FEED" \
-		| sed 	-e '1,/<item>/d; /<\/item>/,$d' \
-				-e '1,/<description>/d; /<\/description>/,$d' \
-				-e 's#\]\]\>##g ; s#<\!\[CDATA\[##g' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
-	| tee -a "$FILENAME:r.txt"
-
-fi
+# if (( $+commands[lynx] ))
+# then
+#
+# 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ${LATEST_VERSION}: " ;
+# 		curl -sfLS "$XML_FEED" \
+# 		| sed 	-e '1,/<item>/d; /<\/item>/,$d' \
+# 				-e '1,/<description>/d; /<\/description>/,$d' \
+# 				-e 's#\]\]\>##g ; s#<\!\[CDATA\[##g' \
+# 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
+# 	| tee -a "$FILENAME:r.txt"
+#
+# fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
