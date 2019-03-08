@@ -44,6 +44,10 @@ DL_URL='https://www.dropbox.com/download?plat=mac&full=1'
 ## This gives the actual URL to download, which should look something like this:
 #
 # https://clientupdates.dropboxstatic.com/dbx-releng/client/Dropbox%2053.4.67.dmg
+#
+## 2019-03-02:
+## Dropbox also seems to use this for downloading specific, full installers:
+## https://www.dropbox.com/downloading?build=68.3.95&plat=mac&type=full
 
 URL=$(curl -sfL --head "$DL_URL" | awk -F' |\r' '/^.ocation: /{print $2}' | tail -1)
 
