@@ -37,7 +37,7 @@ then
 	NAME="$NAME (beta releases)"
 	BETA='yes'
 
-	URL=$(curl -A "$UA_CURL" -sfL "http://handbrake.fr/nightly.php" \
+	URL=$(curl -A "$UA_CURL" -sfL "https://handbrake.fr/nightly.php" \
 	| fgrep -i '.dmg' \
 	| tr '"|\047' '\012' \
 	| awk -F'^' '/https/{print $1}' \
@@ -67,7 +67,11 @@ else
 		# "Sparkle" will always come before "url" because of "sort"
 	LATEST_VERSION="$INFO[1]"
 	LATEST_BUILD="$INFO[2]"
-	URL=$(echo "$INFO[3]" | sed 's#\&amp;#\&#g')
+
+	# URL=$(echo "$INFO[3]" | sed 's#\&amp;#\&#g')
+	# https://download.handbrake.fr/releases/1.2.2/HandBrake-1.2.2.dmg"
+
+	URL="https://download.handbrake.fr/releases/$LATEST_VERSION/HandBrake-$LATEST_VERSION.dmg"
 
 		# If any of these are blank, we should not continue
 	if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
