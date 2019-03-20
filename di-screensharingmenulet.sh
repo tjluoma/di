@@ -45,10 +45,14 @@ ITUNES_URL='itunes.apple.com/us/app/screensharingmenulet/id578078659'
 if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 then
 
+		# LATEST_VERSION=$(curl -sfLS "https://$ITUNES_URL?mt=12" \
+		# 			| fgrep 'version-history__item__version-number' \
+		# 			| head -1 \
+		# 			| sed 's#</h4>##g; s#.*>##g')
+
 	LATEST_VERSION=$(curl -sfLS "https://$ITUNES_URL?mt=12" \
-				| fgrep 'version-history__item__version-number' \
-				| head -1 \
-				| sed 's#</h4>##g; s#.*>##g')
+					| fgrep 'whats-new__latest__version' \
+					| sed 's#.*Version ##g ; s#</p>##g')
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
