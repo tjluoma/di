@@ -254,7 +254,7 @@ then
 
 		(echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions" ;
 		 lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-		 | sed '1,/^Additions$/d; /Newsflash(es)/,$d' ;
+		 | sed '1,/^Additions/d; /Newsflash(es)/,$d' ;
 		 echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$RELEASE_NOTES_FILE"
 
 	else
