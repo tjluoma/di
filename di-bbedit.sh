@@ -249,20 +249,8 @@ then
 
 	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
-	if (( $+commands[lynx] ))
-	then
-
-		(echo "$NAME: Release notes for $INSTALL_TO:t:r version $LATEST_VERSION:\n\nAdditions" ;
-		 lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
-		 | sed '1,/^Additions/d; /Newsflash(es)/,$d' ;
-		 echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$RELEASE_NOTES_FILE"
-
-	else
-
-		( echo "$NAME: 'lynx' is not installed, so release notes cannot be displayed, but you can find them at:" ;
-		  echo "$RELEASE_NOTES_URL" )  | tee "$RELEASE_NOTES_FILE"
-
-	fi
+	(curl -sfL "http://fuckyeahmarkdown.com/go/?u=$RELEASE_NOTES_URL&read=1" \
+	&& echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$RELEASE_NOTES_FILE"
 
 fi
 
