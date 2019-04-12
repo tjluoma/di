@@ -158,9 +158,15 @@ then
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-	(echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to display, but can be found at:\n\t<${RELEASE_NOTES_URL}>") \
-	| tee -a "$FILENAME:r.txt"
+	echo "	$NAME: Saving '$RELEASE_NOTES_URL' to '$FILENAME:h/'"
 
+	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL" \
+	| sed 's#____*____##g' > "$FILENAME:r.txt"
+
+	curl -sfL "$RELEASE_NOTES_URL" > "$FILENAME:r.html"
+
+else
+	echo "	\$USE_VERSION: >$USE_VERSION<"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
