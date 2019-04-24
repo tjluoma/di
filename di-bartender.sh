@@ -115,7 +115,6 @@ function use_v3 {
 	fi
 }
 
-RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}' | tail -1`
 
 if [ "$OS_VER" -lt "10" ]
 then
@@ -205,6 +204,8 @@ else
 
 	FIRST_INSTALL='yes'
 fi
+
+RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}' | tail -1)
 
 FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
