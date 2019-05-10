@@ -132,7 +132,7 @@ fi
 	# Move the old version (if any) to trash
 if [ -e "$INSTALL_TO" ]
 then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO..."
