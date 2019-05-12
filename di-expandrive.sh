@@ -10,6 +10,8 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/ExpanDrive.app'
 
+## @TODO - Version 7 now uses 'https://updates.expandrive.com/appcast/expandrive7.json?version=7.0.15'
+
 XML_FEED="http://updates.expandrive.com/appcast/expandrive.xml?version=5"
 
 HOMEPAGE="https://www.expandrive.com"
