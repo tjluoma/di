@@ -47,7 +47,7 @@ then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
+ 	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -63,9 +63,11 @@ then
 
 	if [ "$LATEST_BUILD" = "$INSTALLED_BUILD" -a "$LATEST_VERSION" = "$INSTALLED_VERSION" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
+
+	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
 	autoload is-at-least
 
@@ -76,8 +78,6 @@ then
 		echo "$NAME: Installed version ($INSTALLED_BUILD) is ahead of official version $LATEST_BUILD"
 		exit 0
 	fi
-
-	echo "$NAME: Outdated (Installed = $INSTALLED_BUILD vs Latest = $LATEST_BUILD)"
 
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
@@ -96,7 +96,7 @@ FILENAME="$HOME/Downloads/Feeder-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
 if (( $+commands[lynx] ))
 then
 
-	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION / $LATEST_BUILD: " ;
+	 ( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version $LATEST_VERSION / $LATEST_BUILD: " ;
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<h2>/d; /<h2>/,$d' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines  -stdin ;
@@ -132,7 +132,7 @@ fi
 	# Move the old version (if any) to trash
 if [ -e "$INSTALL_TO" ]
 then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.${INSTALLED_BUILD}.$RANDOM.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO..."
