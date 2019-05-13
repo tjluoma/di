@@ -111,10 +111,13 @@ EXIT="$?"
 
 echo "$NAME: Mounting $FILENAME:"
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
+## 2019-05-12 - the DMG now has an EULA attached to it, so we need to use `hdid` instead
+# MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+# 	| fgrep -A 1 '<key>mount-point</key>' \
+# 	| tail -1 \
+# 	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
