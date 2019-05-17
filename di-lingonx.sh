@@ -16,8 +16,6 @@ fi
 
 INSTALL_TO='/Applications/Lingon X.app'
 
-OLD_VERSION='yes'
-
 SPARKLE_VERSION='sparkle:shortVersionString'
 
 OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
@@ -49,9 +47,8 @@ then
 			XML_FEED='https://www.peterborgapps.com/updates/lingonx5-appcast.xml'
 		;;
 
-		*)
+		6)
 			XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
-			OLD_VERSION='no'
 		;;
 
 	esac
@@ -78,7 +75,6 @@ else
 
 		10.13|10.14)
 			XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
-			OLD_VERSION='no'
 
 		;;
 
@@ -136,11 +132,6 @@ then
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-
-		if [ "$OLD_VERSION" = "yes" -a "$OS_VER_SHORT" -ge "13" ]
-		then
-			echo "$NAME: 'Lingon X' version 6 is now available. See <https://www.peterborgapps.com/lingon/> for more details."
-		fi
 
 		exit 0
 	fi
