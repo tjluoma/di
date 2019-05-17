@@ -51,6 +51,13 @@ then
 			XML_FEED='https://www.peterborgapps.com/updates/lingonx6-appcast.xml'
 		;;
 
+		*)
+			echo "$NAME: This script only works with Lingon versions 1, 2, 4, 5, and 6."
+			exit 1
+		;;
+
+
+
 	esac
 
 else
