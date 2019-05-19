@@ -114,7 +114,7 @@ if [[ -e "$INSTALL_TO" ]]
 then
 	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
- 	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+ 	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 

@@ -148,7 +148,7 @@ then
 
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 

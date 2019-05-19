@@ -123,7 +123,7 @@ then
 
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 	pgrep -xq 'Airfoil Satellite.app' \
 	&& LAUNCH='yes' \
