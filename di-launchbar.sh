@@ -79,7 +79,8 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	(lynx -assume_charset=UTF-8 -pseudo_inlines -nolist -dump -nomargins -nonumbers -width=1000 "$RELEASE_NOTES_URL" ) | tee -a "$FILENAME:r.txt"
+	(lynx -assume_charset=UTF-8 -pseudo_inlines -nolist -dump -nomargins -nonumbers -width=1000 "$RELEASE_NOTES_URL" ) \
+	| tee -a "$FILENAME:r.txt"
 
 fi
 
@@ -116,7 +117,7 @@ then
 		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "$INSTALL_TO:t:r" to quit'
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
