@@ -35,6 +35,8 @@ function use_v6 {
 	# This seems equivalent. Leaving for future reference, in case it's needed.
 	# XML_FEED='https://smilesoftware.com/appcast/update.php?appName=TextExpander&appVersion=6'
 
+	## Betas: http://smilesoftware.com/appcast/TextExpander6-beta.xml
+
 	XML_FEED=http://smilesoftware.com/appcast/TextExpander6.xml
 	USE_VERSION='6'
 }
