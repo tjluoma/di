@@ -7,29 +7,27 @@
 
 NAME="$0:t:r"
 
-	# Yes, they really put an '(R)' in the app name. 🙄
-INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
-
-## The old URL was https://software.intel.com/en-us/articles/intel-power-gadget-20
-
-# https://software.intel.com/file/778485/download
-
-URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
-
-HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"
-
-	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
-	# 			but I don't know if that '770353' will change over time
-DOWNLOAD_PAGE="$HOMEPAGE"
-
-SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enabled for Intel Core processors (from 2nd Generation up to 7th Generation Intel Core processors)."
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+	# Yes, they really put an '(R)' in the app name. 🙄
+INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
+
+HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"
+
+DOWNLOAD_PAGE="$HOMEPAGE"
+
+SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enabled for Intel Core processors (from 2nd Generation up to 7th Generation Intel Core processors)."
+
+	## The old URL was https://software.intel.com/en-us/articles/intel-power-gadget-20
+	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
+	# 			but I don't know if that '770353' will change over time
+	# 2019-05-23 - it looks like the URL _has_ changed, but I'm not sure if that's because the HOMEPAGE changed too
+URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
 
 	# this just gives the part after the '10.'
 	# i.e. 	for 10.11.6 it gives '11'
