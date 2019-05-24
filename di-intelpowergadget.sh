@@ -10,11 +10,17 @@ NAME="$0:t:r"
 	# Yes, they really put an '(R)' in the app name. 🙄
 INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
 
-HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget-20"
+## The old URL was https://software.intel.com/en-us/articles/intel-power-gadget-20
+
+# https://software.intel.com/file/778485/download
+
+URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
+
+HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"
 
 	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
 	# 			but I don't know if that '770353' will change over time
-DOWNLOAD_PAGE="https://software.intel.com/en-us/articles/intel-power-gadget-20"
+DOWNLOAD_PAGE="$HOMEPAGE"
 
 SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enabled for Intel Core processors (from 2nd Generation up to 7th Generation Intel Core processors)."
 
@@ -34,18 +40,19 @@ if [[ "$OS_VER" -ge "13" ]]
 then
 
 	# LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" |head -1| sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+	# LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | head -2 | tail -1 | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+	# TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
+	# 	| egrep "Intel® Power Gadget .* for Mac" \
+	# 	| head -2 \
+	# 	| tail -1 \
+	# 	| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
+	#
+	# URL=$(curl --head -sfL "$TEASER_URL" \
+	# 	| awk -F' |\r' '/^.ocation/{print $2}' \
+	# 	| tail -1)
 
-	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | head -2 | tail -1 | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
+	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*%20##g')
 
-	TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
-		| egrep "Intel® Power Gadget .* for Mac" \
-		| head -2 \
-		| tail -1 \
-		| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
-
-	URL=$(curl --head -sfL "$TEASER_URL" \
-		| awk -F' |\r' '/^.ocation/{print $2}' \
-		| tail -1)
 
 else
 		# Quoting “Patrick Konsor (Intel) said on Jul 25,2018” from $HOMEPAGE:
@@ -135,60 +142,6 @@ then
 	echo "$NAME: Failed to find a '.pkg' file in '$MNTPNT'."
 	exit 1
 fi
-
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
-#
-#		This is a temporary block of code to deal with 3.5.4 being
-#		used in the filename, but actually installing 3.5.3
-#
-
-if [ "$LATEST_VERSION" = "3.5.4" -a "$INSTALLED_VERSION" = "3.5.3" ]
-then
-
-	TEMP_DIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
-
-	echo "$NAME: Using '$TEMP_DIR' as 'TEMP_DIR'."
-
-	pkgutil --expand "$PKG" "$TEMP_DIR/pkgutil"
-
-	[[ ! -e "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg" ]] \
-	&& echo "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg does not exist" \
-	&& exit 1
-
-	cd "$TEMP_DIR/pkgutil/Intel Power Gadget Application.pkg"
-
-	gunzip --force --stdout Payload | cpio -i --quiet
-
-	EXTRACTED_VERSION=$(defaults read "$PWD/Intel Power Gadget/Intel(R) Power Gadget.app/Contents/Info" CFBundleShortVersionString)
-
-	if [[ "$EXTRACTED_VERSION" = "3.5.3" ]]
-	then
-		echo "$NAME: I knew it. This is 3.5.3. Not installing."
-
-		mv -vf "$FILENAME" "$HOME/.Trash/"
-
-		MAX_ATTEMPTS="10"
-		SECONDS_BETWEEN_ATTEMPTS="1"
-		COUNT=0
-
-		while [ "$COUNT" -lt "$MAX_ATTEMPTS" ]
-		do
-			# Do whatever you want to do in the 'while' loop here
-			diskutil eject "$MNTPNT" && break
-
-			((COUNT++))
-
-				# don't sleep the first time through the loop
-			[[ "$COUNT" != "1" ]] && sleep ${SECONDS_BETWEEN_ATTEMPTS}
-
-		done
-
-		exit 0
-	fi
-
-fi
-
-###
 
 	# IMO - this install is too complicated to do with 'unpkg.py'
 	# so we'll have to settle for /usr/sbin/installer
