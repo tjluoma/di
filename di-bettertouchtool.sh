@@ -24,11 +24,17 @@ INSTALL_TO="/Applications/BetterTouchTool.app"
 
 RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
 
-URL=$(curl -sfL "$RELEASE_NOTES_URL" \
-	| awk -F'"' '/http.*\.zip/{print $2}' \
-	| head -1)
+## 2019-05-23 - https://updates.bettertouchtool.net/appcast.xml
 
-LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]\.'`
+# URL=$(curl -sfL "$RELEASE_NOTES_URL" \
+# 	| awk -F'"' '/http.*\.zip/{print $2}' \
+# 	| head -1)
+
+FILENAME=$(curl -sfL 'https://bettertouchtool.net/releases/' | fgrep -i .zip | head -1 | sed 's#</a>.*##g ; s#.*>##g')
+
+URL="https://bettertouchtool.net/releases/$FILENAME"
+
+LATEST_VERSION=`echo "$FILENAME:t:r" | tr -dc '[0-9]\.'`
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -75,7 +81,7 @@ then
 
 	(  echo "$NAME: Release Notes for $HEADER\n$BODY" \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 
