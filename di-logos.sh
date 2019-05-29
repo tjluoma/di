@@ -1,18 +1,12 @@
 #!/bin/zsh -f
-# Purpose: Download Logos v6 or 7 depending on what's asked for or installed
+# Purpose: Download Logos 8 (since 7 and lower are no longer supported)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-20
 
-	# Default to this unless we're told otherwise
-USE_VERSION='7'
-XML_FEED='https://clientservices.logos.com/update/v1/feed/logos7-mac/stable.xml'
-
-function use_v6 {
-	XML_FEED='https://clientservices.logos.com/update/v1/feed/logos6-mac/stable.xml'
-	ASTERISK='(Note that version 7 is now available.)'
-	}
+	# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
+XML_FEED='https://clientservices.logos.com/update/v1/feed/logos8-mac/stable.xml'
 
 NAME="$0:t:r"
 
@@ -25,7 +19,6 @@ DOWNLOAD_PAGE=$(curl -sfLS "$XML_FEED" \
 
 SUMMARY="Logos helps you discover, understand, and share more of the biblical insights you crave."
 
-# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
 
 if [ -e "$HOME/.path" ]
 then
@@ -34,41 +27,23 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# if v5 is installed, check that. Otherwise, use v6
-	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
-
-	if [[ "$MAJOR_VERSION" == "6" ]]
-	then
-		use_v6
-	fi
-else
-	if [ "$1" = "--use6" -o "$1" = "-6" ]
-	then
-		use_v6
-	fi
-fi
-
 INFO=($(curl -sfL "$XML_FEED" \
 | tidy \
-	--char-encoding utf8 \
-	--force-output yes \
-	--input-xml yes \
-	--markup yes \
-	--output-xhtml no \
-	--output-xml yes \
-	--quiet yes \
-	--show-errors 0 \
-	--show-warnings no \
-	--wrap 0 \
-| egrep 'link href|logos:version' \
-| head -2 \
-| sed 's#<logos:version>##g ; s#</logos:version>##g ; s#<link href="##g; s#" .*##g'))
+        --char-encoding utf8 \
+        --force-output yes \
+        --input-xml yes \
+        --markup yes \
+        --output-xhtml no \
+        --output-xml yes \
+        --quiet yes \
+        --show-errors 0 \
+        --show-warnings no \
+        --wrap 0 \
+| egrep "^<link href='" \
+| head -1 \
+| awk -F"'" '/^/{print $2" "$4}'))
 
 URL="$INFO[1]"
-
-#LATEST_VERSION=`echo "$INFO[2]" | sed 's#\.000#.#g ; s#\.00#.#g' `
 
 LATEST_VERSION="$INFO[2]"
 
@@ -88,9 +63,6 @@ if [[ -e "$INSTALL_TO" ]]
 then
 
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
-
-		# the “official” version has an extra 0 before the last 3 numbers. Why? Who knows. But it does.
-	[[ "$INSTALLED_VERSION" == "6.14.0.134" ]] && INSTALLED_VERSION="6.14.0.0134"
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
@@ -112,9 +84,9 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/Logos-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/Logos-${LATEST_VERSION}.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -133,7 +105,6 @@ then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
 fi
-
 
 if [ -e "$INSTALL_TO" ]
 then
