@@ -254,7 +254,7 @@ then
 				| sed "1,/class='beta'/d; /<article /,\$d" \
 				| sed '1,/<\/h3>/d' \
 				| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin ;
-			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 		else
 
