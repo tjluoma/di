@@ -1,88 +1,47 @@
 #!/bin/zsh -f
-# Purpose: Download and install/update Alfred 2 or 3, depending on OS version or what's already installed
+# Purpose: Updated for Alfred 4
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-08-19
+# Date:	2019-05-29
 
 NAME="$0:t:r"
 
-HOMEPAGE="https://www.alfredapp.com"
-
-DOWNLOAD_PAGE="https://www.alfredapp.com"
-
-SUMMARY="Alfred is an award-winning app for Mac OS X which boosts your efficiency with hotkeys, keywords, text expansion and more. Search your Mac and the web, and be more productive with custom actions to control your Mac."
-
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
+XML_FEED='https://www.alfredapp.com/app/update4/general.xml'
 
-autoload is-at-least
+PLIST="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
-is-at-least "10.9" "$OS_VER"
+rm -f "$PLIST"
 
-IS_AT_LEAST="$?"
+curl -sfLS "$XML_FEED" > "$PLIST"
 
-if [[ "$IS_AT_LEAST" == "0" ]]
+if [[ ! -s "$PLIST" ]]
 then
-	# Can use either
-
-	if [[ -e '/Applications/Alfred 2.app' ]]
-	then
-		USE_VERSION='2'
-	else
-
-		INSTALL_TO='/Applications/Alfred 3.app'
-
-		USE_VERSION='3'
-
-			# if you want to install beta releases
-			# create a file (empty, if you like) using this file name/path:
-		PREFERS_BETAS_FILE="$HOME/.config/di/alfred-prefer-betas.txt"
-
-		if [[ -e "$PREFERS_BETAS_FILE" ]]
-		then
-			XML_FEED='https://www.alfredapp.com/app/update/prerelease.xml'
-			NAME="$NAME (beta releases)"
-
-		else
-				## This is for official, non-beta versions
-			XML_FEED='https://www.alfredapp.com/app/update/general.xml'
-		fi
-	fi
-else
-	# Can only use Alfred 2
-	USE_VERSION='2'
+	echo "$NAME: '$PLIST' is empty."
+	exit 1
 fi
 
-if [[ "$USE_VERSION" == "2" ]]
-then
+INSTALL_TO='/Applications/Alfred 4.app'
 
-	INSTALL_TO='/Applications/Alfred 2.app'
-	XML_FEED='https://cachefly.alfredapp.com/updater/info.plist'
-fi
+RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata)
 
-INFO=($(curl -sfL "$XML_FEED" \
-	| egrep -A1 '<key>version</key>|<key>build</key>|<key>location</key>' \
-	| egrep '<string>|<integer>' \
-	| head -3 \
-	| sort \
-	| awk -F'>|<' '//{print $3}'))
+LATEST_BUILD=$(defaults read "${PLIST}" build)
 
-LATEST_BUILD="$INFO[1]"
-LATEST_VERSION="$INFO[2]"
-URL="$INFO[3]"
+URL=$(defaults read "${PLIST}" location)
 
-	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+LATEST_VERSION=$(defaults read "${PLIST}" version)
+
+	# If any of these are blank, we cannot continue
+if [ "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
@@ -123,19 +82,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/Alfred-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+# <string>https://cachefly.alfredapp.com/Alfred_4.0_1076.tar.gz</string>
 
-if [[ "$USE_VERSION" == "3" ]]
+FILENAME="$HOME/Downloads/Alfred-${LATEST_VERSION}_${LATEST_BUILD}.tgz"
+
+if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="$XML_FEED"
-
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION/$LATEST_BUILD:\n" ;
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/^## Alfred $LATEST_VERSION/d; /^## /,\$d" ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	(echo "Alfred ${LATEST_VERSION} / ${LATEST_BUILD} \nURL: ${URL}\n\n$RELEASE_NOTES") | tee "$FILENAME:r.txt"
 
 fi
+
+## Downloading
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -150,66 +108,63 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+## Un-Archiving
 
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp}/$NAME.XXXXXX")
 
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+echo "$NAME: Extracting '$FILENAME' to '$TEMPDIR':"
 
-EXIT="$?"
+tar -C "$TEMPDIR" -z -x -f "$FILENAME"
 
-if [[ "$EXIT" == "0" ]]
+TEMPAPP="$TEMPDIR/Alfred 4.app"
+
+if [[ ! -d "$TEMPAPP" ]]
 then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	echo "$NAME: Did not find '$TEMPAPP'. Giving up."
 
 	exit 1
+
 fi
+
+## Move old version
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	pgrep -xq "$INSTALL_TO:t:r" \
+		## the release notes for 4.0 suggests that the AppleScript syntax should be
+		## 		osascript -e 'tell application "com.runningwithcrayons.Alfred" to quit'
+		## but that does not actually cause Alfred 4 to quit.
+		## However
+		## 		osascript -e 'tell application "Alfred 4" to quit'
+		## does work, so we use that
+		##
+		## Also `pgrep -x "Alfred 4"` does not work but `pgrep -x "Alfred"` does
+
+		# Quit app, if running
+	pgrep -xq "Alfred" \
 	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	&& osascript -e 'tell application "Alfred 4" to quit'
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
-		exit 1
-	fi
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
-
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -vn "$TEMPAPP" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [ "$EXIT" = "0" ]
 then
+	echo "$NAME: Installed new version to '$INSTALL_TO'."
 
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	[[ "$LAUNCH" = "yes" ]] && open -g -j -a "$INSTALL_TO"
 
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
 exit 0
-#
 #EOF
