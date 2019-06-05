@@ -18,9 +18,9 @@ HOMEPAGE="https://shortcatapp.com"
 
 DOWNLOAD_PAGE="https://shortcatapp.com/download"
 
-SUMMARY="Shortcat is a keyboard tool for Mac OS X that lets you "click" buttons and control your apps with a few keystrokes. Think of it as Spotlight for the user interface."
+SUMMARY="Shortcat is a keyboard tool for Mac OS X that lets you 'click' buttons and control your apps with a few keystrokes. Think of it as Spotlight for the user interface."
 
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+RELEASE_NOTES_URL=$(curl --max-time 30 -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
