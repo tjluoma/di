@@ -80,7 +80,7 @@ if (( $+commands[lynx] ))
 then
 
 	(  echo "$NAME: Release Notes for $HEADER\n$BODY" \
-		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		| lynx -dump -nomargins -width=1000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
