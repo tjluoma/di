@@ -16,9 +16,12 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+#   appcast 'https://github.com/rsyncOSX/RsyncOSX/releases.atom'
+ #   homepage 'https://github.com/rsyncOSX/RsyncOSX'
+
 SOURCE='https://github.com/rsyncOSX/RsyncOSX/releases/latest'
 
-RELEASE_NOTES_URL="https://rsyncosx.github.io/Changelog"
+RELEASE_NOTES_URL=$(curl -sfLS --head "$SOURCE" | awk -F' ' '/^Location:/{print $NF}' | tr -d '\r')
 
 HOMEPAGE="https://rsyncosx.github.io/"
 
@@ -26,11 +29,9 @@ DOWNLOAD_PAGE="https://github.com/rsyncOSX/RsyncOSX/releases/"
 
 SUMMARY="Rsync is a file-based synchronization and backup tool. There is no custom solution for the backup archive. You can quit utilizing RsyncOSX (and rsync) at any time and still have access to all synchronized files. "
 
-URL=$(curl -sfL "$SOURCE" \
-		| egrep -vi 'rsync[0-9]*.dmg' \
-		| egrep -i 'RsyncOSX.*\.dmg' \
-		| head -1 \
-		| awk -F'"' '//{print "https://github.com"$2}')
+URL=$(curl -sfLS "$SOURCE" \
+	| egrep -i "<a href=\"/rsyncOSX/RsyncOSX/releases/download/.*/Rsyncosx-.*\.dmg" \
+	| sed 's#.*href="#https://github.com#g ; s#.dmg.*#.dmg#g')
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
@@ -77,10 +78,10 @@ if (( $+commands[lynx] ))
 then
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<h2 /d; /<h2 /,$d ; s#<a href="/#<a href="https://rsyncosx.github.io/#g' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		curl -sfLS "$RELEASE_NOTES_URL" \
+		| sed '1,/<div class="markdown-body">/d; /<summary>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;\
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 
