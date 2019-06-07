@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose:
+# Purpose: download Nalaprop.app from https://eclecticlight.co/text-utilities-nalaprop-dystextia-and-others/
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -17,6 +17,14 @@ fi
 INSTALL_TO='/Applications/Nalaprop.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -lt "14" ]
+then
+	echo "$NAME: $INSTALL_TO:t:r can only be installed on macOS 14 (Mojave) or later."
+	exit 1
+fi
 
 curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
 
