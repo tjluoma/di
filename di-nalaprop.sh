@@ -18,14 +18,6 @@ INSTALL_TO='/Applications/Nalaprop.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
-
-if [ "$OS_VER" -lt "14" ]
-then
-	echo "$NAME: $INSTALL_TO:t:r can only be installed on macOS 14 (Mojave) or later."
-	exit 1
-fi
-
 curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
 
 LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -i -B1 ' nalaprop$' | awk '{print $NF}' | head -1)
@@ -72,6 +64,15 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [ "$OS_VER" -lt "14" ]
+then
+	echo "$NAME: '$INSTALL_TO:t' can only be installed on macOS 14 (Mojave) or later.
+	The file has been downloaded ($FILENAME) but not installed."
+	exit 1
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
