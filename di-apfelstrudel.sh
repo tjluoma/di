@@ -111,9 +111,7 @@ echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTA
 	# note that the '/*/' is to go inside whatever subfolder is created
 	# this is something all 'eclecticapps' apps do but most other apps do not
 
-	## NOTE: this app seems to be the exception
-# mv -vn "${UNZIP_TO}"/*/"$INSTALL_TO:t" "$INSTALL_TO"
-mv -vn "${UNZIP_TO}/$INSTALL_TO:t" "$INSTALL_TO"
+mv -vn "${UNZIP_TO}"/*/"$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
