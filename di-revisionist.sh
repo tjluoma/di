@@ -20,9 +20,9 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
 curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
 
-LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -B1 ' Revisionist$' | awk '{print $NF}' | head -1)
+LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -B1 -i ' Revisionist$' | awk '{print $NF}' | head -1)
 
-URL=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -A1 ' Revisionist$' | awk '{print $NF}' | tail -1)
+URL=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -A1 -i ' Revisionist$' | awk '{print $NF}' | tail -1)
 
 if [[ -e "$INSTALL_TO" ]]
 then
