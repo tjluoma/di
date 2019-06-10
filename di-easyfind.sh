@@ -9,9 +9,9 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/EasyFind.app"
 
-HOMEPAGE="https://www.devontechnologies.com/products/freeware.html"
+HOMEPAGE="https://www.devontechnologies.com/apps/freeware"
 
-DOWNLOAD_PAGE="https://www.devontechnologies.com/download/thank-you-for-downloading.html?productid=900000013"
+DOWNLOAD_PAGE="https://www.devontechnologies.com/apps/freeware"
 
 SUMMARY="Spotlight is great, but sometimes you need something more specialized. EasyFind finds files and folders by name or content using advanced Boolean operators similar to DEVONthink and DEVONagent, wildcards, and phrases. It does not require indexing, is fast, and uses very little memory. Of course EasyFind doesn't just give you the files, it also shows previews and gives you many other options to work with them. And it's free."
 
@@ -22,7 +22,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sL 'http://www.devontechnologies.com/download.html' | tr '"|\047' '\012' | egrep -i 'http.*easyfind.*zip')
+URL=$(curl -sL 'https://www.devontechnologies.com/apps/freeware' | tr '"|\047' '\012' | egrep -i 'http.*easyfind.*zip')
 
 LATEST_VERSION=$(echo "$URL" | sed 's#.*/easyfind/##g ; s#/.*##g')
 
