@@ -28,11 +28,14 @@ fi
 	# note: this is very much _not_ a Sparkle feed
 XML_FEED='https://github.com/desktop/desktop/releases.atom'
 
-LATEST_VERSION=$(curl -sfLS "$XML_FEED" | awk -F'release-|>|<' '/<title>release/{print $4}' | fgrep -iv 'beta' | head -1)
+## 2019-06-10 no longer works to get version
+# LATEST_VERSION=$(curl -sfLS "$XML_FEED" | awk -F'release-|>|<' '/<title>release/{print $4}' | fgrep -iv 'beta' | head -1)
 
 URL=$(curl -sSfL --head "https://central.github.com/deployments/desktop/desktop/latest/darwin" \
 		| awk -F' |\r' '/^.ocation:/{print $2}' \
 		| tail -1)
+
+LATEST_VERSION=$(echo "$URL" | sed 's#.*/releases/##g ; s#/GitHubDesktop.zip##g ; s#-.*##g')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
