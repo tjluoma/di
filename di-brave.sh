@@ -5,6 +5,19 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-04
 
+INSTALL_TO='/Applications/Brave Browser.app'
+
+## @TODO - new app release
+##   appcast 'https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
+##   url "https://github.com/brave/brave-browser/releases/download/v#{version}/Brave-Browser.dmg"
+##
+##  get-appversion.sh -v /Volumes/Brave\ Browser/Brave\ Browser.app
+##/Volumes/Brave Browser/Brave Browser.app:
+##	CFBundleShortVersionString: 75.0.65.118
+##	CFBundleVersion: 65.118
+##
+## apparently 'CFBundleVersion' is the 'version number' ?
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -17,54 +30,36 @@ fi
 HOMEPAGE="https://brave.com"
 
 DOWNLOAD_PAGE="https://brave.com/download/"
+# https://laptop-updates.brave.com/latest/osx
+# aka https://brave-browser-downloads.s3.brave.com/latest/Brave-Browser.dmg
 
 SUMMARY="Much more than a browser, Brave is a new way of thinking about how the web works."
 
-	# if you want to install beta releases
-	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/brave-prefer-betas.txt"
+XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
 
-if [[ -e "$PREFERS_BETAS_FILE" ]]
+INFO=($(curl -sfLS "$XML_FEED" | tr ' ' '\012' | egrep '^(url|sparkle:version)=' | tail -2 | sort | awk -F'"' '//{print $2}'))
+
+LATEST_VERSION="$INFO[1]"
+
+URL="$INFO[2]"
+
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	NAME="$NAME (beta releases)"
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
 
-	INSTALL_TO='/Applications/Brave-Beta.app'
-
-	URL_PREVIEW=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
-	| fgrep '/browser-laptop/releases/tag/' \
-	| fgrep -i 'beta' \
-	| head -1 \
-	| sed 's#.*https#https#g; s#"/>##g'`
-
-	URL=`curl -sfL "$URL_PREVIEW" \
-	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
-	| fgrep -i 'beta' \
-	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
-
-else
-	# This is for non-beta
-
-	INSTALL_TO='/Applications/Brave.app'
-
-	URL_PREVIEW=`curl -sfL "https://github.com/brave/browser-laptop/releases.atom" \
-	| fgrep '/browser-laptop/releases/tag/' \
-	| fgrep -vi 'beta' \
-	| head -1 \
-	| sed 's#.*https#https#g; s#"/>##g'`
-
-	URL=`curl -sfL "$URL_PREVIEW" \
-	| egrep '/brave/browser-laptop/releases/.*\.dmg"' \
-	| fgrep -vi 'beta' \
-	| sed 's#.dmg.*#.dmg#g ; s#.*/brave/#https://github.com/brave/#g'`
-
+	exit 1
 fi
 
-LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]\.'`
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -87,7 +82,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$URL:t"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
