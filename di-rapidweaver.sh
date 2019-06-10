@@ -20,14 +20,14 @@ HOMEPAGE="https://www.realmacsoftware.com/rapidweaver/"
 
 DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
 
+XML_FEED='https://updates.devmate.com/com.realmacsoftware.rapidweaver8.xml'
+
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 SUMMARY="RapidWeaver for Mac is a powerful and easy to use web design app that puts you back in control. Build your own beautiful, responsive, websites without having to write a line of code."
-
-XML_FEED='https://updates.devmate.com/com.realmacsoftware.rapidweaver8.xml'
 
 INFO=($(curl -sfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
