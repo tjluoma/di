@@ -7,6 +7,12 @@
 
 # @TODO - figure out limits for what version numbers work with which OSes
 
+#   url "https://download3.vmware.com/software/fusion/file/VMware-Fusion-#{version}.dmg"
+#   appcast 'https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
+#   name 'VMware Fusion'
+#   homepage 'https://www.vmware.com/products/fusion.html'
+
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/VMware Fusion.app"
