@@ -15,7 +15,7 @@ DOWNLOAD_PAGE="https://www.houdah.com/houdahSpot/download.html"
 
 SUMMARY="Use HoudahSpot to find important documents, mail messages, photos, image files and more."
 
-RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes4.html"
+RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes5.html"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -25,8 +25,8 @@ else
 fi
 
 # backup?  https://rink.hockeyapp.net/api/2/apps/46da69d75bfa2c801117f4f299061332
-
-XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
+# XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
+XML_FEED="https://www.houdah.com/houdahSpot/updates/cast5.xml"
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -SsfL "${XML_FEED}" \
 		| gunzip \
