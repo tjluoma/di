@@ -18,8 +18,12 @@ SUMMARY="Sourcetree simplifies how you interact with your Git repositories so yo
 ## This stops at versions 2.3.2 but the app is currently at 2.7.6 !
 #XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
 
-# 2018-09-02 - This feed seems to have the current info
-XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcastGroup3.xml'
+## 2018-09-02 - This feed seems to have the current info
+## 2019-06-10 - it seems to be outdated now that version 3 is out
+##XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcastGroup3.xml'
+
+## this is newer feed from Cask
+XML_FEED='https://product-downloads.atlassian.com/software/sourcetree/Appcast/SparkleAppcastGroup1.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
