@@ -20,7 +20,7 @@ FEED='https://www.peterborgapps.com/updates/lingonx7.plist'
 
 LOCALFEED="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
-curl -sfLS "$FEED" >| "$LOCALFEED"
+curl -sfLS "$FEED" >| "$LOCALFEED" || exit 1
 
 LATEST_VERSION=$(defaults read ${LOCALFEED} version | tr -dc '[0-9]\.')
 
