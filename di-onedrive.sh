@@ -43,8 +43,21 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
+		## this is odd. On the website, the LATEST_VERSION is 19.070.0410.0007
+		##
+		## but in the app, it looks like this:
+		##
+		## /Applications/OneDrive.app:
+		## 	CFBundleShortVersionString: 19.070.0410
+		## 	CFBundleVersion: 19070.0410.0007
+		##
+		##  so we need CFBundleShortVersionString plus the last number from CFBundleVersion
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+	MAJOR_INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	MINOR_INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion | sed 's#.*\.##g')
+
+	INSTALLED_VERSION="${MAJOR_INSTALLED_VERSION}.${MINOR_INSTALLED_VERSION}"
 
 	autoload is-at-least
 
