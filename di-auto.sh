@@ -91,6 +91,18 @@ done
 
 log "Finished at `timestamp`. Error count is $COUNT."
 
+if [[ "$COUNT" != "0" ]]
+then
+
+	growlnotify --sticky \
+		--appIcon "Console" \
+		--identifier "di-auto-errors" \
+		--message "Count is $COUNT" \
+		--title "$NAME"
+
+	open -g -j -a Console "$LOG"
+fi
+
 echo "Last run was at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
 
 if (( $+commands[di-local.sh] ))
