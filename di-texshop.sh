@@ -99,15 +99,22 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL $XML_FEED \
+	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-		curl -sfL $RELEASE_NOTES_URL \
-		| sed '1,/<h3>/d; /<h3>/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	if [[ "$RELEASE_NOTES_URL" == ]]
+	then
 
+		echo "No Release Notes found" | tee "$FILENAME:r.txt"
+
+	else
+
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+			curl -sfL $RELEASE_NOTES_URL \
+			| sed '1,/<h3>/d; /<h3>/,$d' \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
