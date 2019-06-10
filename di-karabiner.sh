@@ -182,6 +182,16 @@ echo "$NAME: Unmounting $MNTPNT:"
 
 diskutil eject "$MNTPNT"
 
+if (( $+commands[tag-karabiner.sh] ))
+then
+
+		## This is a separate script I need to run after updates happen
+		## with specific changes for how I use macOS so I don't include them here
+
+	tag-karabiner.sh
+
+fi
+
 exit 0
 #EOF
 
