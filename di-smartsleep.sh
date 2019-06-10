@@ -92,8 +92,9 @@ then
 
 	(curl -sfLS "$XML_FEED" \
 	| egrep -vi '<description>.*</description>' \
-	| sed '1,/<description>/d; /<\/description>/,$d') \
-	| tee -a "$FILENAME:r.txt"
+	| sed '1,/<description>/d; /<\/description>/,$d' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
+	) | tee "$FILENAME:r.txt"
 
 fi
 
