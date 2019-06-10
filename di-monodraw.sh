@@ -98,11 +98,11 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 if (( $+commands[lynx] ))
 then
 
-	((curl -sfL "$RELEASE_NOTES_URL" \
+	( ( curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<body>/d; /<\/table>/,$d' ; echo '</table>') \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin	\
-	| sed '/./,/^$/!d' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	| sed -e 's#^ *##g' -e '/./,/^$/!d' ; echo "\nSource: <$RELEASE_NOTES_URL>") \
+	| tee "$FILENAME:r.txt"
 
 fi
 
