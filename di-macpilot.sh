@@ -62,11 +62,16 @@ XML_FEED="http://www.koingosw.com/postback/versioncheck.php?appname=macpilot&app
 			| sed 's#.*<version>##g ; s#</version>##g; s#.*<macpath>##g; s#</macpath>##g; '
 		))
 
-	URL="$INFO[1]"
+	# URL="$INFO[1]"
+
+	URL='http://mirror.koingosw.com/products/macpilot/download/macpilot.dmg'
 
 		# That's the only version info the app uses
-	LATEST_VERSION="$INFO[2]"
+	# LATEST_VERSION="$INFO[2]"
 
+	LATEST_VERSION=$(curl --silent --location --fail "$XML_FEED" \
+						| fgrep -B1 'macpilot.dmg' \
+						| awk -F'>|<' '/version/{print $3}')
 }
 
 case "$OS_VER" in
