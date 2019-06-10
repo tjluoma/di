@@ -55,7 +55,7 @@ if [ "$FORCE" != "yes" ]
 then
 
 		# This should be '4' or greater
-	BLUETOOTH_VERSION=`system_profiler -detailLevel full SPBluetoothDataType | awk -F' ' '/LMP Version/{print $3}' | cut -d. -f 1`
+	BLUETOOTH_VERSION=$(system_profiler -detailLevel full SPBluetoothDataType 2>/dev/null | awk -F' ' '/LMP Version/{print $3}' | cut -d. -f 1)
 
 	if [ "$BLUETOOTH_VERSION" -ge "4" ]
 	then
