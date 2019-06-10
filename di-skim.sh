@@ -91,21 +91,30 @@ then
 	curl -sSfL "$RELEASE_NOTES_URL" \
 	| sed '1,/CDATA/d; /<\/description>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 fi
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
+if [[ -e "$FILENAME" ]]
+then
 
-curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+	echo "$NAME: '$FILENAME' already exists. Assuming it's fully downloaded, as server does not support resuming downloads."
 
-EXIT="$?"
+else
 
-	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+	curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+	EXIT="$?"
+
+		## exit 22 means 'the file was already fully downloaded'
+	[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+	[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+	[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+fi
 
 echo "$NAME: Mounting $FILENAME:"
 
