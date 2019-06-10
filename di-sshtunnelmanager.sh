@@ -22,9 +22,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Alternate URL in case the old one ever stops working
-	#   https://updates.devmate.com/org.tynsoe.sshtunnelmanager.xml
-XML_FEED='https://ssl.tynsoe.org/stm/stm.xml'
+	## old URL, no longer seems to work 2019-06-09
+# XML_FEED='https://ssl.tynsoe.org/stm/stm.xml'
+
+	## Alternate URL - seems to work 2019-06-09
+XML_FEED='https://updates.devmate.com/org.tynsoe.sshtunnelmanager.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr -s ' ' '\012' \
