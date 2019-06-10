@@ -22,11 +22,12 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+# AKA https://release.axocdn.com/darwin/installGitKraken.dmg
 URL="https://release.gitkraken.com/darwin/installGitKraken.dmg"
 
 RELEASE_NOTES_URL='https://support.gitkraken.com/release-notes/current'
 
-LATEST_VERSION=$(curl -sfLS $RELEASE_NOTES_URL| fgrep '<h2 id="version' | head -1 | sed 's#<h2 id="version-##g ; s#-br-.*##g ; s#-#.#g')
+LATEST_VERSION=$(curl -sfLS "$RELEASE_NOTES_URL" | fgrep '<h2 id="version' | head -1 | sed 's#<br.*##g ; s#<h2.*>##g ; s#Version ##g')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
