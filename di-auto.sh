@@ -28,6 +28,8 @@ LOG="$HOME/Library/Logs/$NAME.log"
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
+COUNT=0
+
 # chdir to the directory where this script is found
 cd "$0:h"
 
@@ -70,7 +72,7 @@ do
 
 						[[ "$VERBOSE" == "yes" ]] && log "Running '$i'"
 
-						"$i" 2>&1 | tee -a "$LOG"
+						("$i" 2>&1 | tee -a "$LOG") || ((COUNT++))
 
 					else
 
@@ -87,7 +89,7 @@ do
 	fi # neither "di-all.sh nor di-auto.sh"
 done
 
-log "Finished at `timestamp`."
+log "Finished at `timestamp`. Error count is $COUNT."
 
 echo "Last run was at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
 
