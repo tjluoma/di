@@ -28,6 +28,27 @@ LOG="$HOME/Library/Logs/$NAME.log"
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
+LOCKFILE="$HOME/.$NAME.lock"
+
+if [[ -e "$LOCKFILE" ]]
+then
+
+	growlnotify \
+		--appIcon "iTerm" \
+		--identifier "$NAME LOCKFILE" \
+		--message "Lockfile found, exiting" \
+		--title "$NAME"
+
+	echo "$NAME: Lockfile found at ${LOCKFILE}, exiting."
+
+	exit 0
+
+else
+
+	timestamp >| "$LOCKFILE"
+
+fi
+
 COUNT=0
 
 # chdir to the directory where this script is found
@@ -101,6 +122,15 @@ then
 		--title "$NAME"
 
 	open -g -j -a Console "$LOG"
+
+else
+
+	growlnotify \
+		--appIcon "Console" \
+		--identifier "di-auto-errors" \
+		--message "Finished with no errors" \
+		--title "$NAME"
+
 fi
 
 echo "Last run was at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
@@ -116,5 +146,7 @@ then
 	di-local.sh
 
 fi
+
+rm -f "$LOCKFILE"
 
 exit 0
