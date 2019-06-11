@@ -33,19 +33,22 @@ LOCKFILE="$HOME/.$NAME.lock"
 if [[ -e "$LOCKFILE" ]]
 then
 
+	LOCKED_TIME=$(cat "$LOCKFILE" | sed 's#.* -- ##g')
+
 	growlnotify \
 		--appIcon "iTerm" \
 		--identifier "$NAME LOCKFILE" \
-		--message "Lockfile found, exiting" \
-		--title "$NAME"
+		--message "Locked since
+$LOCKED_TIME" \
+		--title "$NAME: found LOCKFILE"
 
-	echo "$NAME: Lockfile found at ${LOCKFILE}, exiting."
+	echo "$NAME: Lockfile found at ${LOCKFILE}. Locked since ${LOCKED_TIME}. Exiting."
 
 	exit 0
 
 else
 
-	timestamp >| "$LOCKFILE"
+	echo "$EPOCHSECONDS ($$) -- `timestamp`" >| "$LOCKFILE"
 
 fi
 
