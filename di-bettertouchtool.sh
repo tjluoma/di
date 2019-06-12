@@ -74,8 +74,9 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 if (( $+commands[lynx] ))
 then
 
-	( curl -sfLS "$RELEASE_NOTES_URL" \
-		| awk '/<b>/{i++}i==1' \
+	curl -sfLS "$RELEASE_NOTES_URL" >| "$FILENAME:r.html"
+
+	( awk '/<b>/{i++}i==1' "$FILENAME:r.html" \
 		| lynx -dump -nomargins -width=1000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 		echo "\nURL: ${URL}\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
