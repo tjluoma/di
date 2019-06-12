@@ -69,19 +69,15 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | fgrep "$URL")
-
-BODY=$(curl -sfL "$RELEASE_NOTES_URL" \
-| sed '1,/<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//d; /<b>BetterTouchTool <a href="http:\/\/bettertouchtool.net\/releases\//,$d')
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
 
-	(  echo "$NAME: Release Notes for $HEADER\n$BODY" \
+	( curl -sfLS "$RELEASE_NOTES_URL" \
+		| awk '/<b>/{i++}i==1' \
 		| lynx -dump -nomargins -width=1000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		echo "\nURL: ${URL}\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 
