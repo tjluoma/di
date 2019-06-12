@@ -22,9 +22,14 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# 2018-07-17 this was the old URL I was using (still works, at least for now):
-	# XML_URL='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
-XML_FEED='https://somazonecom.ipage.com/soma-zone.com/LaunchControl/a/appcast_update.xml'
+	##
+	## 2019-06-11 - this one seems slightly slower to update, or is now out of date?
+	## XML_FEED='https://somazonecom.ipage.com/soma-zone.com/LaunchControl/a/appcast_update.xml'
+	##
+	## This one is even older:
+	## XML_URL='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
+
+XML_FEED='https://www.soma-zone.com/LaunchControl/a/appcast.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr '[:blank:]' '\012' \
