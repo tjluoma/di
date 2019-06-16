@@ -22,6 +22,8 @@ LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
 URL="https://github.com/glushchenko/fsnotes/releases/download/$LATEST_VERSION/FSNotes_$LATEST_VERSION.zip"
 
+ITUNES_URL='itunes.apple.com/us/app/fsnotes/id1277179284'
+
 HOMEPAGE="https://fsnot.es"
 
 INSTALL_TO='/Applications/FSNotes.app'
@@ -44,6 +46,21 @@ then
 	fi
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+
+		if [[ "$ITUNES_URL" != "" ]]
+		then
+			echo "	See <https://$ITUNES_URL?mt=12> or"
+			echo "	<macappstore://$ITUNES_URL>"
+		fi
+
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+
+	fi
 
 	FIRST_INSTALL='no'
 
