@@ -68,7 +68,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL" || mv -vf "$FILENAME:r.txt" "$HOME/.Trash/"
 
 EXIT="$?"
 
