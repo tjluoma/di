@@ -38,7 +38,7 @@ LATEST_VERSION="2.2"
 LATEST_BUILD="200"
 RELEASE_NOTES_URL='http://www.klieme.com/ScreenSharingMenulet.html'
 HOMEPAGE="http://www.klieme.com/ScreenSharingMenulet.html"
-ITUNES_URL='itunes.apple.com/us/app/screensharingmenulet/id578078659'
+ITUNES_URL='apps.apple.com/us/app/screensharingmenulet/id578078659'
 	DOWNLOAD_PAGE="https://$ITUNES_URL?mt=12"
 	MAS_URL="macappstore://$ITUNES_URL"
 

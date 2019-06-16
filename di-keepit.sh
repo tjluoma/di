@@ -17,7 +17,7 @@ SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes
 
 XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
 
-ITUNES_URL='itunes.apple.com/us/app/keep-it/id1272768911'
+ITUNES_URL='apps.apple.com/us/app/keep-it/id1272768911'
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \

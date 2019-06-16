@@ -212,8 +212,8 @@ then
 
 		if [[ "$USE_VERSION" == "7" ]]
 		then
-			echo "	See <https://itunes.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12> or"
-			echo "	<macappstore://itunes.apple.com/us/app/1password-7-password-manager/id1333542190>"
+			echo "	See <https://apps.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12> or"
+			echo "	<macappstore://apps.apple.com/us/app/1password-7-password-manager/id1333542190>"
 		fi
 
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"

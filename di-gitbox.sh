@@ -28,7 +28,7 @@ LATEST_VERSION="1.6.2"
 
 RELEASE_NOTES_URL='http://gitboxapp.com/release-notes/1.6.2.html'
 
-ITUNES_URL="itunes.apple.com/us/app/gitbox/id403388357"
+ITUNES_URL="apps.apple.com/us/app/gitbox/id403388357"
 
 if [[ -e "$INSTALL_TO" ]]
 then

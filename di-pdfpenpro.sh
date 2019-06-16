@@ -54,7 +54,7 @@ function use_v10 {
 
 	USE_VERSION='10'
 
-	ITUNES_URL='itunes.apple.com/us/app/pdfpenpro-10/id1359910358'
+	ITUNES_URL='apps.apple.com/us/app/pdfpenpro-10/id1359910358'
 
 		# 2018-07-17 - found alternate URL which seems to have identical info:
 		# https://updates.devmate.com/com.smileonmymac.PDFpenPro.xml

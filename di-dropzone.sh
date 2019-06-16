@@ -78,7 +78,7 @@ then
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
 
-		ITUNES_URL='itunes.apple.com/us/app/dropzone-3/id695406827'
+		ITUNES_URL='apps.apple.com/us/app/dropzone-3/id695406827'
 
 		if [[ "$ITUNES_URL" != "" ]]
 		then

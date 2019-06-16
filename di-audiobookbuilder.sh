@@ -112,8 +112,8 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 then
 	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://itunes.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
-	echo "	<macappstore://itunes.apple.com/us/app/audiobook-builder/id406226796>"
+	echo "	See <https://apps.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
+	echo "	<macappstore://apps.apple.com/us/app/audiobook-builder/id406226796>"
 	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 	exit 0
 fi

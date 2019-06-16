@@ -24,14 +24,14 @@ fi
 
 function use_v2 {
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniFocus2/"
-	ITUNES_URL="itunes.apple.com/us/app/omnifocus-2/id867299399"
+	ITUNES_URL="apps.apple.com/us/app/omnifocus-2/id867299399"
 	ASTERISK='Note: version 3 is now available from: <https://www.omnigroup.com/omnifocus>'
 }
 
 function use_v3 {
 
 	XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniFocus3/"
-	ITUNES_URL="itunes.apple.com/us/app/omnifocus-3/id1346203938"
+	ITUNES_URL="apps.apple.com/us/app/omnifocus-3/id1346203938"
 	ASTERISK=''
 }
 

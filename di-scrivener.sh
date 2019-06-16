@@ -27,7 +27,7 @@ fi
 function use_v2 {
 	XML_FEED='https://www.literatureandlatte.com/downloads/scrivener-2.xml'
 
-		# This is the old Mac App Store url for v2: http://itunes.apple.com/us/app/scrivener/id418889511?mt=12
+		# This is the old Mac App Store url for v2: http://apps.apple.com/us/app/scrivener/id418889511?mt=12
 		# but it won't do any good to show it to anyone, because it no longer works, even if you had
 		# purchased it in the Mac App Store
 
@@ -39,7 +39,7 @@ function use_v2 {
 
 function use_v3 {
 	XML_FEED='https://www.literatureandlatte.com/downloads/scrivener-3.xml'
-	ITUNES_URL="itunes.apple.com/us/app/scrivener-3/id1310686187"
+	ITUNES_URL="apps.apple.com/us/app/scrivener-3/id1310686187"
 
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep    '<sparkle:releaseNotesLink>' \

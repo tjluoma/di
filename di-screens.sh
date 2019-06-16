@@ -38,7 +38,7 @@ function use_v4 {
 	USE_VERSION='4'
 	XML_FEED="https://updates.devmate.com/com.edovia.screens4.mac.xml"
 	INSTALL_TO='/Applications/Screens 4.app'
-	ITUNES_URL='itunes.apple.com/us/app/screens-4/id1224268771'
+	ITUNES_URL='apps.apple.com/us/app/screens-4/id1224268771'
 
 }
 
