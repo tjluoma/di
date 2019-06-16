@@ -71,7 +71,7 @@ do
 
 		unset INSTALL_TO
 
-		IFS=$'\n' ALL_INSTALLS=($(fgrep 'INSTALL_TO=' "$i" | fgrep -v '#' | fgrep -v 'INSTALL_TO="$'))
+		IFS=$'\n' ALL_INSTALLS=($(fgrep 'INSTALL_TO=' "$i" | fgrep -v '#' | fgrep -v 'INSTALL_TO="$' | sort -u))
 
 		if [[ "$ALL_INSTALLS" == "" ]]
 		then
