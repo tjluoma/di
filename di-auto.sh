@@ -140,8 +140,6 @@ else
 
 fi
 
-echo "Last run was at `timestamp`" >| "$HOME/.di-auto.lastrun.txt"
-
 if (( $+commands[di-local.sh] ))
 then
 		# if the command 'di-local.sh' is found in $PATH, run it.
