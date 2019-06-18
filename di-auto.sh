@@ -50,6 +50,10 @@ else
 
 	echo "$EPOCHSECONDS ($$) -- `timestamp`" >| "$LOCKFILE"
 
+	function readable_timestamp { strftime "%H:%M on %Y/%m/%d" "$EPOCHSECONDS" }
+
+	readable_timestamp >| "$HOME/.di-auto.lastrun.txt"
+
 fi
 
 COUNT=0
