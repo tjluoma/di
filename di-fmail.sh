@@ -16,8 +16,6 @@ fi
 
 INSTALL_TO='/Applications/FMail.app'
 
-URL='https://arievanboxel.fr/fmail/en/resources/fmail.dmg'
-
 XML_FEED='https://arievanboxel.fr/fmail/appcast.xml'
 
 RELEASE_NOTES_URL=$(curl -sfLS "$XML_FEED" \
@@ -35,6 +33,8 @@ INFO=($(curl -sfLS "$XML_FEED" \
 LATEST_VERSION="$INFO[1]"
 
 LATEST_BUILD="$INFO[2]"
+
+	# also URL='https://arievanboxel.fr/fmail/en/resources/fmail.dmg'
 
 URL="$INFO[3]"
 
