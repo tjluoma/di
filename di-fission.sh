@@ -24,10 +24,15 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-LATEST_VERSION=$(curl -sfL 'https://rogueamoeba.com/fission/releasenotes.php' \
-				| egrep -i '<h1>.*</h1>' \
-				| head -1 \
-				| sed 's#.*<h1>Fission ##g; s#</h1>##g')
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
+
+OS_SMUSH=$(sw_vers -productVersion | tr -dc '[0-9]')
+
+	# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
+curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
+"https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
+
+LATEST_VERSION=$(awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE")
 
 	# If this is blank, we should not continue
 if [[ "$LATEST_VERSION" == "" ]]
@@ -81,16 +86,27 @@ URL=`curl -sfL 'http://www.rogueamoeba.com/fission/download.php' | tr '"' '\012'
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 
+############################################################################
+## This will store the release notes for JUST THIS VERSION as an HTML file
+
+(sed -e 's#\<\!\[CDATA\[#\
+#g' -e 's#\]\]#\
+#g' "$TEMPFILE" \
+| awk '/<description>/{i++}i==2' \
+| sed -e '/<\/body>/,$d' -e "s#.*<description>#<!DOCTYPE html><html lang='en'><head><title>Fission version $LATEST_VERSION</title>#g" -e "s#<body>#</head><body>#g" ;
+echo "</body></html>" ) \
+> "$FILENAME:r.html"
+
+############################################################################
+## This will store the release notes for ALL VERSIONS as an HTML file
+
+curl -sfLS "$RELEASE_NOTES_URL" > "$FILENAME:r.FullReleaseNotes.html"
+
 if (( $+commands[lynx] ))
 then
 
-	( echo -n "$NAME: Latest Release Notes for:" ;
-		curl -sfL "${RELEASE_NOTES_URL}" \
-		| sed '1,/<div id="title" class="full group">/d ; /<div id="title" class="full group">/,$d' \
-		| lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=1000 -stdin \
-		| sed '/^[[:space:]]*$/d' \
-		| tr -s ' ' ' ' ;
-		echo "Source: <$RELEASE_NOTES_URL>" ) \
+	( lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=500 "$FILENAME:r.html" ; \
+		echo "URL:\t$URL\nHome:\t$HOMEPAGE") \
 	| tee -a "$FILENAME:r.txt"
 
 fi
