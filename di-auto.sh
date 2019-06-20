@@ -120,7 +120,7 @@ do
 
 							((COUNT++))
 
-							echo "$i error at `timestamp`: ${RESULT}\n\n" >>| "$HOME/Library/Logs/$i.log"
+							echo "$i error at `timestamp`: ${RESULT}\n\n" >>| "$HOME/Library/Logs/$i:t:r.log"
 
 						fi
 
