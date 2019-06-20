@@ -14,6 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+HOMEPAGE='https://tclementdev.com/timemachineeditor/'
+
 INSTALL_TO='/Applications/TimeMachineEditor.app'
 
 FEED='https://tclementdev.com/timemachineeditor/updates2.plist'
