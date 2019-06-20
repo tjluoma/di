@@ -89,7 +89,7 @@ then
 	( curl -sfLS "$XML_FEED" \
 	| sed '1,/<description><\!\[CDATA\[/d; /\]\]><\/description>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

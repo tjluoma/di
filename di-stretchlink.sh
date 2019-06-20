@@ -93,7 +93,7 @@ then
 	| sed '1,/<item>/d; /<\/item>/,$d ; s#\<\!\[CDATA\[##g ; s#\]\]##g ; s#<\/p>>#</p>#g' \
 	| egrep -vi '(<pubDate>|<enclosure url=|<guid isPermaLink=)' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

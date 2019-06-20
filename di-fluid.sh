@@ -130,7 +130,7 @@ then
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<description>/d; /<\/description>/,$d ; s#&lt;#<#g' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

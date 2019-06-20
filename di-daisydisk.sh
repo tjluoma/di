@@ -103,7 +103,7 @@ then
 		| tr -s '\t| ' ' ' \
 		| sed '/./,/^$/!d' ;
 		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

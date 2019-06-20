@@ -75,7 +75,7 @@ then
 	| sed '1,/<tbody>/d; /<\/tr>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed G ;
-	echo "Source: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

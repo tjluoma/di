@@ -162,3 +162,5 @@ exit 0
 ## below is a log of URLs and the versions that they are associated with
 
 https://www.cisdem.com/downloads/cisdem-ocrwizard-41.dmg	4.3.0
+
+https://www.cisdem.com/downloads/cisdem-ocrwizard-41.dmg	4.3.0

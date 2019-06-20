@@ -90,7 +90,7 @@ then
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
 		(curl -sfL $RELEASE_NOTES_URL | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
 		| lynx -dump -nomargins -width='80' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

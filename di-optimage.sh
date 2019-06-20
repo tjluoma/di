@@ -70,7 +70,7 @@ then
 
 	( sed '1,/CDATA/d; /<\/description>/,$d' "$TEMPFILE" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

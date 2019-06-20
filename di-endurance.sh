@@ -94,7 +94,7 @@ then
 	| perl -pe 's/<!\[CDATA\[/\n/g ; s/\]\]>/\n/g' \
 	| sed '1,/<description>/d; /<\/description>/,$d ; s#^ ##g' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

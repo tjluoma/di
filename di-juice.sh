@@ -79,7 +79,7 @@ then
 	(curl -sfLS $RELEASE_NOTES_URL \
 		| awk '/<h2>/{i++}i==1' \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
-	echo "\nFeed:	$XML_FEED\nSource:	$RELEASE_NOTES_URL\nURL:	$URL\n") | tee -a "$FILENAME:r.txt"
+	echo "\nFeed:	$XML_FEED\nSource:	$RELEASE_NOTES_URL\nURL:	$URL\n") | tee "$FILENAME:r.txt"
 
 fi
 

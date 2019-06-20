@@ -199,14 +199,14 @@ then
 		| awk '/<h2>/{i++}i==1' \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 		| sed '/./,/^$/!d' ; \
-		echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$RELEASE_NOTES_FILE"
+		echo "\nSource: <$RELEASE_NOTES_URL>") | tee "$RELEASE_NOTES_FILE"
 else
 
 		# if lynx is not found, tell the user where to find the release notes themselves
 
 	(echo "$NAME [info]: 'lynx' is not installed, so release notes cannot be shown here, but see";
 	 echo "		$RELEASE_NOTES_URL";
-	 echo "	for release notes for this version of Printopia" ) | tee -a "$RELEASE_NOTES_FILE"
+	 echo "	for release notes for this version of Printopia" ) | tee "$RELEASE_NOTES_FILE"
 fi
 
 	# Tell the user what we are using for the URL and the FILENAME

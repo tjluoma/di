@@ -95,7 +95,7 @@ then
 		curl -sfL "${RELEASE_NOTES_URL}" \
 		| egrep -v '<div class="dm-rn-head-title-fixed">|<div class="dm-rn-head-title">' \
 		| lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

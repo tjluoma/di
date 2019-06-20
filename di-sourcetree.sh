@@ -103,7 +103,7 @@ then
 	| awk '/<h2>/{i++}i==1' \
 	| fgrep -v '<a name="version' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ; \
-	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee "$FILENAME:r.txt"
 
 fi
 

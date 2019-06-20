@@ -146,7 +146,7 @@ then
 		| sed '1,/<br \/>/d ; s#<hr \/>##g' \
 		| egrep -i '.' \
 		| uniq \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee -a "$FILENAME:r.txt"
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee "$FILENAME:r.txt"
 
 fi
 

@@ -90,7 +90,7 @@ then
 	(curl -sfLS "$RELEASE_NOTES_URL" \
 		| awk '/<h2>/{i++}i==1' \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
-	) | tee -a "$FILENAME:r.txt"
+	) | tee "$FILENAME:r.txt"
 
 fi
 

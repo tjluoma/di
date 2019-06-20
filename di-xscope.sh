@@ -104,7 +104,7 @@ then
 	(echo -n "$NAME: Release Notes for " ;
 	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL" \
 	| awk '/^xScope /{i++}i==1' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>") | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>") | tee "$FILENAME:r.txt"
 
 fi
 

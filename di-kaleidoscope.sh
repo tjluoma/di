@@ -102,7 +102,7 @@ then
 	| sed '1,/<item>/d; /<\/description>/,$d ; s#<!\[CDATA\[##g ; s#\]\]>##g' \
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d' ;
-	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee "$FILENAME:r.txt"
 
 fi
 

@@ -79,7 +79,7 @@ then
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" \
 		| sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee -a "$FILENAME:r.txt"
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee "$FILENAME:r.txt"
 
 	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi

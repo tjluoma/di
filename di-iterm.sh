@@ -115,7 +115,7 @@ FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"
 
 ( echo -n "$NAME: Release Notes for " ;
   curl -sfL "$RELEASE_NOTES_URL" ;
-  echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+  echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 ## Release Notes - end
 

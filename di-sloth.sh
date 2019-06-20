@@ -92,7 +92,7 @@ then
 	| fgrep -v '<description>Most recent Sloth releases, with links to signed updates.</description>' \
 	| sed '1,/<description>/d; /<\/description>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

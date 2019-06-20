@@ -75,7 +75,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| perl -p -e 's/<description>/\n<description>\n/ ; s/<\/description>/\n<\/description>\n/' \
 	| sed '1,/<description>/d; /<\/description>/,$d' ;
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 echo "$NAME: Downloading $URL to $FILENAME"
 

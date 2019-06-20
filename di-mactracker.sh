@@ -75,7 +75,7 @@ then
 	| awk '/<p>/{i++}i==1' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin;
 	  echo "\n\nSource: $RELEASE_NOTES_URL") \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

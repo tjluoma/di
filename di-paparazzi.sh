@@ -97,7 +97,7 @@ then
 	| awk '/<h2 /{i++}i==1' \
 	| html2text -style pretty \
 	| sed '/./,/^$/!d' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" )  | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" )  | tee "$FILENAME:r.txt"
 
 elif (( $+commands[lynx] ))
 then
@@ -107,7 +107,7 @@ then
 	| awk '/<h2 /{i++}i==1' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>")  | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$FILENAME:r.txt"
 
 fi
 

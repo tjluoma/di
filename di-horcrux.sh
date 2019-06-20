@@ -75,7 +75,7 @@ then
 
 	(echo "$INSTALL_TO:t version $LATEST_VERSION Release Notes:\n";
 	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL";
-	echo "\nFeed:	$XML_FEED\nSource:	$RELEASE_NOTES_URL\nURL:	$URL\n") | tee -a "$FILENAME:r.txt"
+	echo "\nFeed:	$XML_FEED\nSource:	$RELEASE_NOTES_URL\nURL:	$URL\n") | tee "$FILENAME:r.txt"
 
 fi
 

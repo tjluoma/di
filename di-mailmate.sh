@@ -107,7 +107,7 @@ then
 		| sed '1,/<body>/d; /<\/ul>/,$d' \
 		;echo '</ul>') \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$RELEASE_NOTES_TXT"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$RELEASE_NOTES_TXT"
 fi
 
 echo "$NAME: Downloading $URL to $FILENAME"

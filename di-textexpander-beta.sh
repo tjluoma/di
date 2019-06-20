@@ -84,7 +84,7 @@ then
 		| awk '/<h4>/{i++}i==1'\
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
 	echo "\nSource: $XML_FEED\n"	) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

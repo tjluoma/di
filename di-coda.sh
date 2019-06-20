@@ -105,7 +105,7 @@ then
 		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
 		| sed "/You will need to manually update from our website. We're sorry for the inconvenience./,\$d" ;
 		echo "Source: <$RELEASE_NOTES_URL>" ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

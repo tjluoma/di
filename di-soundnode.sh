@@ -78,7 +78,7 @@ then
 	| sed '1,/release-header/d; /release-body/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| LC_ALL=C sed 's#file:///#https://github.com/#g' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

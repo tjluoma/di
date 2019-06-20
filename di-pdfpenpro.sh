@@ -179,7 +179,7 @@ then
 		| sed '1,/<div class="dm-rn-head-title-fixed">/d' \
 		| sed '/<\/ul><\/li>/,$d' \
 		| lynx -dump -nomargins -width='90' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 	fi
 fi

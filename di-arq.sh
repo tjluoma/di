@@ -85,7 +85,7 @@ then
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<h1>/d; /<h1>/,$d' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

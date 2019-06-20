@@ -107,7 +107,7 @@ then
 
 	( lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=500 "$FILENAME:r.html" ; \
 		echo "URL:\t$URL\nHome:\t$HOMEPAGE") \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

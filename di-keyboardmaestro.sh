@@ -97,7 +97,7 @@ FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
 
 (echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ; \
  awk '/\]Changes in/{i++}i==1' "$TEMPFILE" | sed 's#^\]##g') \
-| tee -a "$FILENAME:r.txt"
+| tee "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

@@ -266,7 +266,7 @@ then
 			| egrep -vi 'never prompts you for a review|If you need us, you can find us at|<a href="https://c.1password.com/dist/1P/mac7/.*">download</a>' \
 			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -nonumbers -stdin \
 			| sed '/./,/^$/!d' ;
-			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 		fi
 

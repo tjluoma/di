@@ -80,7 +80,7 @@ if (( $+commands[lynx] ))
 then
 
 	(lynx -assume_charset=UTF-8 -pseudo_inlines -nolist -dump -nomargins -nonumbers -width=1000 "$RELEASE_NOTES_URL" ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

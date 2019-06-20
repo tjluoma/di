@@ -108,7 +108,7 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	curl -sfL "$RELEASE_NOTES_URL" \
 		| textutil -convert txt -stdin -stdout \
 		| sed 's#	•	# * #g ; s#  # #g' ;
-	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
 
 ## Release Notes END
 
@@ -143,7 +143,10 @@ then
 	exit 0
 fi
 
-pgrep -q -x 'SuperDuper!'  && (echo "$NAME: SuperDuper! is running, cannot install." | tee -a "$HOME/Desktop/$NAME.log" ) && exit 0
+pgrep -q -x 'SuperDuper!'  \
+	&& (echo "$NAME: SuperDuper! is running, cannot install." \
+	| tee -a "$HOME/Desktop/$NAME.log" ) \
+	&& exit 0
 
 echo "$NAME: Preparing to install $PKG"
 

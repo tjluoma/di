@@ -74,7 +74,7 @@ curl -sfLS "$UPDATE_FEED" \
 | egrep '"description": ' \
 | sed 's#.*"description": "##g ; s#",##g' \
 | sed 's#\\n#\
-#g') | tee -a "$FILENAME:r.txt"
+#g') | tee "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 

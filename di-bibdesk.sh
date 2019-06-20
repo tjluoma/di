@@ -90,7 +90,7 @@ then
 	| sed '1,/<description>/d; /<\/description>/,$d ; s#\<\!\[CDATA\[##g' \
 	| fgrep -v '<title>' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin | sed 's#^ *##g' ;
-	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee "$FILENAME:r.txt"
 
 fi
 

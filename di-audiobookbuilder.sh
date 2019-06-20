@@ -131,7 +131,7 @@ then
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<message>/d; /<\/message>/,$d ; s#\]\]\>##g ; s#<\!\[CDATA\[##g' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: XML_FEED: <$XML_FEED>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: XML_FEED: <$XML_FEED>" ) | tee "$FILENAME:r.txt"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"

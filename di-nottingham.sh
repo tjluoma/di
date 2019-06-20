@@ -91,7 +91,7 @@ then
 	| sed -e '/<pubDate>/,$d' -e 's#\<\!\[CDATA\[##g' -e 's#\]\]\>##g' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed -e '/./,/^$/!d' -e 's#^ *##g') \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

@@ -145,7 +145,7 @@ then
 		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
 		| tr -s '\t' ' ' ;
 		echo "\nSource: <$RELEASE_NOTES_URL>" ) \
-		| tee -a "$FILENAME:r.txt"
+		| tee "$FILENAME:r.txt"
 
 	fi
 else
@@ -153,7 +153,7 @@ else
 
 	(echo "$NAME: No release notes available for nightly builds, but you can see recent changes at:";
 	echo "<https://github.com/HandBrake/HandBrake/commits/master>") \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 

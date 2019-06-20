@@ -95,7 +95,7 @@ then
 	curl -sfL "$RELEASE_NOTES_URL" \
 	| sed '1,/<!-- InstanceBeginEditable name="main editable" -->/d; /<H3>How to be a beta tester:<\/H3>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 
 else
@@ -184,7 +184,7 @@ else
 		curl -sfL "$RELEASE_NOTES_URL" \
 		| sed '1,/<h3>/d; /<h3>/,$d' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
 
 	fi
 

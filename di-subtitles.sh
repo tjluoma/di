@@ -105,7 +105,7 @@ then
 		| sed 's#&lt;#<#g ; s#&gt;#>#g ' \
 		| sed '1,/<item>/d; /<br><h3>/,$d' \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
 
 fi
 

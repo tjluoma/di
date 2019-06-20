@@ -123,7 +123,7 @@ then
 	| fgrep -v 'Follow @markedapp on Twitter' \
 	| tr -s '_' '_' \
 	| uniq ;
-	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
 
 fi
 

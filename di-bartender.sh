@@ -220,14 +220,14 @@ then
 
 		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
 		curl -sfL "${RELEASE_NOTES_URL}" | html2text ;
-		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
 
 	elif (( $+commands[lynx] ))
 	then
 
 		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
 		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
-		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
 
 	fi
 fi

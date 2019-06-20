@@ -152,7 +152,7 @@ then
 	( echo -n "$NAME: Release Notes for Hazel " ;
 		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
 		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee -a "$FILENAME:r.txt"
+		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
 fi
 
 	# Server does not support continued downloads, so assume that this is incomplete and try again

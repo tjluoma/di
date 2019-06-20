@@ -100,7 +100,7 @@ then
 	| sed "1,/<h4>Revision history<\/h4>/d ; /$SECOND_VERSION/,\$d" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed 's#^ ##g' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

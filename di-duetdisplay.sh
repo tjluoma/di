@@ -105,7 +105,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 # 				-e '1,/<description>/d; /<\/description>/,$d' \
 # 				-e 's#\]\]\>##g ; s#<\!\[CDATA\[##g' \
 # 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
-# 	| tee -a "$FILENAME:r.txt"
+# 	| tee "$FILENAME:r.txt"
 #
 # fi
 

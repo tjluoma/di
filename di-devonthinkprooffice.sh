@@ -86,7 +86,7 @@ then
 
 	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r version $LATEST_VERSION:" ;
 	lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee -a "$FILENAME:r.txt"
+	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 

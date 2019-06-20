@@ -68,7 +68,7 @@ then
 	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL" \
 		| sed "1,/^What\'s New/d" \
 		| awk '/^Version /{i++}i==1' ) \
-	| tee -a "$FILENAME:r.txt"
+	| tee "$FILENAME:r.txt"
 
 fi
 
