@@ -18,25 +18,35 @@ INSTALL_TO='/Applications/FMail.app'
 
 XML_FEED='https://arievanboxel.fr/fmail/appcast.xml'
 
-RELEASE_NOTES_URL=$(curl -sfLS "$XML_FEED" \
-					| fgrep -i '<sparkle:releaseNotesLink>' \
-					| head -1 \
-					| sed 's#<sparkle:releaseNotesLink>##; s#</sparkle:releaseNotesLink>##g')
-
+##############################################################################################################
+## DO NOT INDENT!!
+##
+## 2019-06-20 - the XML_FEED is out of order, so we have to go through some extra steps to put it back
+## 				in order and make sure we are getting the latest information
+##
 INFO=($(curl -sfLS "$XML_FEED" \
-		| tr ' ' '\012' \
-		| egrep '^(url|sparkle:version|sparkle:shortVersionString)' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '//{print $2}'))
+| sed 	-e '1,/<title>FMail<\/title>/d; /<\/channel>/,$d' \
+		-e "s#<title># <title> #g" \
+		-e "s#</title># </title> #g" \
+| tr '\012' ' ' \
+| sed 's#<item>#\
+<item>#g' \
+| sort --version-sort --ignore-leading-blanks \
+| tail -1 \
+| tr -s ' ' '\012' \
+| egrep '(url|sparkle:version|sparkle:shortVersionString|sparkle:releaseNotesLink)' \
+| sed 	-e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' \
+		-e 's#</sparkle:releaseNotesLink>#"#g' \
+| sort	\
+| awk -F'"' '//{print $2}'))
 
-LATEST_VERSION="$INFO[1]"
+RELEASE_NOTES_URL="$INFO[1]"
 
-LATEST_BUILD="$INFO[2]"
+LATEST_VERSION="$INFO[2]"
 
-	# also URL='https://arievanboxel.fr/fmail/en/resources/fmail.dmg'
+LATEST_BUILD="$INFO[3]"
 
-URL="$INFO[3]"
+URL="$INFO[4]"			# also URL='https://arievanboxel.fr/fmail/en/resources/fmail.dmg'
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
