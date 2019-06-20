@@ -21,11 +21,14 @@ NAME="$0:t:r"
 
 zmodload zsh/datetime
 
-LOG="$HOME/Library/Logs/$NAME.log"
+function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
+
+DATE=`strftime "%Y-%m-%d" "$EPOCHSECONDS"`
+
+LOG="$HOME/Library/Logs/$NAME.$DATE.log"
 
 [[ -e "$LOG" ]]   || touch "$LOG"       # Create log file if needed
 
-function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
 LOCKFILE="$HOME/.$NAME.lock"
@@ -102,7 +105,24 @@ do
 
 						[[ "$VERBOSE" == "yes" ]] && log "Running '$i'"
 
-						("$i" 2>&1 | tee -a "$LOG") || ((COUNT++))
+						RESULT=$("$i" 2>&1 | tee -a "$LOG")
+
+						EXIT="$?"
+
+						if [[ "$EXIT" != "0" ]]
+						then
+
+							growlnotify --sticky \
+								--appIcon "$INSTALL_TO:t:r" \
+								--identifier "$i" \
+								--message "Exit With Error: $EXIT" \
+								--title "$i"
+
+							((COUNT++))
+
+							echo "$i error at `timestamp`: ${RESULT}\n\n" >>| "$HOME/Library/Logs/$i.log"
+
+						fi
 
 					else
 
