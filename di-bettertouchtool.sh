@@ -24,7 +24,7 @@ INSTALL_TO="/Applications/BetterTouchTool.app"
 
 RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
 
-## 2019-05-23 - https://updates.bettertouchtool.net/appcast.xml
+## 2019-05-23 - https://updates.bettertouchtool.net/appcast.xml is outdated
 
 # URL=$(curl -sfL "$RELEASE_NOTES_URL" \
 # 	| awk -F'"' '/http.*\.zip/{print $2}' \
@@ -94,6 +94,29 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+####################################################################################
+
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+####################################################################################
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
