@@ -105,7 +105,7 @@ do
 
 						[[ "$VERBOSE" == "yes" ]] && log "Running '$i'"
 
-						RESULT=$("$i" 2>&1 | tee -a "$LOG")
+						"$i" 2>&1 | tee -a "$LOG"
 
 						EXIT="$?"
 
@@ -119,8 +119,6 @@ do
 								--title "$i"
 
 							((COUNT++))
-
-							echo "$i error at `timestamp`: ${RESULT}\n\n" >>| "$HOME/Library/Logs/$i:t:r.log"
 
 						fi
 
