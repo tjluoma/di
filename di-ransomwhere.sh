@@ -83,7 +83,7 @@ SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c) | tee "$FILENAME:r.txt"
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
@@ -152,7 +152,7 @@ echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
 	# launch the custom installer app and wait for it to finish.
 	# Note: 'open -W' does not work for this one
-open -W -a "$INSTALLER"
+open -a "$INSTALLER"
 
 exit 0
 #
