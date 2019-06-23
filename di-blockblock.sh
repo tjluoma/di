@@ -75,16 +75,14 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.sha1.txt"
+SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 
-	echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c \
-	| awk '/^VERSION/{i++}i==1' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 

@@ -89,19 +89,16 @@ then
 	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r:l}// /}-${LATEST_VERSION}.sha1.txt"
+SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 
-	echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 
 ## RELEASE_NOTES_URL - begin
 
-	(echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
-	 curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	 | gunzip -f -c \
-	 | awk '/^VERSION/{i++}i==1' ;
-	 echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
+	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
 
 ## RELEASE_NOTES_URL - end
 
