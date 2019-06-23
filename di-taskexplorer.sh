@@ -98,7 +98,7 @@ echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 ## RELEASE_NOTES_URL - begin
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c ) | tee "$FILENAME:r.txt"
 
 ## RELEASE_NOTES_URL - end
 
