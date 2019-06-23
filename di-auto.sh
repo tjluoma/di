@@ -51,6 +51,8 @@ $LOCKED_TIME" \
 
 else
 
+	START_TIME="$EPOCHSECONDS"
+
 	echo "$EPOCHSECONDS ($$) -- `timestamp`" >| "$LOCKFILE"
 
 	function readable_timestamp { strftime "%H:%M on %Y/%m/%d" "$EPOCHSECONDS" }
@@ -137,7 +139,18 @@ do
 	fi # neither "di-all.sh nor di-auto.sh"
 done
 
-log "Finished at `timestamp`. Error count is $COUNT."
+END_TIME="$EPOCHSECONDS"
+
+DIFF=$(($END_TIME - $START_TIME))
+
+if (( $+commands[seconds2readable.sh] ))
+then
+	ELAPSED_TIME=$(seconds2readable.sh "$DIFF")
+else
+	ELAPSED_TIME="$DIFF seconds"
+fi
+
+log "Finished. ${ELAPSED_TIME}. Error count is ${COUNT}."
 
 if [[ "$COUNT" != "0" ]]
 then
@@ -145,8 +158,8 @@ then
 	growlnotify --sticky \
 		--appIcon "Console" \
 		--identifier "di-auto-errors" \
-		--message "Count is $COUNT" \
-		--title "$NAME"
+		--message "$ELAPSED_TIME" \
+		--title "$NAME: With Errors ($COUNT)"
 
 	open -g -j -a Console "$LOG"
 
@@ -155,8 +168,8 @@ else
 	growlnotify \
 		--appIcon "Console" \
 		--identifier "di-auto-errors" \
-		--message "Finished with no errors" \
-		--title "$NAME"
+		--message "$ELAPSED_TIME" \
+		--title "$NAME: No Errors"
 
 fi
 
