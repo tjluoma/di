@@ -82,7 +82,7 @@ SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c) | tee "$FILENAME:r.txt"
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
@@ -149,25 +149,8 @@ INSTALLER="$UNZIP_TO/WhatsYourSign Installer.app"
 
 echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
-	# launch the custom installer app and wait for it to finish.
-open -W -a "$INSTALLER"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "0" ]]
-then
-
-	echo "$NAME: Successfully installed/updated '$INSTALL_TO'."
-
-else
-	echo "$NAME: '$INSTALLER' failed."
-
-	open -R "$INSTALLER"
-
-	exit 1
-fi
-
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+	# launch the custom installer app
+open -a "$INSTALLER"
 
 exit 0
 #
