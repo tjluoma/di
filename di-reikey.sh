@@ -98,7 +98,7 @@ echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
 ## RELEASE_NOTES_URL - begin
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c ) | tee "$FILENAME:r.txt"
 
 ## RELEASE_NOTES_URL - end
 
@@ -155,40 +155,32 @@ else
 	exit 1
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+INSTALLER="$UNZIP_TO/ReiKey Installer.app"
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
-		exit 1
-	fi
-fi
-
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
-
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+	# launch the custom installer app and wait for it to finish.
+open -W -a "$INSTALLER"
 
 EXIT="$?"
 
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: Successfully installed/updated '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: '$INSTALLER' failed."
+
+	open -R "$INSTALLER"
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+exit 0
+
 
 exit 0
 #EOF
