@@ -98,7 +98,7 @@ SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 ## RELEASE_NOTES_URL - begin
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c a ) | tee "$FILENAME:r.txt"
+	| gunzip -f -c) | tee "$FILENAME:r.txt"
 
 ## RELEASE_NOTES_URL - end
 
