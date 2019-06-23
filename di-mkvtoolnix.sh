@@ -16,13 +16,17 @@ fi
 
 INSTALL_TO='/Applications/MKVToolNix.app'
 
+	# This URL isn't a real URL. We just need it for the version number
+	# but we can't use the end-result, because the fosshub.com website is
+	# so terrible
 URL=$(curl -sfLS "https://www.fosshub.com/MKVToolNix.html" | tr '"' '\012' | egrep '^http.*\.dmg')
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#MKVToolNix.html?dwl=MKVToolNix-##g')
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
-
+	# We can actually download from this URL
 URL="https://mkvtoolnix.download/macos/MKVToolNix-${LATEST_VERSION}.dmg"
+
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 RELEASE_NOTES_URL="https://mkvtoolnix.download/doc/NEWS.md"
 
@@ -67,7 +71,7 @@ EXIT="$?"
 
 (curl -sfLS "$RELEASE_NOTES_URL" | awk '/^# Version/{i++}i==1' ) | tee "$FILENAME:r.txt"
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\n\nURL:\t${URL}\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Mounting $FILENAME:"
 
