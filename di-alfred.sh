@@ -28,7 +28,9 @@ then
 	exit 1
 fi
 
-INSTALL_TO='/Applications/Alfred 4.app'
+# INSTALL_TO='/Applications/Alfred 4.app'
+
+INSTALL_TO='/Applications/Alfred.app'
 
 RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata)
 
