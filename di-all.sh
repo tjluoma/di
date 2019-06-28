@@ -6,7 +6,7 @@
 # Date:	2016-05-13
 
 ## This keeps running on its own, so I have to do this to stop it
-exit 0
+#exit 0
 
 NAME="$0:t:r"
 
@@ -24,6 +24,8 @@ LOG="$HOME/Library/Logs/$NAME.log"
 EXPLAIN_USAGE='no'
 
 LAUNCH_APPS='no'
+
+po.sh "$NAME started"
 
 	# Delete (old) log if it exists already
 # [[ -e "$LOG" ]] 	|| rm -f "$LOG"
@@ -107,6 +109,13 @@ done
 log "---------- FINISHED AT `timestamp` after checking $COUNT apps ---------- "
 
 echo "$NAME last ran: `timestamp`. ${COUNT} apps were checked." >| "$HOME/.$NAME.lastrun.log"
+
+exit 0
+
+
+
+
+
 
 if [[ "$LAUNCH_APPS" == 'yes' ]]
 then
