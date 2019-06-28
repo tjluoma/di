@@ -22,6 +22,7 @@ INFO=($(curl -sfLS "$XML_FEED" \
 		| egrep '<enclosure.* url=.*' \
 		| tr ' ' '\012' \
 		| egrep '^(sparkle:|url=)' \
+		| head -3 \
 		| sort \
 		| sed 's#"$##g ; s#.*"##g ; s#\&amp\;#\&#g'))
 
@@ -83,7 +84,8 @@ then
 	| awk '/<description>/{i++}i==1' \
 	| sed '/<pubDate>/,$d' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin  \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin) \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ; \
+	  echo "\n\nURL:\t${URL}\n\nLATEST_VERSION:\t${LATEST_VERSION}\nLATEST_BUILD:\t${LATEST_BUILD}" ) \
 	| tee "$FILENAME:r.txt"
 
 fi
@@ -100,6 +102,9 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
