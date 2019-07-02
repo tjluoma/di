@@ -27,6 +27,7 @@ SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enab
 	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
 	# 			but I don't know if that '770353' will change over time
 	# 2019-05-23 - it looks like the URL _has_ changed, but I'm not sure if that's because the HOMEPAGE changed too
+	# 2019-06-30 - this URL no longer seems to be the one that is used (see footnote) but it still works, for now.
 URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
 
 	# this just gives the part after the '10.'
@@ -161,3 +162,27 @@ fi
 
 exit 0
 #EOF
+
+
+# 2019-06-30 - this seems to be the way to get the actual URL now, although the way above still works, so I'm just keeping it as reference in case this ever breaks
+
+HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"
+
+DOWNLOAD_PAGE=$(curl -sfLS "$HOMEPAGE" \
+| tr '\r' '\n' \
+| sed 's#<p>#\
+<p>#g; s#</p>#</p>\
+#g' \
+| egrep -i 'href=".*Power Gadget .* for MacOS' \
+| sed 's#.* href="/file/#https://software.intel.com/file/#g ; s#" .*##g')
+
+URL=$(curl -sfLS "$DOWNLOAD_PAGE" \
+| tr '\r' '\n' \
+| sed 's#<a href#\
+<a href#g ; s#</a>#</a>\
+#g' \
+| egrep -i 'https://software.intel.com/.*\.dmg' \
+| head -1 \
+| sed 's#.*https://#https://#g ; s#\.dmg.*#.dmg#g')
+
+# Then you can use "$URL" to download the DMG
