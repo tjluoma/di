@@ -345,46 +345,15 @@ echo -n "$NAME: Ejecting '$MNTPNT': "
 
 diskutil eject "$MNTPNT"
 
-if ((! $+commands[bbedit] ))
+if (( $+commands[install-bbedit-cli-tools-and-manpages.sh] ))
 then
+		# This is a separate script I wrote just to make sure that the CLI tools
+		# and man pages are installed correctly, but I want to be able to run it
+		# separate from this script, so it's not part of it.
 
-	BBEDIT="$INSTALL_TO/Contents/Helpers/bbedit_tool"
+	install-bbedit-cli-tools-and-manpages.sh
 
-	if [[ -e "${BBEDIT}" ]]
-	then
-		if [[ -w /usr/local/bin ]]
-		then
-			ln -s "${BBEDIT}" /usr/local/bin/bbedit && \
-			echo "$NAME: Linked ${BBEDIT} to /usr/local/bin/bbedit"
-		else
-			echo "$NAME: cannot link ${BBEDIT} to /usr/local/bin because it is not writable."
-		fi
-	else
-		echo "$NAME: Did not find 'bbedit_tool' at ${BBEDIT}"
-	fi
 fi
-
-for i in bbdiff bbfind bbresults
-do
-	if ((! $+commands[$i] ))
-	then
-
-		BBCMD="$INSTALL_TO/Contents/Helpers/$i"
-
-		if [[ -e "${BBCMD}" ]]
-		then
-			if [[ -w /usr/local/bin ]]
-			then
-				ln -s "${BBCMD}" /usr/local/bin/${i} && \
-				echo "$NAME: Linked '${BBCMD}' to '/usr/local/bin/$i'."
-			else
-				echo "$NAME: cannot link '${BBCMD}' to '/usr/local/bin/$i' because '/usr/local/bin/' is not writable."
-			fi
-		else
-			echo "$NAME: Did not find '$i' at '${BBCMD}'"
-		fi
-	fi
-done
 
 exit 0
 #EOF
