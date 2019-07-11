@@ -76,6 +76,12 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
+echo "$NAME: Due to Zoom's security issues, it will not be installed automatically."
+echo "	You can find it at '$FILENAME' if you want to install it yourself."
+
+exit 0
+
+# This is the older code that actually did install the app automatically. Disabled. Perhaps temporarily. Perhaps not.
 if (( $+commands[pkginstall.sh] ))
 then
 
