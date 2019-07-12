@@ -1,28 +1,33 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Keyboard Maestro from <http://www.keyboardmaestro.com>
+# Purpose: Download and install the latest version of Keyboard Maestro from <http://www.keyboardmaestro.com> (including betas, if enabled)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-02
+# Date:	2019-07-12
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Keyboard Maestro.app'
-
-HOMEPAGE="https://www.keyboardmaestro.com/"
-
-DOWNLOAD_PAGE="https://www.keyboardmaestro.com/action/download?km"
-
-SUMMARY="Whether you are a power user or a just getting started, your time is precious. So why waste it when Keyboard Maestro can help improve almost every aspect of using your Mac. Even the simplest things, like typing your email address, or going to Gmail or Facebook, launching Pages, or duplicating a line, all take time and add frustration. Let Keyboard Maestro help make your Mac life more pleasant and efficient."
-
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# Keyboard%20Maestro%20Engine/8.2.4 CFNetwork/974.1 Darwin/18.0.0 (x86_64)
+BETAS_ENABLED=$(defaults read com.stairways.keyboardmaestro.engine CheckForBetas 2>/dev/null)
+
+if [ "$BETAS_ENABLED" = "1" -o "$BETAS_ENABLED" = "yes" ]
+then
+	URL_STRING='TestURL'
+	MD5_STRING='TestMD5'
+	RELEASE_NOTES_PREFIX='>'
+else
+	URL_STRING='ReleaseURL'
+	MD5_STRING='ReleaseMD5'
+	RELEASE_NOTES_PREFIX=']'
+fi
+
+INSTALL_TO='/Applications/Keyboard Maestro.app'
 
 ENGINE_VERSION=$(defaults read "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo 8.2.4)
 
@@ -32,27 +37,25 @@ DARWIN_VER=$(uname -r)
 
 UA="Keyboard%20Maestro%20Engine/$ENGINE_VERSION CFNetwork/$CFNETWORK_VER Darwin/$DARWIN_VER (x86_64)"
 
-LAUNCH_APP="no"
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.txt"
 
-LAUNCH_ENGINE="yes"
+rm -f "$TEMPFILE"
 
-	# This is not your normal XML_FEED, by a long-shot.
-FEED='https://www.keyboardmaestro.com/action/sivc?M&U&08248000&6ABF5EF7&xxxxxxxx&00000000&000010E0&KM&EN'
+	# get the URL but clean up some weird characters (encoding issue?)
+curl -A "$UA" -sfLS "https://www.keyboardmaestro.com/action/sivc?M&U&08248000&6ABF5EF7&xxxxxxxx&00000000&000010E0&KM&EN" \
+	| sed -e "s#Ò#“#g" -e "s#ÉÓ#”#g" -e "s#Ó#”#g" -e 's#Õ#’#g' >| "$TEMPFILE"
 
-TEMPFILE="${TMPDIR-/tmp}${NAME}.$$.$RANDOM.txt"
+URL=$(awk -F' ' "/^$URL_STRING:/{print \$2}" "$TEMPFILE")
 
-curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" -sfLS "$FEED" > "$TEMPFILE"
+EXPECTED_MD5=$(awk -F' ' "/^$MD5_STRING:/{print \$2}" "$TEMPFILE")
 
-URL=$(awk -F' ' '/ReleaseURL:/{print $2}' "$TEMPFILE")
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#keyboardmaestro-##g')
 
-LATEST_VERSION=$(awk -F' ' '/^\]Changes in /{print $3}' "$TEMPFILE" | head -1)
-
-MD5_SUM_EXPECTED=$(awk -F' ' '/ReleaseMD5:/{print $2}' "$TEMPFILE")
-
-	# If either of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	# If any of these are blank, we cannot continue
+if [ "$EXPECTED_MD5" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
+	EXPECTED_MD5: $EXPECTED_MD5
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
 	"
@@ -63,25 +66,16 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
+		# note that we are removing '.' from the version info, which is unusual but necessary given LATEST_VERSION formatting
+	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | tr -d '.')
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+	if [[ "$INSTALLED_VERSION" == "$LATEST_VERSION" ]]
 	then
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	autoload is-at-least
-
-	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-	if [ "$?" = "0" ]
-	then
-		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-		exit 0
-	fi
-
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
 
@@ -91,17 +85,15 @@ else
 fi
 
 
-# If we get here, we _are_ outdated. Now we just need to figure out which URL to use.
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-FILENAME="$HOME/Downloads/KeyboardMaestro-${LATEST_VERSION}.zip"
-
-(echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):" ; \
- awk '/\]Changes in/{i++}i==1' "$TEMPFILE" | sed 's#^\]##g') \
+( 	egrep "^${RELEASE_NOTES_PREFIX}" "$TEMPFILE" | sed "s#^${RELEASE_NOTES_PREFIX}##g" ;
+	echo "\n\n LATEST_VERSION: $LATEST_VERSION\n EXPECTED_MD5: $EXPECTED_MD5 \nURL: $URL \n" ) \
 | tee "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl -H "Accept: */*" -H "Accept-Language: en-us" -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -112,15 +104,19 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-MD5_SUM_ACTUAL=$(md5 -q "$FILENAME")
+## Verify download vs expected
 
-if [[ "$MD5_SUM_ACTUAL" == "$MD5_SUM_EXPECTED" ]]
+ACTUAL_MD5=$(md5 -q "$FILENAME")
+
+if [[ "$ACTUAL_MD5" == "$EXPECTED_MD5" ]]
 then
-	echo "$NAME: '$FILENAME' passed checksum validation"
+	echo "\n$NAME: MD5 signature verified\n" | tee -a "$FILENAME:r.txt"
 else
-	echo "$NAME: '$FILENAME' failed checksum validation (Expected '$MD5_SUM_EXPECTED' vs Actual: '$MD5_SUM_ACTUAL'.)"
+	echo "\n$NAME: MD5 signature MISMATCH: Expected $EXPECTED_MD5 but actual is $ACTUAL_MD5. Will not install.\n" | tee -a "$FILENAME:r.txt"
 	exit 1
 fi
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -189,6 +185,18 @@ then
 fi
 
 [[ "$LAUNCH_ENGINE" == "yes" ]] && echo "$NAME: Launching 'Keyboard Maestro Engine.app':" && open -a "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app"
+
+	# get nicer-formatted version information from install
+ACTUAL_INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
+
+	# this is what the download _should_ have been named
+BETTER_FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${ACTUAL_INSTALLED_VERSION}.zip"
+
+	# rename the download
+mv -vn "$FILENAME" "$BETTER_FILENAME"
+
+	# rename the Release Notes
+mv -vn "$FILENAME:r.txt" "$BETTER_FILENAME:r.txt"
 
 exit 0
 #EOF
