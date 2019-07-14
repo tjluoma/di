@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: EFIcienC https://eclecticlight.co
+# Purpose: SilentKnight (previously 'EFIcienC') – automatic checking of security systems
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -14,15 +14,15 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/EFIcienC.app'
+INSTALL_TO='/Applications/SilentKnight.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
 curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
 
-LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -B1 -i ' eficienc$' | awk '{print $NF}' | head -1)
+LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -B1 -i ' SilentKnight$' | awk '{print $NF}' | head -1)
 
-URL=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -A1 -i ' eficienc$' | awk '{print $NF}' | tail -1)
+URL=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -A1 -i ' SilentKnight$' | awk '{print $NF}' | tail -1)
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -104,6 +104,21 @@ then
 		exit 1
 	fi
 fi
+
+
+	## the app was renamed, so if we find the old version, replace it too
+if [ -e "/Applications/EFIcienC.app" ]
+then
+	pgrep -xq "EFIcienC" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application "EFIcienC" to quit"
+
+	echo "$NAME: Moving existing (old) '/Applications/EFIcienC.app' to '$HOME/.Trash/'."
+
+	mv -vf "/Applications/EFIcienC.app" "$HOME/.Trash/EFIcienC.is.now.SilentKnight.$$.app"
+fi
+
+
 
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
