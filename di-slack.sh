@@ -15,6 +15,7 @@ DOWNLOAD_PAGE="https://slack.com/ssb/download-osx"
 
 SUMMARY="Slack brings all your communication together — a single place for messaging, tools and files — helping everyone save time and collaborate together."
 
+	## 2019-07-15 @TODO - parsing of this has changed and needs to be updated to get the correct release notes. Maybe also just save the whole HTML file too?
 RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
 
 if [ -e "$HOME/.path" ]
@@ -78,6 +79,9 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
+		# this should get the HTML of the release notes, at least
+		# @TODO 2019-07-15 maybe parse this instead of hitting the server again
+	curl --continue-at - --fail --location --output "$FILENAME:r.html" "$RELEASE_NOTES_URL"
 
 	( echo -n "$NAME: Release Notes for " ;
 	curl -sfL "${RELEASE_NOTES_URL}" \
@@ -85,6 +89,7 @@ then
 	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| sed '/./,/^$/!d' ;
 	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+
 
 fi
 
