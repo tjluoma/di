@@ -25,6 +25,7 @@ LATEST_VERSION=$(echo "${NON_BETA_TITLE}" | sed 's#.*<title>v##g; s#</title>##g'
 	# numbers only, without the dots
 LV_RAW=$(echo "$LATEST_VERSION" | tr -dc '[0-9]')
 
+	### 2019-07-15 @TODO @URGENT - this is NOT a reliable way to get the URL. Find something better!
 URL="https://github.com/mltframework/shotcut/releases/download/v${LATEST_VERSION}/shotcut-macos-signed-${LV_RAW}.dmg"
 
 if [[ -e "$INSTALL_TO" ]]
