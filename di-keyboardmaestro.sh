@@ -186,6 +186,14 @@ fi
 
 [[ "$LAUNCH_ENGINE" == "yes" ]] && echo "$NAME: Launching 'Keyboard Maestro Engine.app':" && open -a "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app"
 
+
+exit 0
+
+
+## Renaming the file like this prevents the script from recognizing that it has already downloaded the proper file(s)
+
+
+
 	# get nicer-formatted version information from install
 ACTUAL_INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
 
