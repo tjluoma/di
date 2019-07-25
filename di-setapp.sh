@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Setapp
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
