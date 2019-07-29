@@ -182,19 +182,34 @@ fi
 
 if [[ "$BINDIR" != "" ]]
 then
-	mv -vf "$UNZIP_TO/swda" "$BINDIR/swda"
 
-	EXIT="$?"
+	MD_EXISTING=$(md5 -q "$BINDIR/swda")
 
-	if [ "$EXIT" = "0" ]
+	MD_NEW=$(md5 -q "$UNZIP_TO/swda")
+
+	if [[ "$MD_EXISTING" == "$MD_NEW" ]]
 	then
-		echo "$NAME: Successfully installed 'swda' to '$BINDIR'."
+
+		mv -vf "$UNZIP_TO/swda" "$BINDIR/swda"
+
+		EXIT="$?"
+
+		if [ "$EXIT" = "0" ]
+		then
+			echo "$NAME: Successfully installed 'swda' to '$BINDIR'."
+
+		else
+			echo "$NAME: failed to install 'swda' to '$BINDIR' (\$EXIT = $EXIT)"
+
+			exit 1
+		fi
 
 	else
-		echo "$NAME: failed to install 'swda' to '$BINDIR' (\$EXIT = $EXIT)"
 
-		exit 1
+		echo "$NAME: 'swda' is identical to the already-installed version."
+
 	fi
+
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
