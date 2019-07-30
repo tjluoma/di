@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest beta of TextExpander 6
 #
 # From:	Timothy J. Luoma
@@ -81,9 +81,11 @@ if (( $+commands[lynx] ))
 then
 
 	(curl -sfLS "$XML_FEED" \
-		| awk '/<h4>/{i++}i==1'\
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
-	echo "\nSource: $XML_FEED\n"	) \
+	| awk '/<description>/{i++}i==2' \
+	| tr -s '\012' ' ' \
+	| sed 's#.*\[CDATA\[##g ; s#\]\].*##g' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
+	  echo "\nSource: $XML_FEED\n" ) \
 	| tee "$FILENAME:r.txt"
 
 fi
@@ -100,6 +102,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
@@ -159,7 +163,7 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+[[ "$LAUNCH" = "yes" ]] && open "$INSTALL_TO"
 
 exit 0
 #EOF
