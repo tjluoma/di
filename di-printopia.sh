@@ -183,9 +183,9 @@ RELEASE_NOTES_URL="https://www.decisivetactics.com/products/printopia/release-no
 	# store the value of the shasum along the the full-path of the filename,
 	# although the user may move it later.
 cat <<EOINPUT > "$SHASUM_FILENAME"
-$EXPECTED_SHASUM1  $FILENAME
-$EXPECTED_SHASUM256  $FILENAME
-$EXPECTED_SHASUM512  $FILENAME
+$EXPECTED_SHASUM1 ?$FILENAME:t
+$EXPECTED_SHASUM256 ?$FILENAME:t
+$EXPECTED_SHASUM512 ?$FILENAME:t
 EOINPUT
 
 	# if the user has 'lynx' installed, we will use that to show them the release notes for this version
