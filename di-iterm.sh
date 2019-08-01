@@ -3,7 +3,33 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2016-01-19, updated: 2018-08-02 ; 2019-08-01 added support for older versions of macOS
+# Original Date:	2016-01-19
+# Updated As Of:	2019-08-01 - added support for older versions of macOS and improved support for nightly / beta builds
+
+## NOTE:
+## By default, this script assumes that you want to check for 'Stable' releases of iTerm.app.
+## However, there are two other options: "Nightly" builds and "Test" (aka "Beta") builds.
+##
+## A nightly build is made at midnight Pacific time on days where a change was committed.
+## The change log may be seen on Github. Nightly builds sometimes have serious bugs.
+##
+## Test/Beta releases update many times a year and are occasionally unstable.
+##
+## If you want this script to download and install "Nightly" builds, create a file
+## at "$HOME/.iterm-prefer-nightly.txt"
+##
+## If you want this script to download and install "Test/Beta" builds, create a file
+## at "$HOME/.iterm-prefer-betas.txt"
+##
+## (If both files exist, it will be assumed that the user wants 'nightly' builds.)
+##
+## The contents of the file are ignored. The file only has to exist, so
+##
+##		touch "$HOME/.iterm-prefer-betas.txt"
+##
+## would be enough to indicate your preference.
+
+
 
 NAME="$0:t:r"
 
@@ -26,68 +52,83 @@ PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
 
 if [ "$PPID_NAME" = "/sbin/launchd" ]
 then
-		# this was launched via launchd. We don't want to use 'exit 1' in launchd because it might keep it from running again
+		# if this script was launched via launchd, we don't want to use 'exit 1'
+		# because that might prevent it from running again automatically
 	function die { exit 0 }
 else
 	function die { exit 1 }
 fi
-
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
 if [ "$OS_VER" -ge "12" ]
 then
 
-		# if you want to install beta releases
-		# create a file (empty, if you like) using this file name/path:
-	PREFERS_BETAS_FILE="$HOME/.config/di/prefers/iterm-prefer-betas.txt"
-
-	if [[ -e "$PREFERS_BETAS_FILE" ]]
+	if [ -e "$HOME/.config/di/prefers/iterm-prefer-nightly.txt" -o -e "$HOME/.iterm-prefer-nightly.txt" ]
 	then
-			## this is for betas
-		HEAD_OR_TAIL='tail'
-		NAME="$NAME (beta releases)"
-		XML_FEED="https://iterm2.com/appcasts/nightly.xml"
+		XML_FEED='https://iterm2.com/appcasts/nightly_new.xml'
+		PREFERS='[Nightly]'
 
-		URL=$(curl -sfLS --head 'https://iterm2.com/nightly/latest' | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
-
-		LATEST_VERSION=$(echo "$URL:t:r" | sed -e 's#iTerm2-##g' -e 's#_#.#g')
-
-		RELEASE_NOTES_URL='https://iterm2.com/appcasts/nightly_changes.txt'
+	elif [ -e "$HOME/.config/di/prefers/iterm-prefer-betas.txt"  -o -e "$HOME/.iterm-prefer-betas.txt" ]
+	then
+		XML_FEED='https://iterm2.com/appcasts/testing_new.xml'
+		PREFERS='[Beta]'
 
 	else
-			## This is for official, non-beta versions
-		HEAD_OR_TAIL='tail'
-		XML_FEED="https://iterm2.com/appcasts/final.xml"
+			# Stable releases update rarely but have no serious bugs.
+		XML_FEED='https://iterm2.com/appcasts/final_new.xml'
+		PREFERS='[Stable]'
+	fi
 
-			# 'CFBundleVersion' and 'CFBundleShortVersionString' are identical in app, but only one is in XML_FEED
-		INFO=($(curl -sfL "$XML_FEED" \
-				| tr ' ' '\012' \
-				| egrep '^(url|sparkle:version)=' \
-				| ${HEAD_OR_TAIL} -2 \
-				| sort \
-				| awk -F'"' '//{print $2}'))
+## Ok, so when I can't remember what this does, here are some bread crumbs :
+# Take the XML_FEED and replace all of the EOL and tabs with spaces (tr)
+# look for '<item>' and put a newline before it (sed)
+# look for '</item>' and put a newline after it (sed)
+# fgrep for '<item>'
+# tail -1 to get take the last one (the nightly and betas might only have 1 item in the feed
+# sed   - look for >< and put a newline between them
+#	   - look for a space and convert it to a newline
+#	   - look for  <sparkle:releaseNotesLink>   and make it	sparkle:releaseNotesLink="
+#	   - look for  </sparkle:releaseNotesLink> and make it a " instead
+# egrep just the lines:
+#	   ^sparkle:releaseNotesLink=
+#	   ^sparkle:version=
+#	   ^url=
+# sort to make sure those 3 lines are always in the same order even if the XML_FEED changes
+# awk to get just the stuff between the " marks
 
-		LATEST_VERSION="$INFO[1]"
+INFO=($((curl -sfLS "$XML_FEED" \
+	| tr -s '\t|\012' ' ' \
+	| sed -e 's#<item>#\
+<item>#g ; s#</item>#</item>\
+#g' -e 's#> #>#g' -e 's/ </</g') \
+	| fgrep '<item>' \
+	| tail -1 \
+	| sed -e 's#><#>\
+<#g' -e 's# #\
+#g' -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' \
+	-e 's#</sparkle:releaseNotesLink>#"#g' \
+	| egrep '^(sparkle:releaseNotesLink|sparkle:version|url)=' \
+	| sort \
+	| awk -F'"' '//{print $2}' \
+	))
 
-		URL="$INFO[2]"
+	RELEASE_NOTES_URL="$INFO[1]"
+	LATEST_VERSION="$INFO[2]"
+	URL="$INFO[3]"
 
-		# This always seems to be a plain-text file, but the filename itself changes
-		RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-			| sed "1,/<title>Version $LATEST_VERSION<\/title>/d; /<\/sparkle:releaseNotesLink>/,\$d ; s#<sparkle:releaseNotesLink>##g" \
-			| awk -F' ' '/https/{print $1}')
+		# If any of these are blank, we cannot continue
+	if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	then
+		echo "$NAME: Error: bad data received:
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		URL: $URL
 
-			# If any of these are blank, we should not continue
-		if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
-		then
-			echo "$NAME: Error: bad data received:
-			INFO: $INFO
-			LATEST_VERSION: $LATEST_VERSION
-			URL: $URL
-			"
+		PREFERS: $PREFERS
+		XML_FEED: $XML_FEED \n"
 
-			die
-		fi
+		exit 1
 	fi
 
 elif [ "$OS_VER" -ge "10" ]
@@ -106,7 +147,7 @@ then
 	RELEASE_NOTES_URL='https://iterm2.com/appcasts/30.txt'
 
 else
-
+		# this is for anything else, so… 10.7 and earlier?
 	URL='https://iterm2.com/downloads/stable/iTerm2-2_1_4.zip'
 	LATEST_VERSION='2.1.4'
 	RELEASE_NOTES_URL='https://iterm2.com/appcasts/2x.txt'
@@ -115,7 +156,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
+	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
 
 	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
 	then
@@ -138,14 +179,15 @@ fi
 
 FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"
 
-## Release Notes - start
+	## Release Notes - start
 if [[ "$RELEASE_NOTES_URL" != '' ]]
 then
-	( echo -n "$NAME: Release Notes for " ;
+	( echo -n "$NAME: Release Notes for iTerm version $LATEST_VERSION ${PREFERS}\n\n" ;
 	  curl -sfL "$RELEASE_NOTES_URL" ;
-	  echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	  echo "\nSource: <$RELEASE_NOTES_URL>\nHome: ${HOMEPAGE} \nDownloads: ${DOWNLOAD_PAGE} \nSummary: ${SUMMARY} \nURL: ${URL} \nXML_FEED: ${XML_FEED}" ) \
+	  | tee "$FILENAME:r.txt"
 fi
-## Release Notes - end
+	## Release Notes - end
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -160,6 +202,30 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+	# save the sha256 checksum to a file
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+	# make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is NOT a valid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	die
+
+fi
+
+	## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
