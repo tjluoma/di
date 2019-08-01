@@ -33,9 +33,6 @@ else
 fi
 
 
-	# LSMinimumSystemVersion is not set (as of 3.3.0) so we rely on information from
-	# https://www.iterm2.com/downloads.html
-
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
 if [ "$OS_VER" -ge "12" ]
@@ -99,20 +96,20 @@ then
 
 	URL='https://iterm2.com/downloads/stable/iTerm2-3_1_7.zip'
 	LATEST_VERSION='3.1.7'
-	RELEASE_NOTES_URL=''
+	RELEASE_NOTES_URL='https://iterm2.com/appcasts/3.1.7.txt'
 
 elif [ "$OS_VER" -ge "8" ]
 then
 		# if this is macOS 10.8 or later
-	URL=' https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip'
+	URL='https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip'
 	LATEST_VERSION='3.1.5'
-	RELEASE_NOTES_URL=''
+	RELEASE_NOTES_URL='https://iterm2.com/appcasts/30.txt'
 
 else
 
-	echo "$NAME: Not sure what version is compatible with mac OS 10.$OS_VER."
-	echo '	See <https://www.iterm2.com/downloads.html> for available versions.'
-	exit 1
+	URL='https://iterm2.com/downloads/stable/iTerm2-2_1_4.zip'
+	LATEST_VERSION='2.1.4'
+	RELEASE_NOTES_URL='https://iterm2.com/appcasts/2x.txt'
 fi
 
 if [[ -e "$INSTALL_TO" ]]
