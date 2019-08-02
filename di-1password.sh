@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download 1Password 6 or 7 depending on OS version or what's already installed
 #
 # From:	Timothy J. Luoma
