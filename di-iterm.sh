@@ -97,21 +97,19 @@ then
 # sort to make sure those 3 lines are always in the same order even if the XML_FEED changes
 # awk to get just the stuff between the " marks
 
-INFO=($((curl -sfLS "$XML_FEED" \
-	| tr -s '\t|\012' ' ' \
-	| sed -e 's#<item>#\
+# 2019-08-01 - I'm not sure why I had to break that up into two separate calls
+#				but I was getting an error when I tried to make it as one long one.
+
+CURL=$(curl -sfLS "$XML_FEED" | tr -s '\t|\012' ' ' | sed -e 's#<item>#\
 <item>#g ; s#</item>#</item>\
-#g' -e 's#> #>#g' -e 's/ </</g') \
-	| fgrep '<item>' \
-	| tail -1 \
-	| sed -e 's#><#>\
+#g' -e 's#> #>#g' -e 's/ </</g')
+
+INFO=($(echo "$CURL" | fgrep '<item>' | tail -1 | sed -e 's#><#>\
 <#g' -e 's# #\
-#g' -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' \
-	-e 's#</sparkle:releaseNotesLink>#"#g' \
-	| egrep '^(sparkle:releaseNotesLink|sparkle:version|url)=' \
-	| sort \
-	| awk -F'"' '//{print $2}' \
-	))
+#g' -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' -e 's#</sparkle:releaseNotesLink>#"#g' \
+| egrep '^(sparkle:releaseNotesLink|sparkle:version|url)=' \
+| sort \
+| awk -F'"' '//{print $2}'))
 
 	RELEASE_NOTES_URL="$INFO[1]"
 	LATEST_VERSION="$INFO[2]"
