@@ -16,22 +16,33 @@ fi
 
 INSTALL_TO='/Applications/Shotcut.app'
 
-XML_FEED='https://github.com/mltframework/shotcut/releases.atom'
+LATEST_URL=$(curl --head -sfLS "https://github.com/mltframework/shotcut/releases/latest" \
+	| awk -F' ' '/^Location:/{print $NF}' \
+	| tr -d '\r')
 
-NON_BETA_TITLE=$(curl -sfLS "$XML_FEED" | fgrep -i '<title>v' | fgrep -vi beta | head -1)
+LATEST_VERSION=$(echo "$LATEST_URL:t" | tr -dc '[0-9]\.')
 
-LATEST_VERSION=$(echo "${NON_BETA_TITLE}" | sed 's#.*<title>v##g; s#</title>##g')
+	# 2019-08-05 attempt to more reliably get the URL of the download
+URL=$(curl -sfLS "https://github.com/mltframework/shotcut/releases/latest" \
+		| tr '"' '\012' \
+		| egrep '/mltframework/shotcut/releases/download/.*-signed-.*\.dmg' \
+		| sed 's#^#https://github.com#g')
 
-	# numbers only, without the dots
-LV_RAW=$(echo "$LATEST_VERSION" | tr -dc '[0-9]')
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
 
-	### 2019-07-15 - this does NOT seem like a reliable way to get the URL. Find something better?
-URL="https://github.com/mltframework/shotcut/releases/download/v${LATEST_VERSION}/shotcut-macos-signed-${LV_RAW}.dmg"
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion 2>/dev/null)
 
 	autoload is-at-least
 
@@ -56,15 +67,17 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
-if (( $+commands[lynx] ))
+function mycurl { curl -sfLS "${LATEST_URL}" | sed '1,/<div class="markdown-body">/d; /<summary>/,$d' }
+
+if (( $+commands[html2text.py] ))
 then
 
-	(curl -sfLS "$XML_FEED" \
-	| sed -e "1,/<title>v${LATEST_VERSION}<\/title>/d" -e '/<author>/,$d' -e 's#<content type="html">##g' -e 's#</content>##g' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ) \
-	| tee "$FILENAME:r.txt"
+	(mycurl | html2text.py) | tee "$FILENAME:r.txt"
 
+elif (( $+commands[lynx] ))
+then
+
+	(mycurl | lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin) | tee "$FILENAME:r.txt"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -80,7 +93,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\nURL: $URL\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Mounting $FILENAME:"
 
