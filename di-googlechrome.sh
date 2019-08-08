@@ -16,6 +16,9 @@ fi
 
 INSTALL_TO='/Applications/Google Chrome.app'
 
+	## Alternative way to find the latest version number
+	# curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.'
+
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
 LATEST_VERSION=$(curl -sfLS 'https://omahaproxy.appspot.com/history?os=mac;channel=stable' \
 				| awk -F',' '/^mac/{print $3}' \
