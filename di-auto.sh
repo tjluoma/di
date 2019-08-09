@@ -47,6 +47,8 @@ $LOCKED_TIME" \
 
 	echo "$NAME: Lockfile found at ${LOCKFILE}. Locked since ${LOCKED_TIME}. Exiting."
 
+	po.sh "$NAME: Locked since $LOCKED_TIME"
+
 	exit 0
 
 else
