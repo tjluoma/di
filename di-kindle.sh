@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Kindle for Mac
 #
 # From:	Tj Luo.ma
@@ -35,7 +35,7 @@ if [ -d "$INSTALL_TO" -a ! -w "$INSTALL_TO" ]
 then
 	echo "$NAME: Although $INSTALL_TO exists, it is not writable."
 	exit 0
-fi 
+fi
 
 	# NOTE: We do not want to use 'curl --location' here because that will not give us the information we need
 	# We _want_ to get the basic HTML redirection page, because that has the actual, current URL in it
@@ -109,24 +109,64 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 1
 
-echo -n "$NAME: Mounting ${FILENAME} ... "
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-[[ "$MNTPNT" == "" ]] && die "MNTPNT is empty"
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
+fi
 
-echo "Mounted at: $MNTPNT"
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO" || die "ditto failed"
+	EXIT="$?"
 
-echo "$NAME: Successfully installed to: '$INSTALL_TO'.\n\tUnmounting '$FILENAME':"
+	if [[ "$EXIT" != "0" ]]
+	then
 
-diskutil eject "$MNTPNT"
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
+	echo "$NAME: ditto failed"
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
 
 	# Rename the generic filename to include the Version and Build information
 INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
