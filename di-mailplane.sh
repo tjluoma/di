@@ -1,12 +1,12 @@
-#!/bin/zsh -f
-# Purpose: Download and install Mailplane.app v3 or 4, depending on which is installed (if any)
+#!/usr/bin/env zsh -f
+# Purpose: Download and update/install Mailplane.app 4
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2018-08-20
 
-## 2018-11-05 - the format of the XML_FEED seems to have changed
+# no RELEASE_NOTES_URL found -- update and @TODO found it - https://mailplaneapp.com/releases/mailplane4.html
 
 NAME="$0:t:r"
 
@@ -15,8 +15,6 @@ HOMEPAGE="https://mailplaneapp.com"
 DOWNLOAD_PAGE="https://update.mailplaneapp.com/mailplane_4.php"
 
 SUMMARY="The best way to use Gmail on your Mac."
-
-# no RELEASE_NOTES_URL found
 
 INSTALL_TO="/Applications/Mailplane.app"
 
