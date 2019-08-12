@@ -6,8 +6,6 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2018-08-20
 
-# no RELEASE_NOTES_URL found -- update and @TODO found it - https://mailplaneapp.com/releases/mailplane4.html
-
 NAME="$0:t:r"
 
 HOMEPAGE="https://mailplaneapp.com"
@@ -74,7 +72,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/MailPlane-4-${LATEST_VERSION}_${LATEST_BUILD}.tbz"
+FILENAME="$HOME/Downloads/MailPlane-${LATEST_VERSION}_${LATEST_BUILD}.tbz"
+
+if (( $+commands[lynx] ))
+then
+
+	( curl -sfLS "https://mailplaneapp.com/releases/mailplane4.html" \
+	| awk '/<li id=/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| uniq ; \
+	echo "\nURL: $URL\n\nXML_FEED: ${XML_FEED}\n" ) | tee "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -88,6 +97,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
