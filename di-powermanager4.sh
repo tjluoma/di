@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install/update the latest version of Power Manager from DSSW
+# Purpose: Download and install/update Power Manager version 4 from DSSW
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
