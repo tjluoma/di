@@ -83,7 +83,7 @@ then
 		# if we get to this point, we know we need to do either an install or an update
 		# AND we have an URL to work with.
 
-	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/CallRecorder.*\.zip')
+	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/CallRecorder.*\.zip' | fgrep "$LATEST_VERSION")
 
 else
 	# These are the less-desirable options. All of these end with 'exit 1'
