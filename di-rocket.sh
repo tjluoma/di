@@ -15,11 +15,21 @@ DOWNLOAD_PAGE="https://matthewpalmer.net/rocket/"
 
 SUMMARY="The fastest, smoothest Slack-style emoji picker for your Mac."
 
-XML_FEED='https://updates.devmate.com/net.matthewpalmer.Rocket.xml'
+## Beta also uses DMG not zip so I'm not including support for it at the moment
+## https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml?beta=true
+## https://macrelease.matthewpalmer.net/distribution/appcasts/rocket-beta.xml
+# NAME="$NAME (betas)"
+# XML_FEED='https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml?beta=true'
+# HEADS_OR_TAILS='tail'
+
+	# https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml?beta=false
+	# https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml
+XML_FEED='https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml'
+HEADS_OR_TAILS='head'
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
+	| "$HEADS_OR_TAILS" -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [[ -e "$HOME/.path" ]]
@@ -31,7 +41,7 @@ fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '(<enclosure url="https://.*\.zip")' \
-		| head -1 \
+		| "$HEADS_OR_TAILS" -1 \
 		| tr ' ' '\012' \
 		| sort \
 		| egrep 'url=|sparkle:version=|sparkle:shortVersionString=' \
@@ -129,7 +139,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.$$.app"
 
 	EXIT="$?"
 
