@@ -25,11 +25,10 @@ SUMMARY="The fastest, smoothest Slack-style emoji picker for your Mac."
 	# https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml?beta=false
 	# https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml
 XML_FEED='https://macrelease.matthewpalmer.net/distribution/appcasts/rocket.xml'
-HEADS_OR_TAILS='head'
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
-	| "$HEADS_OR_TAILS" -1 \
+	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 if [[ -e "$HOME/.path" ]]
@@ -41,7 +40,7 @@ fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '(<enclosure url="https://.*\.zip")' \
-		| "$HEADS_OR_TAILS" -1 \
+		| head -1 \
 		| tr ' ' '\012' \
 		| sort \
 		| egrep 'url=|sparkle:version=|sparkle:shortVersionString=' \
@@ -96,7 +95,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-echo "$NAME: Release Notes for $INSTALL_TO:t:r are too long to show here, but you can find them at:\n\t<$RELEASE_NOTES_URL>"
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
@@ -113,6 +111,33 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+echo "$NAME: Release Notes from '$RELEASE_NOTES_URL' are too long to show, saving them to '$FILENAME:r.html'." | tee "$FILENAME:r.txt"
+
+curl -sfLS "$RELEASE_NOTES_URL" >| "$FILENAME:r.html"
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
@@ -138,14 +163,17 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.$$.app"
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
+
 		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
 		exit 1
 	fi
 fi
