@@ -103,6 +103,25 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nURL: $URL\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
+MIN_REQUIRED='10.12'
+
+OS_VER=$(sw_vers -productVersion)
+
+autoload is-at-least
+
+is-at-least "$MIN_REQUIRED"  "$OS_VER"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "1" ]]
+then
+
+	echo "$NAME: '$INSTALL_TO:t' requires '$MIN_REQUIRED' but this Mac is running '$OS_VER'. The file has been downloaded, but will not be installed:\n${FILENAME}\n"
+
+	exit 0
+
+fi
+
 if (( $+commands[pkginstall.sh] ))
 then
 
