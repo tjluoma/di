@@ -43,7 +43,7 @@ then
 
 		LATEST_VERSION="$LATEST_VERSION_AUTOMATIC"
 		URL=$(jq --raw-output .Automatic.fileURL < "$TEMPFILE")
-		RELEASE_NOTES_URL=$(jq --raw-output .Automatic.ReleaseNotes < "$TEMPFILE")
+		RELEASE_NOTES_URL=$(jq --raw-output .Automatic.ReleaseNotes.en < "$TEMPFILE")
 
 	else
 
@@ -60,7 +60,7 @@ then
 
 			LATEST_VERSION="$LATEST_VERSION_AUTOMATIC"
 			URL=$(jq --raw-output .Automatic.fileURL < "$TEMPFILE")
-			RELEASE_NOTES_URL=$(jq --raw-output .Automatic.ReleaseNotes < "$TEMPFILE")
+			RELEASE_NOTES_URL=$(jq --raw-output .Automatic.ReleaseNotes.en < "$TEMPFILE")
 
 		else
 
@@ -68,7 +68,7 @@ then
 
 			LATEST_VERSION="$LATEST_VERSION_MANUAL"
 			URL=$(jq --raw-output .Manual.fileURL < "$TEMPFILE")
-			RELEASE_NOTES_URL=$(jq --raw-output .Manual.ReleaseNotes < "$TEMPFILE")
+			RELEASE_NOTES_URL=$(jq --raw-output .Manual.ReleaseNotes.en < "$TEMPFILE")
 		fi
 	fi
 
@@ -133,8 +133,8 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.pkg"
 if (( $+commands[lynx] ))
 then
 
-	(lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL";\
-	echo "URL: $URL") | tee "$FILENAME:r.txt"
+	(lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;\
+	echo "\nURL: $URL") | tee "$FILENAME:r.txt"
 
 fi
 
