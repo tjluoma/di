@@ -21,7 +21,35 @@ NAME="$0:t:r"
 
 zmodload zsh/datetime
 
-function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
+function timestamp { strftime "%Y-%m-%d @ %H:%M:%S" "$EPOCHSECONDS" }
+
+LASTRUN="$HOME/.$NAME.lastrun.txt"
+
+if [[ "$1" != "--force" ]]
+then
+
+	LASTRUN_TIME=$(tail "$LASTRUN" | egrep '[0-9]' | tail -1 | awk '{print $1}')
+
+	DIFF=$(($EPOCHSECONDS - $LASTRUN_TIME))
+
+		# unless "forced" don't run if we've run in the last 59 minutes
+	if [ "$DIFF" -lt "3540" ]
+	then
+
+		TIME_AGO_READABLE=$(seconds2readable.sh "$DIFF")
+
+		growlnotify  \
+			--appIcon "iTerm" \
+			--identifier "$NAME" \
+			--message "${TIME_AGO_READABLE} ago" \
+			--title "$NAME not running.
+					Last ran: "
+
+		po.sh "$NAME not running. Ran $TIME_AGO_READABLE ago."
+
+		exit 0
+	fi
+fi
 
 DATE=`strftime "%Y-%m-%d" "$EPOCHSECONDS"`
 
@@ -57,11 +85,7 @@ else
 
 	echo "$EPOCHSECONDS ($$) -- `timestamp`" >| "$LOCKFILE"
 
-	function readable_timestamp { strftime "%H:%M on %Y/%m/%d" "$EPOCHSECONDS" }
-
-	readable_timestamp    >| "$HOME/.di-auto.lastrun.txt"
-
-	echo "$EPOCHSECONDS" >>| "$HOME/.di-auto.lastrun.txt"
+	echo "$EPOCHSECONDS	`timestamp`" >>| "$LASTRUN"
 
 fi
 
