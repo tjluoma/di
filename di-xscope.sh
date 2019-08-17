@@ -25,7 +25,7 @@ else
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
-	| tr ' ' '\012' \
+	| tr ' |\t' '\012' \
 	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
 	| head -3 \
 	| sort \
