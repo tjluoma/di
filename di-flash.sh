@@ -98,7 +98,13 @@ fi
 
 echo "$NAME: Installing '$PKG' from '$FILENAME'...\n" | tee -a "$LOG"
 
-sudo /usr/sbin/installer -pkg "$PKG" -dumplog -target / -lang en 2>&1 | tee -a "$LOG"
+if [[ "$EUID" == "0" ]]
+then
+		# if we are running as root, we don't need `sudo`
+	/usr/sbin/installer -pkg "$PKG" -dumplog -target / -lang en 2>&1 | tee -a "$LOG"
+else
+	sudo /usr/sbin/installer -pkg "$PKG" -dumplog -target / -lang en 2>&1 | tee -a "$LOG"
+fi
 
 EXIT="$?"
 
