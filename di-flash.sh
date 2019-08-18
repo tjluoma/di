@@ -115,7 +115,35 @@ else
 
 fi
 
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+MAX_ATTEMPTS="10"
+
+SECONDS_BETWEEN_ATTEMPTS="1"
+
+	# initialize the counter
+COUNT=0
+
+	# NOTE this 'while' loop can be changed to something else
+while [[ -e "$MNTPNT" ]]
+do
+
+		# increment counter (this is why we init to 0 not 1)
+	((COUNT++))
+
+		# check to see if we have exceeded maximum attempts
+	if [ "$COUNT" -gt "$MAX_ATTEMPTS" ]
+	then
+		echo "$NAME: exceeded $MAX_ATTEMPTS to eject '$MNTPNT'. Giving up."
+		exit 1
+	fi
+
+		# don't sleep the first time through the loop
+	[[ "$COUNT" != "1" ]] && sleep ${SECONDS_BETWEEN_ATTEMPTS}
+
+	(echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT" 2>&1) | tee -a "$LOG"
+
+done
+
+echo "$NAME: Finished"
 
 exit 0
 #EOF
