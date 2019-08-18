@@ -110,15 +110,10 @@ EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
-
 	echo "$NAME: Installation successful" | tee -a "$LOG"
-
 else
-
 	echo "$NAME: installer failed (\$EXIT = $EXIT)" | tee -a "$LOG"
-
 	exit 1
-
 fi
 
 MAX_ATTEMPTS="10"
@@ -145,7 +140,7 @@ do
 		# don't sleep the first time through the loop
 	[[ "$COUNT" != "1" ]] && sleep ${SECONDS_BETWEEN_ATTEMPTS}
 
-	(echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT" 2>&1) | tee -a "$LOG"
+	(echo -n "$NAME: Attempt $COUNT/$MAX_ATTEMPTS at unmounting '$MNTPNT' : " && diskutil eject "$MNTPNT" 2>&1) | tee -a "$LOG"
 
 done
 
