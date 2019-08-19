@@ -14,6 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+INSTALL_TO='/Library/PreferencePanes/Flash Player.prefPane'
+
 LATEST_VERSION=$(curl -sfLS "https://fpdownload.adobe.com/pub/flashplayer/update/current/xml/version_en_mac_pl.xml" \
 				| tr '\012' ' ' \
 				| sed 's#.*<update version="##g; s#">.*##g ; s#,#.#g')
@@ -34,7 +36,7 @@ then
 	exit 1
 fi
 
-PLIST="/Library/PreferencePanes/Flash Player.prefPane/Contents/Info.plist"
+PLIST="$INSTALL_TO/Contents/Info.plist"
 
 if [[ -e "$PLIST" ]]
 then
