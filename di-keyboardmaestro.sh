@@ -139,21 +139,32 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	pgrep -q 'Keyboard Maestro Engine' \
+	pgrep -qx 'Keyboard Maestro Engine' \
 	&& LAUNCH_ENGINE='yes' \
 	&& osascript -e 'tell application "Keyboard Maestro Engine" to quit'
 
-	pgrep -q 'Keyboard Maestro Engine' \
+	pgrep -qx 'Keyboard Maestro Engine' \
 	&& LAUNCH_ENGINE='yes' \
 	&& pkill -f 'Keyboard Maestro Engine'
 
-	pgrep -q 'Keyboard Maestro' \
-	&& LAUNCH_APP='yes' \
-	&& osascript -e 'tell application "Keyboard Maestro" to quit'
+	while [ "`pgrep -x 'Keyboard Maestro'`" != "" ]
+	do
 
-	pgrep -q 'Keyboard Maestro' \
-	&& LAUNCH_ENGINE='yes' \
-	&& pkill -f 'Keyboard Maestro'
+		MSG="$NAME: Keyboard Maestro (app not just the engine) is running. Cannot update. Waiting 30 seconds."
+
+		echo  "$MSG"
+
+		growlnotify  \
+		--appIcon "Keyboard Maestro" \
+		--identifier "$NAME" \
+		--message "$MSG" \
+		--title "$NAME"
+
+	done
+
+	osascript -e 'tell application "Keyboard Maestro" to quit'
+
+	pgrep -qx 'Keyboard Maestro' && pkill -x 'Keyboard Maestro'
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
