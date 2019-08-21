@@ -414,6 +414,9 @@ else
 			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
+			# save the HTML too
+		curl -sfLS "$RELEASE_NOTES_URL" > "$FILENAME:r.html"
+
 	fi
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
