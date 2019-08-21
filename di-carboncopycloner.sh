@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download/Install/Upgrade Carbon Copy Cloner version 3, 4, or 5, depending on OS and what's installed.
 #
 # From:	Timothy J. Luoma
