@@ -1,9 +1,11 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: 	Download and install the latest version of VLC
 #
 # Author:		Timothy J. Luoma
 # Email:		luomat at gmail dot com
 # Date:		2011-10-26, verified 2018-08-07
+
+## 2019-08-21 - failed to find 'vlc_3.0.8.dmg'
 
 NAME="$0:t"
 
