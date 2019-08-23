@@ -31,7 +31,7 @@ then
 	exit 1
 fi
 
-echo "\nLV1 = ${LATEST_VERSION}\nLV2 = ${LV2}\n"
+echo "\n$NAME: LV1 = ${LATEST_VERSION}\n$NAME: LV2 = ${LV2}\n"
 
 
 if [[ -e "$INSTALL_TO" ]]
