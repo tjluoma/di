@@ -160,6 +160,8 @@ then
 		--message "$MSG" \
 		--title "$NAME"
 
+		sleep 30
+
 	done
 
 	osascript -e 'tell application "Keyboard Maestro" to quit'
