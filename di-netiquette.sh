@@ -20,6 +20,9 @@ INSTALL_TO='/Applications/Netiquette.app'
 
 URL=$(curl -sfLS "https://objective-see.com/products/netiquette.html" | tr '"' '\012' | egrep -i "^http.*netiquette.*\.zip" | head -1)
 
+	# This is a plain text file. At some point we might want to limit how much we fetch but for now we'll just take the whole thing
+RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Netiquette.txt'
+
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 	# If any of these are blank, we cannot continue
@@ -59,7 +62,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+
+curl -sfLS "$RELEASE_NOTES_URL" >| "$FILENAME:r.txt"
+
+SHA1=$(curl -sfLS "https://objective-see.com/products/netiquette.html" | awk -F' ' '/sha-1/{print $NF}')
+
+if [[ "$SHA1" != "" ]]
+then
+	SUMFILE="$FILENAME:r.sha1.txt"
+	echo "${SHA1} ?${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip" >| "$SUMFILE"
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -73,6 +87,23 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+if [[ -e "$SUMFILE" ]]
+then
+	cd "$FILENAME:h"
+
+	shasum -c "$SUMFILE"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: SHA1 verification failed"
+
+		exit 1
+	fi
+fi
 
 (cd "$FILENAME:h" ; echo "\nURL: $URL\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
