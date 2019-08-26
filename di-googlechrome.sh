@@ -16,9 +16,6 @@ fi
 
 INSTALL_TO='/Applications/Google Chrome.app'
 
-	## Alternative way to find the latest version number
-LV2=$(curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.')
-
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
 LATEST_VERSION=$(curl -sfLS 'https://omahaproxy.appspot.com/history?os=mac;channel=stable' \
 				| awk -F',' '/^mac/{print $3}' \
@@ -30,6 +27,11 @@ then
 	echo "$NAME: Unable to determine latest version of Google Chrome."
 	exit 1
 fi
+
+## 2019-08-26 - LV1 is updated faster than LV2
+
+	## Alternative way to find the latest version number
+LV2=$(curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.')
 
 echo "\n$NAME: LV1 = ${LATEST_VERSION}\n$NAME: LV2 = ${LV2}\n"
 
