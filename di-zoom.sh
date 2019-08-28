@@ -76,20 +76,10 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-echo "$NAME: Due to Zoom's security issues, it will not be installed automatically."
-echo "	You can find it at '$FILENAME' if you want to install it yourself."
-
-exit 0
-
-# This is the older code that actually did install the app automatically. Disabled. Perhaps temporarily. Perhaps not.
 if (( $+commands[pkginstall.sh] ))
 then
 
 	pkginstall.sh "$FILENAME"
-
-	osascript -e 'tell application "ZoomOpener" to quit' 2>/dev/null || true
-
-	osascript -e 'tell application "zoom.us" to quit' 2>/dev/null || true
 
 else
 		# fall back to either `sudo installer` or macOS's installer app
@@ -98,9 +88,8 @@ else
 
 fi
 
-
-osascript -e 'tell application "ZoomOpener" to quit' 2>/dev/null || true
-
+	## the app will automatically start when installed/updated. I don't usually want that, so
+	## this will quit it. If you do want that, remove or comment-out the next line.
 osascript -e 'tell application "zoom.us" to quit' 2>/dev/null || true
 
 exit 0
