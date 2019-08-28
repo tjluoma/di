@@ -1,9 +1,9 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of Cookie version 5
+# Purpose: Download and install the latest version of Cookie version 6
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-08-19
+# Date:	2018-08-19; updated for version 6 on 2019-08-28
 
 NAME="$0:t:r"
 
@@ -11,13 +11,14 @@ INSTALL_TO="/Applications/Cookie.app"
 
 HOMEPAGE="https://cookie5app.com"
 
-DOWNLOAD_PAGE="https://sweetpproductions.com/products/cookie5/Cookie5.dmg"
+	# https://sweetpproductions.com/products/cookie5/Cookie5.dmg
+DOWNLOAD_PAGE="https://sweetpproductions.com/products/cookieapp/Cookie.dmg"
 
-SUMMARY="Tired of targeted ads that mysteriously know what products you’ve been shopping for online? Protect your privacy with Cookie 5."
+SUMMARY="Tired of targeted ads that mysteriously know what products you’ve been shopping for online? Protect your privacy with Cookie."
 
-XML_FEED="https://sweetpproductions.com/products/cookie5/appcast.xml"
+XML_FEED="https://sweetpproductions.com/products/cookieapp/appcast.xml"
 
-RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookie5/updates.htm"
+RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookieapp/updates.htm"
 
 if [[ -e "$HOME/.path" ]]
 then
