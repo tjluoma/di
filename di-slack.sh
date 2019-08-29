@@ -1,9 +1,12 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
+#
 # Purpose: Download the direct (not Mac App Store) version of Slack from <https://slack.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-17
+
+# @TODO - fix Release Notes - 
 
 NAME="$0:t:r"
 
