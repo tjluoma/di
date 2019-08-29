@@ -127,7 +127,7 @@ then
 else
 
 	case "$OS_VER" in
-		13|14)
+		13|14|15)
 			CAN_USE_3='yes'
 			CAN_USE_2='no'
 			use_v3
