@@ -6,8 +6,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-17
 
-# @TODO - fix Release Notes - 
-
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Slack.app'
@@ -18,7 +16,6 @@ DOWNLOAD_PAGE="https://slack.com/ssb/download-osx"
 
 SUMMARY="Slack brings all your communication together — a single place for messaging, tools and files — helping everyone save time and collaborate together."
 
-	## 2019-07-15 @TODO - parsing of this has changed and needs to be updated to get the correct release notes. Maybe also just save the whole HTML file too?
 RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
 
 if [ -e "$HOME/.path" ]
@@ -80,19 +77,25 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
+	## Save full release notes to an HTML file
+curl -sfLS "$RELEASE_NOTES_URL" \
+| tidy 	--char-encoding utf8 --clean yes --force-output yes --indent yes --input-xml no --join-classes yes \
+		--join-styles yes --markup yes --output-xhtml yes --output-xml no --quiet yes --quote-ampersand yes \
+		--quote-marks yes --quote-nbsp no --show-errors 0 --show-warnings no --tidy-mark no \
+		--uppercase-attributes no --uppercase-tags no --wrap 0 \
+> "$FILENAME:r.html"
+
 if (( $+commands[lynx] ))
 then
-		# this should get the HTML of the release notes, at least
-		# @TODO 2019-07-15 maybe parse this instead of hitting the server again
-	curl --continue-at - --fail --location --output "$FILENAME:r.html" "$RELEASE_NOTES_URL"
 
-	( echo -n "$NAME: Release Notes for " ;
-	curl -sfL "${RELEASE_NOTES_URL}" \
-	| sed '1,/<a name="/d; /<a name="/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d' ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		# if we have access to lynx, use it on the local HTML file we just saved (and tidy'd)
+		# to get just the latest release note changes
 
+	( awk '/<h2>/{i++}i==1' "$FILENAME:r.html" \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin; \
+		echo "\nURL: ${URL}\nSource: <$RELEASE_NOTES_URL>" \
+	) \
+	| tee "$FILENAME:r.txt"
 
 fi
 
