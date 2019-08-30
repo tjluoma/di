@@ -1,10 +1,13 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install Audio Hijack 3
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-01-20
+
+
+## 2019-08-29 @TODO - figure out why release notes are coming up empty.
 
 NAME="$0:t:r"
 
