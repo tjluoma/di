@@ -16,6 +16,8 @@ fi
 
 INSTALL_TO='/Applications/zoom.us.app'
 
+RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'
+
 	# this assumes that 'https://zoom.us/client/latest/Zoom.pkg' won't change
 URL=$(curl -sfLS --head https://zoom.us/client/latest/Zoom.pkg | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
 
@@ -60,6 +62,18 @@ else
 fi
 
 FILENAME="$HOME/Downloads/Zoom-${LATEST_VERSION}.pkg"
+
+if (( $+commands[lynx] ))
+then
+
+	(curl -sfLS "$RELEASE_NOTES_URL" \
+		| sed '1,/<h2>Current Release<\/h2>/d; /<h2>Previous Releases<\/h2>/,$d' \
+		| fgrep -v '<hr class="style-two" />' \
+		| lynx -dump -nomargins -width='1000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+		echo "\nSource: $RELEASE_NOTES_URL\nURL: $URL" ) \
+	| tee "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
