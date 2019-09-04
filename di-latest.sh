@@ -14,7 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://max.codes/latest/feed.xml'
+	## 2019-09-04 This one is apparently outdated now --> XML_FEED='https://max.codes/latest/feed.xml'
+XML_FEED='https://max.codes/latest/update.xml'
 
 INSTALL_TO='/Applications/Latest.app'
 
