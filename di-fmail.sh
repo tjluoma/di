@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: FastMail Mac client https://arievanboxel.fr/fmail/
 #
 # From:	Timothy J. Luoma
@@ -118,6 +118,26 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+
+MIN_REQUIRED='10.14'
+
+OS_VER=$(sw_vers -productVersion)
+
+autoload is-at-least
+
+is-at-least "$MIN_REQUIRED" "$OS_VER"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "1" ]]
+then
+
+	echo "\n$NAME: '$INSTALL_TO:t' requires '$MIN_REQUIRED' but this Mac is running '$OS_VER'. The file has been downloaded, but will not be installed:\n${FILENAME}\n"
+
+	exit 1
+
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
