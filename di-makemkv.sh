@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of MakeMKV.app
 #
 # From:	Timothy J. Luoma
@@ -22,15 +22,19 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-########################################################################################################################
-	## I can't seem to find an RSS feed for the updates, although it does have some sort of update checking
+###############################################################################################
+	## I can't seem to find an RSS feed for the updates, although it does have some sort
+	## of update checking
 	## So, instead, I make an ugly-hack-ish check for an URL with 'dmg' in it
 
 if (( $+commands[lynx] ))
 then
 
-		# if lynx is installed, use it, since it is better at parsing HTML than a shell script ever will be
-	URL=$(lynx -dump -nonumbers -listonly 'http://www.makemkv.com/download/' | egrep '^http.*\.dmg' | head -1)
+		# if lynx is installed, use it,
+		# since it is better at parsing HTML than a shell script ever will be
+	URL=$(lynx -dump -nonumbers -listonly 'http://www.makemkv.com/download/' \
+			| egrep '^http.*\.dmg' \
+			| head -1)
 
 else
 		# if lynx is not installed, parse the output of 'curl'
@@ -56,7 +60,7 @@ then
 	exit 1
 fi
 
-########################################################################################################################
+###############################################################################################
 
 if [ -e "$INSTALL_TO" ]
 then
@@ -82,18 +86,21 @@ then
 
 fi
 
-########################################################################################################################
+###############################################################################################
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-########################################################################################################################
+###############################################################################################
 
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL='http://www.makemkv.com/download/'
 
-	SECOND_VERSION=$(curl -sfL "${RELEASE_NOTES_URL}" | egrep '<li>MakeMKV v.* \(.* \)</li>' | sed -n '2p' | sed 's#</li>##g')
+	SECOND_VERSION=$(curl -sfL "${RELEASE_NOTES_URL}" \
+					| egrep '<li>MakeMKV v.* \(.* \)</li>' \
+					| sed -n '2p' \
+					| sed 's#</li>##g')
 
 	( echo -n "$NAME: Release Notes for" ;
 	curl -sfL 'http://www.makemkv.com/download/' \
@@ -104,7 +111,7 @@ then
 
 fi
 
-########################################################################################################################
+###############################################################################################
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
