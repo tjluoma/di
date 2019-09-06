@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: get the latest https://www.soma-zone.com/BackupLoupe/
 #
 # From:	Timothy J. Luoma
@@ -73,10 +73,12 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	(echo "$INSTALL_TO:t:r $LATEST_VERSION / $LATEST_BUILD";echo "${INFO}" \
-	| sed '1,/<description>/d; /<\/description>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ) \
-	| tee "$FILENAME:r.txt"
+	(echo "$INSTALL_TO:t:r $LATEST_VERSION / $LATEST_BUILD";\
+		echo "${INFO}" \
+		| sed '1,/<description>/d; /<\/description>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
+		echo "URL: $URL" \
+	) | tee "$FILENAME:r.txt"
 
 fi
 
@@ -92,6 +94,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
