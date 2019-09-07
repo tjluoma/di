@@ -23,6 +23,7 @@ HOMEPAGE='https://www.ergonis.com/products/keycue/'
 	# The server doesn't like `curl` so we pretend not to be `curl`
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.2 Safari/605.1.15'
 
+	## If you want to get betas, create a text file at this location
 if [[ -e "$HOME/.config/di/prefers/KeyCute-Beta.txt" ]]
 then
 		#  Source: https://www.ergonis.com/downloads/beta/
@@ -30,12 +31,17 @@ then
 	BETA='yes'
 	NAME="$NAME (beta)"
 	PREFIX="beta-"
-	URL=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" | egrep -i 'keycue.*\.dmg' | sed 's#.*href="#https://www.ergonis.com/downloads/beta/#g ; s#.dmg.*#.dmg#g')
+	URL=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" \
+			| egrep -i 'keycue.*\.dmg' \
+			| sed 's#.*href="#https://www.ergonis.com/downloads/beta/#g ; s#.dmg.*#.dmg#g')
 
 else
 		## Source: https://www.ergonis.com/downloads/dnld_keycue.html
 		## https://www.ergonis.com/downloads/keycue-install.dmg redirects to actual DMG
-	URL=$(curl -A "$UA" --head -sfL "https://www.ergonis.com/downloads/keycue-install.dmg" | awk -F' |\r' '/^Location:/{print $2}' || echo https://www.ergonis.com/downloads/keycue-install.dmg)
+	URL=$(curl -A "$UA" --head -sfL "https://www.ergonis.com/downloads/keycue-install.dmg" \
+			| awk -F' |\r' '/^Location:/{print $2}' \
+			|| echo "https://www.ergonis.com/downloads/keycue-install.dmg")
+
 	FEED="https://update.ergonis.com/vck/keycue.xml?s=0"
 	PREFIX=''
 	BETA='no'
@@ -102,7 +108,10 @@ then
 		if (( $+commands[unrtf] ))
 		then
 
-			RTF=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" | tr '"' '\012' | egrep -i '^KeyCue.*\.rtf' | sed 's#^#https://www.ergonis.com/downloads/beta/#g')
+			RTF=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" \
+					| tr '"' '\012' \
+					| egrep -i '^KeyCue.*\.rtf' \
+					| sed 's#^#https://www.ergonis.com/downloads/beta/#g')
 
 			( curl -sfLS "$RTF" \
 			| command unrtf \
