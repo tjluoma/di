@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download latest version of Lingon 7+
 #
 # From:	Timothy J. Luoma
@@ -84,7 +84,7 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r (${LATEST_VERSION}/${LATEST_BUILD}):\n\n${RELEASE_NOTES}\n\nSource: ${FEED}" ) | tee "$FILENAME:r.txt"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r (${LATEST_VERSION}/${LATEST_BUILD}):\n\n${RELEASE_NOTES}\n\nSource: ${FEED}\nURL: $URL" ) | tee "$FILENAME:r.txt"
 
 fi
 
@@ -100,6 +100,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
