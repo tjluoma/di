@@ -23,17 +23,31 @@ HOMEPAGE='https://www.ergonis.com/products/keycue/'
 	# The server doesn't like `curl` so we pretend not to be `curl`
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.2 Safari/605.1.15'
 
-# BETAs = "https://update.ergonis.com/downloads/beta/keycue/keycuev.xml?s=0"
+if [[ -e "$HOME/.config/di/prefers/KeyCute-Beta.txt" ]]
+then
+		#  Source: https://www.ergonis.com/downloads/beta/
+	FEED="https://update.ergonis.com/downloads/beta/keycue/keycuev.xml?s=0"
+	BETA='yes'
+	NAME="$NAME (beta)"
+	PREFIX="beta-"
+	URL=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" | egrep -i 'keycue.*\.dmg' | sed 's#.*href="#https://www.ergonis.com/downloads/beta/#g ; s#.dmg.*#.dmg#g')
 
-LATEST_VERSION=$(curl -A "$UA" -sfLS "https://update.ergonis.com/vck/keycue.xml" \
-				| fgrep '<Program_Version>9.4</Program_Version>' \
-				| sed 's#.*<Program_Version>##g ; s#</Program_Version>##g')
+else
+		## Source: https://www.ergonis.com/downloads/dnld_keycue.html
+		## https://www.ergonis.com/downloads/keycue-install.dmg redirects to actual DMG
+	URL=$(curl -A "$UA" --head -sfL "https://www.ergonis.com/downloads/keycue-install.dmg" | awk -F' |\r' '/^Location:/{print $2}' || echo https://www.ergonis.com/downloads/keycue-install.dmg)
+	FEED="https://update.ergonis.com/vck/keycue.xml?s=0"
+	PREFIX=''
+	BETA='no'
+fi
+
+LATEST_VERSION=$(curl -A "$UA" -sfLS "$FEED" \
+				| egrep "<Program_Version>.*</Program_Version>" \
+				| sed 's#.*<Program_Version>##g ; s#</Program_Version>##g' \
+				| tr -d '\r')
 
 [[ "$LATEST_VERSION" == "" ]] && echo "$NAME: 'LATEST_VERSION' is empty." && exit 1
 
-	## Source: https://www.ergonis.com/downloads/dnld_keycue.html
-	## https://www.ergonis.com/downloads/keycue-install.dmg redirects to actual DMG
-URL=$(curl -A "$UA" --head -sfL "https://www.ergonis.com/downloads/keycue-install.dmg" | awk -F' |\r' '/^Location:/{print $2}' || echo https://www.ergonis.com/downloads/keycue-install.dmg)
 
 URL_CODE=$(curl -A "$UA" --head --silent $URL | awk -F' ' '/^HTTP/{print $2}')
 
@@ -69,18 +83,39 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${PREFIX}${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
 
-	(curl -A "$UA" -sfLS "$RELEASE_NOTES_URL" \
-	| awk '/<h1>/{i++}i==1' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin -nonumbers -nolist \
-	| sed 's#^ *##g' ;\
-	echo "\nURL: ${URL}\n") | tee "$FILENAME:r.txt"
+	if [[ "$BETA" = "no" ]]
+	then
 
-fi
+		(curl -A "$UA" -sfLS "$RELEASE_NOTES_URL" \
+		| awk '/<h1>/{i++}i==1' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin -nonumbers -nolist \
+		| sed 's#^ *##g' ;\
+		echo "\nURL: ${URL}\n") | tee "$FILENAME:r.txt"
+
+	else
+
+		if (( $+commands[unrtf] ))
+		then
+
+			RTF=$(curl -sfLS "https://www.ergonis.com/downloads/beta/" | tr '"' '\012' | egrep -i '^KeyCue.*\.rtf' | sed 's#^#https://www.ergonis.com/downloads/beta/#g')
+
+			( curl -sfLS "$RTF" \
+			| command unrtf \
+			| lynx -dump -nomargins -width='10000' -assume_charset='UTF-8' -pseudo_inlines -stdin \
+			| sed G ; \
+			  echo "\nURL for RTF: $RTF\n" ) \
+			| tee "$FILENAME:r.txt"
+
+		fi # unrtf
+
+	fi # beta
+
+fi # lynx
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
