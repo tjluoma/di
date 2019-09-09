@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Duet Display
 #
 # From:	Timothy J. Luoma
@@ -13,6 +13,8 @@ HOMEPAGE="https://www.duetdisplay.com"
 
 DOWNLOAD_PAGE="https://www.duetdisplay.com/#download"
 
+RELEASE_NOTES_URL='https://help.duetdisplay.com/updates/mac-release-notes'
+
 SUMMARY="Turn your iPad into an extra display."
 
 if [ -e "$HOME/.path" ]
@@ -22,42 +24,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# XML_FEED='http://updates.duetdisplay.com/checkMacUpdates'
-### 2018-12-15 - this feed does not seem to have the latest version either. It ends with '1.7.1.4'
-## 				 Actual latest version is 2.0.3.8
-## This one is even older
-##   XML_FEED='https://updates.devmate.com/com.kairos.duet.xml'
-##
-# INFO=($(curl -sfL "$XML_FEED" \
-# 		| tr -s ' ' '\012' \
-# 		| egrep 'sparkle:version=|url=' \
-# 		| head -2 \
-# 		| sort \
-# 		| awk -F'"' '/^/{print $2}'))
+# https://help.duetdisplay.com/updates/mac-release-notes now has links to recent downloads
 
-## https://duet.nyc3.cdn.digitaloceanspaces.com/Mac/2_0/duet-2-0-5-0.zip
+## curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes"| tidy -config ~/.config/tidy/basic-clean-reformat-no-indent.rc | awk '/<p><strong>Version/{i++}i==1'
 
-URL=$(curl --fail --silent --location --head "https://www.duetdisplay.com/mac/" \
-		| awk -F' ' '/^Location: /{print $2}' \
-		| tail -1 \
-		| tr -d '\r')
+URL=$(curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes" | tr '"' '\012' | egrep '^https://duet.*\.zip' | head -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
-
-	## "Sparkle" will always come before "url" because of "sort"
-# LATEST_VERSION="$INFO[1]"
-# URL="$INFO[2]"
-#
-# if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-# then
-# 	echo "$NAME: Error: bad data received:
-# 	INFO: $INFO
-# 	LATEST_VERSION: $LATEST_VERSION
-# 	URL: $URL
-# 	"
-#
-# 	exit 1
-# fi
 
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
@@ -148,3 +121,44 @@ fi
 
 exit 0
 #EOF
+
+
+
+## http://updates.duetdisplay.com/checkMacUpdates or https://updates.duetdisplay.com/checkMacUpdates
+## redirects to
+## https://duet.nyc3.cdn.digitaloceanspaces.com/Mac/2_0/2-0-5-3/DuetDisplayAppcast.xml
+##
+## which gives this
+##
+# <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+#     <channel>
+#         <title>Duet Display Updates</title>
+#         <link>
+#             https://duetdisplay.com/DuetDisplayAppcast.xml
+#         </link>
+#         <description>We have a few important changes for you.</description>
+#         <language>en</language>
+#         <item>
+#             <title>Version 2.0.5.3</title>
+#             <description>
+#                 <![CDATA[
+#                     <ul> <li>Stability fixes</li>
+#                     <li>Performance upgradese</li>
+#                     <li>macOS Mojave upgrades</li>
+#                     <li>macOS Mojave Hardware Acceleration</li>
+#                     </ul>
+#                 ]]>
+#             </description>
+#             <pubDate>11 March 2019</pubDate>
+#             <enclosure url="https://duet.nyc3.cdn.digitaloceanspaces.com/Mac/2_0/duet-2-0-5-3.zip" sparkle:version="2.0.5.3" length="23809834" type="application/octet-stream"/>
+#         </item>
+#     </channel>
+# </rss>
+##
+## But 2.0.5.3 is an old version. 2.0.7.4 is the current (as far as I know) version
+##
+##
+## This one is even older: "https://updates.devmate.com/com.kairos.duet.xml" (hasn't been updated since 2015)
+##
+## 2019-09-09 - this URL "https://www.duetdisplay.com/mac/" now redirects to 'https://help.duetdisplay.com/updates'
+
