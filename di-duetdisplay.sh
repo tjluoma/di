@@ -84,47 +84,106 @@ then
 
 fi
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 	# Note the special '-H "Accept-Encoding: gzip,deflate"' otherwise you'll get a 404
 curl -H "Accept-Encoding: gzip,deflate" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
-[[ ! -e "$FILENAME" ]] && echo "$NAME: No file found at $FILENAME" && exit 0
+EXIT="$?"
 
-if [ -e "$INSTALL_TO" ]
-then
-		# Quit app, if running
-		# Note that '-i' to pgrep
-	pgrep -ixq "Duet" \
-	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "duet" to quit'
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Duet.$INSTALLED_VERSION.app"
-fi
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-ditto --noqtn -xk "$FILENAME" "$INSTALL_TO:h/"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
-
-	echo "$NAME: Installed/updated $INSTALL_TO"
+	echo "$NAME: '$FILENAME' is a valid zip file."
 
 else
-	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+		# Note that '-i' to pgrep (ignore case)
+	pgrep -ixq "Duet" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "duet" to quit'
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
-
-
 
 ## http://updates.duetdisplay.com/checkMacUpdates or https://updates.duetdisplay.com/checkMacUpdates
 ## redirects to
