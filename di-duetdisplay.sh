@@ -26,7 +26,8 @@ fi
 
 # https://help.duetdisplay.com/updates/mac-release-notes now has links to recent downloads
 
-## curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes"| tidy -config ~/.config/tidy/basic-clean-reformat-no-indent.rc | awk '/<p><strong>Version/{i++}i==1'
+
+
 
 URL=$(curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes" | tr '"' '\012' | egrep '^https://duet.*\.zip' | head -1)
 
@@ -69,18 +70,19 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-# if (( $+commands[lynx] ))
-# then
-#
-# 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ${LATEST_VERSION}: " ;
-# 		curl -sfLS "$XML_FEED" \
-# 		| sed 	-e '1,/<item>/d; /<\/item>/,$d' \
-# 				-e '1,/<description>/d; /<\/description>/,$d' \
-# 				-e 's#\]\]\>##g ; s#<\!\[CDATA\[##g' \
-# 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
-# 	| tee "$FILENAME:r.txt"
-#
-# fi
+if (( $+commands[lynx] ))
+then
+
+	(curl -sfLS "$RELEASE_NOTES_URL" \
+	| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no \
+		--output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no \
+		--clean yes --force-output yes --join-classes yes --join-styles yes --markup yes --output-xhtml yes \
+		--quiet yes --quote-ampersand yes --quote-marks yes \
+	| awk '/<p><strong>Version/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ; \
+	echo "\nRelease Notes: $RELEASE_NOTES_URL") | tee "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading $URL to $FILENAME"
 
@@ -95,7 +97,7 @@ then
 		# Note that '-i' to pgrep
 	pgrep -ixq "Duet" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "Duet" to quit'
+	&& osascript -e 'tell application "duet" to quit'
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/Duet.$INSTALLED_VERSION.app"
