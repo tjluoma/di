@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-12
+# Date:	2015-11-12, major update 2019-09-09
 
 NAME="$0:t:r"
 
@@ -23,11 +23,6 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
-
-# https://help.duetdisplay.com/updates/mac-release-notes now has links to recent downloads
-
-
-
 
 URL=$(curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes" | tr '"' '\012' | egrep '^https://duet.*\.zip' | head -1)
 
