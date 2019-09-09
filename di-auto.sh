@@ -25,6 +25,8 @@ function timestamp { strftime "%Y-%m-%d @ %H:%M:%S" "$EPOCHSECONDS" }
 
 LASTRUN="$HOME/.$NAME.lastrun.txt"
 
+[[ ! -e "$LASTRUN" ]] && echo '0' > "$LASTRUN"
+
 if [[ "$1" != "--force" ]]
 then
 
