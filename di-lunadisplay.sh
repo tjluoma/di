@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Luna Display
 #
 # From:	Timothy J. Luoma
@@ -16,7 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Luna Display.app'
 
-XML_FEED='https://s3.amazonaws.com/lunadisplay.com/downloads/sparkle.xml'
+XML_FEED='https://s3.lunadisplay.com/downloads/sparkle.xml'
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
