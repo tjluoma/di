@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of BBEdit determined by OS version
 #
 # From:	Timothy J. Luoma
@@ -240,7 +240,7 @@ else
 	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 fi
 
-	RELEASE_NOTES_FILE="$FILENAME:r.ReleaseNotes.txt"
+	RELEASE_NOTES_FILE="$FILENAME:r.txt"
 
 	SHA256_FILE="$FILENAME:r.sha256.txt"
 
@@ -250,7 +250,7 @@ then
 	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
 	(curl -sfL "http://fuckyeahmarkdown.com/go/?u=$RELEASE_NOTES_URL&read=1" \
-	&& echo "\nSource: <$RELEASE_NOTES_URL>")  | tee "$RELEASE_NOTES_FILE"
+	&& echo "\nSource: <$RELEASE_NOTES_URL>") | sed G | uniq | tee "$RELEASE_NOTES_FILE"
 
 fi
 
