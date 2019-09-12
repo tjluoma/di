@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of OmniGraffle 6 or 7
 #
 # From:	Timothy J. Luoma
@@ -51,7 +51,7 @@ fi
 
 LAUNCH='no'
 
-## Note: Downloads are available in tbz2 and dmg but dmg has EULA so I use tbz2
+## Note: Downloads are available in tbz2 and dmg, but dmg has EULA so I use tbz2
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tidy --input-xml yes --output-xml yes --show-warnings no --force-output yes --quiet yes --wrap 0 \
@@ -110,10 +110,8 @@ FILENAME="$HOME/Downloads/OmniGraffle-$LATEST_VERSION.tbz2"
 if (( $+commands[lynx] ))
 then
 
-	( curl -sfL "$RELEASE_NOTES_URL" \
-	| sed "1,/<section class='latest'>/d; /<\/section>/,\$d" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL";
+		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
 
