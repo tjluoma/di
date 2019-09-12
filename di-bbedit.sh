@@ -79,6 +79,15 @@ function use_v12 {
 
 function use_v11 {
 
+	# BBEdit 11.1.4
+	# This update is provided for customers running OS X 10.8.5.
+	# If you are using OS X 10.9.5 or later, BBEdit 11.6.2 is recommended. You must have a BBEdit 11 serial number to use this version.
+	# This version of BBEdit is not compatible with macOS “High Sierra”. If you are running macOS 10.13 or later, please use BBEdit 12.
+
+	# BBEdit 11.6.8
+	# Important: BBEdit 11 requires Mac OS X 10.9.5 or later, and will not run on any earlier version of Mac OS X.
+	# This version of BBEdit is not compatible with macOS “High Sierra and later”. If you are running macOS 10.13 or later, please use BBEdit 12.
+
 	if [ "$OS_VER_SHORT" -ge "13" ]
 	then
 		echo "$NAME: Cannot use BBEdit v11 with macOS High Sierra (10.13) or later. Must use v12."
@@ -93,6 +102,8 @@ function use_v11 {
 }
 
 function use_v10 {
+
+		## I do not know what the 'maximum' version of macOS is for version 10 of BBEdit
 
 	if [ "$OS_VER_SHORT" -ge "13" ]
 	then
@@ -135,18 +146,20 @@ then
 
 	else
 
-		is-at-least "10.6.8"  "$OS_VER" 	&& use_v10
+		is-at-least "10.6.8"   "$OS_VER" 	&& use_v10
 
-		is-at-least "10.8.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.1.4.dmg" 	&& LATEST_VERSION="11.1.4"
+		# There may be a better version to specify for macOS 10.7
 
-		is-at-least "10.9.5"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.6.8.dmg" 	&& LATEST_VERSION="11.6.8"
+		is-at-least "10.8.5"   "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.1.4.dmg" 	&& LATEST_VERSION="11.1.4"
 
-		is-at-least "10.11.6" "$OS_VER"	&& use_v12
+		is-at-least "10.9.5"   "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_11.6.8.dmg" 	&& LATEST_VERSION="11.6.8"
+
+		is-at-least "10.11.6"  "$OS_VER" 	&& URL="https://s3.amazonaws.com/BBSW-download/BBEdit_12.1.6.dmg" 	&& LATEST_VERSION="12.1.6"
+
+		is-at-least "10.12.6"  "$OS_VER"	&& use_v12
 
 	fi
 fi
-
-## I don't actually have any Macs running a version of Mac OS older than 10.11.6, so it's a hard thing to test
 
 	# If either of these are blank, we cannot continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -249,8 +262,19 @@ then
 
 	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
-	(curl -sfL "http://fuckyeahmarkdown.com/go/?u=$RELEASE_NOTES_URL&read=1" \
-	&& echo "\nSource: <$RELEASE_NOTES_URL>") | sed G | uniq | tee "$RELEASE_NOTES_FILE"
+	if [[ -s "$RELEASE_NOTES_FILE" ]]
+	then
+			# if the file already exists, just show the contents
+
+		cat "$RELEASE_NOTES_FILE"
+
+	else
+			# if the file does not exist, create it
+
+		(curl -sfL "http://fuckyeahmarkdown.com/go/?u=$RELEASE_NOTES_URL&read=1" \
+		&& echo "\nSource: <$RELEASE_NOTES_URL>") | sed G | uniq | tee "$RELEASE_NOTES_FILE"
+
+	fi
 
 fi
 
