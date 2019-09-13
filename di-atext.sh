@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of aText from <https://www.trankynam.com/atext/>
 #
 # From:	Timothy J. Luoma
@@ -90,7 +90,7 @@ then
 
 	( echo -n "$NAME: Release Notes for: " ;
 		curl -sfL "$RELEASE_NOTES_URL" \
-		| awk '/<h2>/{i++}i==2' \
+		| awk '/<h2>aText/{i++}i==1' \
 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
 		echo "\nSource: $RELEASE_NOTES_URL" ) | tee "$FILENAME:r.txt"
 
