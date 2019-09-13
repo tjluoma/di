@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Usher from <https://manytricks.com/usher/>
 #
 # From:	Timothy J. Luoma
@@ -6,10 +6,14 @@
 # Date:	2016-05-22, verified 2018-08-07
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/Usher.app'
+
 XML_FEED='https://manytricks.com/usher/appcast.xml'
 
 HOMEPAGE="https://manytricks.com/usher/"
+
+RELEASE_NOTES_URL="https://manytricks.com/usher/releasenotes/?rref=appcast"
 
 DOWNLOAD_PAGE="https://manytricks.com/download/usher"
 
@@ -79,10 +83,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-# RELEASE_NOTES_URL support not added as Usher is “hibernating”. See
-# https://manytricks.com/blog/?p=4372
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
+if (( $+commands[lynx] ))
+then
+
+	(curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<h2>/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nolist -stdin ; \
+	echo "\nRelease Notes: ${RELEASE_NOTES_URL}\nDownload Page: ${DOWNLOAD_PAGE}\nURL: ${URL}\n") | tee "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -97,6 +108,8 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -108,6 +121,8 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -118,7 +133,18 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.$RANDOM.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -135,6 +161,8 @@ else
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
