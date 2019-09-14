@@ -16,6 +16,7 @@ fi
 
 INSTALL_TO='/Applications/Jump Desktop.app'
 
+# same as 'https://jumpdesktop.com/downloads/viewer/jdmac-web-appcast.xml' I think
 XML_FEED='https://s3.amazonaws.com/jumpdesktop.com/downloads/viewer/jdmac-web-appcast.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" \
