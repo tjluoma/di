@@ -20,7 +20,11 @@ LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 FFMPEG='/usr/local/bin/ffmpeg'
 
-if [[ -x "$FFMPEG" ]]
+if [[ -L "$FFMPEG" ]]
+then
+	echo "$NAME: '$FFMPEG' is a link. Not replacing it because it's probably part of 'brew'."
+	exit 0
+elif [[ -x "$FFMPEG" ]]
 then
 	INSTALLED_VERSION=$(ffmpeg -version | awk -F' ' '/^ffmpeg /{print $3}' | tr -dc '[0-9]\.')
 else
