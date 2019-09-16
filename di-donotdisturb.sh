@@ -25,7 +25,7 @@ SUMMARY="Physical access (or “evil maid”) attacks are some of the most insid
 INSTALL_TO='/Applications/Do Not Disturb.app'
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS 'https://objective-see.com/products/dnd.html' \
-		| gunzip \
+		| gunzip --force \
 		| tr -s '"|\047' '\012' \
 		| egrep '^http.*\.zip|sha-1:' \
 		| awk '{print $NF}' \
