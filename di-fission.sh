@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Fission
 #
 # From:	Timothy J. Luoma
@@ -13,7 +13,7 @@ HOMEPAGE="https://www.rogueamoeba.com/fission/"
 
 DOWNLOAD_PAGE="https://www.rogueamoeba.com/fission/download.php"
 
-SUMMARY=" Fast & lossless audio editing With Fission, audio editing is no longer a chore. You can join files, crop and trim audio, and rapidly split up long files. Fission is streamlined for fast editing, and it works without the quality loss other audio editors cause. If you need to convert between audio formats, Fission can do that too. Rapidly export or batch convert files to the MP3, AAC, Apple Lossless, FLAC, AIFF, and WAV formats. Fission has all your audio needs covered. Finally, simple audio editing has arrived."
+SUMMARY="Fast & lossless audio editing With Fission, audio editing is no longer a chore. You can join files, crop and trim audio, and rapidly split up long files. Fission is streamlined for fast editing, and it works without the quality loss other audio editors cause. If you need to convert between audio formats, Fission can do that too. Rapidly export or batch convert files to the MP3, AAC, Apple Lossless, FLAC, AIFF, and WAV formats. Fission has all your audio needs covered. Finally, simple audio editing has arrived."
 
 RELEASE_NOTES_URL="https://www.rogueamoeba.com/fission/releasenotes.php"
 
@@ -24,25 +24,75 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
+OS_MAJOR_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-OS_SMUSH=$(sw_vers -productVersion | tr -dc '[0-9]')
-
-	# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
-curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
-"https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
-
-LATEST_VERSION=$(awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE")
-
-	# If this is blank, we should not continue
-if [[ "$LATEST_VERSION" == "" ]]
+if [[ "$OS_MAJOR_VER" -ge "12" ]]
 then
-	echo "$NAME: Error: bad data received:
-	LATEST_VERSION: $LATEST_VERSION
-	"
 
+	TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
+
+	OS_SMUSH=$(sw_vers -productVersion | tr -dc '[0-9]')
+
+		# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
+	curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
+	"https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
+
+	LATEST_VERSION=$(awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE")
+
+		# If this is blank, we should not continue
+	if [[ "$LATEST_VERSION" == "" ]]
+	then
+		echo "$NAME: Error: bad data received:
+		LATEST_VERSION: $LATEST_VERSION
+		"
+
+		exit 1
+	fi
+
+		# Try to parse the download URL from the download page
+	URL=`curl -sfL 'http://www.rogueamoeba.com/fission/download.php' | tr '"' '\012' | egrep '\.(zip)$' | head -1`
+
+		# if we didn't get anything, fall back to this
+	[[ "$URL" == "" ]] && URL='http://rogueamoeba.com/fission/download/Fission.zip'
+
+
+elif [[ "$OS_MAJOR_VER" == "11" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-245.zip'
+	LATEST_VERSION='2.4.5'
+
+elif [[ "$OS_MAJOR_VER" == "10" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-243.zip'
+	LATEST_VERSION='2.4.3'
+
+
+elif [[ "$OS_MAJOR_VER" == "9" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-231.zip'
+	LATEST_VERSION='2.3.1'
+
+elif [ "$OS_MAJOR_VER" = "8" -o "$OS_MAJOR_VER" = "7" ]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-224.zip'
+	LATEST_VERSION='2.2.4'
+
+elif [[ "$OS_MAJOR_VER" == "6" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-213.zip'
+	LATEST_VERSION='2.1.3'
+
+else
+
+	echo "$NAME: Sorry, I don't know what to do for macOS version '10.$OS_MAJOR_VER'."
 	exit 1
 fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -78,13 +128,10 @@ then
 
 fi
 
-	# Try to parse the download URL from the download page
-URL=`curl -sfL 'http://www.rogueamoeba.com/fission/download.php' | tr '"' '\012' | egrep '\.(zip)$' | head -1`
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-	# if we didn't get anything, fall back to this
-[[ "$URL" == "" ]] && URL='http://rogueamoeba.com/fission/download/Fission.zip'
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
+if [[ "$OS_MAJOR_VER" -ge "12" ]]
+then
 
 ############################################################################
 ## This will store the release notes for JUST THIS VERSION as an HTML file
@@ -93,23 +140,28 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 #g' -e 's#\]\]#\
 #g' "$TEMPFILE" \
 | awk '/<description>/{i++}i==2' \
-| sed -e '/<\/body>/,$d' -e "s#.*<description>#<!DOCTYPE html><html lang='en'><head><title>Fission version $LATEST_VERSION</title>#g" -e "s#<body>#</head><body>#g" ;
+| sed -e "s#.*<description>#<!DOCTYPE html><html lang='en'><head><title>Fission version $LATEST_VERSION</title>#g" \
+	-e '/<\/body>/,$d' \
+	-e "s#<body>#</head><body>#g" ; \
 echo "</body></html>" ) \
 > "$FILENAME:r.html"
 
-############################################################################
-## This will store the release notes for ALL VERSIONS as an HTML file
 
-curl -sfLS "$RELEASE_NOTES_URL" > "$FILENAME:r.FullReleaseNotes.html"
+	############################################################################
+	## This will store the release notes for ALL VERSIONS as an HTML file
 
-if (( $+commands[lynx] ))
-then
+	curl -sfLS "$RELEASE_NOTES_URL" > "$FILENAME:r.FullReleaseNotes.html"
 
-	( lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=500 "$FILENAME:r.html" ; \
-		echo "URL:\t$URL\nHome:\t$HOMEPAGE") \
-	| tee "$FILENAME:r.txt"
+	if (( $+commands[lynx] ))
+	then
 
-fi
+		( lynx -assume_charset=UTF-8 -pseudo_inlines -dump -nomargins -width=500 "$FILENAME:r.html" ; \
+			echo "URL:\t$URL\nHome:\t$HOMEPAGE") \
+		| tee "$FILENAME:r.txt"
+
+	fi
+
+fi 	# OS_MAJOR_VER -ge 12
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
