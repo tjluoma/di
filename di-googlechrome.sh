@@ -31,9 +31,9 @@ fi
 ## 2019-08-26 - LV1 is updated faster than LV2
 
 	## Alternative way to find the latest version number
-LV2=$(curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.')
-
-echo "\n$NAME: LV1 = ${LATEST_VERSION}\n$NAME: LV2 = ${LV2}\n"
+# LV2=$(curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.')
+#
+# echo "\n$NAME: LV1 = ${LATEST_VERSION}\n$NAME: LV2 = ${LV2}\n"
 
 
 if [[ -e "$INSTALL_TO" ]]
