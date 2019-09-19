@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-04
+# Date:	2015-11-04 ; 2019-09-18 updated for older versions of macOS
 
 NAME="$0:t:r"
 
