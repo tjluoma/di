@@ -194,24 +194,12 @@ curl -sfLS "$RELEASE_NOTES_URL" >| "$FILENAME:r.html"
 ## OK, so now we have a valid download, but is it a ZIP or a DMG? We don't know!
 ## So we'll leave options for either, and take action depending on which extension we have
 
+##
 
-if [[ "$EXT" == "dmg" ]]
-then
+## both the DMG and ZIP actions need this, but rather than duplicate it,
+## I put it in a function and called it in both `if/then` options
 
-	echo "$NAME: Mounting $FILENAME:"
-
-	MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
-
-	if [[ "$MNTPNT" == "" ]]
-	then
-		echo "$NAME: MNTPNT is empty"
-		exit 1
-	else
-		echo "$NAME: MNTPNT is $MNTPNT"
-	fi
+function move_old_version {
 
 	if [[ -e "$INSTALL_TO" ]]
 	then
@@ -232,8 +220,30 @@ then
 
 			exit 1
 		fi
-
 	fi
+}
+
+##
+
+if [[ "$EXT" == "dmg" ]]
+then
+
+	echo "$NAME: Mounting $FILENAME:"
+
+	MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
+
+	if [[ "$MNTPNT" == "" ]]
+	then
+		echo "$NAME: MNTPNT is empty"
+		exit 1
+	else
+		echo "$NAME: MNTPNT is $MNTPNT"
+	fi
+
+	move_old_version
 
 	echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
@@ -295,27 +305,7 @@ then
 		exit 1
 	fi
 
-	if [[ -e "$INSTALL_TO" ]]
-	then
-
-		pgrep -xq "$INSTALL_TO:t:r" \
-		&& LAUNCH='yes' \
-		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
-
-		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-
-		EXIT="$?"
-
-		if [[ "$EXIT" != "0" ]]
-		then
-
-			echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
-			exit 1
-		fi
-	fi
+	move_old_version
 
 	echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
