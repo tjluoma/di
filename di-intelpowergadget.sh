@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/upgrade the latest version of the Intel Power Gadget
 #
 # From:	Timothy J. Luoma
@@ -23,13 +23,6 @@ DOWNLOAD_PAGE="$HOMEPAGE"
 
 SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enabled for Intel Core processors (from 2nd Generation up to 7th Generation Intel Core processors)."
 
-	## The old URL was https://software.intel.com/en-us/articles/intel-power-gadget-20
-	# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
-	# 			but I don't know if that '770353' will change over time
-	# 2019-05-23 - it looks like the URL _has_ changed, but I'm not sure if that's because the HOMEPAGE changed too
-	# 2019-06-30 - this URL no longer seems to be the one that is used (see footnote) but it still works, for now.
-URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
-
 	# this just gives the part after the '10.'
 	# i.e. 	for 10.11.6 it gives '11'
 	# 		for 10.14 it gives '14'
@@ -38,19 +31,30 @@ OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 if [[ "$OS_VER" -ge "13" ]]
 then
 
-	# LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" |head -1| sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
-	# LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" | egrep "Intel® Power Gadget .* for Mac" | head -2 | tail -1 | sed 's# for Mac<\/a>.*##g ; s#.*Intel® Power Gadget ##g')
-	# TEASER_URL=$(curl -sfLS "$HOMEPAGE" \
-	# 	| egrep "Intel® Power Gadget .* for Mac" \
-	# 	| head -2 \
-	# 	| tail -1 \
-	# 	| sed "s#\" title=\"Intel® Power Gadget [0-9]\.[0-9]\.[0-9] for Mac\".*##g ; s#.*<a href=\"/file/#https://software.intel.com/file/#g")
-	#
-	# URL=$(curl --head -sfL "$TEASER_URL" \
-	# 	| awk -F' |\r' '/^.ocation/{print $2}' \
-	# 	| tail -1)
+		## 2019-09-28 - yes the file URL changed. That is not a huge surprise, but it means we are reduced to HTML scraping
+		## The old URL was https://software.intel.com/en-us/articles/intel-power-gadget-20
+		# 2018-08-27 - the download link seems to be 'https://software.intel.com/file/770353/download'
+		# 			but I don't know if that '770353' will change over time
+		# 2019-05-23 - it looks like the URL _has_ changed, but I'm not sure if that's because the HOMEPAGE changed too
+		# 2019-06-30 - this URL no longer seems to be the one that is used (see footnote) but it still works, for now.
+	# URL=$(curl -sfL --head 'https://software.intel.com/file/778485/download' | awk -F' ' '/^Location:/{print $NF}' | tr -d '[:cntrl:]')
 
-	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#.*%20##g')
+	URL1=$(curl -sfLS "$HOMEPAGE" \
+			| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no --output-xml no \
+			--quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no --clean yes --force-output yes \
+			--join-classes yes --join-styles yes --markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
+			| egrep -i '.*href=.*Power Gadget.*for macOS' \
+			| sed -e 's#.* href="##g ; s#" .*##g' -e 's#^#https://software.intel.com#g')
+
+	URL=$(curl -sfLS "$URL1" | tr '"' '\012' | egrep -i '^http.*\.dmg$' | head -1)
+
+	LATEST_VERSION=$(curl -sfLS "$HOMEPAGE" \
+		| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no --output-xml no \
+			--quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no --clean yes --force-output yes \
+			--join-classes yes --join-styles yes --markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
+		| egrep -i '.*href=.*Power Gadget.*for macOS' \
+		| sed -e 's#</a>.*##g' -e 's#.*>##g' \
+		| tr -dc '[0-9]\.')
 
 
 else
@@ -118,6 +122,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "URL: $URL\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Mounting $FILENAME:"
 
