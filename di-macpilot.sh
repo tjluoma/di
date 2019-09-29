@@ -8,6 +8,9 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-27
 
+# @TODO - 2019-09-26 - probably needs updating for version 11
+
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/MacPilot.app'
