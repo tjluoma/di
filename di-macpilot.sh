@@ -32,54 +32,59 @@ OS_VER=$(sw_vers -productVersion)
 
 function use_v8 {
 
-	ASTERISK='(Note that version 10 is also available.)'
+	# MacPilot-8.0.8 requires 10.11
+	# MacPilot 8.1 requires 10.9 ? (or Mac OS 10.10 according to website )
+	# That seems weird
+
+	ASTERISK='(Note that version 11 is also available.)'
 	INFO='(Valued are hard-coded)'
-	URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_81_intel_1010.dmg"
+	# URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_81_intel_1010.dmg"
+	URL='http://mirror.koingosw.com/products/macpilot/download/old/macpilot_81_intel_1010.dmg'
 	LATEST_VERSION="8.1"
 }
 
 function use_v9 {
 
-	ASTERISK='(Note that version 10 is also available.)'
-	URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_914_intel_1012.dmg"
+	ASTERISK='(Note that version 11 is also available.)'
+	# URL="http://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fold%2Fmacpilot_914_intel_1012.dmg"
+	URL='http://mirror.koingosw.com/products/macpilot/download/old/macpilot_914_intel_1012.dmg'
 	LATEST_VERSION="9.1.4"
 }
 
 function use_v10 {
 
-	if [[ -e "$INSTALL_TO" ]]
-	then
-		INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString`
-	else
-		# we need to fake that we've installed something if it isn't installed, so I chose '10'
-		# since it's the most recent major version as of this writing
-		INSTALLED_VERSION='10'
-	fi
+		# Requires Mac OS X 10.12
+		# and will work with 10.13 and 10.14
+		# but so will MacPilot ver 11
+	ASTERISK='(Note that version 11 is also available.)'
 
-XML_FEED="http://www.koingosw.com/postback/versioncheck.php?appname=macpilot&appversion=${INSTALLED_VERSION}&sysplatform=Mac%20OS%20X&sysversion=Mac%20OS%20X%20${OS_VER}"
+	URL='http://mirror.koingosw.com/products/macpilot/download/old/macpilot_1015_intel_for_1014.dmg'
 
-	INFO=($(curl --silent --location --fail "$XML_FEED" \
-			| fgrep -A3 '<macpilot>' \
-			| egrep '(<version>|<macpath>)' \
-			| sort \
-			| sed 's#.*<version>##g ; s#</version>##g; s#.*<macpath>##g; s#</macpath>##g; '
-		))
+	LATEST_VERSION='10.15.0'
 
-	# URL="$INFO[1]"
+}
+
+function use_v11 {
+
+		# This version requires at least Mac OS X 10.13.
+
+	XML_FEED='https://www.koingosw.com/postback/versioncheck.php?appname=macpilot&type=sparkle'
+
+	LATEST_VERSION=$(curl -sfLS "$XML_FEED"| tr ' ' '\012' | egrep '^sparkle:version=' | head -1 | tr -dc '[0-9]\.')
 
 	URL='http://mirror.koingosw.com/products/macpilot/download/macpilot.dmg'
 
-		# That's the only version info the app uses
-	# LATEST_VERSION="$INFO[2]"
-
-	LATEST_VERSION=$(curl --silent --location --fail "$XML_FEED" \
-						| fgrep -B1 'macpilot.dmg' \
-						| awk -F'>|<' '/version/{print $3}')
 }
 
+
 case "$OS_VER" in
-	10.12|10.13|10.14)
+	10.13|10.14|10.15)
+		use_v11
+	;;
+
+	10.12)
 		use_v10
+		# Could also use v9 with 10.12
 	;;
 
 	10.10|10.11)
@@ -92,7 +97,7 @@ if [[ -e "$INSTALL_TO" ]]
 then
 	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
 
-		# if v8 or v9 are installed, check that. Otherwise, use v10
+		# if v8 or v9 or v10 are installed, check that. Otherwise, use v11
 	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
 
 	if [[ "$MAJOR_VERSION" == "8" ]]
@@ -101,23 +106,31 @@ then
 	elif [[ "$MAJOR_VERSION" == "9" ]]
 	then
 		use_v9
-	else
+	elif [[ "$MAJOR_VERSION" == "10" ]]
+	then
 		use_v10
+	else
+		use_v11
 	fi
 else
-	if [ "$1" = "--use9" -o "$1" = "-9" ]
+	if [ "$1" = "--use8" -o "$1" = "-8" ]
+	then
+		use_v8
+	elif [ "$1" = "--use9" -o "$1" = "-9" ]
 	then
 		use_v9
-	else
+	elif [ "$1" = "--use10" -o "$1" = "-10" ]
+	then
 		use_v10
+	else
+		use_v11
 	fi
 fi
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
 	XML_FEED: $XML_FEED
@@ -155,13 +168,17 @@ then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-		# have to call lynx twice because the release notes are encoded as HTML characters. Weird.
+		# Have to call lynx twice because the release notes are encoded as HTML characters.
+		# The result of the first 'lynx' is regular HTML.
+		# Weird.
 
-	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
-	curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<macpilot>/d ; /<\/macpilot>/,$d' \
-	| egrep -vi "<version|minimumSystemVersion|macpath>" \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+	(curl -sfLS "$XML_FEED" \
+		| awk '/<description>/{i++}i==2' \
+		| tr -d '\012| ' \
+		| sed 's#<description>##g ; s#</description>.*##g' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed G ; \
 	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
 fi
@@ -178,6 +195,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Mounting $FILENAME:"
 
