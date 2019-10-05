@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Cheat Sheet <https://mediaatelier.com/CheatSheet/>
 #
 # From:	Timothy J. Luoma
@@ -29,23 +29,22 @@ fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
-		| egrep 'sparkle:shortVersionString|sparkle:version=|url=' \
-		| head -3 \
+		| egrep 'sparkle:version=|url=' \
+		| head -2 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+# LATEST_BUILD="$INFO[2]"
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -57,7 +56,7 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+#	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -65,17 +64,25 @@ then
 
 	VERSION_COMPARE="$?"
 
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+
+# 	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+#
+# 	BUILD_COMPARE="$?"
+#
+# 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+# 	then
+# 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+# 		exit 0
+# 	fi
+#
+# 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
 
