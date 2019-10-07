@@ -5,6 +5,10 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-09
 
+echo "$NAME: As of 2019-10-06, this is installing the same version over and over again."
+
+exit 1
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/FineReader.app'
