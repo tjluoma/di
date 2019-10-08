@@ -167,6 +167,8 @@ fi
 	# This is where we will save the actual app (in zipped format) to
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
+cd "$FILENAME:h"
+
 	# This is a file we will use to check the shasum of the .zip file after it is downloaded
 	# it will contain the shasum value that we received from the XML_FEED, above
 SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum.txt"
