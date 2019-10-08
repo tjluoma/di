@@ -5,6 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-10-28
 
+
+echo "@TODO - update for BBEdit 13"
+
+exit 1
+
+
+
 if [ -e "/Users/luomat/.path" ]
 then
 	source "/Users/luomat/.path"

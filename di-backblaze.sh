@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-10-06
 
+exit 0
+## @TODO - the manual updater for this is a PITA, so I'm just going to use it to install, not update
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
