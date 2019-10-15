@@ -133,9 +133,13 @@ elif [ "$OS_VER" -ge "10" ]
 then
 		# if this is macOS 10.10 or later
 
-	URL='https://iterm2.com/downloads/stable/iTerm2-3_1_7.zip'
-	LATEST_VERSION='3.1.7'
-	RELEASE_NOTES_URL='https://iterm2.com/appcasts/3.1.7.txt'
+	# URL='https://iterm2.com/downloads/stable/iTerm2-3_1_7.zip'
+	# LATEST_VERSION='3.1.7'
+	# RELEASE_NOTES_URL='https://iterm2.com/appcasts/3.1.7.txt'
+
+	LATEST_VERSION='3.1.6beta4'
+	URL='https://iterm2.com/misc/iTerm2-3.1.7-notmux.zip'
+	RELEASE_NOTES_URL='https://groups.google.com/forum/m/#!topic/iterm2-discuss/57k_AuLdQa4'
 
 elif [ "$OS_VER" -ge "8" ]
 then
