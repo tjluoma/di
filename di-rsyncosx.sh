@@ -31,7 +31,8 @@ SUMMARY="Rsync is a file-based synchronization and backup tool. There is no cust
 
 URL=$(curl -sfLS "$SOURCE" \
 	| egrep -i "<a href=\"/rsyncOSX/RsyncOSX/releases/download/.*/Rsyncosx-.*\.dmg" \
-	| sed 's#.*href="#https://github.com#g ; s#.dmg.*#.dmg#g')
+	| sed 's#.*href="#https://github.com#g ; s#.dmg.*#.dmg#g' \
+	| tail -1)
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
