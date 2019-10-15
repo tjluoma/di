@@ -30,6 +30,9 @@ function use_v5 {
 	ASTERISK='(Note that version 6 is also available.)'
 }
 
+## 'https://textexpander.com/cgi-bin/redirect.pl?cmd=download&platform=osx' -->
+## https://cdn.textexpander.com/mac/TextExpander_6.5.2.zip
+
 function use_v6 {
 
 	# This seems equivalent. Leaving for future reference, in case it's needed.
@@ -64,7 +67,7 @@ fi
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:shortVersionString|url=' \
-		| head -2 \
+		| tail -2 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
