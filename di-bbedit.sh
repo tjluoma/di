@@ -66,7 +66,7 @@ do
 		&& break
 
 	is-at-least '10.6.8' "$OS_VER" \
-		&& URL='http://pine.barebones.com/files/BBEdit_10.5.13.dmg' \
+		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_10.5.13.dmg' \
 		&& SHA256_EXPECTED='2de7baf01ba12650e158e86c65bea72103eca840ab2de45121e3460d09a58ebd' \
 		&& LATEST_VERSION='10.5.13' \
 		&& LATEST_BUILD='3396' \
