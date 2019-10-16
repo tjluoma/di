@@ -171,16 +171,18 @@ fi
 if [[ "$RELEASE_NOTES_URL" != "" ]]
 then
 
+		## if we have a release notes URL, then we want to save the information therein to a file
+
 	RELEASE_NOTES_FILE="$FILENAME:r.txt"
 
 	if [[ -s "$RELEASE_NOTES_FILE" ]]
 	then
 			# if the file already exists, just show the contents
-
 		cat "$RELEASE_NOTES_FILE"
 
 	else
 			# if the file does not exist, create it
+			# uses Brett Terpstra's great Markdown site because it also runs it through 'Readability'
 
 		echo "$NAME: Fetching release notes..."
 
@@ -191,6 +193,8 @@ then
 
 fi
 ################################################################################################################################################
+
+## Here is where the download happens and is verified
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -206,6 +210,9 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 ################################################################################################################################################
+
+## The XML_FEED includes a shasum for the latest version, so we should use that to check that we got what we expected
+## For older versions of BBEdit, I downloaded them from Barebones and checked them myself, and then added them.
 
 if [[ "$SHA256_EXPECTED" != "" ]]
 then
@@ -246,6 +253,9 @@ then
 fi
 
 ################################################################################################################################################
+##
+## 	Once the DMG is verified, we mount it
+##
 
 echo "$NAME: Mounting $FILENAME:"
 
@@ -263,6 +273,9 @@ else
 fi
 
 ################################################################################################################################################
+##
+##	Once the DMG is mounted, we should move the existing version of BBEdit out of the way, if it exists.
+##
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -281,6 +294,9 @@ then
 fi
 
 ################################################################################################################################################
+##
+##	This is where we copy from the DMG to the expected destination
+##
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
@@ -297,7 +313,10 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+################################################################################################################################################
+##
+## if we made it this far, the installation went OK, so let's unmount the DMG
+##
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
