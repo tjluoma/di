@@ -93,8 +93,13 @@ done
 if [[ "$URL" == "check" ]]
 then
 
+	## if we get here, we need to check for the latest version of BBEdit
+
+		## this is the feed wherein the latest information is made available from Barebones
 	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
+		## this is where we process that feed. There may be a better way of doing this,
+		## and I'm open to suggestions. But this works, even on a Mac without any special tools installed.
 	INFO=($(curl -sfL "$XML_FEED" \
 			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryVersion|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
 			| tail -11 \
@@ -105,19 +110,26 @@ then
 
 	## ok, so with the 'sort' this guarantees that the items will always be in this order:
 	#
-	#	SUFeedEntryDownloadChecksum ef8795bee09830944b4018377280888c28cf26a0591c2994c50cd2837fef9f67
-	#	SUFeedEntryDownloadURL https://s3.amazonaws.com/BBSW-download/BBEdit_12.1.5.dmg
-	#	SUFeedEntryShortVersionString 12.1.5
+	#	SUFeedEntryDownloadChecksum
+	#	SUFeedEntryDownloadURL
+	#	SUFeedEntryShortVersionString
+	#	SUFeedEntryVersion
 
 	SHA256_EXPECTED="$INFO[2]"
 	URL="$INFO[4]"
 	LATEST_VERSION="$INFO[6]"
 	LATEST_BUILD="$INFO[8]"
+
+		## As long as Barebones keeps using this URL format, we don't need to calculate it each time
 	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
 
+		## this is where the file will be downloaded and what it will be named
 	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 else
+
+	## if we get here, we are using a pre-defined version of BBEdit for our version of macOS/Mac OS X
+
 		# don't try to fetch release notes for old versions
 	RELEASE_NOTES_URL=''
 
@@ -126,7 +138,7 @@ fi
 
 ################################################################################################################################################
 
-
+	## This is where we check the installed version -- if there is one -- against the most current information
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -152,11 +164,6 @@ then
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
-	FIRST_INSTALL='no'
-
-else
-
-	FIRST_INSTALL='yes'
 fi
 
 ################################################################################################################################################
