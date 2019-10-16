@@ -14,18 +14,18 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-NAME="$0:t:r"
-
+	# This is where the app will be installed or updated.
 INSTALL_TO='/Applications/BBEdit.app'
 
+	# Not current in use, but useful reference info
 SUMMARY='BBEdit is the leading professional HTML and text editor for macOS. It doesn’t suck.®'
-
 HOMEPAGE="https://www.barebones.com/products/bbedit/"
-
 DOWNLOAD_PAGE="https://www.barebones.com/support/bbedit/updates.html"
 
+	# This is the current version of macOS that this computer is running
 OS_VER=$(sw_vers -productVersion)
 
+	# a zsh-specific function for comparing numbers, including version numbers
 autoload is-at-least
 
 ################################################################################################################################################
@@ -33,10 +33,14 @@ autoload is-at-least
 while
 do
 
+		## The first one of these to match will break the loop. We start with the newest version and work back.
+
+		# for Mojave (10.14.2) and newer, look for the most recent version of BBEdit
 	is-at-least "10.14.2" "$OS_VER" \
 		&& URL='check' \
 		&& break
 
+		# for Sierra (10.12.6) or later, use BBEdit 12.6.7
 	is-at-least '10.12.6' "$OS_VER" \
 		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_12.6.7.dmg' \
 		&& SHA256_EXPECTED='d0647c864268b187343bd95bfcf490d6a2388579b1f8fce64a289c65341b1144' \
@@ -44,6 +48,7 @@ do
 		&& LATEST_BUILD='412120' \
 		&& break
 
+		# for El Capitan (10.11.6) or later, use BBEdit 12.1.6
 	is-at-least '10.11.6' "$OS_VER" \
 		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_12.1.6.dmg' \
 		&& SHA256_EXPECTED='23b9fc6ef5c03cbcab041566503c556d5baf56b2ec18f551e6f0e9e6b48dc690' \
@@ -51,6 +56,7 @@ do
 		&& LATEST_BUILD='410110' \
 		&& break
 
+		# for Mavericks (10.9.5) or later, use BBEdit 11.6.8
 	is-at-least '10.9.5' "$OS_VER" \
 		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_11.6.8.dmg' \
 		&& SHA256_EXPECTED='aa4a9f8ed12206dbf1d9e61c213be02789b87f963d8171743a3a057bfd1ede2a' \
@@ -58,6 +64,7 @@ do
 		&& LATEST_BUILD='397082' \
 		&& break
 
+		# for Mountain Lion (10.8.5) or later, use BBEdit 11.1.4
 	is-at-least '10.8.5' "$OS_VER" \
 		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_11.1.4.dmg' \
 		&& SHA256_EXPECTED='9e14bcafaa2f1e9900a9826e2d51c194e530641b6fd5f55334444531736f68df' \
@@ -65,6 +72,7 @@ do
 		&& LATEST_BUILD='3780' \
 		&& break
 
+		# for Snow Leopard (10.6.8) or later, use BBEdit 10.5.13
 	is-at-least '10.6.8' "$OS_VER" \
 		&& URL='https://s3.amazonaws.com/BBSW-download/BBEdit_10.5.13.dmg' \
 		&& SHA256_EXPECTED='2de7baf01ba12650e158e86c65bea72103eca840ab2de45121e3460d09a58ebd' \
@@ -72,6 +80,8 @@ do
 		&& LATEST_BUILD='3396' \
 		&& break
 
+		# if you get here, you're probably Stephen Hackett or John Moltz. Sorry, I don't know
+		# which versions of BBEdit go with older versions of Mac OS X
 	echo "$NAME: Sorry, I do not know what to do for Mac OS X version $OS_VER."
 
 	exit 1
