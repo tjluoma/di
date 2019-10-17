@@ -223,20 +223,29 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+## 2019-10-17 - the app folder name now includes version info, so we use 'find' isntead
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t:r/$INSTALL_TO:t" "$INSTALL_TO"
+NEWAPP=$(find "$UNZIP_TO" -iname 'PhoneView.app' -maxdepth 2 -print)
+
+if [[ "$NEWAPP" == "" ]]
+then
+	echo "$NAME: Failed to find 'PhoneView.app' in '$UNZIP_TO'." >>/dev/stderr
+	exit 1
+fi
+
+echo "$NAME: Moving new version from '$NEWAPP' to '$INSTALL_TO'."
+
+mv -vf "$NEWAPP" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" = "0" ]]
 then
 
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: Successfully installed '$NEWAPP' to '$INSTALL_TO'."
 
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: Failed to move '$NEWAPP' to '$INSTALL_TO'."
 
 	exit 1
 fi
