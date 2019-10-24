@@ -47,7 +47,11 @@ then
 			--title "$NAME not running.
 					Last ran: "
 
-		po.sh "$NAME not running. Ran $TIME_AGO_READABLE ago."
+		MSG="$NAME not running. Ran $TIME_AGO_READABLE ago."
+
+		echo "$MSG" >>/dev/stderr
+
+		po.sh "$MSG"
 
 		exit 0
 	fi
