@@ -1,9 +1,9 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of VPN Unlimited
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-08-03
+# Date:	2018-08-03; updated 2019-10-24
 
 NAME="$0:t:r"
 
@@ -26,13 +26,11 @@ fi
 
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15'
 
-	# 2018-08-03 - No appcast found. but the 'CFBundleShortVersionString' is used in the download URL
-	# e.g. the '4.22' in 'http://c7be0123d7efff32860a-a5a4fb8b39b86d00a1eb7d52603ae1d2.r6.cf1.rackcdn.com/VPN%20Unlimited_v4.22.dmg'
-URL=$(curl -A "$UA" -sfL 'https://www.vpnunlimitedapp.com/en/downloads/mac' \
-	| awk -F'"' '/http.*\.dmg/{print $2}' \
-	| head -1)
+URL='https://www.vpnunlimitedapp.com/download/mac'
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+REMOTE_FILENAME=$(curl -sS --head --location "$URL" | awk -F'"' '/^content-disposition/{print $2}')
+
+LATEST_VERSION=$(echo "$REMOTE_FILENAME:t:r" | tr -dc '[0-9]\.')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
