@@ -5,6 +5,11 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-15
 
+
+## 2019-10-23 @TODO  - well this doesn't seem right:
+## di-onedrive: Up-To-Date (19.152.1013.0012 vs Stapled)
+
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/OneDrive.app"
