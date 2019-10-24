@@ -102,7 +102,7 @@ then
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
 
-	if [[ "$RELEASE_NOTES_URL" == ]]
+	if [[ "$RELEASE_NOTES_URL" == "" ]]
 	then
 
 		echo "No Release Notes found" | tee "$FILENAME:r.txt"
