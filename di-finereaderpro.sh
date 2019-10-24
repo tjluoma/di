@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Fine Reader Pro
 #
 # From:	Timothy J. Luoma
@@ -6,11 +6,6 @@
 # Date:	2015-11-09
 
 NAME="$0:t:r"
-
-echo "$NAME: As of 2019-10-06, this is installing the same version over and over again."
-
-exit 1
-
 
 INSTALL_TO='/Applications/FineReader.app'
 
