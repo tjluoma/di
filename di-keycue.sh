@@ -14,6 +14,15 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+## Beta
+# https://update.ergonis.com/autoupdate/keycue/autoupdate9.5.plist
+# https://update.ergonis.com/downloads/beta/keycue/keycuev.xml?s=0
+
+# Non Beta
+# https://update.ergonis.com/vck/keycue.xml?s=0
+
+
+
 INSTALL_TO='/Applications/KeyCue.app'
 
 RELEASE_NOTES_URL='https://www.ergonis.com/products/keycue/history.html'
