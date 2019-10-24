@@ -1,5 +1,5 @@
-#!/bin/zsh -f
-# Purpose:
+#!/usr/bin/env zsh -f
+# Purpose: Download and install/update DragThing
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -15,7 +15,7 @@ DOWNLOAD_PAGE="https://www.dragthing.com/english/download.html"
 
 SUMMARY="DragThing is the original dock designed to tidy up your Macintosh desktop. It puts all your documents, folders, and applications just a single click away. Highly flexible, it allows multiple docks, each customised to suit your exact needs."
 
-# RELEASE_NOTES_URL = ? https://www.dragthing.com/english/history.html ?
+RELEASE_NOTES_URL='https://www.dragthing.com/english/history.html'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -24,7 +24,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sfLS 'https://www.dragthing.com/english/download.html' | tr '"|\047' '\012' | egrep -i 'https.*DragThing.*\.dmg' | head -1)
+	# This is the last version of the app
+URL='https://s3.amazonaws.com/tlasystems/DragThing-5.9.17.dmg'
 
 	# both version strings are identical so we only need one
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
@@ -64,6 +65,15 @@ then
 else
 
 	FIRST_INSTALL='yes'
+fi
+
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+
+if [[ "$OS_VER" == "15" ]]
+then
+	echo "$NAME: DragThing will not work on any version of macOS after 10.14. See <https://dragthing.com> for details."
+	echo "	You can download the last version at <$URL>"
+	exit 1
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
