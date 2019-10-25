@@ -11,6 +11,20 @@ INSTALL_TO='/Applications/FineReader.app'
 
 HOMEPAGE="https://www.abbyy.com/en-us/finereader/pro-for-mac/"
 
+## Found this URL -  https://www.abbyy.com/finereader-pro-mac-downloads/
+# curl -sfLS "https://www.abbyy.com/finereader-pro-mac-downloads/" | fgrep 'Build #:' | sed 's#</p>##g ; s#.*>##g' | tr -dc '[0-9]\.'
+## Result: '12.1.13.1043958'
+## 	/Applications/FineReader.app:
+## 		CFBundleShortVersionString: 12.1.13
+## 		CFBundleVersion: 1043958
+##
+## Release Notes: <https://support.abbyy.com/hc/en-us/articles/360001026229-FineReader-Pro-for-Mac-Change-Log>
+##
+## Trial Version <https://downloads.abbyy.com/fr/fr_mac/current/ABBYYFineReaderPro.dmg?secure=EOkGXxyiKvTXMK8VEYyT1g==>
+##
+## The trial version is the same as the URL version just with a different name
+
+
 DOWNLOAD_PAGE="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
 
 SUMMARY="Easily transform paper documents, PDFs and digital photos of text into editable and searchable files. No more manual retyping or reformatting. Instead you can search, share, archive, and copy information from documents for reuse and quotation — saving you time, effort and hassles."
