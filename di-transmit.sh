@@ -53,7 +53,7 @@ curl \
 	-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
 	-sfLS "$XML_FEED" >| "$TEMPFILE"
 
-open -g -j -a BBEdit "$TEMPFILE"
+# open -g -j -a BBEdit "$TEMPFILE"
 
 MINIMUM_VERSION=$(fgrep '<sparkle:minimumSystemVersion>' "$TEMPFILE" \
 		| head -1 \
