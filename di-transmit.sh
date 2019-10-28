@@ -30,8 +30,8 @@ then
 
 else
 		# if it's not installed, fake a slightly older version
-	INSTALLED_VERSION='5.1.3'
-	INSTALLED_BUILD='88844'
+	INSTALLED_VERSION='5.6.1'
+	INSTALLED_BUILD='133740'
 fi
 
 MAC_TYPE=$(sysctl hw.model | awk -F' ' '/^hw.model/{print $NF}')
@@ -40,16 +40,22 @@ DARWIN_VERSION=$(uname -r)
 
 CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
 
-	# the feed reports itself as 'http://www.panic.com/updates/transmit/transmit-en.xml' but that URL is 404
-XML_FEED="https://www.panic.com/updates/update.php?osVersion=$OS_VER&cputype=7&cpu64bit=1&cpusubtype=8&model=${MAC_TYPE}&ncpu=4&lang=en-US&appName=Transmit&appVersion=${INSTALLED_BUILD}&cpuFreqMHz=1200&ramMB=8192"
-
 OS_VER=$(sw_vers -productVersion)
 
-MINIMUM_VERSION=$(curl -sfL "$XML_FEED" \
-		-H "Accept: application/rss+xml,*/*;q=0.1" \
-		-H "Accept-Language: en-us" \
-		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
-		| fgrep '<sparkle:minimumSystemVersion>' \
+	# the feed reports itself as 'http://www.panic.com/updates/transmit/transmit-en.xml' but that URL is 404
+XML_FEED="https://www.panic.com/updates/update.php?osVersion=${OS_VER}&cputype=7&cpu64bit=1&cpusubtype=8&model=${MAC_TYPE}&ncpu=4&lang=en-US&appName=Transmit&appVersion=${INSTALLED_BUILD}&cpuFreqMHz=1600&ramMB=16384"
+
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
+
+curl \
+	-H "Accept: application/rss+xml,*/*;q=0.1" \
+	-H "Accept-Language: en-us" \
+	-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
+	-sfLS "$XML_FEED" >| "$TEMPFILE"
+
+open -g -j -a BBEdit "$TEMPFILE"
+
+MINIMUM_VERSION=$(fgrep '<sparkle:minimumSystemVersion>' "$TEMPFILE" \
 		| head -1 \
 		| sed 's#.*<sparkle:minimumSystemVersion>##g ; s#</sparkle:minimumSystemVersion>##g')
 
@@ -59,17 +65,13 @@ is-at-least "$MINIMUM_VERSION" "$OS_VER"
 
 VER_TEST="$?"
 
-if [ "$VER_TEST" = "1" ]
+if [[ "$VER_TEST" == "1" ]]
 then
-	echo "$NAME: Transmit requires at least '$MINIMUM_VERSION' of Mac OS. You have $OS_VER. Cannot continue."
+	echo "$NAME: Transmit requires at least '$MINIMUM_VERSION' of Mac OS. You have '$OS_VER'. Cannot continue."
 	exit 1
 fi
 
-IFS=$'\n' INFO=($(curl -sSfL "${XML_FEED}" \
-		-H "Accept: application/rss+xml,*/*;q=0.1" \
-		-H "Accept-Language: en-us" \
-		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+IFS=$'\n' INFO=($(egrep 'sparkle:version|sparkle:shortVersionString|url=' "$TEMPFILE" \
 		| head -3 \
 		| sort \
 		| sed 's#"$##g ; s#.*"##g'))
@@ -100,23 +102,33 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($LATEST_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
 	# This also depends on the format of their download URLs not changing
