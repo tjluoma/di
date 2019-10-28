@@ -15,6 +15,8 @@ DOWNLOAD_PAGE="https://www.sourcetreeapp.com"
 
 SUMMARY="Sourcetree simplifies how you interact with your Git repositories so you can focus on coding. Visualize and manage your repositories through Sourcetree's simple Git GUI."
 
+## 2019-10-28 - currently there is a version in the feed that is 403 when you try to download it
+
 ## This stops at versions 2.3.2 but the app is currently at 2.7.6 !
 #XML_FEED='https://www.sourcetreeapp.com/update/SparkleAppcast.xml'
 
