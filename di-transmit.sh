@@ -159,11 +159,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		-H "Accept: application/rss+xml,*/*;q=0.1" \
-		-H "Accept-Language: en-us" \
-		-H "User-Agent: Transmit/${INSTALLED_VERSION} Sparkle/1.14.0" \
-		| fgrep '<sparkle:releaseNotesLink>' \
+	RELEASE_NOTES_URL=$(fgrep '<sparkle:releaseNotesLink>' "$TEMPFILE" \
 		| head -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
