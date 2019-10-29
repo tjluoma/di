@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Hazel
 #
 # From:	Tj Luo.ma
@@ -13,6 +13,8 @@ NAME="$0:t:r"
 HOMEPAGE="https://www.noodlesoft.com"
 
 DOWNLOAD_PAGE="https://www.noodlesoft.com/Products/Hazel/download"
+
+OLDER='https://www.noodlesoft.com/old-versions/'
 
 SUMMARY="Hazel watches whatever folders you tell it to, automatically organizing your files according to the rules you create. Have Hazel move files around based on name, date, type, what site it came from and much more. Automatically sort your movies or file your bills. Keep your files off the desktop and put them where they belong."
 
@@ -152,13 +154,13 @@ then
 	( echo -n "$NAME: Release Notes for Hazel " ;
 		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
 		lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
+		echo "\nSource: <${RELEASE_NOTES_URL}>\nURL: $URL" ) | tee "$FILENAME:r.txt"
 fi
 
 	# Server does not support continued downloads, so assume that this is incomplete and try again
 [[ -f "$FILENAME" ]] && rm -f "$FILENAME"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -170,6 +172,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 # If we get here we are ready to install
 # let's make sure we can
@@ -214,7 +218,7 @@ if [[ -e "$INSTALL_TO" ]]
 then
 	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.prefPane"
 
 	EXIT="$?"
 
