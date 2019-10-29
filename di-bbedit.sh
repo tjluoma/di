@@ -193,7 +193,7 @@ then
 
 				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
-				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py
+				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py > "$RELEASE_NOTES_FILE"
 
 			else
 
