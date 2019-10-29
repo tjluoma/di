@@ -181,17 +181,34 @@ then
 		cat "$RELEASE_NOTES_FILE"
 
 	else
-			# if the file does not exist, create it
-			# uses Brett Terpstra's great Markdown site because it also runs it through 'Readability'
 
-		echo "$NAME: Fetching release notes..."
+			# Barebones' release notes are good enough that I'll go to extra lengths to get them
 
-		(curl -sfL "http://heckyesmarkdown.com/go/?u=$RELEASE_NOTES_URL&read=1" \
-		&& echo "\nSource: <$RELEASE_NOTES_URL>") | sed G | uniq | tee "$RELEASE_NOTES_FILE"
+		if (( $+commands[wget] ))
+		then
 
-	fi
+			if (( $+commands[html2text.py] ))
+			then
+				TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.html"
 
-fi
+				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
+
+				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py
+
+			else
+
+				TEMPFILE="$FILENAME:r.html"
+
+				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
+
+			fi # if html2text.py
+
+		fi # if wget
+
+	fi # if release notes file
+
+fi # if release notes URL
+
 ################################################################################################################################################
 
 ## Here is where the download happens and is verified
