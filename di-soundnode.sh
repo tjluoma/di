@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of Soundnode from <http://www.soundnodeapp.com>
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,43 @@
 # Date:	2016-06-02
 
 NAME="$0:t:r"
+
+echo "$NAME: this is re-downloading version 0.6.5 as Soundnode-7.0.11"
+
+## @TODO The numbering scheme has changed dramatically. Presumably as v7 switched to electron and
+## the developer wants to get everything on the same version number?
+
+## 2018-08-02 - ok, for some reason there's a '7.0.0' tag_name, when all the rest are like this:
+#     "tag_name": "0.6.5",
+#     "tag_name": "0.6.4",
+#     "tag_name": "0.6.3",
+#     "tag_name": "0.6.2",
+#     "tag_name": "0.6.1",
+#     "tag_name": "0.6.0",
+#     "tag_name": "0.5.9",
+## So I'm just excluding that one for 'latest-version' checking purposes, because otherwise this will constantly run
+## and replace itself with new versions that aren't really new. Not sure what else to do.
+
+## See LATEST_VERSION= below
+
+exit 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 INSTALL_TO="/Applications/Soundnode.app"
 
@@ -25,17 +62,6 @@ fi
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
 URL='http://www.soundnodeapp.com/downloads/mac/Soundnode.zip'
-
-## 2018-08-02 - ok, for some reason there's a '7.0.0' tag_name, when all the rest are like this:
-#     "tag_name": "0.6.5",
-#     "tag_name": "0.6.4",
-#     "tag_name": "0.6.3",
-#     "tag_name": "0.6.2",
-#     "tag_name": "0.6.1",
-#     "tag_name": "0.6.0",
-#     "tag_name": "0.5.9",
-## So I'm just excluding that one for 'latest-version' checking purposes, because otherwise this will constantly run
-## and replace itself with new versions that aren't really new. Not sure what else to do.
 
 LATEST_VERSION=`curl -sfL https://api.github.com/repos/Soundnode/soundnode-app/releases \
 				| fgrep tag_name \
