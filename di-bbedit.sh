@@ -193,11 +193,13 @@ then
 
 				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
-				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py > "$RELEASE_NOTES_FILE"
+				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py | tee -a "$RELEASE_NOTES_FILE"
 
 			else
 
 				TEMPFILE="$FILENAME:r.html"
+
+				echo "$NAME: saving Release Notes to '$TEMPFILE'."
 
 				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
@@ -206,6 +208,10 @@ then
 		fi # if wget
 
 	fi # if release notes file
+
+else
+
+	echo "$NAME: no Release Notes URL found"
 
 fi # if release notes URL
 
