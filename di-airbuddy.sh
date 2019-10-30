@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Download and install the latest version of AirBuddy
 #
 # From:	Timothy J. Luoma
@@ -16,7 +16,10 @@ fi
 
 INSTALL_TO='/Applications/AirBuddy.app'
 
-XML_FEED='https://su.airbuddy.app/appcast.xml'
+## This feed is outdated
+# XML_FEED='https://su.airbuddy.app/appcast.xml'
+
+XML_FEED='https://su.airbuddy.app/appcast_shelby.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" \
 		| egrep -i '<enclosure url=".*\.zip' \
@@ -91,6 +94,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
