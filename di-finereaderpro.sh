@@ -5,7 +5,12 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-09
 
+
 NAME="$0:t:r"
+
+echo "$NAME: @TODO - this keeps installing the wrong version"
+
+exit 1
 
 INSTALL_TO='/Applications/FineReader.app'
 
