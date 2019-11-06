@@ -183,5 +183,13 @@ fi
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
+if (( $+commands[delete-google-chrome-keystone-registration-framework.sh] ))
+then
+
+		# This is my shell script that disbles Chrome's auto-update "feature"
+	delete-google-chrome-keystone-registration-framework.sh
+
+fi
+
 exit 0
 #EOF
