@@ -13,7 +13,7 @@ HOMEPAGE="https://www.duetdisplay.com"
 
 DOWNLOAD_PAGE="https://www.duetdisplay.com/#download"
 
-RELEASE_NOTES_URL='https://help.duetdisplay.com/updates/mac-release-notes'
+RELEASE_NOTES_URL='https://www.duetdisplay.com/help-center/mac-release-notes'
 
 SUMMARY="Turn your iPad into an extra display."
 
@@ -24,7 +24,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sfLS "https://help.duetdisplay.com/updates/mac-release-notes" | tr '"' '\012' | egrep '^https://duet.*\.zip' | head -1)
+URL=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
 
@@ -68,14 +68,15 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 if (( $+commands[lynx] ))
 then
 
-	(curl -sfLS "$RELEASE_NOTES_URL" \
-	| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no \
-		--output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no \
-		--clean yes --force-output yes --join-classes yes --join-styles yes --markup yes --output-xhtml yes \
-		--quiet yes --quote-ampersand yes --quote-marks yes \
-	| awk '/<p><strong>Version/{i++}i==1' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ; \
-	echo "\nRelease Notes: $RELEASE_NOTES_URL") | tee "$FILENAME:r.txt"
+	RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+		| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent no --input-xml no \
+			--output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no \
+			--clean yes --force-output yes --join-classes yes --join-styles yes --markup yes --output-xhtml yes \
+			--quiet yes --quote-ampersand yes --quote-marks yes \
+		| awk '/<h4>/{i++}i==1' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
+
+	echo "\n${RELEASE_NOTES}\n\nRelease Notes: $RELEASE_NOTES_URL" | tee "$FILENAME:r.txt"
 
 fi
 
