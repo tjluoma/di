@@ -1,5 +1,5 @@
 #!/bin/zsh -f
-# Purpose: Download and install the latest version of PathFinder 8 from <https://cocoatech.com/>
+# Purpose: Download and install the latest version of PathFinder 9 from <https://cocoatech.com/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -18,10 +18,11 @@ INSTALL_TO='/Applications/Path Finder.app'
 
 HOMEPAGE="https://cocoatech.com/"
 
-DOWNLOAD_PAGE="https://get.cocoatech.com/PF8.dmg"
+DOWNLOAD_PAGE="https://get.cocoatech.com/PF9.dmg"
 
 SUMMARY="File manager for macOS."
 
+	## http://sparkle.cocoatech.com/PF9.xml" is 403 forbidden as of 2019-11-11
 XML_FEED="http://sparkle.cocoatech.com/PF8.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
