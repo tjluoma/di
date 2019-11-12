@@ -22,31 +22,22 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-XML_FEED="https://updates.devmate.com/com.edovia.Screens-Connect.xml"
+XML_FEED="https://updates.edovia.com/com.edovia.screens.connect.mac/appcast.xml"
 
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
-INFO=($(curl -sfL $XML_FEED \
-		| egrep '<enclosure url="https://.*/ScreensConnect-.*.zip"' \
-		| head -1 \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+curl -sfL "$XML_FEED" >| "$TEMPFILE"
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL=$(tr '"' '\012' < "$TEMPFILE" | egrep -i '^https.*screensconnect.*\.zip$' | head -1)
+
+LATEST_BUILD=$(tr ' ' '\012' < "$TEMPFILE" | egrep -i '^sparkle:version=' | head -1 | tr -dc '[0-9]')
+
+LATEST_VERSION=$(tr ' ' '\012' < "$TEMPFILE" | egrep -i '^sparkle:shortVersionString=' | head -1 | tr -dc '[0-9]\.')
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
@@ -54,6 +45,7 @@ then
 
 	exit 1
 fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -92,13 +84,10 @@ FILENAME="$HOME/Downloads/ScreensConnect-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 if (( $+commands[lynx] ))
 then
 
-	( echo -n "$NAME: Release Notes for " ;
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| fgrep -v 'dm-rn-head-title-fixed' \
-	| fgrep -v '</ul><hr /><ul>' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| tr -s '_' '_'  ;
-	echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	RELEASE_NOTES=$(sed '1,/CDATA\[/d; /\]\]\>/,$d' "$TEMPFILE" \
+				| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
+
+	echo "$RELEASE_NOTES\n\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 
