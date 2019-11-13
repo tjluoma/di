@@ -20,7 +20,12 @@ INSTALL_TO='/Applications/One Switch.app'
 
 XML_FEED='https://updates.devmate.com/studio.fireball.OneSwitch.xml'
 
-INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1'| egrep -v '(\.delta|:deltas>)' | egrep '<sparkle:releaseNotesLink>|<enclosure' | tr ' |>|<' '\012' | tr '"' ' ')
+INFO=$(curl -sfLS "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| egrep -v '(\.delta|:deltas>)' \
+		| egrep '<sparkle:releaseNotesLink>|<enclosure' \
+		| tr ' |>|<' '\012' \
+		| tr '"' ' ')
 
 URL=$(echo "$INFO" | awk -F' ' '/^url=/{print $2}')
 
