@@ -174,27 +174,3 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 exit 0
 #EOF
 
-
-# @TODO - release notes - https://github.com/brave/brave-browser/releases/latest - parse with lynx to get full URLs?
-# Will https://github.com/brave/brave-browser/releases/latest show beta / nightly releases too? If so that might break this
-
-# use this instead
-# https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml
-
-
-
-
-## @TODO - new app release
-##   appcast 'https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
-##   url "https://github.com/brave/brave-browser/releases/download/v#{version}/Brave-Browser.dmg"
-##
-##  get-appversion.sh -v /Volumes/Brave\ Browser/Brave\ Browser.app
-##/Volumes/Brave Browser/Brave Browser.app:
-##	CFBundleShortVersionString: 75.0.65.118
-##	CFBundleVersion: 65.118
-##
-## apparently 'CFBundleVersion' is the 'version number' ?
-
-
-# https://laptop-updates.brave.com/latest/osx
-# aka https://brave-browser-downloads.s3.brave.com/latest/Brave-Browser.dmg
