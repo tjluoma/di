@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of SpamSieve from <https://c-command.com/spamsieve/>
 #
 # From:	Timothy J. Luoma
@@ -22,12 +22,18 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# @Todo - look for appcast
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.plist"
 
-URL=$(curl -sfL --head "https://c-command.com/downloads/SpamSieve-current.dmg" \
-	| awk -F' |\r' '/^.ocation/{print $2}')
+curl -sfLS "https://c-command.com/versions.plist" \
+| sed \
+	-e '1,/<key>com.c-command.SpamSieve<\/key>/d' \
+	-e '/<\/dict>/,$d' \
+	-e 's#^[		 ]*##g' \
+| tr -d '\012' >| "$TEMPFILE"
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+LATEST_VERSION=$(sed 's#.*<key>Version</key><string>##g ; s#</string>.*##g' "$TEMPFILE")
+
+URL=$(sed 's#.*<key>DownloadURL</key><string>##g ; s#</string>.*##g' "$TEMPFILE")
 
 	# If either of these are blank, we should not continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -71,17 +77,12 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL="https://c-command.com/spamsieve/help/version-history"
+	RELEASE_NOTES=$(sed 's#.*<key>ReleaseNotes</key><string>##g ; s#</string>.*##g' "$TEMPFILE" \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
 
-	VERSION_HEADER=$(curl -sfL "$RELEASE_NOTES_URL" | egrep -i "<dt>$LATEST_VERSION.*<\/dt>" | sed 's#<dt>## ; s#<\/dt>##g')
+	echo "${RELEASE_NOTES}\n\nURL: $URL"
 
-	( (echo -n "$NAME: Release Notes for $INSTALL_TO:t:r $VERSION_HEADER:\n" ;
-		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed "1,/<dt>$LATEST_VERSION.*<\/dt>/d; /<dt>/,\$d" \
-		| sed 's#\<a href="./#<a href="https://c-command.com/spamsieve/help/#g') \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) | tee "$FILENAME:r.txt"
-
-	echo "\nSource: <$RELEASE_NOTES_URL>"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -97,6 +98,8 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -108,6 +111,8 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -119,6 +124,17 @@ then
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -138,9 +154,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-echo "$NAME: Unmounting $MNTPNT:"
-
-diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
