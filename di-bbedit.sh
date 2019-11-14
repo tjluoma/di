@@ -35,7 +35,7 @@ do
 
 		## The first one of these to match will break the loop. We start with the newest version and work back.
 
-		# for Mojave (10.14.2) and newer, look for the most recent version of BBEdit
+		# for Mojave (10.14.2) and newer, look for the most recent version of BBEdit 13
 	is-at-least "10.14.2" "$OS_VER" \
 		&& URL='check' \
 		&& break
