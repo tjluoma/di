@@ -81,7 +81,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 if (( $+commands[lynx] ))
 then
 
-	(echo "$NAME: Release notes for OmniWeb:";
+	(echo "$NAME: Release notes for OmniWeb $LATEST_VERSION:";
 	curl -sfLS "$RELEASE_NOTES_URL" \
 	| awk '/<h3/{i++}i==2' \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
