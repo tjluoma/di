@@ -1,11 +1,9 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of DaisyDisk from http://daisydiskapp.com
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-24
-
-# @TODO - if you are up to date, it appears that you get an empty XML_FEED
 
 if [ -e "$HOME/.path" ]
 then
@@ -25,8 +23,6 @@ DOWNLOAD_PAGE="https://daisydiskapp.com/downloads/DaisyDisk.zip"
 SUMMARY="DaisyDisk also gives you a great overview of all connected disks, be it Macintosh HD, Thunderbolt disk, flash, network storage, you name it."
 
 OS_VER=`sw_vers -productVersion`
-
-# OS_VER='10.13.6'
 
 	# If we don't tell it we are using at least version 4, we get an empty feed
 MAJOR_VERSION='4'
@@ -91,7 +87,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
@@ -120,6 +116,29 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
