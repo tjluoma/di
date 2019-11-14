@@ -1,12 +1,9 @@
-#!/bin/zsh -f
-# Purpose:
+#!/usr/bin/env zsh -f
+# Purpose: Download and install/update Backblaze
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-10-06
-
-exit 0
-## @TODO - the manual updater for this is a PITA, so I'm just going to use it to install, not update
 
 NAME="$0:t:r"
 
@@ -70,6 +67,11 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+	# if there is already an instance of 'bzdoinstall' running, don't start another, just quit
+pgrep -x -q bzdoinstall \
+&& echo "$NAME: 'bzdoinstall' is already running." \
+&& exit 0
+
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
@@ -97,7 +99,6 @@ then
 fi
 
 	# The app will install / update an existing installation, so all we need to do it launch it
-
 echo "$NAME: Launching '$TARGET'. User action required to finish $ACTION_WORD of Backblaze."
 
 open "$TARGET"
