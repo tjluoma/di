@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of OmniWeb
 #
 # From:	Timothy J. Luoma
@@ -33,9 +33,9 @@ INFO=($(curl -sfLS 'https://omnistaging.omnigroup.com/omniweb/' \
 
 URL="$INFO[1]"
 
-# RELEASE_NOTES_URL="$INFO[2]" -- @todo - this URL seems outdated
+RELEASE_NOTES_URL="$INFO[2]"
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]')
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#OmniWeb-v##g ; s#-.*##g')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -51,7 +51,9 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | cut -d. -f3)
+	# INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion | cut -d. -f3)
+
+	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -76,16 +78,16 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-# if (( $+commands[lynx] ))
-# then
-#
-# 	(echo "$NAME: Release notes for OmniWeb:\n\n"
-# 	curl -sfLS "$RELEASE_NOTES_URL" \
-# 	| awk '/<h3/{i++}i==2' \
-# 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
-# 	| tee "$FILENAME:r.txt"
-#
-# fi
+if (( $+commands[lynx] ))
+then
+
+	(echo "$NAME: Release notes for OmniWeb:";
+	curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<h3/{i++}i==2' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin) \
+	| tee "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -99,6 +101,8 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Agreeing to the EULA and mounting $FILENAME: (sorry if this opens a Finder window): "
 
