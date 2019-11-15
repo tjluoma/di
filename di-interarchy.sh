@@ -9,9 +9,9 @@ NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Interarchy.app"
 
-HOMEPAGE="https://nolobe.com/interarchy/"
+HOMEPAGE="https://interarchy.com"
 
-DOWNLOAD_PAGE="https://nolobe.com/interarchy/download"
+DOWNLOAD_PAGE="https://interarchy.com"
 
 SUMMARY="Professional Mac FTP."
 
@@ -22,12 +22,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-echo "$NAME: @TODO - web page has changed and this script needs to be updated."
-
-exit 0
-
-URL=$(curl -sfL --head 'https://nolobe.com/interarchy/download' \
-		| awk -F' |\r' '/^.ocation/{print $2}')
+URL=$(curl -sfLS "https://interarchy.com" | tr '"' '\012' | egrep '^https.*\.zip$')
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
@@ -68,11 +63,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-RELEASE_NOTES_URL='https://nolobe.com/blog/'
-
-echo "$NAME: No Release Notes available, but checkout ${RELEASE_NOTES_URL} for helpful information."
-
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -87,6 +78,29 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
