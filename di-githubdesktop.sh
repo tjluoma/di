@@ -1,12 +1,9 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of GitHub Desktop from <https://desktop.github.com/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-26
-
-# RELEASE_NOTES_URL ? @TODO
-
 
 NAME="$0:t:r"
 
@@ -18,6 +15,8 @@ DOWNLOAD_PAGE="https://central.github.com/deployments/desktop/desktop/latest/dar
 
 SUMMARY="Extend your GitHub workflow beyond your browser with GitHub Desktop, completely redesigned with Electron. Get a unified cross-platform experience that’s completely open source and ready to customize."
 
+RELEASE_NOTES_URL='https://desktop.github.com/release-notes/'
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -27,9 +26,6 @@ fi
 
 	# note: this is very much _not_ a Sparkle feed
 XML_FEED='https://github.com/desktop/desktop/releases.atom'
-
-## 2019-06-10 no longer works to get version
-# LATEST_VERSION=$(curl -sfLS "$XML_FEED" | awk -F'release-|>|<' '/<title>release/{print $4}' | fgrep -iv 'beta' | head -1)
 
 URL=$(curl -sSfL --head "https://central.github.com/deployments/desktop/desktop/latest/darwin" \
 		| awk -F' |\r' '/^.ocation:/{print $2}' \
@@ -77,11 +73,19 @@ fi
 
 FILENAME="$HOME/Downloads/GitHubDesktop-${LATEST_VERSION}.zip"
 
+RELEASE_NOTES=$(curl -sfLS "https://central.github.com/deployments/desktop/desktop/changelog.json" \
+| sed \
+-e 's#},{.*##g' \
+-e 's#"\],".*##g' \
+-e 's#\[{"name":"","notes":\["##g' \
+-e 's#","#\
+#g')
+
+echo "GitHub Desktop Version $LATEST_VERSION:\n\n$RELEASE_NOTES\n\nSource: ${RELEASE_NOTES_URL}\nURL: $URL" | tee "$FILENAME:r.txt"
+
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15'
-
-curl -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -92,6 +96,29 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$HOME/.Trash/"
+
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
@@ -152,7 +179,7 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-#   link "$INSTALL_TO/Contents/Resources/app/static/github.sh" to /usr/local/bin/ ? Maybe? @TODO
+#   link "$INSTALL_TO/Contents/Resources/app/static/github.sh" to /usr/local/bin/ ? Maybe?
 
 exit 0
 #EOF
