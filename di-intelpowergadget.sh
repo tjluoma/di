@@ -63,7 +63,7 @@ else
 		# 	If you would like to install on macOS 10.12 or earlier, you can try v3.5.2: https://software.intel.com/file/641033/download
 		# https://software.intel.com/sites/default/files/managed/6c/0b/Intel%C2%AE%20Power%20Gadget.dmg
 
-		# this is for 10.12 and earlier (although I think "earlier" is capped, at 10.7 maybe? Not sure) @todo - investigate
+		# this is for 10.12 and earlier (although I think "earlier" is capped, at 10.7 maybe? Not sure)
 	LATEST_VERSION="3.5.2"
 	URL='https://software.intel.com/sites/default/files/managed/6c/0b/Intel%C2%AE%20Power%20Gadget.dmg'
 
