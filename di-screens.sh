@@ -1,9 +1,9 @@
-#!/bin/zsh -f
-# Purpose: Download and install Screens version 3 or 4
+#!/usr/bin/env zsh -f
+# Purpose: Download and install Screens 4
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-08-21
+# Date:	2018-08-21 ; 2019-11-15
 
 NAME="$0:t:r"
 
@@ -20,57 +20,11 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_V3_TO='/Applications/Screens.app'
+INSTALL_TO='/Applications/Screens 4.app'
 
-INSTALL_V4_TO='/Applications/Screens 4.app'
+XML_FEED="https://updates.edovia.com/com.edovia.screens4.mac/appcast.xml"
 
-function use_v3 {
-
-	ASTERISK='(Note that version 4 is also available.)'
-	USE_VERSION='3'
-	INSTALL_TO="/Applications/Screens.app"
-	XML_FEED="https://updates.edovia.com/com.edovia.screens.mac/appcast.xml"
-	# FYI - https://download.edovia.com/screens/Screens_3.8.7.zip
-}
-
-function use_v4 {
-
-	USE_VERSION='4'
-	XML_FEED="https://updates.devmate.com/com.edovia.screens4.mac.xml"
-	INSTALL_TO='/Applications/Screens 4.app'
-	ITUNES_URL='apps.apple.com/us/app/screens-4/id1224268771'
-
-}
-
-        # if the user explicitly askes for version 3, use it, regardless of the above
-if [ "$1" = "--use3" -o "$1" = "-3" ]
-then
-        use_v3
-elif [ "$1" = "--use4" -o "$1" = "-4" ]
-then
-        use_v4
-else
-        if [ -e "$INSTALL_V3_TO" -a -e "$INSTALL_V4_TO" ]
-        then
-                echo "$NAME: Both versions 3 and 4 of Screens are installed. I will _only_ check for updates for version 4 in this situation."
-                echo "  If you want to check for updates for version 3, add the argument '--use3' i.e. '$0:t --use3' "
-                echo "  To avoid this message in the future, add the argument '--use4' i.e. '$0:t --use4' "
-
-                use_v4
-
-        elif [ ! -e "$INSTALL_V3_TO" -a -e "$INSTALL_V4_TO" ]
-        then
-                        # version 3 is not installed but version 4 is
-                use_v4
-        elif [ -e "$INSTALL_V3_TO" -a ! -e "$INSTALL_V4_TO" ]
-        then
-                        # version 3 is installed but version 4 is not
-                use_v3
-        else
-                        # neither v3 or v4 are installed
-                use_v4
-        fi
-fi
+ITUNES_URL='apps.apple.com/us/app/screens-4/id1224268771'
 
 INFO=($(curl -sfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -148,7 +102,7 @@ fi
 	##
 FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-if [[ "$USE_VERSION" == "4" ]]
+if (( $+commands[lynx] ))
 then
 
 	### These release notes seem to be for the entire 4.0 release, with no clear way to tell what happened with one particular version
@@ -165,8 +119,6 @@ then
 
 	curl -sfL "$RELEASE_NOTES_URL" > "$FILENAME:r.html"
 
-else
-	echo "	\$USE_VERSION: >$USE_VERSION<"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
