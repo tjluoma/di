@@ -22,7 +22,7 @@ LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
 URL="https://github.com/glushchenko/fsnotes/releases/download/$LATEST_VERSION/FSNotes_$LATEST_VERSION.zip"
 
-ITUNES_URL='itunes.apple.com/us/app/fsnotes/id1277179284'
+ITUNES_URL='apps.apple.com/us/app/fsnotes/id1277179284'
 
 HOMEPAGE="https://fsnot.es"
 

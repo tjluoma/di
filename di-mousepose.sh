@@ -12,7 +12,7 @@ INSTALL_TO='/Applications/Mousepose.app'
 
 HOMEPAGE="https://boinx.com/mousepose/overview/"
 
-DOWNLOAD_PAGE="http://itunes.apple.com/app/mousepose/id405904955?mt=12"
+DOWNLOAD_PAGE="http://apps.apple.com/app/mousepose/id405904955?mt=12"
 
 SUMMARY="Mouseposé 3 is an essential tool for everyone doing presentations or demos. When turned on, it dims the screen and puts a spotlight on the area around the mouse pointer, easily guiding the audience‘s attention to an area of interest."
 
@@ -72,8 +72,8 @@ then
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://itunes.apple.com/us/app/mousepose/id405904955?mt=12> or"
-		echo "	<macappstore://itunes.apple.com/us/app/mousepose/id405904955>"
+		echo "	See <https://apps.apple.com/us/app/mousepose/id405904955?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/mousepose/id405904955>"
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
