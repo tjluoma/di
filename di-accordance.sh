@@ -1,9 +1,9 @@
-#!/bin/zsh -f
-# Purpose: Download and install the latest version of Accordance 12 from <https://www.accordancebible.com>
+#!/usr/bin/env zsh -f
+# Purpose: Download and install the latest version of Accordance 13 from <https://www.accordancebible.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-02 (Last Verified: 2018-08-07)
+# Date:	2015-11-02 (Last Verified: 2019-11-15)
 
 NAME="$0:t:r"
 
@@ -23,7 +23,7 @@ else
 fi
 
 	# sparkle:version identical to sparkle:shortVersionString
-INFO=($(curl -sfL 'https://accordancefiles1.com/php/v12/profileInfo.php' \
+INFO=($(curl -sfL 'https://accordancefiles1.com/xml/appcast_13.xml' \
 		| tr ' ' '\012' \
 		| egrep '^(url|sparkle:shortVersionString)=' \
 		| head -2 \
@@ -84,7 +84,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_URL='http://accordancefiles1.com/appcastupdates/rnotes12.html'
+	RELEASE_NOTES_URL='https://accordancefiles1.com/appcastupdates/rnotes13.html'
 
 	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 	curl -sfL "${RELEASE_NOTES_URL}" \
