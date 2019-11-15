@@ -1,15 +1,11 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of MacPilot
-# {Note/@todo: ideally this script would use `sw_vers` to make sure to download the right version for the particular OS the user is running.}
 # See https://www.koingosw.com/products/macpilot/
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-27
-
-# @TODO - 2019-09-26 - probably needs updating for version 11
-
 
 NAME="$0:t:r"
 
@@ -161,7 +157,7 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
