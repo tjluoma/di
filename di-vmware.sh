@@ -1,34 +1,20 @@
-#!/bin/zsh -f
-# Purpose:
+#!/usr/bin/env zsh -f
+# Purpose: Download and install/update the latest version of VMware Fusion
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-10
 
-# @TODO - figure out limits for what version numbers work with which OSes
-
-#   url "https://download3.vmware.com/software/fusion/file/VMware-Fusion-#{version}.dmg"
-#   appcast 'https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
-#   name 'VMware Fusion'
-#   homepage 'https://www.vmware.com/products/fusion.html'
-
-
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/VMware Fusion.app"
 
+## This file is an attractive nuisance, but not useful
 # XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
-
-# /Applications/VMware Fusion.app:
-# 	CFBundleShortVersionString: 10.1.3
-# 	CFBundleVersion: 9472307
 
 HOMEPAGE="https://www.vmware.com/products/fusion.html"
 
 DOWNLOAD_PAGE="https://www.vmware.com/go/getfusion"
-
-# locurl.sh
-# https://download3.vmware.com/software/fusion/file/VMware-Fusion-10.1.3-9472307.dmg
 
 URL=$(curl -sfLS --head https://www.vmware.com/go/getfusion | awk -F' |\r' '/^.ocation:/{print $2}')
 
@@ -120,3 +106,14 @@ open "$MNTPNT/VMware Fusion.app"
 
 exit 0
 #EOF
+
+## These are all linked from 'https://docs.vmware.com/en/VMware-Fusion/index.html'
+## but must be loaded via JavaScript because the URLs are not accessible in the HTML
+#
+# https://docs.vmware.com/en/VMware-Fusion/11.5.0/rn/VMware-Fusion-1151-Release-Notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11.5.0/rn/VMware-Fusion-1150-Release-Notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11.1.1/rn/VMware-Fusion-1111-Release-Notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11.1.0/rn/VMware-Fusion-1110-Release-Notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11/rn/fusion-1103-release-notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11/rn/fusion-1102-release-notes.html
+# https://docs.vmware.com/en/VMware-Fusion/11/rn/fusion-1101-release-notes.html
