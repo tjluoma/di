@@ -72,7 +72,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -81,7 +81,7 @@ then
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
 
-	echo "${RELEASE_NOTES}\n\nURL: $URL"
+	echo "${RELEASE_NOTES}\n\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 
