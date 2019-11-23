@@ -22,6 +22,7 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
 XML_FEED="https://www.digitalrebellion.com/rss/appcast?app=posthaste&subapp=posthaste"
 
+	# save the feed
 curl -sfLS "$XML_FEED" | sed 's#^ *##g' | tr -d '\r|\012' >| "$TEMPFILE"
 
 URL_RAW=$(sed -e 's#.*enclosure url="##g' -e 's#" .*##g' "$TEMPFILE")
