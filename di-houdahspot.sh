@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of HoudahSpot from <https://www.houdah.com/houdahSpot/>
 #
 # From:	Timothy J. Luoma
@@ -24,8 +24,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-# backup?  https://rink.hockeyapp.net/api/2/apps/46da69d75bfa2c801117f4f299061332
-# XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
+	# backup?  https://rink.hockeyapp.net/api/2/apps/46da69d75bfa2c801117f4f299061332
+	# XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
 XML_FEED="https://www.houdah.com/houdahSpot/updates/cast5.xml"
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -SsfL "${XML_FEED}" \
