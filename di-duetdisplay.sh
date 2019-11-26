@@ -24,9 +24,35 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-URL=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
+	## There are two ways of finding the current version.
+	## Try them both and compare them to see which is higher
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
+	# First Way
+URL1=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
+
+LV1=$(echo "$URL1:t:r" | sed 's#duet-##g; s#-#.#g')
+
+	# Second Way
+URL2=$(curl -sfLS "https://www.duetdisplay.com/help-center/mac-release-notes" | tr '"' '\012' | egrep 'https.*\.zip$')
+
+LV2=$(echo "$URL2:t:r" | sed 's#duet-##g; s#-#.#g')
+
+	# Compare Them
+autoload is-at-least
+
+is-at-least "$LV1" "$LV2"
+
+EXIT="$0"
+
+if [[ "$EXIT" == "0" ]]
+then
+	LATEST_VERSION="$LV1"
+	URL="$URL1"
+else
+	LATEST_VERSION="$LV2"
+	URL="$URL2"
+fi
+
 
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
@@ -63,7 +89,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
