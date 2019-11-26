@@ -207,6 +207,8 @@ fi
 exit 0
 #EOF
 
+##	2019-11-26 - verified that this is still showing _very_ old information
+##
 ## http://updates.duetdisplay.com/checkMacUpdates or https://updates.duetdisplay.com/checkMacUpdates
 ## redirects to
 ## https://duet.nyc3.cdn.digitaloceanspaces.com/Mac/2_0/2-0-5-3/DuetDisplayAppcast.xml
