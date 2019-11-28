@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of SuperDuper
 #
 # From:	Timothy J. Luoma
@@ -123,8 +123,25 @@ EXIT="$?"
 
 if [[ -e "$INSTALL_TO" ]]
 then
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/SuperDuper!.$INSTALLED_VERSION.app"
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app" \
+	|| sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/" >>/dev/stderr
+
+		exit 1
+	fi
 fi
 
 TEMPDIR=`mktemp -d "${TMPDIR-/tmp}/$NAME.XXXXXX"`
@@ -154,6 +171,7 @@ if (( $+commands[pkginstall.sh] ))
 then
 
 	pkginstall.sh "$PKG"
+
 else
 
 	if [ "$EUID" = "0" ]
