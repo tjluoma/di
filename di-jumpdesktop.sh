@@ -73,7 +73,7 @@ RELEASE_NOTES_URL=$(curl -sfLS "$XML_FEED" \
 if (( $+commands[lynx] ))
 then
 
-	 ( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers "$RELEASE_NOTES_URL" \
+	 ( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
 	 | sed 's/^        */## /g' ; \
 	   echo "\n\nURL:\t${URL}\nVer:\t${LATEST_VERSION}\nBuild:\t${LATEST_BUILD}\nNotes:\t${RELEASE_NOTES_URL}" ) \
 	 | tee "$FILENAME:r.txt"
