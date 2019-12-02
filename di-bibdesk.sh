@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of BibDesk
 #
 # From:	Timothy J. Luoma
@@ -22,15 +22,10 @@ DOWNLOAD_PAGE="https://bibdesk.sourceforge.io"
 
 SUMMARY="Use BibDesk to edit and manage your bibliography. It will keep track of both the bibliographic information and the associated files or web links for you. BibDesk’s services will simplify using your bibliography in other applications and are particularly well suited for LATEX users."
 
-XML_FEED="http://bibdesk.sourceforge.net/bibdesk.xml"
+XML_FEED="https://bibdesk.sourceforge.io/bibdesk.xml"
 
 RELEASE_NOTES_URL="$XML_FEED"
 
-	# sparkle:version="4603"
-	# sparkle:shortVersionString="1.6.16"
-	# url="https://sourceforge.net/projects/bibdesk/files/BibDesk/BibDesk-1.6.16/BibDesk-1.6.16.dmg/download"
-
-	# 1.6.16 4603 https://sourceforge.net/projects/bibdesk/files/BibDesk/BibDesk-1.6.16/BibDesk-1.6.16.dmg/download
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version=|sparkle:shortVersionString=|url=' \
@@ -107,6 +102,8 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -131,6 +128,17 @@ then
 
 		# move installed version to trash
 	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -154,3 +162,10 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 EOF
+
+
+# sparkle:version="4603"
+# sparkle:shortVersionString="1.6.16"
+# url="https://sourceforge.net/projects/bibdesk/files/BibDesk/BibDesk-1.6.16/BibDesk-1.6.16.dmg/download"
+
+# 1.6.16 4603 https://sourceforge.net/projects/bibdesk/files/BibDesk/BibDesk-1.6.16/BibDesk-1.6.16.dmg/download
