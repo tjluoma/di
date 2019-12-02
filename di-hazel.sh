@@ -112,6 +112,7 @@ then
 	URL='https://s3.amazonaws.com/Noodlesoft/Hazel-sparkle-4.3.5.zip'
 	LATEST_VERSION='4.3.5'
 	RELEASE_NOTES='no'
+	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
 else
 
