@@ -57,6 +57,11 @@ fi
 OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
 
 case "$OS_VER" in
+	'10.13')
+		URL='http://downloads.omnigroup.com/software/MacOSX/10.13/OmniDiskSweeper-1.11(n).dmg'
+		LATEST_VERSION="1.11"
+		RELEASE_NOTES_URL=''
+	;;
 	'10.12')
 		URL='http://downloads.omnigroup.com/software/MacOSX/10.12/OmniDiskSweeper-1.10.dmg'
 		LATEST_VERSION="1.10"
