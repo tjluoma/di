@@ -124,6 +124,16 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| tail -1 \
 		| sed 's#</string>.*##g ; s#.*<string>##g')
 
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty" >>/dev/stderr
+	exit 1
+else
+	echo "$NAME: MNTPNT is '$MNTPNT'."
+fi
+
+
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
 #		Open app (which is an installer,
