@@ -1,9 +1,9 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install File Juicer
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-07-20
+# Date:	2018-07-20 ; 2019-12-07 - new method for URL
 
 NAME="$0:t:r"
 
@@ -22,17 +22,14 @@ DOWNLOAD_PAGE="https://echoone.com/filejuicer/download"
 
 SUMMARY="File Juicer doesn’t care what type file you drop onto it; it searches the entire file byte by byte. If it finds a JPEG, JP2, PNG, GIF, PDF, BMP, WMF, EMF, PICT, TIFF, Flash, Zip, HTML, WAV, MP3, AVI, MOV, MPG, WMV, MP4, AU, AIFF or text file inside, it can save it to your desktop or to another folder you choose."
 
-# UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15'
+	## See notes at bottom for older methods of finding URL
+UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15'
 
-UA='Safari'
+SUFFIX=$(curl -A "$UA" --head -sfLS "https://echoone.com/filejuicer/latestversion" | awk -F' |\r' '/^Location:/{print $2}' | tail -1)
 
-## 2019-11-25 if this stops working, try this
-# locurl.sh "https://echoone.com/filejuicer/FileJuicer.zip"
-# /filejuicer/FileJuicer-4.81.zip
+PREFIX='https://echoone.com'
 
-URL=$(curl -A "$UA" -sfLS --head 'https://echoone.com/filejuicer/latestversion?f=unknown' \
-		| awk -F' |\r' '/^.ocation/{print "https://echoone.com"$2}' \
-		| tail -1)
+URL="${PREFIX}${SUFFIX}"
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
@@ -78,7 +75,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -151,3 +148,13 @@ fi
 
 exit 0
 #EOF
+
+## 2019-11-25 if this stops working, try this
+# locurl.sh "https://echoone.com/filejuicer/FileJuicer.zip"
+# /filejuicer/FileJuicer-4.81.zip
+
+### 2019-12-07 - this has ceased working
+#
+# URL=$(curl -A "$UA" -sfLS --head 'https://echoone.com/filejuicer/latestversion?f=unknown' \
+# 		| awk -F' |\r' '/^.ocation/{print "https://echoone.com"$2}' \
+# 		| tail -1)
