@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2019-06-19
+# Date:	2019-06-19 ; rewritten 2019-12-07 for new JSON feed and DMG
 
 NAME="$0:t:r"
 
@@ -16,45 +16,25 @@ fi
 
 INSTALL_TO='/Applications/FMail.app'
 
-XML_FEED='https://arievanboxel.fr/fmail/appcast.xml'
+FEED='https://arievanboxel.fr/fmail/updates/d_appinfo.json'
 
-##############################################################################################################
-## DO NOT INDENT!!
-##
-## 2019-06-20 - the XML_FEED is out of order, so we have to go through some extra steps to put it back
-## 				in order and make sure we are getting the latest information
-##
-INFO=($(curl -sfLS "$XML_FEED" \
-| sed 	-e '1,/<title>FMail<\/title>/d; /<\/channel>/,$d' \
-		-e "s#<title># <title> #g" \
-		-e "s#</title># </title> #g" \
-| tr '\012' ' ' \
-| sed 's#<item>#\
-<item>#g' \
-| sort --version-sort --ignore-leading-blanks \
-| tail -1 \
-| tr -s ' ' '\012' \
-| egrep '(url|sparkle:version|sparkle:shortVersionString|sparkle:releaseNotesLink)' \
-| sed 	-e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' \
-		-e 's#</sparkle:releaseNotesLink>#"#g' \
-| sort	\
-| awk -F'"' '//{print $2}'))
+INFO=$(curl -sfLS "$FEED" \
+| sed -e 's#.*{##g' -e 's#}.*##g' -e 's#"##g' -e 's#, #\
+#g')
 
-RELEASE_NOTES_URL="$INFO[1]"
+URL=$(echo "$INFO" | awk -F' ' '/^target/{print $NF}')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" | awk -F' ' '/^appVersion/{print $NF}')
 
-LATEST_BUILD="$INFO[3]"
-
-URL="$INFO[4]"			# also URL='https://arievanboxel.fr/fmail/en/resources/fmail.dmg'
+RELEASE_NOTES_URL=$(echo "$INFO" | awk -F' ' '/^releaseNotes/{print $NF}')
 
 	# If any of these are blank, we cannot continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$INFO" = "" -o "$RELEASE_NOTES_URL" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
+	RELEASE_NOTES_URL: $RELEASE_NOTES_URL
 	URL: $URL
 	"
 
@@ -66,25 +46,19 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
-
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
 
@@ -93,14 +67,14 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 if (( $+commands[lynx] ))
 then
 
-	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ; \
-	  echo "\nURL:\t$URL\nVer:\t$LATEST_VERSION\nBuild:\t$LATEST_BUILD" ) \
-	| tee "$FILENAME:r.txt"
+	RELEASE_NOTES=$(lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL")
+
+	echo "${RELEASE_NOTES}\n\nFeed: ${FEED}\nURL: ${URL}" | tee "$FILENAME:r.txt"
 
 fi
 
@@ -117,10 +91,10 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-
-MIN_REQUIRED='10.14'
+	# Check to make sure we are running minimum required version of macOS
+MIN_REQUIRED=$(echo "$INFO" | awk -F' ' '/^minSystemVersion/{print $NF}')
 
 OS_VER=$(sw_vers -productVersion)
 
@@ -139,65 +113,61 @@ then
 
 fi
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+echo "$NAME: Mounting $FILENAME:"
 
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
+
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
