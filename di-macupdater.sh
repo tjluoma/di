@@ -17,8 +17,6 @@ SUMMARY="MacUpdater can automatically track the latest updates of all applicatio
 
 XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
 
-RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html'
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -26,26 +24,59 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| egrep '(<enclosure.*url="https://.*\.dmg"|sparkle:version=|sparkle:shortVersionString=)' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/url|sparkle:version|sparkle:shortVersionString/{print $2}'))
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
-
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
+if [[ "$OS_VER" -ge "13" ]]
 then
-	echo "$NAME: Bad data from $XML_FEED
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
-	URL: $URL
-	"
 
+	# 2019-12-07 IMPORTANT: As of MacUpdater version 1.5.0,
+	# the minimum system requirements have been raised to macOS 10.13
+
+	RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html'
+
+	INFO=($(curl -sfL "$XML_FEED" \
+			| egrep '(<enclosure.*url="https://.*\.dmg"|sparkle:version=|sparkle:shortVersionString=)' \
+			| head -3 \
+			| sort \
+			| awk -F'"' '/url|sparkle:version|sparkle:shortVersionString/{print $2}'))
+
+	LATEST_VERSION="$INFO[1]"
+	LATEST_BUILD="$INFO[2]"
+	URL="$INFO[3]"
+
+	if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
+	then
+		echo "$NAME: Bad data from $XML_FEED
+		INFO: $INFO
+		LATEST_VERSION: $LATEST_VERSION
+		LATEST_BUILD: $LATEST_BUILD
+		URL: $URL
+		"
+
+		exit 1
+	fi
+
+elif [ "$OS_VER" = "11" -o "$OS_VER" = "12" ]
+then
+
+	RELEASE_NOTES_URL=''
+
+		# a DMG made from https://www.corecode.io/downloads/macupdater_1.4.18.zip
+		# If the main URL fails, try this:
+		# URL='https://iusethis.luo.ma/macupdater/MacUpdater-1.4.18_6425.dmg'
+	URL='https://www.dropbox.com/s/qrg8dwpk4wzsh5h/MacUpdater-1.4.18_6425.dmg?dl=0'
+
+	LATEST_VERSION='1.4.18'
+
+	LATEST_BUILD='6425'
+
+else
+
+	echo "$NAME: MacUpdater requires macOS 10.13 or higher for versions above 1.5." >>/dev/stderr
+	echo "$NAME: macOS 10.11 or 10.12 can use version 1.4.18." >>/dev/stderr
+	echo "$NAME: This Mac is running `sw_vers -productVersion`." >>/dev/stderr
 	exit 1
+
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -81,15 +112,20 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
-if (( $+commands[lynx] ))
+if [[ "$RELEASE_NOTES_URL" != "" ]]
 then
+	if (( $+commands[lynx] ))
+	then
 
-	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: " ;
-	curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<br>/d; /<br>/,$d' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| egrep --colour=never -i '[a-z0-9]' ;
-	echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
+
+		( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version: " ;
+		curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<br>/d; /<br>/,$d' \
+		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| egrep --colour=never -i '[a-z0-9]' ;
+		echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
