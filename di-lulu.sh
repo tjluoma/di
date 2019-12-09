@@ -145,7 +145,38 @@ else
 	exit 1
 fi
 
-INSTALLER="$UNZIP_TO/LuLu Installer.app"
+## 2019-12-08 - now the installer app is called "LuLu.app" but the full path is
+## 				'LuLu.app/Contents/MacOS/LuLu Installer'
+#
+# INSTALLER="$UNZIP_TO/LuLu Installer.app"
+
+INSTALLER=$(find "$UNZIP_TO" -iname '*.app' -maxdepth 1 -print)
+
+if [[ "$INSTALLER" =="" ]]
+then
+	MSG="$NAME: 'INSTALLER' variable is empty."
+	po.sh "$MSG"
+	echo "$MSG" >>/dev/stderr
+	exit 1
+
+fi
+
+	# Check to see if the installer is already running
+pgrep -qfl "$INSTALLER:t"
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	MSG="$NAME: '$INSTALLER:t' is already running."
+
+	po.sh "$MSG"
+
+	echo "$MSG" >>/dev/stderr
+
+	exit 1
+
+fi
 
 echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
