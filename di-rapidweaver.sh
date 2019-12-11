@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of RapidWeaver 8 from <https://www.realmacsoftware.com>
 #
 # From:	Timothy J. Luoma
@@ -20,7 +20,7 @@ HOMEPAGE="https://www.realmacsoftware.com/rapidweaver/"
 
 DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
 
-XML_FEED='https://updates.devmate.com/com.realmacsoftware.rapidweaver8.xml'
+XML_FEED='https://www.realmacsoftware.com/sparkle-updates/com.realmacsoftware.rapidweaver8.xml'
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
@@ -29,8 +29,10 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 
 SUMMARY="RapidWeaver for Mac is a powerful and easy to use web design app that puts you back in control. Build your own beautiful, responsive, websites without having to write a line of code."
 
-INFO=($(curl -sfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
+INFO=($(curl -sfLS "$XML_FEED" \
+		| tidy --input-xml yes --output-xml yes --wrap 0 2>/dev/null \
+		| fgrep -v 'delta' \
+		| tr ' ' '\012' \
 		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
 		| head -3 \
 		| sort \
