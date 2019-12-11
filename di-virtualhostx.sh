@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of VirtualHostX
 #
 # From:	Timothy J. Luoma
@@ -22,7 +22,10 @@ DOWNLOAD_PAGE="https://clickontyler.com/virtualhostx/download/"
 
 SUMMARY="VirtualHostX 8.0 is the easiest way to build and test multiple websites on your Mac. It’s the perfect solution for web designers working on more than one project at a time. With VirtualHostX you can easily create and manage unlimited Apache websites with just a few clicks."
 
-XML_FEED='http://shine.clickontyler.com/appcast.php?id=38'
+# XML_FEED='http://shine.clickontyler.com/appcast.php?id=38'
+
+## This is the new 'Pro' feed
+XML_FEED='https://shine.clickontyler.com/appcast.php?id=45'
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
