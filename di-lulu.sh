@@ -152,7 +152,7 @@ fi
 
 INSTALLER=$(find "$UNZIP_TO" -iname '*.app' -maxdepth 1 -print)
 
-if [[ "$INSTALLER" =="" ]]
+if [[ "$INSTALLER" == "" ]]
 then
 	MSG="$NAME: 'INSTALLER' variable is empty."
 	po.sh "$MSG"
