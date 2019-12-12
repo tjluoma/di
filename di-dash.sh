@@ -1,5 +1,5 @@
-#!/bin/zsh -f
-# Purpose: Download and install the latest version of Dash (3 or 4)
+#!/usr/bin/env zsh -f
+# Purpose: Download and install the latest version of Dash (3, 4, or 5)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -10,7 +10,7 @@ INSTALL_TO='/Applications/Dash.app'
 
 HOMEPAGE="https://kapeli.com/dash"
 
-DOWNLOAD_PAGE="https://newyork.kapeli.com/downloads/v4/Dash.zip"
+DOWNLOAD_PAGE="https://newyork.kapeli.com/downloads/v5/Dash.zip"
 
 SUMMARY="Dash is an API Documentation Browser and Code Snippet Manager. Dash stores snippets of code and instantly searches offline documentation sets for 200+ APIs, 100+ cheat sheets and more. You can even generate your own docsets or request docsets to be included."
 
@@ -23,15 +23,22 @@ fi
 
 function use_v3 {
 
-	ASTERISK='(Note that version 4 is also available.)'
+	ASTERISK='(Note that version 4 & 5 are also available.)'
 	USE_VERSION='3'
 	XML_FEED='https://kapeli.com/Dash3.xml'
 }
 
 function use_v4 {
 
+	ASTERISK='(Note that version 5 is also available.)'
 	USE_VERSION='4'
 	XML_FEED='https://kapeli.com/Dash4.xml'
+}
+
+function use_v5 {
+
+	USE_VERSION='4'
+	XML_FEED='https://kapeli.com/Dash5.xml'
 }
 
 if [[ -e "$INSTALL_TO" ]]
@@ -42,15 +49,21 @@ then
 	if [[ "$MAJOR_VERSION" == "3" ]]
 	then
 		use_v3
-	else
+	elif [[ "$MAJOR_VERSION" == "4" ]]
+	then
 		use_v4
+	else
+		use_v5
 	fi
 else
 	if [ "$1" = "--use3" -o "$1" = "-3" ]
 	then
 		use_v3
-	else
+	elif [ "$1" = "--use4" -o "$1" = "-4" ]
+	then
 		use_v4
+	else
+		use_v5
 	fi
 fi
 
