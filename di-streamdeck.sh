@@ -56,23 +56,22 @@ then
 		if [[ "$EXIT" == "0" ]]
 		then
 
+			echo "$NAME: Versions differ:\n\tAutomatic: $LATEST_VERSION_AUTOMATIC\n\t   Manual: $LATEST_VERSION_MANUAL\n\tUsing 'Manual'."
+
+			LATEST_VERSION="$LATEST_VERSION_MANUAL"
+			URL=$(jq --raw-output .Manual.fileURL < "$TEMPFILE")
+			RELEASE_NOTES_URL=$(jq --raw-output .Manual.ReleaseNotes.en < "$TEMPFILE")
+
+		else
+
 			echo "$NAME: Versions differ:\n\tAutomatic: $LATEST_VERSION_AUTOMATIC\n\t   Manual: $LATEST_VERSION_MANUAL\n\tUsing 'Automatic'."
 
 			LATEST_VERSION="$LATEST_VERSION_AUTOMATIC"
 			URL=$(jq --raw-output .Automatic.fileURL < "$TEMPFILE")
 			RELEASE_NOTES_URL=$(jq --raw-output .Automatic.ReleaseNotes.en < "$TEMPFILE")
 
-		else
-
-			echo "$NAME: Versions differ:\n\tAutomatic: $LATEST_VERSION_AUTOMATIC\n\t   Manual: $LATEST_VERSION_MANUAL\n\tUsing 'Manual'."
-
-			LATEST_VERSION="$LATEST_VERSION_MANUAL"
-			URL=$(jq --raw-output .Manual.fileURL < "$TEMPFILE")
-			RELEASE_NOTES_URL=$(jq --raw-output .Manual.ReleaseNotes.en < "$TEMPFILE")
 		fi
 	fi
-
-
 
 else
 		# no jq? Fine, we'll do it the hard/inefficient/error-prone way
