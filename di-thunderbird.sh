@@ -19,6 +19,7 @@ INSTALL_TO='/Applications/Thunderbird.app'
 	# LATEST_BUILD is identical to LATEST_VERSION
 LATEST_VERSION=$(curl -sfLS 'https://www.thunderbird.net/en-US/thunderbird/releases/' \
 				| egrep -i 'en-US/thunderbird/.*/releasenotes/' \
+				| fgrep -vi 'beta' \
 				| sed 's#.*/releasenotes/">##g' \
 				| tr -dc '[0-9]\.\n' \
 				| sort -n \
