@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: Download and install/update the latest version of ChronoSync
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -56,8 +56,76 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
+if (( $+commands[lynx] ))
+then
 
+	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" | tee "$FILENAME:r.txt"
 
+	echo "\nVersion: ${LATEST_VERSION}\nSource: ${RELEASE_NOTES_URL}\nURL: $URL" | tee -a "$FILENAME:r.txt"
+
+fi
+
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
+
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+echo "$NAME: Mounting $FILENAME:"
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
+fi
+
+PKG=$(find "$MNTPNT" -maxdepth 1 -iname 'Install.pkg' -print)
+
+if [[ "$PKG" == "" ]]
+then
+	echo "$NAME: No 'Install.pkg' found in '$MNTPNT'." >>/dev/stderr
+	exit 1
+fi
+
+if (( $+commands[pkginstall.sh] ))
+then
+	pkginstall.sh "$PKG"
+else
+	sudo /usr/sbin/installer -verbose -pkg "$PKG" -dumplog -target / -lang en 2>&1
+fi
+
+EXIT="$?"
+
+if [[ "$EXIT" != "0" ]]
+then
+
+	echo "$NAME: installation of '$PKG' failed (\$EXIT = $EXIT)."
+
+		# Show the .pkg file at least, to draw their attention to it.
+	open -R "$PKG"
+
+	exit 1
+fi
+
+echo "$NAME: Unmounting $MNTPNT:"
+
+diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
