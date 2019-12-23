@@ -16,23 +16,37 @@ fi
 
 INSTALL_TO='/Applications/Hook.app'
 
-XML_FEED='https://updates.devmate.com/com.cogsciapps.hook.xml'
+# XML_FEED='https://updates.devmate.com/com.cogsciapps.hook.xml'
+#
+# INFO=($(curl -sfLS "$XML_FEED" \
+# 		| awk '/<item>/{i++}i==1' \
+# 		| tr -s '\t| ' '\012' \
+# 		| egrep -i '<sparkle:releaseNotesLink>|url=|sparkle:version=|sparkle:shortVersionString=' \
+# 		| sort \
+# 		| tr '<|>|"' ' ' \
+# 		| awk '{print $2}'))
+#
+#
+# 	RELEASE_NOTES_URL="$INFO[1]"
+#
+# 	LATEST_VERSION="$INFO[2]"
+#
+# 	LATEST_BUILD="$INFO[3]"
+#
+# 	URL="$INFO[4]"
 
-INFO=($(curl -sfLS "$XML_FEED" \
-		| awk '/<item>/{i++}i==1' \
-		| tr -s '\t| ' '\012' \
-		| egrep -i '<sparkle:releaseNotesLink>|url=|sparkle:version=|sparkle:shortVersionString=' \
-		| sort \
-		| tr '<|>|"' ' ' \
-		| awk '{print $2}'))
+XML_FEED="https://api.appcenter.ms/v0.1/public/sparkle/apps/a77a1a87-7d69-435d-90ea-7365b2f7bddb"
 
-RELEASE_NOTES_URL="$INFO[1]"
+INFO=$(curl -sfLS "$XML_FEED" \
+	| sed 's#^[	 ]*##g' \
+	| tr -s '\012|\r| ' ' ' \
+	| sed -e 's#> <#><#g' -e 's#> #>#g' -e 's# <#<#g')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_BUILD=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
 
-LATEST_BUILD="$INFO[3]"
+LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e 's#" .*##g')
 
-URL="$INFO[4]"
+URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -46,6 +60,17 @@ then
 
 	exit 1
 fi
+
+# echo "
+# 	INFO: $INFO
+# 	LATEST_VERSION: $LATEST_VERSION
+# 	LATEST_BUILD: $LATEST_BUILD
+# 	URL: $URL
+# 	RELEASE_NOTES:
+# ---
+# $RELEASE_NOTES
+# ---
+# "
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -84,10 +109,17 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
- 	  | sed 's#____________________________#_#g' ;\
-	echo "\nURL: $URL" ;\
- 	) | tee "$FILENAME:r.txt"
+	# 	( lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" \
+	#  	  | sed 's#____________________________#_#g' ;\
+	# 	echo "\nURL: $URL" ;\
+	#  	) | tee "$FILENAME:r.txt"
+
+	RELEASE_NOTES=$(echo "$INFO" \
+		| sed -e 's#.*<description>##g' -e 's#</description>.*##g' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin )
+
+	echo "${RELEASE_NOTES}\n\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 
