@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest BitTorrent Sync (aka Resilio Sync)
 #
 # From:	Tj Luo.ma
@@ -86,13 +86,18 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM"
 #		Check to see what the latest version is
 #
 
-curl -sfL "$URL" \
-| sed '1,/<item>/d; /<\/item>/,$d' \
-| tr -s ' |\t' '\012' > "$TEMPFILE"
+## TEMP - manually setting latest version
+# curl -sfL "$URL" \
+# | sed '1,/<item>/d; /<\/item>/,$d' \
+# | tr -s ' |\t' '\012' > "$TEMPFILE"
+#
+# LATEST_VERSION=`awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE"`
+#
+# URL=`awk -F'"' '/url/{print $2}' "$TEMPFILE"`
 
-LATEST_VERSION=`awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE"`
+URL='http://internal.resilio.com/support/debug/sync/2.6.10070/Resilio-Sync.dmg'
 
-URL=`awk -F'"' '/url/{print $2}' "$TEMPFILE"`
+LATEST_VERSION='2.6.10070'
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
