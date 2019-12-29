@@ -22,6 +22,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+## NOTE: The app _must_ be installed at /Applications/
+
 INSTALL_V6_TO='/Applications/1Password 6.app'
 INSTALL_V7_TO='/Applications/1Password 7.app'
 
