@@ -1,11 +1,13 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Dropbox
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	Sat, Jul 14, 2018 4:11
+# Date:	2018-07-14
 
 NAME="$0:t:r"
+
+## @TODO - the installer app may default to /Applications/
 
 INSTALL_TO='/Applications/Dropbox.app'
 
