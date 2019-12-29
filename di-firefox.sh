@@ -1,9 +1,12 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of Firefox from <https://www.mozilla.org/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-25
+
+
+	# must be in /Applications/ for 1Password
 
 NAME="$0:t:r"
 

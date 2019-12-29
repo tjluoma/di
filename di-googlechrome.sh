@@ -14,6 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+	# must be in /Applications/ for 1Password
+
 INSTALL_TO='/Applications/Google Chrome.app'
 
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing

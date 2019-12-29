@@ -5,6 +5,8 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-04
 
+	# must be in /Applications/ for 1Password
+
 INSTALL_TO='/Applications/Brave Browser.app'
 
 NAME="$0:t:r"
