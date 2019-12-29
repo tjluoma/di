@@ -35,7 +35,7 @@ LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e
 URL1=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
 
 	# this URL looks like 'https://binaryfruit.com/download/drivedx/mac/1/bin/DriveDx.1.9.0.zip'
-URL=$(curl -sfLS --head "$URL1" | awk -F' |\r' '/^Location/{print $2}')
+URL=$(curl -sfLS --head "$URL1" | awk -F' |\r' '/^[Ll]ocation/{print $2}')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -45,6 +45,7 @@ then
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	LATEST_BUILD: $LATEST_BUILD
+	URL1: $URL1
 	URL: $URL
 	"
 
