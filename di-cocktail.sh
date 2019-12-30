@@ -20,6 +20,7 @@ DOWNLOAD_PAGE="https://www.maintain.se/cocktail/"
 
 SUMMARY="Cocktail is a general purpose utility for macOS that lets you clean, repair and optimize your Mac. It is a powerful digital toolset that helps hundreds of thousands of Mac users around the world get the most out of their computers every day."
 
+	# Don't share this one, different version for each version of macOS
 INSTALL_TO="/Applications/Cocktail.app"
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
