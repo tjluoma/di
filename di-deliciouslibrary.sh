@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Delicious Library 3.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Delicious Library 3.app'
+else
+	INSTALL_TO='/Applications/Delicious Library 3.app'
+fi
 
 HOMEPAGE="https://www.delicious-monster.com/"
 

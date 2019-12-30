@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/MiniUsage.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/MiniUsage.app'
+else
+	INSTALL_TO='/Applications/MiniUsage.app'
+fi
 
 HOMEPAGE='http://nsek.net/SYW/software/english/miniusage/'
 

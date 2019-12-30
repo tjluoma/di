@@ -28,7 +28,13 @@ then
 	exit 1
 fi
 
-INSTALL_TO='/Applications/Alfred 4.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Alfred 4.app'
+else
+	INSTALL_TO='/Applications/Alfred 4.app'
+fi
 
 RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata)
 

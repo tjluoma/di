@@ -18,7 +18,13 @@ fi
 # https://www.bitfield.se/submarine/download/Submarine_2.0.6.zip
 # https://www.bitfield.se/submarine/changelog.xml
 
-INSTALL_TO='/Applications/Submarine.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Submarine.app'
+else
+	INSTALL_TO='/Applications/Submarine.app'
+fi
 
 XML_FEED='https://www.bitfield.se/submarine/changelog.xml'
 

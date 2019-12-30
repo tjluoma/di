@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Luna Secondary.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Luna Secondary.app'
+else
+	INSTALL_TO='/Applications/Luna Secondary.app'
+fi
 
 XML_FEED='https://s3.lunadisplay.com/downloads/luna-secondary-sparkle.xml'
 

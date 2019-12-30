@@ -22,7 +22,13 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Lockdown.txt'
 
 SUMMARY="Lockdown is an open-source tool for El Capitan that audits and remediates security configuration settings."
 
-INSTALL_TO='/Applications/Lockdown.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Lockdown.app'
+else
+	INSTALL_TO='/Applications/Lockdown.app'
+fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \

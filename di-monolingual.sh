@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Monolingual.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Monolingual.app'
+else
+	INSTALL_TO='/Applications/Monolingual.app'
+fi
 
 XML_FEED='https://ingmarstein.github.io/Monolingual/appcast.xml'
 

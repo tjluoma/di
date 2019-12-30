@@ -16,7 +16,13 @@ fi
 
 XML_FEED="https://updates.binarynights.com/ForkLift3/update.xml"
 
-INSTALL_TO="/Applications/ForkLift.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/ForkLift.app'
+else
+	INSTALL_TO='/Applications/ForkLift.app'
+fi
 
 HOMEPAGE="https://binarynights.com"
 

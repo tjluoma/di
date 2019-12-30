@@ -8,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Vellum.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Vellum.app'
+else
+	INSTALL_TO='/Applications/Vellum.app'
+fi
 
 XML_FEED="https://get.180g.co/updates/vellum/"
 

@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Sourcetree.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Sourcetree.app'
+else
+	INSTALL_TO='/Applications/Sourcetree.app'
+fi
 
 HOMEPAGE="https://www.sourcetreeapp.com"
 

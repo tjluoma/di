@@ -6,7 +6,14 @@
 # Date:	2016-01-19
 
 NAME="$0:t:r"
-INSTALL_TO="/Applications/Cyberduck.app"
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Cyberduck.app'
+else
+	INSTALL_TO='/Applications/Cyberduck.app'
+fi
 
 HOMEPAGE="https://cyberduck.io"
 

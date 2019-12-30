@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Screens Connect.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Screens Connect.app'
+else
+	INSTALL_TO='/Applications/Screens Connect.app'
+fi
 
 HOMEPAGE="http://screensconnect.com/en/"
 

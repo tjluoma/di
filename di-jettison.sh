@@ -23,7 +23,13 @@ fi
 
 XML_FEED='http://www.stclairsoft.com/updates/Jettison.xml'
 
-INSTALL_TO='/Applications/Jettison.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Jettison.app'
+else
+	INSTALL_TO='/Applications/Jettison.app'
+fi
 
 HOMEPAGE="https://www.stclairsoft.com/Jettison/"
 

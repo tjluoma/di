@@ -16,7 +16,13 @@ fi
 
 XML_FEED='https://www.soma-zone.com/BackupLoupe/a/appcast_update.xml'
 
-INSTALL_TO='/Applications/BackupLoupe.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/BackupLoupe.app'
+else
+	INSTALL_TO='/Applications/BackupLoupe.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
 

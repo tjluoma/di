@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Semulov.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Semulov.app'
+else
+	INSTALL_TO='/Applications/Semulov.app'
+fi
 
 XML_FEED='https://kainjow.com/updates/semulov.xml'
 

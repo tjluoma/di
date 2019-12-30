@@ -28,7 +28,14 @@ OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
 function use_v1 {
 
-	INSTALL_TO="/Applications/Bartender.app"
+
+		# This is where the app will be installed or updated.
+	if [[ -d '/Volumes/Applications' ]]
+	then
+		INSTALL_TO='/Volumes/Applications/Bartender.app'
+	else
+		INSTALL_TO='/Applications/Bartender.app'
+	fi
 
 	URL='http://www.macbartender.com/updates/latest/Bartender.zip'
 
@@ -57,7 +64,13 @@ function use_v2 {
 
 		LATEST_BUILD=$(echo "$INFO" | sed 's#.*sparkle:version="##g; s#".*##g;')
 
-		INSTALL_TO="/Applications/Bartender 2.app"
+			# This is where the app will be installed or updated.
+		if [[ -d '/Volumes/Applications' ]]
+		then
+			INSTALL_TO='/Volumes/Applications/Bartender 2.app'
+		else
+			INSTALL_TO='/Applications/Bartender 2.app'
+		fi
 
 		ASTERISK='(Note that version 3 is also available.)'
 		USE_VERSION='2'
@@ -74,7 +87,13 @@ function use_v3 {
 
 		USE_VERSION='3'
 
-		INSTALL_TO='/Applications/Bartender 3.app'
+			# This is where the app will be installed or updated.
+		if [[ -d '/Volumes/Applications' ]]
+		then
+			INSTALL_TO='/Volumes/Applications/Bartender 3.app'
+		else
+			INSTALL_TO='/Applications/Bartender 3.app'
+		fi
 
 				# if you want to install beta releases
 				# create a file (empty, if you like) using this file name/path:

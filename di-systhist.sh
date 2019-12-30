@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/SystHist.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SystHist.app'
+else
+	INSTALL_TO='/Applications/SystHist.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 

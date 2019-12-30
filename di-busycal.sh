@@ -1,4 +1,5 @@
 #!/bin/zsh -f
+
 # Purpose: Download and install the latest version of BusyCal
 #
 # From:	Timothy J. Luoma
@@ -7,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/BusyCal.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/BusyCal.app'
+else
+	INSTALL_TO='/Applications/BusyCal.app'
+fi
 
 HOMEPAGE="https://www.busymac.com/busycal/index.html"
 

@@ -26,7 +26,13 @@ ITUNES_URL='apps.apple.com/us/app/fsnotes/id1277179284'
 
 HOMEPAGE="https://fsnot.es"
 
-INSTALL_TO='/Applications/FSNotes.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/FSNotes.app'
+else
+	INSTALL_TO='/Applications/FSNotes.app'
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then

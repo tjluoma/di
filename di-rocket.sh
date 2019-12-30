@@ -30,7 +30,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Rocket.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Rocket.app'
+else
+	INSTALL_TO='/Applications/Rocket.app'
+fi
 
 HOMEPAGE="https://matthewpalmer.net/rocket/"
 

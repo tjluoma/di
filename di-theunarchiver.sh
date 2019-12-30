@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/The Unarchiver.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/The Unarchiver.app'
+else
+	INSTALL_TO='/Applications/The Unarchiver.app'
+fi
 
 HOMEPAGE="https://macpaw.com/the-unarchiver"
 

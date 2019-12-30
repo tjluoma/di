@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/TaskExplorer.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TaskExplorer.app'
+else
+	INSTALL_TO='/Applications/TaskExplorer.app'
+fi
 
 HOMEPAGE="https://objective-see.com/products/taskexplorer.html"
 

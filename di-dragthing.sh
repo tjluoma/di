@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/DragThing.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/DragThing.app'
+else
+	INSTALL_TO='/Applications/DragThing.app'
+fi
 
 HOMEPAGE="https://www.dragthing.com"
 

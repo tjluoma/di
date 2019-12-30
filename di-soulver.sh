@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Soulver.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Soulver.app'
+else
+	INSTALL_TO='/Applications/Soulver.app'
+fi
 
 HOMEPAGE="https://www.acqualia.com/soulver/"
 

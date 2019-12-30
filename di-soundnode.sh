@@ -13,7 +13,13 @@ NAME="$0:t:r"
 ## USE THIS
 # https://github.com/Soundnode/soundnode-app/releases/latest
 
-INSTALL_TO="/Applications/Soundnode.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Soundnode.app'
+else
+	INSTALL_TO='/Applications/Soundnode.app'
+fi
 
 HOMEPAGE="https://github.com/Soundnode/soundnode-app"
 

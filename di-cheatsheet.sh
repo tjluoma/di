@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/CheatSheet.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/CheatSheet.app'
+else
+	INSTALL_TO='/Applications/CheatSheet.app'
+fi
 
 XML_FEED='https://mediaatelier.com/CheatSheet/feed.php'
 

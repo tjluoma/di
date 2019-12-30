@@ -17,7 +17,13 @@ fi
 	# NOT XML
 FEED='https://desktop-release.notion-static.com/latest-mac.yml'
 
-INSTALL_TO='/Applications/Notion.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Notion.app'
+else
+	INSTALL_TO='/Applications/Notion.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.yml"
 

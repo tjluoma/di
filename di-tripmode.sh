@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/TripMode.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TripMode.app'
+else
+	INSTALL_TO='/Applications/TripMode.app'
+fi
 
 HOMEPAGE="https://www.tripmode.ch"
 

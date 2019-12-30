@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/NetNewsWire.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/NetNewsWire.app'
+else
+	INSTALL_TO='/Applications/NetNewsWire.app'
+fi
 
 	# I assume there will be a non-beta URL soon, but maybe the beta URL will live on?
 XML_FEED='https://ranchero.com/downloads/netnewswire-beta.xml'

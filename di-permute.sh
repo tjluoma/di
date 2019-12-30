@@ -16,7 +16,13 @@ fi
 
 ## ver 2:
 # INSTALL_TO="/Applications/Permute.app"
-INSTALL_TO="/Applications/Permute 3.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Permute 3.app'
+else
+	INSTALL_TO='/Applications/Permute 3.app'
+fi
 
 ## ver 2:
 # XML_FEED='https://trial.charliemonroe.net/permute/updates.xml'

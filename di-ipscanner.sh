@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/IP Scanner.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/IP Scanner.app'
+else
+	INSTALL_TO='/Applications/IP Scanner.app'
+fi
 
 XML_FEED="https://updates.10base-t.com/appcasts/ipscanner_appcast_sandbox.xml"
 

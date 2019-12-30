@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/BLEUnlock.app/'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/BLEUnlock.app'
+else
+	INSTALL_TO='/Applications/BLEUnlock.app'
+fi
 
 URL=$(curl -sfLS "https://api.github.com/repos/ts1/BLEUnlock/releases/latest" \
 		| awk -F'"' '/browser_download_url/{print $4}')

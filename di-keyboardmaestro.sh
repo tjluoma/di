@@ -27,7 +27,13 @@ else
 	RELEASE_NOTES_PREFIX=']'
 fi
 
-INSTALL_TO='/Applications/Keyboard Maestro.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Keyboard Maestro.app'
+else
+	INSTALL_TO='/Applications/Keyboard Maestro.app'
+fi
 
 ENGINE_VERSION=$(defaults read "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo 8.2.4)
 

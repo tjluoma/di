@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/TheTimeMachineMechanic.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TheTimeMachineMechanic.app'
+else
+	INSTALL_TO='/Applications/TheTimeMachineMechanic.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 

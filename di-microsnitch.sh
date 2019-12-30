@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Micro Snitch.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Micro Snitch.app'
+else
+	INSTALL_TO='/Applications/Micro Snitch.app'
+fi
 
 PLIST_URL="https://sw-update.obdev.at/update-feeds/microsnitch-1.plist"
 

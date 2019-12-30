@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/SmartGit.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SmartGit.app'
+else
+	INSTALL_TO='/Applications/SmartGit.app'
+fi
 
 RELEASE_NOTES_URL='https://www.syntevo.com/smartgit/changelog.txt'
 

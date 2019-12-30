@@ -14,8 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-
-INSTALL_TO='/Applications/IINA.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/IINA.app'
+else
+	INSTALL_TO='/Applications/IINA.app'
+fi
 
 XML_FEED='https://www.iina.io/appcast.xml'
 

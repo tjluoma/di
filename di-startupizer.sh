@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Startupizer2.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Startupizer2.app'
+else
+	INSTALL_TO='/Applications/Startupizer2.app'
+fi
 
 HOMEPAGE="http://gentlebytes.com/startupizer/"
 

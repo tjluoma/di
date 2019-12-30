@@ -25,7 +25,13 @@ fi
 
 ## NOTE: after the initial installation the app must be opened to be configured
 
-INSTALL_TO='/Applications/iStat Server.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/iStat Server.app'
+else
+	INSTALL_TO='/Applications/iStat Server.app'
+fi
 
 ## This is an XML Feed but it's not Sparkle
 XML_FEED="https://updates.bjango.com/istatserver3/version.php"

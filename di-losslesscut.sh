@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/LosslessCut.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/LosslessCut.app'
+else
+	INSTALL_TO='/Applications/LosslessCut.app'
+fi
 
 LATEST_RELEASE_URL=$(curl -sfLS --head "https://github.com/mifi/lossless-cut/releases/latest" \
 				| awk -F' |\r' '/^.ocation:/{print $2}' \

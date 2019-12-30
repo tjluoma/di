@@ -14,7 +14,13 @@ DOWNLOAD_PAGE="http://bitbq_changes.s3.amazonaws.com/changes.zip"
 	# no RELEASE_NOTES_URL as the app is EOL
 SUMMARY="Compares two files. (Note that homepage is dead.)"
 
-INSTALL_TO="/Applications/Changes.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Changes.app'
+else
+	INSTALL_TO='/Applications/Changes.app'
+fi
 
 if [[ -e "$HOME/.path" ]]
 then

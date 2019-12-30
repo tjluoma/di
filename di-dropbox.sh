@@ -9,7 +9,13 @@ NAME="$0:t:r"
 
 ## @TODO - the installer app may default to /Applications/
 
-INSTALL_TO='/Applications/Dropbox.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Dropbox.app'
+else
+	INSTALL_TO='/Applications/Dropbox.app'
+fi
 
 HOMEPAGE="https://www.dropbox.com"
 

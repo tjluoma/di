@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/PDF Expert.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/PDF Expert.app'
+else
+	INSTALL_TO='/Applications/PDF Expert.app'
+fi
 
 # https://d1ke680phyeohy.cloudfront.net/release/appcast.xml
 XML_FEED='https://readdle-test-binaries.s3.amazonaws.com/release/appcast.xml'

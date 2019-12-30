@@ -25,7 +25,13 @@ SUMMARY="Audiobook Builder makes it easy to turn your audio CDs and files into a
 URL="http://www.splasm.com/downloads/audiobookbuilder/Audiobook%20Builder.dmg"
 
 	## Where should the app be installed to?
-INSTALL_TO='/Applications/Audiobook Builder.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Audiobook Builder.app'
+else
+	INSTALL_TO='/Applications/Audiobook Builder.app'
+fi
 
 	## if installed, get current version. If not, put in 1.0.0
 INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0')

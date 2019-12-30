@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Script Debugger.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Script Debugger.app'
+else
+	INSTALL_TO='/Applications/Script Debugger.app'
+fi
 
 HOMEPAGE="http://latenightsw.com/"
 

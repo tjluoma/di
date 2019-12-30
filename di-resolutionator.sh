@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Resolutionator.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Resolutionator.app'
+else
+	INSTALL_TO='/Applications/Resolutionator.app'
+fi
 
 XML_FEED='https://manytricks.com/resolutionator/appcast.xml'
 

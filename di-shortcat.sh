@@ -12,7 +12,13 @@ NAME="$0:t:r"
 	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
 XML_FEED='https://shortcatapp.com/updates/appcast.xml'
 
-INSTALL_TO='/Applications/Shortcat.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Shortcat.app'
+else
+	INSTALL_TO='/Applications/Shortcat.app'
+fi
 
 HOMEPAGE="https://shortcatapp.com"
 

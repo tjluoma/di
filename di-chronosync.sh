@@ -14,7 +14,13 @@ else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-INSTALL_TO='/Applications/ChronoSync.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/ChronoSync.app'
+else
+	INSTALL_TO='/Applications/ChronoSync.app'
+fi
 
 URL='https://downloads.econtechnologies.com/updates/CS4_Download.dmg'
 

@@ -8,7 +8,13 @@
 NAME="$0:t:r"
 
 	# Note: it appears in Finder as Mouseposé but in Terminal as Mousepose
-INSTALL_TO='/Applications/Mousepose.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Mousepose.app'
+else
+	INSTALL_TO='/Applications/Mousepose.app'
+fi
 
 HOMEPAGE="https://boinx.com/mousepose/overview/"
 

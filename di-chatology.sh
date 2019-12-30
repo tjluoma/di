@@ -16,7 +16,13 @@ fi
 
 # https://flexibits.com/chatology/appcast.php
 
-INSTALL_TO='/Applications/Chatology.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Chatology.app'
+else
+	INSTALL_TO='/Applications/Chatology.app'
+fi
 
 XML_FEED='https://flexibits.com/chatology/appcast.php'
 

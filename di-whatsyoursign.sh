@@ -22,7 +22,13 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/WhatsYourSign.t
 
 SUMMARY="Verifying a file's cryptographic signature can deduce its origin or trustability. Unfortunately on macs there's no simple way to view a file's signature via the UI. WhatsYourSign adds a menu item to Finder.app. Simply right-, or control-click on any file to display its cryptographic signing information!"
 
-INSTALL_TO='/Applications/WhatsYourSign.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/WhatsYourSign.app'
+else
+	INSTALL_TO='/Applications/WhatsYourSign.app'
+fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \

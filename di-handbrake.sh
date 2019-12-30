@@ -8,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/HandBrake.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/HandBrake.app'
+else
+	INSTALL_TO='/Applications/HandBrake.app'
+fi
 
 HOMEPAGE="https://handbrake.fr"
 

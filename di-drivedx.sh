@@ -18,7 +18,13 @@ XML_FEED="https://binaryfruit.com/download/drivedx/mac/1/updates/?appcast&appNam
 
 HOMEPAGE='https://binaryfruit.com/drivedx'
 
-INSTALL_TO='/Applications/DriveDx.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/DriveDx.app'
+else
+	INSTALL_TO='/Applications/DriveDx.app'
+fi
 
 INFO=$(curl -sfLS "$XML_FEED" \
 	| sed 's#^[	 ]*##g' \

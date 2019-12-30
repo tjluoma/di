@@ -15,7 +15,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Pretzel.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Pretzel.app'
+else
+	INSTALL_TO='/Applications/Pretzel.app'
+fi
 
 HOMEPAGE="https://www.amie-chen.com/pretzel/"
 

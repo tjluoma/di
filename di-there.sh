@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/There.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/There.app'
+else
+	INSTALL_TO='/Applications/There.app'
+fi
 
 LATEST_VERSION=$(curl -sfLS 'https://github.com/therehq/there-desktop/releases.atom' \
 				| fgrep -i 'https://github.com/therehq/there-desktop/releases/tag/' \

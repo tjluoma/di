@@ -27,7 +27,13 @@ fi
 
 XML_FEED='https://black-burn.ch/apps/SCD2/updates/gold.xml?hwni=1'
 
-INSTALL_TO='/Applications/SoundCloud Downloader.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SoundCloud Downloader.app'
+else
+	INSTALL_TO='/Applications/SoundCloud Downloader.app'
+fi
 
 INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1')
 

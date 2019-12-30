@@ -9,7 +9,13 @@
 
 NAME="$0:t"
 
-INSTALL_TO='/Applications/VLC.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/VLC.app'
+else
+	INSTALL_TO='/Applications/VLC.app'
+fi
 
 HOMEPAGE="http://www.videolan.org/vlc/"
 

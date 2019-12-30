@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/LaunchControl.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/LaunchControl.app'
+else
+	INSTALL_TO='/Applications/LaunchControl.app'
+fi
 
 HOMEPAGE="http://www.soma-zone.com/LaunchControl/"
 

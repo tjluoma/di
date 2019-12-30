@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/MKVToolNix.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/MKVToolNix.app'
+else
+	INSTALL_TO='/Applications/MKVToolNix.app'
+fi
 
 	# This URL isn't a real URL. We just need it for the version number
 	# but we can't use the end-result, because the fosshub.com website is

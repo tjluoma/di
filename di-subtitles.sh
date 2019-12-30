@@ -8,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Subtitles.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Subtitles.app'
+else
+	INSTALL_TO='/Applications/Subtitles.app'
+fi
 
 HOMEPAGE="https://subtitlesapp.com/"
 

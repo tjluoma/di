@@ -15,7 +15,13 @@ DOWNLOAD_PAGE="https://xscopeapp.com"
 
 SUMMARY="xScope is a powerful set of tools that are ideal for measuring, inspecting & testing on-screen graphics and layouts in both Mac OS X and iOS."
 
-INSTALL_TO='/Applications/xScope.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/xScope.app'
+else
+	INSTALL_TO='/Applications/xScope.app'
+fi
 
 if [ -e "$HOME/.path" ]
 then

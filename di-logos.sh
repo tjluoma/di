@@ -10,7 +10,13 @@ XML_FEED='https://clientservices.logos.com/update/v1/feed/logos8-mac/stable.xml'
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Logos.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Logos.app'
+else
+	INSTALL_TO='/Applications/Logos.app'
+fi
 
 HOMEPAGE="https://www.logos.com"
 

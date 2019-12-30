@@ -20,7 +20,13 @@ DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnioutliner/"
 
 SUMMARY="Create perfect outlines with a powerful, productive app. This is your all-purpose tool for Mac with smart columns, scriptability, custom styles, templates, and more."
 
-INSTALL_TO='/Applications/OmniOutliner.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniOutliner.app'
+else
+	INSTALL_TO='/Applications/OmniOutliner.app'
+fi
 
 LAUNCH='no'
 

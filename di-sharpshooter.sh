@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Sharpshooter.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Sharpshooter.app'
+else
+	INSTALL_TO='/Applications/Sharpshooter.app'
+fi
 
 HOMEPAGE="http://www.kerlmax.com/products/sharpshooter/"
 

@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/StretchLink.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/StretchLink.app'
+else
+	INSTALL_TO='/Applications/StretchLink.app'
+fi
 
 HOMEPAGE="http://brettterpstra.com/2015/04/28/stretchlink-1-dot-0/"
 

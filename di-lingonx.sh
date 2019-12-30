@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Lingon X.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Lingon X.app'
+else
+	INSTALL_TO='/Applications/Lingon X.app'
+fi
 
 FEED='https://www.peterborgapps.com/updates/lingonx7.plist'
 

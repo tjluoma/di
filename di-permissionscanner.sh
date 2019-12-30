@@ -16,7 +16,13 @@ fi
 
 HOMEPAGE='https://eclecticlight.co/keychains-permissions'
 
-INSTALL_TO='/Applications/PermissionScanner.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/PermissionScanner.app'
+else
+	INSTALL_TO='/Applications/PermissionScanner.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 

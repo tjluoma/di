@@ -14,7 +14,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Catch.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Catch.app'
+else
+	INSTALL_TO='/Applications/Catch.app'
+fi
 
 XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
 

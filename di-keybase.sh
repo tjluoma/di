@@ -19,7 +19,13 @@ SUMMARY="The Keybase app:
 *	is open source
 It's also free, of course."
 
-INSTALL_TO="/Applications/Keybase.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Keybase.app'
+else
+	INSTALL_TO='/Applications/Keybase.app'
+fi
 
 if [[ -e "$HOME/.path" ]]
 then

@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Downie 3.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Downie 3.app'
+else
+	INSTALL_TO='/Applications/Downie 3.app'
+fi
 
 HOMEPAGE="https://software.charliemonroe.net/downie.php"
 

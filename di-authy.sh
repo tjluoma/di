@@ -25,7 +25,13 @@ URL=$(curl --dump-header - -sfS 'https://electron.authy.com/download?channel=sta
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#Authy%20Desktop-##g')
 
-INSTALL_TO='/Applications/Authy Desktop.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Authy Desktop.app'
+else
+	INSTALL_TO='/Applications/Authy Desktop.app'
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then

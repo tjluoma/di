@@ -8,7 +8,13 @@
 NAME="$0:t:r"
 
 	# Note: this script will also install/update 'Airfoil Satellite.app' in the same directory
-INSTALL_TO="/Applications/Airfoil.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Airfoil.app'
+else
+	INSTALL_TO='/Applications/Airfoil.app'
+fi
 
 HOMEPAGE="https://www.rogueamoeba.com/airfoil/"
 

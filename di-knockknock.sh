@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/KnockKnock.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/KnockKnock.app'
+else
+	INSTALL_TO='/Applications/KnockKnock.app'
+fi
 
 HOMEPAGE="https://objective-see.com/products/knockknock.html"
 

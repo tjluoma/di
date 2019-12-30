@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/LiteIcon.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/LiteIcon.app'
+else
+	INSTALL_TO='/Applications/LiteIcon.app'
+fi
 
 XML_FEED='http://www.freemacsoft.net/liteicon/updates.xml'
 

@@ -8,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/GitHub Desktop Classic.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/GitHub Desktop Classic.app'
+else
+	INSTALL_TO='/Applications/GitHub Desktop Classic.app'
+fi
 
 # HOMEPAGE="https://blog.github.com/2015-08-12-github-desktop-is-now-available/"
 

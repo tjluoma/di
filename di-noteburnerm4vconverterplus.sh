@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/NoteBurner M4V Converter Plus.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/NoteBurner M4V Converter Plus.app'
+else
+	INSTALL_TO='/Applications/NoteBurner M4V Converter Plus.app'
+fi
 
 XML_FEED='http://www.noteburner.com/feed-m4v-converter-plus.xml'
 

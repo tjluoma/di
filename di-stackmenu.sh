@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/StackMenu.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/StackMenu.app'
+else
+	INSTALL_TO='/Applications/StackMenu.app'
+fi
 
 HOMEPAGE="http://basilsalad.com/os-x/stack-menu"
 

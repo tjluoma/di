@@ -21,9 +21,13 @@ fi
 # Non Beta
 # https://update.ergonis.com/vck/keycue.xml?s=0
 
-
-
-INSTALL_TO='/Applications/KeyCue.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/KeyCue.app'
+else
+	INSTALL_TO='/Applications/KeyCue.app'
+fi
 
 RELEASE_NOTES_URL='https://www.ergonis.com/products/keycue/history.html'
 

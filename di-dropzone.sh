@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Dropzone 3.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Dropzone 3.app'
+else
+	INSTALL_TO='/Applications/Dropzone 3.app'
+fi
 
 HOMEPAGE="https://aptonic.com"
 

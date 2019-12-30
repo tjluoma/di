@@ -14,7 +14,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/VirtualHostX.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/VirtualHostX.app'
+else
+	INSTALL_TO='/Applications/VirtualHostX.app'
+fi
 
 HOMEPAGE="https://clickontyler.com/virtualhostx/"
 

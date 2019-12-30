@@ -18,7 +18,13 @@ HOMEPAGE='https://marktext.app'
 
 LATEST_RELEASE_URL='https://github.com/marktext/marktext/releases/latest'
 
-INSTALL_TO='/Applications/Mark Text.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Mark Text.app'
+else
+	INSTALL_TO='/Applications/Mark Text.app'
+fi
 
 RELEASE_NOTES_URL=$(curl -sfLS --head 'https://github.com/marktext/marktext/releases/latest' | awk -F' |\r' '/Location:/{print $2}')
 

@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Grammarly.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Grammarly.app'
+else
+	INSTALL_TO='/Applications/Grammarly.app'
+fi
 
 	## URL outputs: something like this:
 	# {"pub_date":"2019-08-02T16:37:14+00:00","url":"https://download-editor.grammarly.com/osx/Grammarly1.5.52-osx.zip","version":"1.5.52"}

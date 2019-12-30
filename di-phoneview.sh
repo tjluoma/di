@@ -23,7 +23,13 @@ DOWNLOAD_PAGE="https://www.ecamm.com/mac/phoneview/"
 
 SUMMARY="Get your iOS messages, voicemail and data on your Mac. Just connect your device to browse, search and archive. (Note: you must login to download a non-demo version.)"
 
-INSTALL_TO='/Applications/PhoneView.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/PhoneView.app'
+else
+	INSTALL_TO='/Applications/PhoneView.app'
+fi
 
 NAME="$0:t:r"
 

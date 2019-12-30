@@ -14,7 +14,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/OmniDiskSweeper.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniDiskSweeper.app'
+else
+	INSTALL_TO='/Applications/OmniDiskSweeper.app'
+fi
 
 HOMEPAGE="https://www.omnigroup.com/more"
 

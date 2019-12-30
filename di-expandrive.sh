@@ -8,7 +8,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/ExpanDrive.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/ExpanDrive.app'
+else
+	INSTALL_TO='/Applications/ExpanDrive.app'
+fi
 
 	# Do Not Use: http://updates.expandrive.com/apps/expandrive.xml
 

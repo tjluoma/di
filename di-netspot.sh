@@ -9,7 +9,13 @@ NAME="$0:t:r"
 
 XML_FEED='https://www.netspotapp.com/updates/netspot2-appcast.xml'
 
-INSTALL_TO='/Applications/NetSpot.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/NetSpot.app'
+else
+	INSTALL_TO='/Applications/NetSpot.app'
+fi
 
 HOMEPAGE="https://www.netspotapp.com"
 

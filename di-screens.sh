@@ -20,7 +20,13 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_TO='/Applications/Screens 4.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Screens 4.app'
+else
+	INSTALL_TO='/Applications/Screens 4.app'
+fi
 
 XML_FEED="https://updates.edovia.com/com.edovia.screens4.mac/appcast.xml"
 

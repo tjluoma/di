@@ -16,7 +16,13 @@ fi
 
 HOMEPAGE='https://eclecticlight.co/taccy-signet-precize-alifix-utiutility-alisma/'
 
-INSTALL_TO='/Applications/Precize.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Precize.app'
+else
+	INSTALL_TO='/Applications/Precize.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 

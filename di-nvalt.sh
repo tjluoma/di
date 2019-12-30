@@ -14,7 +14,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/nvALT.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/nvALT.app'
+else
+	INSTALL_TO='/Applications/nvALT.app'
+fi
 
 HOMEPAGE="http://brettterpstra.com/projects/nvalt/"
 

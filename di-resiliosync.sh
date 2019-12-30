@@ -9,7 +9,13 @@
 	# 2018-08-02 - this is what the newest version available calls itself
 #INSTALL_TO='/Applications/BitTorrent Sync.app'
 
-INSTALL_TO='/Applications/Resilio Sync.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Resilio Sync.app'
+else
+	INSTALL_TO='/Applications/Resilio Sync.app'
+fi
 
 HOMEPAGE="https://www.resilio.com"
 

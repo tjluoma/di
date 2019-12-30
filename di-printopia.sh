@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Printopia.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Printopia.app'
+else
+	INSTALL_TO='/Applications/Printopia.app'
+fi
 
 XML_FEED="https://www.decisivetactics.com/api/checkupdate?app_id=com.decisivetactics.printopia"
 

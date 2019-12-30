@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Kiwi for Gmail.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Kiwi for Gmail.app'
+else
+	INSTALL_TO='/Applications/Kiwi for Gmail.app'
+fi
 
 XML_FEED='https://rink.hockeyapp.net/api/2/apps/865041dca0724e00accae3b90b66c63a'
 

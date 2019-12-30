@@ -20,7 +20,13 @@ DOWNLOAD_PAGE="http://www.jinx.de/SmartSleep_files/SmartSleep.current.dmg"
 
 SUMMARY="Sleep your Mac differently depending on the battery level."
 
-INSTALL_TO="/Applications/SmartSleep.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SmartSleep.app'
+else
+	INSTALL_TO='/Applications/SmartSleep.app'
+fi
 
 XML_FEED="https://www.jinx.de/SmartSleep.update.11.x86_64.xml"
 

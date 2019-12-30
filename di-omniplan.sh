@@ -14,7 +14,13 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/OmniPlan.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniPlan.app'
+else
+	INSTALL_TO='/Applications/OmniPlan.app'
+fi
 
 HOMEPAGE="https://www.omnigroup.com/omniplan"
 

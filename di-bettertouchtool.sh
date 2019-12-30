@@ -20,7 +20,13 @@ DOWNLOAD_PAGE="https://bettertouchtool.net/releases/BetterTouchTool.zip"
 
 SUMMARY="BetterTouchTool is a great, feature packed app that allows you to customize various input devices on your Mac."
 
-INSTALL_TO="/Applications/BetterTouchTool.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/BetterTouchTool.app'
+else
+	INSTALL_TO='/Applications/BetterTouchTool.app'
+fi
 
 RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
 

@@ -16,7 +16,13 @@ fi
 
 HOMEPAGE='https://tclementdev.com/timemachineeditor/'
 
-INSTALL_TO='/Applications/TimeMachineEditor.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TimeMachineEditor.app'
+else
+	INSTALL_TO='/Applications/TimeMachineEditor.app'
+fi
 
 FEED='https://tclementdev.com/timemachineeditor/updates2.plist'
 

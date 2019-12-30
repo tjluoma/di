@@ -6,7 +6,14 @@
 # Date:	2016-01-19, updated and verified 2018-08
 
 NAME="$0:t:r"
-INSTALL_TO="/Applications/Übersicht.app"
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Übersicht.app'
+else
+	INSTALL_TO='/Applications/Übersicht.app'
+fi
 
 HOMEPAGE="http://tracesof.net/uebersicht/"
 

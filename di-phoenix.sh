@@ -14,7 +14,14 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Phoenix.app'
+ 	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Phoenix.app'
+else
+	INSTALL_TO='/Applications/Phoenix.app'
+fi
+
 # Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
 
 HOMEPAGE="https://twitterrific.com/mac"

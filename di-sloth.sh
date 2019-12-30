@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Sloth.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Sloth.app'
+else
+	INSTALL_TO='/Applications/Sloth.app'
+fi
 
 HOMEPAGE="https://sveinbjorn.org/sloth"
 

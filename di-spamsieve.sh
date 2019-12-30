@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/SpamSieve.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SpamSieve.app'
+else
+	INSTALL_TO='/Applications/SpamSieve.app'
+fi
 
 HOMEPAGE="https://c-command.com/spamsieve/"
 

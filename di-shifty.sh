@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Shifty.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Shifty.app'
+else
+	INSTALL_TO='/Applications/Shifty.app'
+fi
 
 HOMEPAGE="https://shifty.natethompson.io"
 

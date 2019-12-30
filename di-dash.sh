@@ -6,7 +6,14 @@
 # Date:	2018-08-20
 
 NAME="$0:t:r"
-INSTALL_TO='/Applications/Dash.app'
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Dash.app'
+else
+	INSTALL_TO='/Applications/Dash.app'
+fi
 
 HOMEPAGE="https://kapeli.com/dash"
 

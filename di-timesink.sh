@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Time Sink.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Time Sink.app'
+else
+	INSTALL_TO='/Applications/Time Sink.app'
+fi
 
 XML_FEED='https://manytricks.com/timesink/appcast.xml'
 

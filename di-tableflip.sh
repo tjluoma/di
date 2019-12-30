@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/TableFlip.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TableFlip.app'
+else
+	INSTALL_TO='/Applications/TableFlip.app'
+fi
 
 XML_FEED="https://update.christiantietze.de/tableflip/v1/release.xml"
 

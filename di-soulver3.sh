@@ -16,7 +16,13 @@ fi
 
 XML_FEED='https://soulver.app/mac/sparkle/appcast.xml'
 
-INSTALL_TO='/Applications/Soulver 3.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Soulver 3.app'
+else
+	INSTALL_TO='/Applications/Soulver 3.app'
+fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| fgrep -vi 'delta' \

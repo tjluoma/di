@@ -22,7 +22,13 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Ostiarius.txt'
 
 SUMMARY="Ostiarius is tool for El Capitan that blocks unsigned internet binaries from executing. Though OS X's Gatekeeper attempts to provide this functionality, I discovered it was trivial to bypass. The bypass was detailed in: 'Gatekeeper Exposed'."
 
-INSTALL_TO='/Applications/Ostiarius.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Ostiarius.app'
+else
+	INSTALL_TO='/Applications/Ostiarius.app'
+fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \

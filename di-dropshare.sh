@@ -25,7 +25,13 @@ DOWNLOAD_PAGE="https://dropshare.app/download"
 
 SUMMARY="Upload Screen Shots, Screen Recordings, files, literally anything to you favorite hosting provider and share it immediately with anyone."
 
-INSTALL_TO='/Applications/Dropshare 5.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Dropshare 5.app'
+else
+	INSTALL_TO='/Applications/Dropshare 5.app'
+fi
 
 INFO=($(curl -sfLS $XML_FEED \
 		| egrep '<sparkle:releaseNotesLink>|<enclosure url' \

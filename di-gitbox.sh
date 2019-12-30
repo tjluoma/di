@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Gitbox.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Gitbox.app'
+else
+	INSTALL_TO='/Applications/Gitbox.app'
+fi
 
 HOMEPAGE="http://gitboxapp.com/"
 

@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Shotcut.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Shotcut.app'
+else
+	INSTALL_TO='/Applications/Shotcut.app'
+fi
 
 LATEST_URL=$(curl --head -sfLS "https://github.com/mltframework/shotcut/releases/latest" \
 	| awk -F' ' '/^Location:/{print $NF}' \

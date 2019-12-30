@@ -16,7 +16,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/TogglDesktop.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/TogglDesktop.app'
+else
+	INSTALL_TO='/Applications/TogglDesktop.app'
+fi
 
 RELEASE_NOTES_URL='https://toggl.github.io/toggldesktop/'
 

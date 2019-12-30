@@ -14,7 +14,13 @@ DOWNLOAD_PAGE="https://update.mailplaneapp.com/mailplane_4.php"
 
 SUMMARY="The best way to use Gmail on your Mac."
 
-INSTALL_TO="/Applications/Mailplane.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Mailplane.app'
+else
+	INSTALL_TO='/Applications/Mailplane.app'
+fi
 
 OS_VER=$(sw_vers -productVersion)
 

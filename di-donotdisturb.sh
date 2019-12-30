@@ -22,7 +22,13 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/DoNotDisturb.tx
 
 SUMMARY="Physical access (or “evil maid”) attacks are some of the most insidious threats faced by those of us who travel with our Macs. Do Not Disturb (DND) is a free, open-source utility that aims to detect and alert you of such attacks."
 
-INSTALL_TO='/Applications/Do Not Disturb.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Do Not Disturb.app'
+else
+	INSTALL_TO='/Applications/Do Not Disturb.app'
+fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS 'https://objective-see.com/products/dnd.html' \
 		| gunzip --force \

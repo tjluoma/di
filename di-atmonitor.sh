@@ -18,7 +18,13 @@ zmodload zsh/stat
 
 COUNT='0'
 
-INSTALL_TO='/Applications/atMonitor.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/atMonitor.app'
+else
+	INSTALL_TO='/Applications/atMonitor.app'
+fi
 
 function check_permissions {
 

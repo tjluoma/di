@@ -15,7 +15,13 @@ else
 fi
 
 	## Note: the app wants to call itself 'Launchpad Manager Yosemite' but that's gross, so… no.
-INSTALL_TO='/Applications/Launchpad Manager.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Launchpad Manager.app'
+else
+	INSTALL_TO='/Applications/Launchpad Manager.app'
+fi
 
 XML_FEED='http://launchpadmanager.com/appyos/sparkle.rss'
 

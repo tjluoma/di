@@ -16,7 +16,13 @@ fi
 
 XML_FEED="https://updates.devmate.com/com.runtimesharks.dndme.xml"
 
-INSTALL_TO='/Applications/DND Me.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/DND Me.app'
+else
+	INSTALL_TO='/Applications/DND Me.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 

@@ -16,7 +16,13 @@ fi
 
 HOMEPAGE='https://fireball.studio/oneswitch'
 
-INSTALL_TO='/Applications/One Switch.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/One Switch.app'
+else
+	INSTALL_TO='/Applications/One Switch.app'
+fi
 
 XML_FEED='https://updates.devmate.com/studio.fireball.OneSwitch.xml'
 

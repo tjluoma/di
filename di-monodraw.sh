@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Monodraw.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Monodraw.app'
+else
+	INSTALL_TO='/Applications/Monodraw.app'
+fi
 
 XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"        # There does not seem to be a non-beta appcast URL
 

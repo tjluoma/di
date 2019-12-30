@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Key Codes.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Key Codes.app'
+else
+	INSTALL_TO='/Applications/Key Codes.app'
+fi
 
 HOMEPAGE="https://manytricks.com/keycodes/"
 

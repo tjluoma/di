@@ -14,7 +14,13 @@ else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-INSTALL_TO='/Applications/App Tamer.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/App Tamer.app'
+else
+	INSTALL_TO='/Applications/App Tamer.app'
+fi
 
 	## alternatively:
 	# XML_FEED='https://www.stclairsoft.com/cgi-bin/sparkle.cgi?AT&id=A483E71F448B'

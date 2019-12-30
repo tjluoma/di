@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Cisdem OCRWizard.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Cisdem OCRWizard.app'
+else
+	INSTALL_TO='/Applications/Cisdem OCRWizard.app'
+fi
 
 # There's no feed for this AND the URL does not necessarily reflect the version number
 # so we have to get a bit creative.

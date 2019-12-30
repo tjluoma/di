@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/KeepingYouAwake.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/KeepingYouAwake.app'
+else
+	INSTALL_TO='/Applications/KeepingYouAwake.app'
+fi
 
 HOMEPAGE="https://newmarcel.github.io/KeepingYouAwake/"
 

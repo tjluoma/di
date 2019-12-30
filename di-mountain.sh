@@ -7,7 +7,13 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Mountain.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Mountain.app'
+else
+	INSTALL_TO='/Applications/Mountain.app'
+fi
 
 XML_FEED='https://appgineers.de/mountain/files/mountaincast.xml'
 

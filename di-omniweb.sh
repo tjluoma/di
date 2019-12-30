@@ -14,7 +14,13 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="/Applications/OmniWeb.app"
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniWeb.app'
+else
+	INSTALL_TO='/Applications/OmniWeb.app'
+fi
 
 HOMEPAGE="https://www.omnigroup.com/more"
 

@@ -17,7 +17,13 @@ fi
 	## 2019-09-04 This one is apparently outdated now --> XML_FEED='https://max.codes/latest/feed.xml'
 XML_FEED='https://max.codes/latest/update.xml'
 
-INSTALL_TO='/Applications/Latest.app'
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Latest.app'
+else
+	INSTALL_TO='/Applications/Latest.app'
+fi
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
