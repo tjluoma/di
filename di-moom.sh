@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of Moom from <https://manytricks.com/moom/>
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,15 @@
 # Date:	2016-05-11
 
 NAME="$0:t:r"
+
+if [[ -e "/Applications/Moom.app/Contents/_MASReceipt/receipt" ]]
+then
+	echo "$NAME: '/Applications/Moom.app' was installed from the Mac App Store and cannot be updated by this script."
+	echo "	See <https://apps.apple.com/us/app/moom/id419330170?mt=12> or"
+	echo "	<macappstore://apps.apple.com/us/app/moom/id419330170>"
+	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+	exit 0
+fi
 
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
@@ -29,7 +38,7 @@ if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
@@ -81,15 +90,6 @@ then
 	fi
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
-
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/moom/id419330170?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/moom/id419330170>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
 
 	FIRST_INSTALL='no'
 
