@@ -9,6 +9,8 @@ NAME="$0:t:r"
 
 # It doesn't really matter which one we check, they both have the same version information
 #INSTALL_TO="/Applications/Karabiner-EventViewer.app"
+
+	# Installed via pkg
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
 HOMEPAGE="https://pqrs.org/osx/karabiner/"
