@@ -7,6 +7,7 @@
 
 NAME="$0:t:r"
 
+	# Installed by installer
 INSTALL_TO='/Applications/Little Snitch Configuration.app'
 
 HOMEPAGE="https://www.obdev.at/products/littlesnitch/index.html"
