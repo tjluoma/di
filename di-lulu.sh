@@ -22,6 +22,7 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/LuLu.txt'
 
 SUMMARY="In today's connected world, it is rare to find an application or piece of malware that doesn't talk to a remote server. Let's control this! LuLu is the free, shared-source macOS firewall that aims to block unknown outgoing connections, unless explicitly approved by the user."
 
+	# Installed by installer
 INSTALL_TO='/Applications/Lulu.app'
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
