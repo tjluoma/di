@@ -120,7 +120,7 @@ then
 	&& osascript -e 'tell application "Charles" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Charles.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Charles.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Accepting EULA and mounting '$FILENAME':"

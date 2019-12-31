@@ -128,7 +128,7 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/TripMode.${INSTALLED_VERSION}-${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/TripMode.${INSTALLED_VERSION}-${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME:  Installing $MNTPNT/TripMode.app to $INSTALL_TO"

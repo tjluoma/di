@@ -38,13 +38,13 @@ function check_bytes { ACTUAL_BYTES=$(zstat -L +size "$FILENAME" 2>/dev/null || 
 function trash_our_files {
 
 		# if the file FILENAME exists, put it in the trash with a warning to leave it alone
-	[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$HOME/.Trash/$FILENAME:t:r.Corrupted-Do-Not-Use.$ACTUAL_SHASUM256.zip"
+	[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/$FILENAME:t:r.Corrupted-Do-Not-Use.$ACTUAL_SHASUM256.zip"
 
 		# put the checksum file in the trash too
-	[[ -e "$SHASUM_FILENAME" ]] && mv -vf "$SHASUM_FILENAME" "$HOME/.Trash/"
+	[[ -e "$SHASUM_FILENAME" ]] && mv -vf "$SHASUM_FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
 		# if we created a $RELEASE_NOTES_FILE, then we move that to the trash also
-	[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
+	[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$INSTALL_TO:h/.Trashes/$UID/"
 
 }
 
@@ -501,10 +501,10 @@ then
 	&& pkill -f "$PRINTOPIA_SERVER"
 
 		# tell the user we are trashing their old installation
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
 		# move the existing installation to the trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	if [[ -e "$INSTALL_TO" ]]
 	then

@@ -135,28 +135,28 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Airfoil Satellite" to quit'
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash/'."
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
 		exit 1
 	fi
 
-	mv -vf "$INSTALL_TO:h/Airfoil Satellite.app" "$HOME/.Trash/Airfoil Satellite.$INSTALLED_VERSION.app" \
+	mv -vf "$INSTALL_TO:h/Airfoil Satellite.app" "$INSTALL_TO:h/.Trashes/$UID/Airfoil Satellite.$INSTALLED_VERSION.app" \
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO:h/Airfoil Satellite.app' to '$HOME/.Trash/'."
+		echo "$NAME: failed to move existing '$INSTALL_TO:h/Airfoil Satellite.app' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
 		exit 1
 	fi

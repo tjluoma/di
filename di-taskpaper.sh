@@ -141,7 +141,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/TaskPaper.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/TaskPaper.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/TaskPaper.app to $INSTALL_TO"

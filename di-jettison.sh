@@ -121,7 +121,7 @@ then
 	&& osascript -e 'tell application "Jettison" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Jettison.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Jettison.$INSTALLED_VERSION.app"
 fi
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \

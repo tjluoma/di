@@ -132,7 +132,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 	pgrep -qx "$INSTALL_TO:t:r" && LAUNCH='yes' && killall "$INSTALL_TO:t:r"
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.$INSTALLED_BUILD.$RANDOM.app"
+	mv -f "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.$INSTALLED_BUILD.$RANDOM.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

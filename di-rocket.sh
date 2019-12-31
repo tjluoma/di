@@ -215,7 +215,7 @@ function move_old_version {
 		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 			# move installed version to trash
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 		EXIT="$?"
 
@@ -284,9 +284,9 @@ then
 	else
 		echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-		mv -fv "$FILENAME" "$HOME/.Trash/"
+		mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
-		mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+		mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
 
 		exit 0
 

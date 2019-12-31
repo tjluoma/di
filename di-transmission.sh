@@ -125,7 +125,7 @@ then
 	# 	&& osascript -e 'tell application "Transmission" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Transmission.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Transmission.$INSTALLED_VERSION.app"
 fi
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \

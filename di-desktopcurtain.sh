@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Desktop Curtain
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,15 @@
 # Date:	2016-02-01
 
 NAME="$0:t:r"
+
+if [[ -e "/Applications/Desktop Curtain.app/Contents/_MASReceipt/receipt" ]]
+then
+	echo "$NAME: '/Applications/Desktop Curtain.app' was installed from the Mac App Store and cannot be updated by this script."
+	echo "	See <https://apps.apple.com/us/app/desktop-curtain/id414088151?mt=12> or"
+	echo "	<macappstore://apps.apple.com/us/app/desktop-curtain/id414088151>"
+	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+	exit 0
+fi
 
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
@@ -77,14 +86,6 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/desktop-curtain/id414088151?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/desktop-curtain/id414088151>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
 
 fi
 
@@ -136,7 +137,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

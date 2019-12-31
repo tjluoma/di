@@ -79,7 +79,7 @@ function check_install_location {
 		else # no 'trash' command
 				# move the file to the trash, renaming it to use the $INSTALLED_VERSION and $INSTALLED_BUILD variables
 				# if those variables are unset use zero (0) instead
-			sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION-0}.${INSTALLED_BUILD-0}.$INSTALL_TO:e"
+			sudo mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION-0}.${INSTALLED_BUILD-0}.$INSTALL_TO:e"
 		fi # 'trash' command
 
 			# Check again to see if we've successfully removed it
@@ -205,9 +205,9 @@ then
 	else
 		echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-		mv -fv "$FILENAME" "$HOME/.Trash/"
+		mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
-		mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+		mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
 
 	fi
 
@@ -248,9 +248,9 @@ then
 	else
 		echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-		mv -fv "$FILENAME" "$HOME/.Trash/"
+		mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
-		mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+		mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
 
 		exit 0
 
@@ -304,16 +304,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
 
 		exit 1
 	fi

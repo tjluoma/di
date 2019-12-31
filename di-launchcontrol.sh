@@ -110,7 +110,7 @@ EXIT="$?"
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vn "$INSTALL_TO" "$HOME/.Trash/LaunchControl-$INSTALLED_VERSION.app"
+	mv -vn "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/LaunchControl-$INSTALLED_VERSION.app"
 fi
 
 	# Unpack and Install the .tbz2 file to /Applications/

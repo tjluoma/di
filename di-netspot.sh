@@ -139,7 +139,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/NetSpot.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/NetSpot.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO"

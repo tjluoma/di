@@ -121,7 +121,7 @@ then
 	&& osascript -e 'tell application "Hocus Focus" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Hocus Focus.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Hocus Focus.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"

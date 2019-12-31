@@ -96,16 +96,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
 
 		exit 1
 	fi
@@ -119,9 +119,9 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application "EFIcienC" to quit"
 
-	echo "$NAME: Moving existing (old) '/Applications/EFIcienC.app' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '/Applications/EFIcienC.app' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-	mv -vf "/Applications/EFIcienC.app" "$HOME/.Trash/EFIcienC.is.now.SilentKnight.$$.app"
+	mv -vf "/Applications/EFIcienC.app" "$INSTALL_TO:h/.Trashes/$UID/EFIcienC.is.now.SilentKnight.$$.app"
 fi
 
 

@@ -120,7 +120,7 @@ then
 	&& osascript -e 'tell application "Logos" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Logos.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Logos.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/Logos.app to $INSTALL_TO"

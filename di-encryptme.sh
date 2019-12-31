@@ -130,7 +130,7 @@ then
 	&& killall EncryptMe
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/EncryptMe.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/EncryptMe.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"

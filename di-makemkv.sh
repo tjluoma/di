@@ -149,7 +149,7 @@ fi
 if [ -e "$INSTALL_TO" ]
 then
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/MakeMKV.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/MakeMKV.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $MNTPNT/MakeMKV.app to $INSTALL_TO"

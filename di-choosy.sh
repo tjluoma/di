@@ -128,9 +128,9 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$HOME/.Trash/"
+	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
 
 	exit 0
 

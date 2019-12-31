@@ -126,7 +126,7 @@ then
 		&& LAUNCH='yes' \
 		&& osascript -e 'tell application "MailMate" to quit'
 
-		mv "$INSTALL_TO" "$HOME/.Trash/MailMate.$INSTALLED_VERSION.app"
+		mv "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/MailMate.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h"

@@ -119,13 +119,13 @@ then
 		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 			# move installed version to trash
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
 		if [[ "$EXIT" != "0" ]]
 		then
-			echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+			echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
 			exit 1
 		fi
 	fi
@@ -137,7 +137,7 @@ then
 	TIME=`strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS"`
 
 		# Move what should be empty directories to the trash
-	mv -vf "$EXTRACTED_TO" "$HOME/.Trash/$EXTRACTED_TO:t_${TIME}"
+	mv -vf "$EXTRACTED_TO" "$INSTALL_TO:h/.Trashes/$UID/$EXTRACTED_TO:t_${TIME}"
 
 	[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 

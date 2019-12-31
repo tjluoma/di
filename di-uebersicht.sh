@@ -120,7 +120,7 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$INSTALL_TO:h/.Trashes/$UID/\"."
 
 	## I couldn't get this to work, but the 'osascript' line does quit the app,
 	## so I'm suggesting that instead.
@@ -139,14 +139,14 @@ then
 		LAUNCH='yes'
 	fi
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.$RANDOM.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.$RANDOM.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
 
 		exit 1
 	fi

@@ -131,7 +131,7 @@ cd "$FILENAME:h"
 
 ditto --noqtn -xk -v --rsrc --extattr "$FILENAME" . || die "ditto failed"
 
-mv -f "$FILENAME" "$HOME/.Trash/"
+mv -f "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
 mv -vf "BusyCal Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 
@@ -152,7 +152,7 @@ then
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# If there's an existing installation, move it to the trash
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
 	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'

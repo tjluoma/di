@@ -175,7 +175,7 @@ then
 	pgrep -qx 'Keyboard Maestro' && pkill -x 'Keyboard Maestro'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
 
 fi
 

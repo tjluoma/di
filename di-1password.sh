@@ -334,23 +334,23 @@ else
 		&& LAUNCH='yes' \
 		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
 		if [[ "$EXIT" != "0" ]]
 		then
 
-			echo "$NAME: failed to move existing '$INSTALL_TO' to $HOME/.Trash/"
+			echo "$NAME: failed to move existing '$INSTALL_TO' to $INSTALL_TO:h/.Trashes/$UID/"
 
 			read -t 30 "?Do you want to use ’sudo’ to try to move the outdated ‘$INSTALL_TO’? [y/N] " ANSWER
 
 			case "$ANSWER" in
 
 				Y*|y*)
-						sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+						sudo mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 						EXIT="$?"
 

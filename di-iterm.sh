@@ -225,9 +225,9 @@ then
 else
 	echo "$NAME: '$FILENAME' is NOT a valid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$HOME/.Trash/"
+	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
 
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
+	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
 
 	die
 
@@ -255,15 +255,15 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
 
 		die
 	fi
