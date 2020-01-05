@@ -5,17 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-01-02
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Displays.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Displays.app'
-	TRASH="/.Trashes/$UID"
-fi
+INSTALL_TO='/Applications/Displays.app'
 
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -28,8 +20,6 @@ fi
 
 # URL='https://www.jibapps.com/ressources/displays/files/Displays.dmg'
 # https://www.jibapps.com/apps/displays/
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 XML_FEED='https://www.jibapps.com/ressources/displays/appcast.xml'
 
