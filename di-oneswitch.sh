@@ -18,6 +18,8 @@ HOMEPAGE='https://fireball.studio/oneswitch'
 
 INSTALL_TO='/Applications/One Switch.app'
 
+	# 2020-01-05 - 'OneSwitch-1.9.1_216.dmg' was not in the feed when MacUpdater had it
+	# 	so I manually updated
 XML_FEED='https://updates.devmate.com/studio.fireball.OneSwitch.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
