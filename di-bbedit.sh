@@ -14,13 +14,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/BBEdit.app'
-else
-	INSTALL_TO='/Applications/BBEdit.app'
-fi
+INSTALL_TO='/Applications/BBEdit.app'
 
 	# Not current in use, but useful reference info
 SUMMARY='BBEdit is the leading professional HTML and text editor for macOS. It doesn’t suck.®'
