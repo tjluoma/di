@@ -90,7 +90,8 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BU
 if (( $+commands[lynx] ))
 then
 
-	( echo "$NAME: Release Notes for $INSTALL_TO:t:r (${LATEST_VERSION}/${LATEST_BUILD}):\n\n${RELEASE_NOTES}\n\nSource: ${FEED}\nURL: $URL" ) | tee "$FILENAME:r.txt"
+	( echo "$NAME: Release Notes for $INSTALL_TO:t:r (${LATEST_VERSION}/${LATEST_BUILD}):\n\n${RELEASE_NOTES}\n\nSource: ${FEED}\nURL: $URL" ) \
+	| tee "$FILENAME:r.txt"
 
 fi
 
@@ -109,7 +110,27 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TRASH/"
+
+	mv -fv "$FILENAME:r".* "$TRASH/"
+
+	exit 0
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -132,18 +153,18 @@ then
 
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e "quit application \"$INSTALL_TO:t:r\""
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

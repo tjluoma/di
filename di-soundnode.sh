@@ -17,9 +17,13 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Soundnode.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Soundnode.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 HOMEPAGE="https://github.com/Soundnode/soundnode-app"
 
@@ -125,7 +129,7 @@ EXIT="$?"
 # Note: while macOS does not have a separate `xz` command, the `tar` command apparently understands how to deal
 # with a .tar.xz file, going back at least to 10.11
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unpacking '$FILENAME' to '$UNZIP_TO':"
 
@@ -156,13 +160,13 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'"
 		exit 1
 	fi
 fi

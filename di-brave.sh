@@ -6,7 +6,6 @@
 # Date:	2018-08-04
 
 	# must be in /Applications/ for 1Password
-
 INSTALL_TO='/Applications/Brave Browser.app'
 
 NAME="$0:t:r"
@@ -140,7 +139,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
@@ -151,7 +150,6 @@ then
 
 		exit 1
 	fi
-
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

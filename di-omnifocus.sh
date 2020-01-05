@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest OmniFocus 2 or 3 (depending on which is installed)
 #
 # From:	Timothy J. Luoma
@@ -11,9 +11,13 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/OmniFocus.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/OmniFocus.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 HOMEPAGE="https://www.omnigroup.com/omnifocus"
 
@@ -151,7 +155,8 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Installing $FILENAME to $UNZIP_TO"
 
@@ -173,13 +178,13 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
 		exit 1
 	fi
 fi

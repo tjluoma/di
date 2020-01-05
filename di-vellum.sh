@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Vellum
 #
 # From:	Tj Luo.ma
@@ -12,9 +12,13 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Vellum.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Vellum.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 XML_FEED="https://get.180g.co/updates/vellum/"
 
@@ -111,8 +115,7 @@ fi
 #		This is where we do the actual download
 #
 
-	# Download the latest zip
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -123,9 +126,34 @@ EXIT="$?"
 
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && exit 0
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TRASH/"
+
+	mv -fv "$FILENAME:r".* "$TRASH/"
+
+	exit 0
+
+fi
+
+## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -145,16 +173,21 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$INSTALL_TO:h/.Trashes/$UID/\"."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi
@@ -178,7 +211,7 @@ else
 	exit 1
 fi
 
-exit 0
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 #
 #EOF

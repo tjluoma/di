@@ -5,6 +5,18 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-10
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniGraffle.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/OmniGraffle.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
@@ -13,14 +25,6 @@ else
 fi
 
 NAME="$0:t:r"
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OmniGraffle.app'
-else
-	INSTALL_TO='/Applications/OmniGraffle.app'
-fi
 
 HOMEPAGE="https://www.omnigroup.com/omnigraffle"
 
@@ -134,7 +138,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unpacking '$FILENAME' to '$UNZIP_TO':"
 
@@ -156,13 +160,13 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
 		exit 1
 	fi
 fi

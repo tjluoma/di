@@ -19,9 +19,13 @@ SUMMARY="xScope is a powerful set of tools that are ideal for measuring, inspect
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/xScope.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/xScope.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [ -e "$HOME/.path" ]
 then
@@ -147,16 +151,16 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$$TRASH/$UID/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$$TRASH/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $$TRASH/$UID/"
 
 		exit 1
 	fi

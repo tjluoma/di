@@ -5,6 +5,18 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-10-15
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/BBEdit.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/BBEdit.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -12,14 +24,6 @@ then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
-fi
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/BBEdit.app'
-else
-	INSTALL_TO='/Applications/BBEdit.app'
 fi
 
 	# Not current in use, but useful reference info
@@ -237,6 +241,8 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 ################################################################################################################################################
 
 ## The XML_FEED includes a shasum for the latest version, so we should use that to check that we got what we expected
@@ -270,11 +276,11 @@ then
 		echo "$NAME: checksum failed (\$SHASUM_EXIT = $SHASUM_EXIT)"
 		echo "$NAME: Moving '$FILENAME' and related files to the Trash, as they may be unsafe."
 
-		[[ -e "$FILENAME" ]] && mv -vf "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+		[[ -e "$FILENAME" ]] && mv -vf "$FILENAME" "$TRASH/"
 
-		[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$INSTALL_TO:h/.Trashes/$UID/"
+		[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$TRASH/"
 
-		[[ -e "$SHA256_FILE" ]] && mv -vf "$SHA256_FILE" "$INSTALL_TO:h/.Trashes/$UID/"
+		[[ -e "$SHA256_FILE" ]] && mv -vf "$SHA256_FILE" "$TRASH/"
 
 		exit 1
 	fi
@@ -300,31 +306,26 @@ else
 	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-################################################################################################################################################
-##
-##	Once the DMG is mounted, we should move the existing version of BBEdit out of the way, if it exists.
-##
-
 if [[ -e "$INSTALL_TO" ]]
 then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
 fi
-
-################################################################################################################################################
-##
-##	This is where we copy from the DMG to the expected destination
-##
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
@@ -341,15 +342,9 @@ else
 	exit 1
 fi
 
-################################################################################################################################################
-##
-## if we made it this far, the installation went OK, so let's unmount the DMG
-##
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
-
-################################################################################################################################################
-
 
 exit 0
 #EOF

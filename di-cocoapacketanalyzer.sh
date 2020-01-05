@@ -5,15 +5,28 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-03-19; 2019-07-31
 
-NAME="$0:t:r"
-
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/CocoaPacketAnalyzer.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/CocoaPacketAnalyzer.app'
+	TRASH="/.Trashes/$UID"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/cocoa-packet-analyzer/id418357707?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/cocoa-packet-analyzer/id418357707>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
+NAME="$0:t:r"
 
 HOMEPAGE="http://www.tastycocoabytes.com/cpa/"
 
@@ -76,15 +89,6 @@ fi
 
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/cocoa-packet-analyzer/id418357707?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/cocoa-packet-analyzer/id418357707>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
@@ -114,7 +118,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
@@ -126,16 +130,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME" "$TRASH/"
 
-	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME:r".* "$TRASH/"
 
 	exit 0
 
 fi
 
-## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -160,16 +164,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi
@@ -178,8 +182,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-	# Note the extra "$INSTALL_TO:t:r" which is not usually necessary
-mv -vn "$UNZIP_TO/$INSTALL_TO:t:r/$INSTALL_TO:t" "$INSTALL_TO"
+mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
@@ -195,7 +198,6 @@ else
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
 
 exit 0
 #EOF

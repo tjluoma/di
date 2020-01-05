@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Install Bartender 2 or 3 depending on OS version or what's installed already
 #
 # From:	Timothy J. Luoma
@@ -20,22 +20,30 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-INSTALL_V1_TO="/Applications/Bartender.app"
-INSTALL_V2_TO="/Applications/Bartender 2.app"
-INSTALL_V3_TO='/Applications/Bartender 3.app'
+V1_A="/Applications/Bartender.app"
+V1_B="/Volumes/Applications/Bartender.app"
+
+V2_A="/Applications/Bartender 2.app"
+V2_B="/Volumes/Applications/Bartender 2.app"
+
+V3_A="/Applications/Bartender 3.app"
+V3_B="/Volumes/Applications/Bartender 3.app"
 
 OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
 
 function use_v1 {
 
-
 		# This is where the app will be installed or updated.
 	if [[ -d '/Volumes/Applications' ]]
 	then
 		INSTALL_TO='/Volumes/Applications/Bartender.app'
+		TRASH="/Volumes/Applications/.Trashes/$UID"
 	else
 		INSTALL_TO='/Applications/Bartender.app'
+		TRASH="/.Trashes/$UID"
 	fi
+
+	[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 	URL='http://www.macbartender.com/updates/latest/Bartender.zip'
 
@@ -68,9 +76,13 @@ function use_v2 {
 		if [[ -d '/Volumes/Applications' ]]
 		then
 			INSTALL_TO='/Volumes/Applications/Bartender 2.app'
+			TRASH="/Volumes/Applications/.Trashes/$UID"
 		else
 			INSTALL_TO='/Applications/Bartender 2.app'
+			TRASH="/.Trashes/$UID"
 		fi
+
+		[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 		ASTERISK='(Note that version 3 is also available.)'
 		USE_VERSION='2'
@@ -91,9 +103,13 @@ function use_v3 {
 		if [[ -d '/Volumes/Applications' ]]
 		then
 			INSTALL_TO='/Volumes/Applications/Bartender 3.app'
+			TRASH="/Volumes/Applications/.Trashes/$UID"
 		else
 			INSTALL_TO='/Applications/Bartender 3.app'
+			TRASH="/.Trashes/$UID"
 		fi
+
+		[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 				# if you want to install beta releases
 				# create a file (empty, if you like) using this file name/path:
@@ -166,13 +182,13 @@ else
 fi
 
 
-if [[ -e "$INSTALL_V3_TO" ]]
+if [ -e "$V3_A" -o -e "$V3_B"]
 then
 	use_v3
-elif [[ -e "$INSTALL_V2_TO" ]]
+elif [ -e "$V2_A" -o -e "$V2_B" ]
 then
 	use_v2
-elif [[ -e "$INSTALL_V1_TO" ]]
+elif [ -e "$V1_A" -o -e "$V1_B" ]
 then
 	use_v1
 else
@@ -289,16 +305,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
 
 		exit 1
 	fi

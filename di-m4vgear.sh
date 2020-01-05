@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of m4vgear
 #
 # From:	Timothy J. Luoma
@@ -11,9 +11,13 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/M4VGear.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/M4VGear.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 HOMEPAGE="http://www.m4vgear.com/"
 
@@ -83,7 +87,7 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
 	| sed '1,/<description>/d; /<\/description>/,$d' ;
 	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
 
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -96,47 +100,64 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+echo "$NAME: Mounting $FILENAME:"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-
-if [ -e "$INSTALL_TO" ]
+if [[ "$MNTPNT" == "" ]]
 then
-
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO"
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-ditto --noqtn "$MNTPNT/M4VGear.app" "$INSTALL_TO"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Installation successful"
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: ditto failed (\$EXIT = $EXIT)"
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-if (( $+commands[unmount.sh] ))
-then
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
-	unmount.sh "$MNTPNT"
-
-else
-	diskutil eject "$MNTPNT"
-
-fi
 
 exit 0
 #EOF

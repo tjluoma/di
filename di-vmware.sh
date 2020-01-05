@@ -7,16 +7,11 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/VMware Fusion.app'
-else
-	INSTALL_TO='/Applications/VMware Fusion.app'
-fi
+	# Installed via Installer
+INSTALL_TO='/Applications/VMware Fusion.app'
 
-## This file is an attractive nuisance, but not useful
-# XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
+	## This file is an attractive nuisance, but not useful
+	# XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
 
 HOMEPAGE="https://www.vmware.com/products/fusion.html"
 

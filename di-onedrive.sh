@@ -7,13 +7,8 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OneDrive.app'
-else
-	INSTALL_TO='/Applications/OneDrive.app'
-fi
+	# Installed by pkg
+INSTALL_TO='/Applications/OneDrive.app'
 
 HOMEPAGE="https://onedrive.live.com/about/en-us/"
 

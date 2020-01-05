@@ -5,6 +5,18 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-08-03
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Grammarly.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Grammarly.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -12,14 +24,6 @@ then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
-fi
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Grammarly.app'
-else
-	INSTALL_TO='/Applications/Grammarly.app'
 fi
 
 	## URL outputs: something like this:
@@ -100,16 +104,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME" "$TRASH/"
 
-	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME:r".* "$TRASH/"
 
 	exit 0
 
 fi
 
 	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -134,16 +138,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

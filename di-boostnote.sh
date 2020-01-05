@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: https://boostnote.io
 #
 # From:	Timothy J. Luoma
@@ -18,6 +18,18 @@
 # For code snippets the app is able to highlight code syntax in more than 100 languages, including
 #  Javascript, Python, HTML and CSS and you can store multiple code snippets within the same snippet."
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Boostnote.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Boostnote.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -25,14 +37,6 @@ then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
-fi
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Boostnote.app'
-else
-	INSTALL_TO='/Applications/Boostnote.app'
 fi
 
 XML_FEED='https://github.com/BoostIO/boost-releases/releases.atom'
@@ -76,12 +80,12 @@ if (( $+commands[lynx] ))
 then
 
 	(echo "Boostnote ${LATEST_VERSION}";
-			curl -sfLS "$XML_FEED" \
-			| awk '/<content type="html"/{i++}i==1' \
-			| sed -e '/<author>/,$d' -e 's#<content type="html">##g' -e 's#</content>##g' \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ) \
-			| tee "$FILENAME:r.txt"
+	curl -sfLS "$XML_FEED" \
+	| awk '/<content type="html"/{i++}i==1' \
+	| sed -e '/<author>/,$d' -e 's#<content type="html">##g' -e 's#</content>##g' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
+	) | tee "$FILENAME:r.txt"
 
 fi
 
@@ -98,7 +102,30 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TRASH/"
+
+	mv -fv "$FILENAME:r".* "$TRASH/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -123,16 +150,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

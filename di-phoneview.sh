@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of PhoneView from <https://www.ecamm.com/mac/phoneview/>
 #
 # From:	Tj Luo.ma
@@ -17,19 +17,23 @@ PRIVATE_FILE="$HOME/.config/di/private/di-phoneview.txt"
 #		You shouldn't have to change anything below this line
 #
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/PhoneView.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/PhoneView.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 HOMEPAGE="https://www.ecamm.com/mac/phoneview/"
 
 DOWNLOAD_PAGE="https://www.ecamm.com/mac/phoneview/"
 
 SUMMARY="Get your iOS messages, voicemail and data on your Mac. Just connect your device to browse, search and archive. (Note: you must login to download a non-demo version.)"
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/PhoneView.app'
-else
-	INSTALL_TO='/Applications/PhoneView.app'
-fi
 
 NAME="$0:t:r"
 
@@ -189,7 +193,7 @@ then
 
 fi
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -214,16 +218,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

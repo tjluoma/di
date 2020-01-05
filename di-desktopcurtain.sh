@@ -7,22 +7,17 @@
 
 NAME="$0:t:r"
 
-if [[ -e "/Applications/Desktop Curtain.app/Contents/_MASReceipt/receipt" ]]
-then
-	echo "$NAME: '/Applications/Desktop Curtain.app' was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://apps.apple.com/us/app/desktop-curtain/id414088151?mt=12> or"
-	echo "	<macappstore://apps.apple.com/us/app/desktop-curtain/id414088151>"
-	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-	exit 0
-fi
-
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Desktop Curtain.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Desktop Curtain.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 XML_FEED='https://manytricks.com/desktopcurtain/appcast.xml'
 
@@ -86,6 +81,14 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	if [[ -e "/Applications/Desktop Curtain.app/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: '/Applications/Desktop Curtain.app' was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/desktop-curtain/id414088151?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/desktop-curtain/id414088151>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 
 fi
 
@@ -114,6 +117,8 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -137,7 +142,17 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

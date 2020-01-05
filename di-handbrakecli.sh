@@ -28,7 +28,7 @@ URL="https://download2.handbrake.fr/${LATEST_VERSION}/HandBrakeCLI-${LATEST_VERS
 
 if (( $+commands[HandBrakeCLI] ))
 then
-		# this replicated 'which HandBrakeCLI'
+		# this replicates 'which HandBrakeCLI'
 	INSTALL_TO=$(echo =HandBrakeCLI)
 	INSTALLED_VERSION=$(HandBrakeCLI --version 2>/dev/null | egrep '[0-9]' | tr -dc '[0-9]\.')
 
@@ -121,7 +121,7 @@ if [[ -e "$INSTALL_TO" ]]
 then
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 

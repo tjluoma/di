@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest NeoOffice Viewer app (free) from <https://www.neooffice.org>
 #
 # From:	Timothy J. Luoma
@@ -7,13 +7,12 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/NeoOffice.app'
-else
-	INSTALL_TO='/Applications/NeoOffice.app'
-fi
+	# Installed by pkg
+INSTALL_TO='/Applications/NeoOffice.app'
+
+TRASH="/.Trashes/$UID"
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 HOMEPAGE="http://www.neooffice.org/"
 
@@ -188,7 +187,7 @@ then
 	then
 		echo "$NAME: Moving old version to trash:"
 
-		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
 	echo "$NAME: running 'unpkg.py' on '$PKG':"

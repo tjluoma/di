@@ -1,9 +1,12 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of "Do Not Disturb"
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-13
+
+	# Installer
+INSTALL_TO='/Applications/Do Not Disturb.app'
 
 NAME="$0:t:r"
 
@@ -21,14 +24,6 @@ DOWNLOAD_PAGE="https://objective-see.com/products/dnd.html"
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/DoNotDisturb.txt'
 
 SUMMARY="Physical access (or “evil maid”) attacks are some of the most insidious threats faced by those of us who travel with our Macs. Do Not Disturb (DND) is a free, open-source utility that aims to detect and alert you of such attacks."
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Do Not Disturb.app'
-else
-	INSTALL_TO='/Applications/Do Not Disturb.app'
-fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS 'https://objective-see.com/products/dnd.html' \
 		| gunzip --force \
@@ -154,8 +149,6 @@ case "$MAC_TYPE" in
 
 esac
 
-
-
 ##
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
@@ -176,12 +169,30 @@ else
 	exit 1
 fi
 
+pgrep -qfl 'Do Not Disturb Installer'
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	MSG="$NAME: Installer is already running."
+
+	echo "$MSG"
+
+	if (( $+commands[po.sh] ))
+	then
+		po.sh "$MSG"
+	fi
+
+	exit 0
+fi
+
 INSTALLER="$UNZIP_TO/Do Not Disturb Installer.app"
 
 echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
-	# launch the custom installer app and wait for it to finish.
-open -a "$INSTALLER"
+	# launch the custom installer app
+open "$INSTALLER"
 
 exit 0
 #

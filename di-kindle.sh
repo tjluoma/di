@@ -12,8 +12,19 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Kindle.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Kindle.app'
+	TRASH="/.Trashes/$UID"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/kindle/id405399194?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/kindle/id405399194>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 fi
 
 HOMEPAGE="https://www.amazon.com/kindle-dbs/fd/kcp"
@@ -85,15 +96,6 @@ then
 
 	FIRST_INSTALL='no'
 
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/kindle/id405399194?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/kindle/id405399194>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
-
 else
 
 	FIRST_INSTALL='yes'
@@ -140,14 +142,14 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
@@ -172,7 +174,6 @@ fi
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
-
 
 	# Rename the generic filename to include the Version and Build information
 INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)

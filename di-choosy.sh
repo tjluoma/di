@@ -14,13 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Choosy.app'
-else
-	INSTALL_TO='/Applications/Choosy.app'
-fi
+	# Installed via pkg
+INSTALL_TO='/Applications/Choosy.app'
 
 XML_FEED='https://www.choosyosx.com/sparkle/feed'
 
@@ -115,7 +110,6 @@ EXIT="$?"
 
 # <sparkle:minimumSystemVersion>10.14</sparkle:minimumSystemVersion>
 
-
 ## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
@@ -128,9 +122,9 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME" "$TRASH/"
 
-	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME:r".* "$TRASH/"
 
 	exit 0
 

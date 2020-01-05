@@ -22,6 +22,8 @@ else
 	INSTALL_TO='/Applications/Clean Text.app'
 fi
 
+HOMEPAGE='https://www.apimac.com/mac/cleantext/'
+
 URL='https://www.apimac.com/download/CleanText.zip'
 
 XML_FEED="https://www.apimac.com/version_checking/cleantext.xml"
@@ -29,8 +31,6 @@ XML_FEED="https://www.apimac.com/version_checking/cleantext.xml"
 echo "$NAME: the feed ($XML_FEED) is not really useful right now. No version info.\n"
 
 curl -sfLS "$XML_FEED"
-
-echo '\n\n'
 
 exit 0
 #EOF

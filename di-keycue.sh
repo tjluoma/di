@@ -5,6 +5,18 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-09-07
 
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/KeyCue.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/KeyCue.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -21,20 +33,12 @@ fi
 # Non Beta
 # https://update.ergonis.com/vck/keycue.xml?s=0
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/KeyCue.app'
-else
-	INSTALL_TO='/Applications/KeyCue.app'
-fi
-
 RELEASE_NOTES_URL='https://www.ergonis.com/products/keycue/history.html'
 
 HOMEPAGE='https://www.ergonis.com/products/keycue/'
 
 	# The server doesn't like `curl` so we pretend not to be `curl`
-UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.2 Safari/605.1.15'
+UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15'
 
 	## If you want to get betas, create a text file at this location
 if [[ -e "$HOME/.config/di/prefers/KeyCute-Beta.txt" ]]
@@ -177,18 +181,17 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
-
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

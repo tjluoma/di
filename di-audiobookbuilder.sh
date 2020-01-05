@@ -1,9 +1,30 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of AudioBook Builder from http://www.splasm.com/audiobookbuilder/
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-09
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Audiobook Builder.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Audiobook Builder.app'
+	TRASH="/.Trashes/$UID"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/audiobook-builder/id406226796>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -23,15 +44,6 @@ SUMMARY="Audiobook Builder makes it easy to turn your audio CDs and files into a
 	## Since the XML_FEED doesn't specify an enclosure url, I assume this
 	## will always point to the latest version
 URL="http://www.splasm.com/downloads/audiobookbuilder/Audiobook%20Builder.dmg"
-
-	## Where should the app be installed to?
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Audiobook Builder.app'
-else
-	INSTALL_TO='/Applications/Audiobook Builder.app'
-fi
 
 	## if installed, get current version. If not, put in 1.0.0
 INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '2.0')
@@ -115,15 +127,6 @@ fi
 	## If we get here, we need to update
 echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
-if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-then
-	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://apps.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
-	echo "	<macappstore://apps.apple.com/us/app/audiobook-builder/id406226796>"
-	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-	exit 0
-fi
-
 	## Save the DMG but put the version number in the filename
 	## so I'll know what version it is later
 FILENAME="$HOME/Downloads/AudioBookBuilder-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
@@ -176,7 +179,17 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of "Ostiarius"
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,18 @@
 # Date:	2019-06-23
 
 NAME="$0:t:r"
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Ostiarius.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Ostiarius.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [ -e "$HOME/.path" ]
 then
@@ -21,14 +33,6 @@ DOWNLOAD_PAGE="https://objective-see.com/products/ostiarius.html"
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Ostiarius.txt'
 
 SUMMARY="Ostiarius is tool for El Capitan that blocks unsigned internet binaries from executing. Though OS X's Gatekeeper attempts to provide this functionality, I discovered it was trivial to bypass. The bypass was detailed in: 'Gatekeeper Exposed'."
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Ostiarius.app'
-else
-	INSTALL_TO='/Applications/Ostiarius.app'
-fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \
@@ -123,9 +127,6 @@ else
 	exit 1
 fi
 
-
-##
-
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
 if [ "$OS_VER" != "11" ]
@@ -135,10 +136,8 @@ then
 	exit 0
 fi
 
-##
 
-
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
@@ -150,16 +149,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME" "$TRASH/"
 
-	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME:r".* "$TRASH/"
 
 	exit 0
 
 fi
 
-## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -184,16 +183,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

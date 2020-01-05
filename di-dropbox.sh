@@ -5,17 +5,21 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-14
 
-NAME="$0:t:r"
-
-## @TODO - the installer app may default to /Applications/
-
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Dropbox.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Dropbox.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
+NAME="$0:t:r"
+
+## @TODO - the installer app may default to /Applications/
 
 HOMEPAGE="https://www.dropbox.com"
 
@@ -79,31 +83,30 @@ fi
 #		Get the version number for the installed version of Dropbox
 #
 
-
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo 0`
-
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		msg "Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		msg "Installed version ($INSTALLED_VERSION) is ahead of official version ($LATEST_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	msg  "Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
+	FIRST_INSTALL='no'
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
@@ -113,14 +116,20 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-echo "$NAME: Downloading $URL to $FILENAME:"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --fail \
-   \
-   --continue-at - \
-   --location \
-   --output "$FILENAME" \
-	"$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+
+EXIT="$?"
+
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
+
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
@@ -132,7 +141,6 @@ MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 		| tail -1 \
 		| sed 's#</string>.*##g ; s#.*<string>##g')
 
-
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty" >>/dev/stderr
@@ -140,7 +148,6 @@ then
 else
 	echo "$NAME: MNTPNT is '$MNTPNT'."
 fi
-
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 #
@@ -154,7 +161,6 @@ then
 else
 	die "Did not find anything at $MNTPNT/Dropbox.app"
 	exit 1
-
 fi
 
 exit 0

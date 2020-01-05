@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of LittleSnitch
 #
 # From:	Timothy J. Luoma
@@ -141,6 +141,23 @@ fi
 	# ¯\_(ツ)_/¯
 	# Fortunately it will handle moving the existing installation, etc
 	# so that's handy
+
+pgrep -fl 'Little Snitch Installer'
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	MSG="$NAME: 'Little Snitch Installer' is already running."
+	echo "$MSG"
+
+	if (( $+commands[po.sh] ))
+	then
+		po.sh "$MSG"
+	fi
+
+	exit 0
+fi
 
 open "$MNTPNT/Little Snitch Installer.app"
 

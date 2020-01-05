@@ -1,17 +1,17 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Acron
+# Purpose: Manage your monitors and more
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2019-10-24
+# Date:	2020-01-02
 
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
-	INSTALL_TO='/Volumes/Applications/Acorn.app'
+	INSTALL_TO='/Volumes/Applications/Displays.app'
 	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
-	INSTALL_TO='/Applications/Acorn.app'
+	INSTALL_TO='/Applications/Displays.app'
 	TRASH="/.Trashes/$UID"
 fi
 
@@ -23,25 +23,30 @@ if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
+	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-	# it's always this URL
-URL='https://flyingmeat.com/download/Acorn.zip'
+# URL='https://www.jibapps.com/ressources/displays/files/Displays.dmg'
+# https://www.jibapps.com/apps/displays/
 
-	## Only the most recent version is in feed
-XML_FEED="https://www.flyingmeat.com/download/acorn6update.xml"
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
-	# save XML_FEED locally so we can refer to it without having to download it multiple times
-TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
+XML_FEED='https://www.jibapps.com/ressources/displays/appcast.xml'
 
-curl -sfLS "$XML_FEED" > "$TEMPFILE"
+INFO=($(curl -sfLS "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| tr ' ' '\012' \
+		| egrep -i '<sparkle:releaseNotesLink>|url=|sparkle:version=|sparkle:shortVersionString' \
+		| sort \
+		| sed 	-e 's#<sparkle:releaseNotesLink>##g' \
+				-e 's#</sparkle:releaseNotesLink>##g' \
+				-e 's#"$##g' \
+				-e 's#.*"##g'))
 
-VERSION_INFO=($(awk '/<enclosure /{i++}i==1' "$TEMPFILE" | tr ' ' '\012' | egrep '^sparkle:(shortVersionString|version)="' | sort | tr '"' ' ' | awk '{print $NF}'))
-
-LATEST_VERSION="$VERSION_INFO[1]"
-
-LATEST_BUILD="$VERSION_INFO[2]"
+RELEASE_NOTES_URL="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
+LATEST_BUILD="$INFO[3]"
+URL="$INFO[4]"
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -75,21 +80,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
 
-	( awk '/<description>/{i++}i==2' "$TEMPFILE" \
-	| sed -e '/<\/description>/,$d' -e 's#<description>##g' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
-		--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
-		--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
-		--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
-	| awk '/<div class="release">/{i++}i==1' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) \
-	| tee "$FILENAME:r.txt"
+	RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+	| awk '/<h1/{i++}i==1' \
+	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin -nonumbers -nolist \
+	| sed -e 's#^  *##g' -e 's#+ Previous versions##g')
+
+	echo "${RELEASE_NOTES}\n\nSource: $RELEASE_NOTES_URL\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 

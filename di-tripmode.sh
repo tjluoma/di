@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Trip Mode
 #
 # From:	Timothy J. Luoma
@@ -11,9 +11,13 @@ NAME="$0:t:r"
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/TripMode.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/TripMode.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 HOMEPAGE="https://www.tripmode.ch"
 
@@ -55,7 +59,6 @@ then
 
 	exit 1
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -103,8 +106,7 @@ then
 
 fi
 
-	# Download the latest version
-echo "$NAME: Downloading $URL to $FILENAME"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -113,38 +115,66 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+echo "$NAME: Mounting $FILENAME:"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-			| fgrep -A 1 '<key>mount-point</key>' \
-			| tail -1 \
-			| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
-	exit 0
+	exit 1
 else
-	echo "$NAME: Mounted $FILENAME at $MNTPNT"
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/TripMode.${INSTALLED_VERSION}-${INSTALLED_BUILD}.app"
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
-echo "$NAME:  Installing $MNTPNT/TripMode.app to $INSTALL_TO"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-ditto --noqtn "$MNTPNT/TripMode.app" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+	echo "$NAME: ditto failed"
+
+	exit 1
 fi
 
-diskutil eject "$MNTPNT"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
-

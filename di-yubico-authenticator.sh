@@ -14,13 +14,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Yubico Authenticator.app'
-else
-	INSTALL_TO='/Applications/Yubico Authenticator.app'
-fi
+INSTALL_TO='/Applications/Yubico Authenticator.app'
 
 ROOT_URL='https://developers.yubico.com/yubioath-desktop/Releases'
 
@@ -106,7 +100,9 @@ then
 
 else
 
-	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log" || open -R "$FILENAME"
+	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en \
+	| tee -a "$FILENAME:r.install.log" || open -R "$FILENAME"
+
 fi
 
 exit 0

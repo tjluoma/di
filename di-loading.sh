@@ -1,9 +1,21 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Loading - Simple network activity monitor for OS X
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-07-03
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Loading.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Loading.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -12,14 +24,6 @@ then
 	source "$HOME/.path"
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
-fi
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Loading.app'
-else
-	INSTALL_TO='/Applications/Loading.app'
 fi
 
 XML_FEED='http://bonzaiapps.com/loading/update.xml'
@@ -95,7 +99,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
@@ -107,16 +111,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME" "$TRASH/"
 
-	mv -fv "$FILENAME:r".* "$INSTALL_TO:h/.Trashes/$UID/"
+	mv -fv "$FILENAME:r".* "$TRASH/"
 
 	exit 0
 
 fi
 
-## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -141,16 +145,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi
@@ -178,19 +182,22 @@ fi
 
 exit 0
 
-
 #EOF
 
-
-Loading - Simple network activity monitor for OS X
-
-https://bonzaiapps.com/loading/
-
-https://bonzaiapps.com/loading/Loading.zip
-
-
-Your iPad and iPhone show you when apps are using your network. So why can't your Mac? Sure, there's always the Network section in Activity Monitor, but that's far from ideal. At best you can group by All Processes, Hierarchically, sort by Rcvd Bytes, and check the list to see if anything changed.
-
-That's why Loading was created. Loading is a lightweight app that lives in your menubar, and it looks like this: A disabled progress wheel. When an app uses your data connection, it looks like this: An animated progress wheel. It's just like your iPad and iPhone! You can also click the icon to see which apps are using the network. Loading separates apps into two groups: those that are using your network right now, and those that used your network recently.
-
-If you hold down the alt option key when clicking on the icon, Loading shows the processes with their identifier and path. Clicking the checkbox disables the spinning animation for that app or process.
+# Loading - Simple network activity monitor for OS X
+#
+# https://bonzaiapps.com/loading/
+#
+# https://bonzaiapps.com/loading/Loading.zip
+#
+# Your iPad and iPhone show you when apps are using your network. So why can't your Mac?
+# Sure, there's always the Network section in Activity Monitor, but that's far from ideal.
+# At best you can group by All Processes, Hierarchically, sort by Rcvd Bytes, and check the list to see if anything changed.
+#
+# That's why Loading was created. Loading is a lightweight app that lives in your menubar, and it looks like this: A disabled progress wheel.
+# When an app uses your data connection, it looks like this: An animated progress wheel. #
+# It's just like your iPad and iPhone! You can also click the icon to see which apps are using the network.
+# Loading separates apps into two groups: those that are using your network right now, and those that used your network recently.
+#
+# If you hold down the alt option key when clicking on the icon, Loading shows the processes with their identifier and path.
+# Clicking the checkbox disables the spinning animation for that app or process.

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install (or update) Xquartz
 #
 # From:	Timothy J. Luoma
@@ -16,6 +16,7 @@ DOWNLOAD_PAGE="https://www.xquartz.org/releases/"
 
 SUMMARY="The XQuartz project is an open-source effort to develop a version of the X.Org X Window System that runs on OS X. Together with supporting libraries and applications, it forms the X11.app that Apple shipped with OS X versions 10.5 through 10.7."
 
+	# Installed by package
 INSTALL_TO='/Applications/Utilities/XQuartz.app'
 
 if [ -e "$HOME/.path" ]

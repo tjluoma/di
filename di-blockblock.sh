@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of "BlockBlock"
 #
 # From:	Timothy J. Luoma
@@ -14,6 +14,9 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+	# Installed via pkg
+INSTALL_TO='/Library/Objective-See/BlockBlock/BlockBlock.app'
+
 HOMEPAGE="https://objective-see.com/products/blockblock.html"
 
 DOWNLOAD_PAGE="https://objective-see.com/products/blockblock.html"
@@ -21,8 +24,6 @@ DOWNLOAD_PAGE="https://objective-see.com/products/blockblock.html"
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/BlockBlock.txt'
 
 SUMMARY="Malware installs itself persistently, to ensure it's automatically re-executed at reboot. BlockBlock continually monitors common persistence locations and displays an alert whenever a persistent component is added to the OS."
-
-INSTALL_TO='/Library/Objective-See/BlockBlock/BlockBlock.app'
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \
@@ -145,12 +146,28 @@ else
 	exit 1
 fi
 
+pgrep -qfl 'BlockBlock Installer'
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	MSG="$NAME: BlockBlock Installer is already running"
+
+	echo "$MSG"
+
+	if (( $+commands[po.sh] ))
+	then
+		po.sh "$MSG"
+	fi
+fi
+
 INSTALLER="$UNZIP_TO/BlockBlock Installer.app"
 
 echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
 	# launch the custom installer app
-open -a "$INSTALLER"
+open "$INSTALLER"
 
 exit 0
 #

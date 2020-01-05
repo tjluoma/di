@@ -1,5 +1,4 @@
-#!/bin/zsh -f
-
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of BusyCal
 #
 # From:	Timothy J. Luoma
@@ -8,13 +7,8 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/BusyCal.app'
-else
-	INSTALL_TO='/Applications/BusyCal.app'
-fi
+	# Installed via pkg
+INSTALL_TO='/Applications/BusyCal.app'
 
 HOMEPAGE="https://www.busymac.com/busycal/index.html"
 
@@ -90,7 +84,6 @@ then
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
-
 fi
 
 	# What we download is a .zip file with a .pkg file inside of it,
@@ -131,7 +124,7 @@ cd "$FILENAME:h"
 
 ditto --noqtn -xk -v --rsrc --extattr "$FILENAME" . || die "ditto failed"
 
-mv -f "$FILENAME" "$INSTALL_TO:h/.Trashes/$UID/"
+mv -f "$FILENAME" "$TRASH/"
 
 mv -vf "BusyCal Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 
@@ -152,7 +145,7 @@ then
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# If there's an existing installation, move it to the trash
-		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
 	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'

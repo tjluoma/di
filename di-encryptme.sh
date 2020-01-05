@@ -1,21 +1,24 @@
-#!/bin/zsh -f
-# Purpose: Download and install the latest version of EncryptMe nee Cloak
+#!/usr/bin/env zsh -f
+# Purpose: Download and install the latest version of EncryptMe (formerly Cloak)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-06
-
-## 2018-07-10 - renamed di-cloak to di-encryptme to reflect new name
-
-NAME="$0:t:r"
+#		2018-07-10 - renamed di-cloak to di-encryptme to reflect new name
 
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/EncryptMe.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/EncryptMe.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://encrypt.me"
 
@@ -109,50 +112,62 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+
+echo "$NAME: Mounting $FILENAME:"
+
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-		| fgrep -A 1 '<key>mount-point</key>' \
-		| tail -1 \
-		| sed 's#</string>.*##g ; s#.*<string>##g')
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
-		echo "$NAME: Failed to mount $FILENAME. (MNTPNT is empty)"
-		exit 0
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-echo "$MNTPNT"
-
-if [ -e "$INSTALL_TO" ]
+if [[ -e "$INSTALL_TO" ]]
 then
 		# Quit app, if running
-	pgrep -xq "EncryptMe" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& killall EncryptMe
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/EncryptMe.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
 fi
 
-echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-ditto --noqtn "$MNTPNT/EncryptMe.app" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [ "$EXIT" = "0" ]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Updated $INSTALL_TO"
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: 'ditto' failed (\$EXIT = $EXIT)"
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
-diskutil eject "$MNTPNT"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF

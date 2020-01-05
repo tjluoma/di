@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of ReiKey
 #
 # From:	Timothy J. Luoma
@@ -7,13 +7,8 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/ReiKey.app'
-else
-	INSTALL_TO='/Applications/ReiKey.app'
-fi
+	# installed by pkg
+INSTALL_TO='/Applications/ReiKey.app'
 
 HOMEPAGE="https://objective-see.com/products/reikey.html"
 
@@ -165,28 +160,8 @@ INSTALLER="$UNZIP_TO/ReiKey Installer.app"
 
 echo "$NAME: launching custom installer/updater: '$INSTALLER'"
 
-	# launch the custom installer app and wait for it to finish.
-open -W -a "$INSTALLER"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "0" ]]
-then
-
-	echo "$NAME: Successfully installed/updated '$INSTALL_TO'."
-
-else
-	echo "$NAME: '$INSTALLER' failed."
-
-	open -R "$INSTALLER"
-
-	exit 1
-fi
-
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-exit 0
-
+	# launch the custom installer app
+open -a "$INSTALLER"
 
 exit 0
 #EOF

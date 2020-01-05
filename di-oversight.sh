@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of "OverSight"
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,9 @@
 # Date:	2018-09-13
 
 NAME="$0:t:r"
+
+	# installed via installer
+INSTALL_TO='/Applications/OverSight.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -21,14 +24,6 @@ DOWNLOAD_PAGE="https://objective-see.com/products/oversight.html"
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/OverSight.txt'
 
 SUMMARY=" Mac malware often spies on users by recording audio and video sessions...sometimes in an undetected manner. OverSight monitors a mac's mic and webcam, alerting the user when the internal mic is activated, or whenever a process accesses the webcam."
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OverSight.app'
-else
-	INSTALL_TO='/Applications/OverSight.app'
-fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \

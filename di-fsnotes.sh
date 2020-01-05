@@ -1,9 +1,31 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest FSNotes
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-09
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/FSNotes.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/FSNotes.app'
+	TRASH="/.Trashes/$UID"
+
+	ITUNES_URL='apps.apple.com/us/app/fsnotes/id1277179284'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		echo "	See <https://$ITUNES_URL?mt=12> or <macappstore://$ITUNES_URL>"
+		exit 0
+	fi
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -22,17 +44,7 @@ LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
 URL="https://github.com/glushchenko/fsnotes/releases/download/$LATEST_VERSION/FSNotes_$LATEST_VERSION.zip"
 
-ITUNES_URL='apps.apple.com/us/app/fsnotes/id1277179284'
-
 HOMEPAGE="https://fsnot.es"
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/FSNotes.app'
-else
-	INSTALL_TO='/Applications/FSNotes.app'
-fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -52,21 +64,6 @@ then
 	fi
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
-
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-
-		if [[ "$ITUNES_URL" != "" ]]
-		then
-			echo "	See <https://$ITUNES_URL?mt=12> or"
-			echo "	<macappstore://$ITUNES_URL>"
-		fi
-
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-
-	fi
 
 	FIRST_INSTALL='no'
 
@@ -101,7 +98,27 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TRASH/"
+
+	mv -fv "$FILENAME:r".* "$TRASH/"
+
+	exit 0
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -126,16 +143,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$INSTALL_TO:h/.Trashes/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi

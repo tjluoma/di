@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of RDM from <https://github.com/avibrazil/RDM/>
 #
 # From:	Timothy J. Luoma
@@ -7,13 +7,8 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/RDM.app'
-else
-	INSTALL_TO='/Applications/RDM.app'
-fi
+	# installed by pkg
+INSTALL_TO='/Applications/RDM.app'
 
 RELEASE_NOTES_URL='https://github.com/avibrazil/RDM/'
 
@@ -21,7 +16,7 @@ HOMEPAGE="https://github.com/avibrazil/RDM/"
 
 DOWNLOAD_PAGE="http://avi.alkalay.net/software/RDM/"
 
-SUMMARY='(Retina Display Menu) This is a tool that lets you use MacBook Pro Retina’s highest and unsupported resolutions. As an example, a Retina MacBook Pro 13" can be set to 3360×2100 maximum resolution, as opposed to Apple’s max supported 1680×1050. It is accessible from the menu bar.'
+SUMMARY='Retina Display Menu is a tool that lets you use MacBook Pro Retina’s highest and unsupported resolutions. As an example, a Retina MacBook Pro 13" can be set to 3360×2100 maximum resolution, as opposed to Apple’s max supported 1680×1050. It is accessible from the menu bar.'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -119,13 +114,13 @@ then
 		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 			# move installed version to trash
-		mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
 		if [[ "$EXIT" != "0" ]]
 		then
-			echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+			echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash'"
 			exit 1
 		fi
 	fi
@@ -137,7 +132,7 @@ then
 	TIME=`strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS"`
 
 		# Move what should be empty directories to the trash
-	mv -vf "$EXTRACTED_TO" "$INSTALL_TO:h/.Trashes/$UID/$EXTRACTED_TO:t_${TIME}"
+	mv -vf "$EXTRACTED_TO" "$HOME/.Trash/$EXTRACTED_TO:t_${TIME}"
 
 	[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 

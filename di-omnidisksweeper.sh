@@ -1,9 +1,21 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of OmniDiskSweeper
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-14
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/OmniDiskSweeper.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/OmniDiskSweeper.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [ -e "$HOME/.path" ]
 then
@@ -13,14 +25,6 @@ else
 fi
 
 NAME="$0:t:r"
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OmniDiskSweeper.app'
-else
-	INSTALL_TO='/Applications/OmniDiskSweeper.app'
-fi
 
 HOMEPAGE="https://www.omnigroup.com/more"
 
@@ -151,7 +155,10 @@ EXIT="$?"
 
 echo "$NAME: Accepting EULA and mounting $FILENAME: (sorry if this opens a Finder window)"
 
-MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
+MNTPNT=$(echo -n "Y" \
+		| hdid -plist "$FILENAME" 2>/dev/null \
+		| fgrep '/Volumes/' \
+		| sed 's#</string>##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
@@ -169,7 +176,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

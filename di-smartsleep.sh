@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose:
 #
 # From:	Timothy J. Luoma
@@ -6,6 +6,18 @@
 # Date:	2018-09-30
 
 NAME="$0:t:r"
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/SmartSleep.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/SmartSleep.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -19,14 +31,6 @@ HOMEPAGE="https://www.jinx.de/SmartSleep.html"
 DOWNLOAD_PAGE="http://www.jinx.de/SmartSleep_files/SmartSleep.current.dmg"
 
 SUMMARY="Sleep your Mac differently depending on the battery level."
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/SmartSleep.app'
-else
-	INSTALL_TO='/Applications/SmartSleep.app'
-fi
 
 XML_FEED="https://www.jinx.de/SmartSleep.update.11.x86_64.xml"
 
@@ -140,7 +144,18 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: get the latest version of Zoom
 #
 # From:	Timothy J. Luoma
@@ -15,12 +15,7 @@ else
 fi
 
 	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/zoom.us.app'
-else
-	INSTALL_TO='/Applications/zoom.us.app'
-fi
+INSTALL_TO='/Applications/zoom.us.app'
 
 RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'
 

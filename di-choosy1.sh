@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install the latest version of Choosy
 #
 # From:	Timothy J. Luoma
@@ -129,7 +129,7 @@ then
 	pgrep -qx Choosy && pkill Choosy
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	FIRST_INSTALL='no'
 else
@@ -181,7 +181,6 @@ then
 		# Launch App
 	open "$INSTALL_TO"
 fi
-
 
 exit 0
 #

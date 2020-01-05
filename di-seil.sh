@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Seil, which is no longer developed: <https://pqrs.org/osx/karabiner/seil.html>
 #
 # From:	Timothy J. Luoma
@@ -7,13 +7,8 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Seil.app'
-else
-	INSTALL_TO='/Applications/Seil.app'
-fi
+	# installed via pkg
+INSTALL_TO='/Applications/Seil.app'
 
 HOMEPAGE="https://pqrs.org/osx/karabiner/seil.html"
 

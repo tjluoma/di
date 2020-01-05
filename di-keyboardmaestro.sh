@@ -1,9 +1,21 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Keyboard Maestro from <http://www.keyboardmaestro.com> (including betas, if enabled)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-07-12
+
+	# This is where the app will be installed or updated.
+if [[ -d '/Volumes/Applications' ]]
+then
+	INSTALL_TO='/Volumes/Applications/Keyboard Maestro.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
+else
+	INSTALL_TO='/Applications/Keyboard Maestro.app'
+	TRASH="/.Trashes/$UID"
+fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -25,14 +37,6 @@ else
 	URL_STRING='ReleaseURL'
 	MD5_STRING='ReleaseMD5'
 	RELEASE_NOTES_PREFIX=']'
-fi
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Keyboard Maestro.app'
-else
-	INSTALL_TO='/Applications/Keyboard Maestro.app'
 fi
 
 ENGINE_VERSION=$(defaults read "${INSTALL_TO}/Contents/MacOS/Keyboard Maestro Engine.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo 8.2.4)
@@ -90,7 +94,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
 ( 	egrep "^${RELEASE_NOTES_PREFIX}" "$TEMPFILE" | sed "s#^${RELEASE_NOTES_PREFIX}##g" ;
@@ -124,7 +127,7 @@ fi
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -175,7 +178,7 @@ then
 	pgrep -qx 'Keyboard Maestro' && pkill -x 'Keyboard Maestro'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
+	mv -vf "$INSTALL_TO" "$TRASH/Keyboard Maestro.$INSTALLED_VERSION.$RANDOM.app"
 
 fi
 
@@ -208,11 +211,7 @@ fi
 
 exit 0
 
-
 ## Renaming the file like this prevents the script from recognizing that it has already downloaded the proper file(s)
-
-
-
 	# get nicer-formatted version information from install
 ACTUAL_INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
 

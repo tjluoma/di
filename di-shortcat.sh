@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Shortcat from <https://shortcatapp.com>
 #
 # From:	Tj Luo.ma
@@ -8,17 +8,21 @@
 
 NAME="$0:t:r"
 
-	# 2018-07-17 - alt feed:
-	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
-XML_FEED='https://shortcatapp.com/updates/appcast.xml'
-
 	# This is where the app will be installed or updated.
 if [[ -d '/Volumes/Applications' ]]
 then
 	INSTALL_TO='/Volumes/Applications/Shortcat.app'
+	TRASH="/Volumes/Applications/.Trashes/$UID"
 else
 	INSTALL_TO='/Applications/Shortcat.app'
+	TRASH="/.Trashes/$UID"
 fi
+
+[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+
+	# 2018-07-17 - alt feed:
+	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
+XML_FEED='https://shortcatapp.com/updates/appcast.xml'
 
 HOMEPAGE="https://shortcatapp.com"
 
@@ -126,7 +130,28 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
+then
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
+else
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TRASH/"
+
+	mv -fv "$FILENAME:r".* "$TRASH/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -147,18 +172,20 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	pgrep -xq "$INSTALL_TO:t:r" && LAUNCH='yes' && osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$INSTALL_TO:h/.Trashes/$UID/\"."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
 
-	mv -vf "$INSTALL_TO" "$INSTALL_TO:h/.Trashes/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $INSTALL_TO:h/.Trashes/$UID/"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
 
 		exit 1
 	fi
@@ -182,11 +209,8 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
-
-[[ "$FIRST_INSTALL" == "yes" ]] && open -a "$INSTALL_TO"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 
-#
 #EOF
