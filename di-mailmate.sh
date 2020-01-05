@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of MailMate
 #
 # From:	Timothy J. Luoma
@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/MailMate.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/MailMate.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/MailMate.app'
 
 HOMEPAGE="https://freron.com"
 
@@ -130,7 +120,7 @@ then
 		&& LAUNCH='yes' \
 		&& osascript -e 'tell application "MailMate" to quit'
 
-		mv "$INSTALL_TO" "$TRASH/MailMate.$INSTALLED_VERSION.app"
+		mv "$INSTALL_TO" "$HOME/.Trash/MailMate.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME: Installing $FILENAME to $INSTALL_TO:h"

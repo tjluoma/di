@@ -6,19 +6,9 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-01-20
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Audio Hijack.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Audio Hijack.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Audio Hijack.app'
 
 HOMEPAGE="https://www.rogueamoeba.com/audiohijack/"
 
@@ -130,16 +120,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$TRASH/"
+	mv -fv "$FILENAME" "$HOME/.Trash/"
 
-	mv -fv "$FILENAME:r".* "$TRASH/"
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
 
 	exit 0
 
 fi
 
 	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -161,19 +151,19 @@ if [[ -e "$INSTALL_TO" ]]
 then
 
 	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	&& echo "$NAME: '$INSTALL_TO:t' is running. Not replacing it." \
+	&& exit 1
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi

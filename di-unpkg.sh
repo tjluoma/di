@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of unpkg
 # Source: https://www.timdoug.com/unpkg/
 #
@@ -8,17 +8,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/unpkg.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/unpkg.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/unpkg.app'
 
 HOMEPAGE="https://www.timdoug.com/unpkg/"
 
@@ -36,8 +26,6 @@ fi
 CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/unpkg.rb"
 
 # The app apparently hasn't been updated since 2010-08-26 so it's pretty safe to hard-code the LATEST_VERSION
-# Well, I said that, and then he went and updated it from 4.5 to 4.6 to make it fully 64-bit. But I don't expect
-# much more by the way of activity, so I'm incrementing this to 4.6 and will leave it at that.
 
 if [[ -e "$CASK_FILE" ]]
 then
@@ -45,9 +33,9 @@ then
 	LATEST_VERSION=$(awk -F"'" '/version /{print $2}' "$CASK_FILE" 2>/dev/null)
 
 		# If we didn't find anything in the $CASK_FILE, then use '4.5 as a known version
-	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="4.6"
+	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="4.5"
 else
-	LATEST_VERSION="4.6"
+	LATEST_VERSION="4.5"
 fi
 
 URL="https://www.timdoug.com/unpkg/unpkg-${LATEST_VERSION}.zip"
@@ -93,7 +81,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping $FILENAME to $UNZIP_TO:"
 
@@ -113,16 +101,16 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to '$TRASH'"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi

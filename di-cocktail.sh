@@ -1,11 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install/update the latest version of Cocktail
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-13
-
-# @TODO - check for updates to Mojave and Catalina
 
 NAME="$0:t:r"
 
@@ -22,7 +20,6 @@ DOWNLOAD_PAGE="https://www.maintain.se/cocktail/"
 
 SUMMARY="Cocktail is a general purpose utility for macOS that lets you clean, repair and optimize your Mac. It is a powerful digital toolset that helps hundreds of thousands of Mac users around the world get the most out of their computers every day."
 
-	# Don't share this one, different version for each version of macOS
 INSTALL_TO="/Applications/Cocktail.app"
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
@@ -215,16 +212,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi

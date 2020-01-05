@@ -1,21 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download latest version of Cisdem OCRWizard from https://www.cisdem.com/ocr-wizard-mac.html
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-18
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Cisdem OCRWizard.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Cisdem OCRWizard.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -25,6 +13,8 @@ then
 else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
+
+INSTALL_TO='/Applications/Cisdem OCRWizard.app'
 
 # There's no feed for this AND the URL does not necessarily reflect the version number
 # so we have to get a bit creative.
@@ -105,8 +95,6 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -130,17 +118,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -162,7 +140,6 @@ fi
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
-
 	## OK, so now we have the app installed, but we need to prepare for what happens
 	## the next time we run this script. We need to update it to say what the URL
 	## is and what the version number associated with that URL is.
@@ -183,5 +160,7 @@ mv -vn "$FILENAME" "$FILENAME:h/CisdemOCRWizard-${LATEST_VERSION}.dmg"
 exit 0
 
 ## below is a log of URLs and the versions that they are associated with
+
+https://www.cisdem.com/downloads/cisdem-ocrwizard-41.dmg	4.3.0
 
 https://www.cisdem.com/downloads/cisdem-ocrwizard-41.dmg	4.3.0

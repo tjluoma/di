@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: download and install GitHub’s Mac app (now referred to as “Classic” since they have a new Electron-based version now.)
 #
 # From:	Tj Luo.ma
@@ -6,19 +6,9 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2014-09-30, updated and renamed 2018-08-26
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/GitHub Desktop Classic.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/GitHub Desktop Classic.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/GitHub Desktop Classic.app'
 
 # HOMEPAGE="https://blog.github.com/2015-08-12-github-desktop-is-now-available/"
 
@@ -86,28 +76,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-	## make sure that the .zip is valid before we proceed
-(command unzip -l "$FILENAME" 2>&1 )>/dev/null
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-	echo "$NAME: '$FILENAME' is a valid zip file."
-
-else
-	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-	mv -fv "$FILENAME" "$TRASH/"
-
-	mv -fv "$FILENAME:r".* "$TRASH/"
-
-	exit 0
-
-fi
-
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -132,16 +101,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi
@@ -149,7 +118,9 @@ fi
 
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
-	# Move the file out of the folder -- NOTE the change from usual
+	# Move the file out of the folder
+	# Note that we have to specify the name since we're renaming it on install.
+	# See note at top of document.
 mv -vn "$UNZIP_TO/GitHub Desktop.app" "$INSTALL_TO"
 
 EXIT="$?"

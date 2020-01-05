@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: get the latest version of Zoom
 #
 # From:	Timothy J. Luoma
@@ -14,7 +14,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# This is where the app will be installed or updated.
 INSTALL_TO='/Applications/zoom.us.app'
 
 RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'

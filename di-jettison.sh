@@ -1,22 +1,10 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Jettison
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-26
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Jettison.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Jettison.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -34,6 +22,8 @@ fi
 ## so that's what I'm using
 
 XML_FEED='http://www.stclairsoft.com/updates/Jettison.xml'
+
+INSTALL_TO='/Applications/Jettison.app'
 
 HOMEPAGE="https://www.stclairsoft.com/Jettison/"
 
@@ -113,75 +103,52 @@ then
 
 fi
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
+echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
-EXIT="$?"
-
-	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
-
-[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
-
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
-echo "$NAME: Mounting $FILENAME:"
-
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
-
-if [[ "$MNTPNT" == "" ]]
-then
-	echo "$NAME: MNTPNT is empty"
-	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
-fi
-
-if [[ -e "$INSTALL_TO" ]]
+if [ -e "$INSTALL_TO" ]
 then
 		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
+	pgrep -xq "Jettison" \
 	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	&& osascript -e 'tell application "Jettison" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Jettison.$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
+
+ditto --noqtn "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
+
+	echo "$NAME: Installation of $INSTALL_TO successful"
+
 else
-	echo "$NAME: ditto failed"
+	echo "$NAME: ditto failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
 
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+if (( $+commands[unmount.sh] ))
+then
+
+	unmount.sh "$MNTPNT"
+else
+	diskutil eject "$MNTPNT"
+fi
 
 exit 0
 #

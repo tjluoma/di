@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install latest version of Keep It from <https://reinventedsoftware.com/keepit/>
 #
 # From:	Timothy J. Luoma
@@ -7,28 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Keep It.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Keep It.app'
-	TRASH="/.Trashes/$UID"
-
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-
-		ITUNES_URL='apps.apple.com/us/app/keep-it/id1272768911'
-
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		echo "	See <https://$ITUNES_URL?mt=12> or <macappstore://$ITUNES_URL>"
-		exit 0
-	fi
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO="/Applications/Keep It.app"
 
 HOMEPAGE="https://reinventedsoftware.com/keepit/"
 
@@ -37,6 +16,8 @@ DOWNLOAD_PAGE="https://reinventedsoftware.com/keepit/downloads/"
 SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes, keeping web links, storing documents, images or any kind of file, and finding them again. Available on Mac, and as a separate app for iPhone and iPad, Keep It is the destination for all those things you want to put somewhere, confident you will find them again later."
 
 XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
+
+ITUNES_URL='apps.apple.com/us/app/keep-it/id1272768911'
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
@@ -50,7 +31,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-## 2018-09-17 - removed 'sparkle:version' because Mac App Store and direct versions might differ in that
+## 2018-09-17 - remove 'sparkle:version' because Mac App Store and direct versions might differ in that
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
@@ -75,6 +56,7 @@ then
 	exit 1
 fi
 
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -95,6 +77,20 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+
+		if [[ "$ITUNES_URL" != "" ]]
+		then
+			echo "	See <https://$ITUNES_URL?mt=12> or"
+			echo "	<macappstore://$ITUNES_URL>"
+		fi
+
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 
 else
 
@@ -127,8 +123,6 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
 echo "$NAME: Mounting $FILENAME:"
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
@@ -140,8 +134,6 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -152,17 +144,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "

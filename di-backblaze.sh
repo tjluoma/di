@@ -14,7 +14,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Installed by pkg
 INSTALL_TO="/Library/PreferencePanes/BackblazeBackup.prefPane"
 
 # mac_version="5.4.0.246" mac_url="%DEST_HOST%/api/install_backblaze?file=bzinstall-mac-5.4.0.246.zip"

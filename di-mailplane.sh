@@ -6,18 +6,6 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2018-08-20
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Mailplane.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Mailplane.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
 
 HOMEPAGE="https://mailplaneapp.com"
@@ -25,6 +13,8 @@ HOMEPAGE="https://mailplaneapp.com"
 DOWNLOAD_PAGE="https://update.mailplaneapp.com/mailplane_4.php"
 
 SUMMARY="The best way to use Gmail on your Mac."
+
+INSTALL_TO="/Applications/Mailplane.app"
 
 OS_VER=$(sw_vers -productVersion)
 
@@ -110,7 +100,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping $FILENAME to $UNZIP_TO"
 
@@ -132,7 +122,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/MailPlane.$INSTALLED_VERSION.$INSTALLED_BUILD.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/MailPlane.$INSTALLED_VERSION.$INSTALLED_BUILD.app"
 fi
 
 mv -vf "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"

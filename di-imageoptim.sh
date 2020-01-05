@@ -1,23 +1,13 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install ImageOptim from <https://imageoptim.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-04-26
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/ImageOptim.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/ImageOptim.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/ImageOptim.app'
 
 HOMEPAGE="https://imageoptim.com/mac"
 
@@ -125,7 +115,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-TEMPDIR=`mktemp -d "${TRASH}/$NAME.XXXXXXXX"`
+TEMPDIR=`mktemp -d "${TMPDIR-/tmp/}XXXXXXXX"`
 
 ## I am installing into a temp directory so that I can use my own custom INSTALL_TO name rather than overwriting the non-beta version
 
@@ -151,7 +141,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 mv -vf "$TEMPDIR/$INSTALL_TO:t" "$INSTALL_TO"
@@ -168,6 +158,8 @@ else
 
 	exit 1
 fi
+
+rmdir "$TEMPDIR"
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 

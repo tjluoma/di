@@ -1,23 +1,13 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Default Folder X
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-05
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Default Folder X.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Default Folder X.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Default Folder X.app'
 
 HOMEPAGE="https://stclairsoft.com/DefaultFolderX/index.html"
 
@@ -34,6 +24,7 @@ fi
 
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
+
 
 	# if we find the old prefer-beta file, move it to the new place
 OLD_PREFERS_BETAS_FILE="$HOME/.config/di/defaultfolderx-prefer-betas.txt"
@@ -212,7 +203,18 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "Default Folder X" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "Default Folder X" to quit'
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Default Folder X.$INSTALLED_VERSION.app"
+fi
+
+echo "$NAME: Installing $FILENAME to $INSTALL_TO:h/"
 
 echo "$NAME: Mounting $FILENAME:"
 
@@ -225,8 +227,6 @@ if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -237,17 +237,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -265,9 +255,20 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+[[ "$LAUNCH" = "yes" ]] && echo "$NAME: Re-Launching '$INSTALL_TO':"  && open -a "$INSTALL_TO"
 
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+echo -n "$NAME: Unmounting $MNTPNT: "
+
+diskutil eject "$MNTPNT"
+
+if (is-growl-running-and-unpaused.sh)
+then
+	growlnotify \
+	--appIcon "Default Folder X" \
+	--identifier "$NAME" \
+	--message "Updated to $LATEST_VERSION" \
+	--title "$NAME"
+fi
 
 exit 0
 #EOF

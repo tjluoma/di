@@ -1,23 +1,14 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Airfoil (and Airfoil Satellite)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-28
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Airfoil.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Airfoil.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+	# Note: this script will also install/update 'Airfoil Satellite.app' in the same directory
+INSTALL_TO="/Applications/Airfoil.app"
 
 HOMEPAGE="https://www.rogueamoeba.com/airfoil/"
 
@@ -109,9 +100,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -140,28 +129,28 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e 'tell application "Airfoil Satellite" to quit'
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$$TRASH/'."
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash/'."
 
 		exit 1
 	fi
 
-	mv -vf "$INSTALL_TO:h/Airfoil Satellite.app" "$$TRASH/Airfoil Satellite.$INSTALLED_VERSION.app" \
+	mv -vf "$INSTALL_TO:h/Airfoil Satellite.app" "$HOME/.Trash/Airfoil Satellite.$INSTALLED_VERSION.app" \
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO:h/Airfoil Satellite.app' to '$$TRASH/'."
+		echo "$NAME: failed to move existing '$INSTALL_TO:h/Airfoil Satellite.app' to '$HOME/.Trash/'."
 
 		exit 1
 	fi

@@ -1,21 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Updated for Alfred 4
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-05-29
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Alfred 4.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Alfred 4.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -39,6 +27,8 @@ then
 	echo "$NAME: '$PLIST' is empty."
 	exit 1
 fi
+
+INSTALL_TO='/Applications/Alfred 4.app'
 
 RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata)
 
@@ -99,8 +89,7 @@ FILENAME="$HOME/Downloads/Alfred-${LATEST_VERSION}_${LATEST_BUILD}.tgz"
 if (( $+commands[lynx] ))
 then
 
-	(echo "Alfred ${LATEST_VERSION} / ${LATEST_BUILD} \nURL: ${URL}\n\n$RELEASE_NOTES") \
-	| tee "$FILENAME:r.txt"
+	(echo "Alfred ${LATEST_VERSION} / ${LATEST_BUILD} \nURL: ${URL}\n\n$RELEASE_NOTES") | tee "$FILENAME:r.txt"
 
 fi
 
@@ -121,7 +110,7 @@ EXIT="$?"
 
 ## Un-Archiving
 
-TEMPDIR=$(mktemp -d "${TRASH}/$NAME.XXXXXX")
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp}/$NAME.XXXXXX")
 
 echo "$NAME: Extracting '$FILENAME' to '$TEMPDIR':"
 
@@ -158,7 +147,7 @@ then
 	&& osascript -e 'tell application "Alfred 4" to quit'
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t.$INSTALLED_VERSION.app"
 fi
 
 mv -vn "$TEMPAPP" "$INSTALL_TO"

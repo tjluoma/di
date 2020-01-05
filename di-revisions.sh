@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install latest version of Revisions
 #
 # From:	Timothy J. Luoma
@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Revisions.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Revisions.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/Revisions.app'
 
 HOMEPAGE="https://www.revisionsapp.com/"
 
@@ -27,9 +17,7 @@ SUMMARY="The Mac OS X app that displays all your Dropbox edits, shows exactly wh
 
 RELEASE_NOTES_URL='https://www.revisionsapp.com/releases'
 
-URL=$(curl -sfL https://www.revisionsapp.com \
-	| fgrep '.dmg' \
-	| sed "s#.*downloads/#https://www.revisionsapp.com/downloads/#g ; s#'\;##g ; s# ##g")
+URL=$(curl -sfL https://www.revisionsapp.com | fgrep '.dmg' | sed "s#.*downloads/#https://www.revisionsapp.com/downloads/#g ; s#'\;##g ; s# ##g")
 
 FILENAME="$HOME/Downloads/$URL:t"
 
@@ -175,46 +163,36 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-echo "$NAME: Mounting $FILENAME:"
-
 	# This will agree to the EULA for you without you reading it
 	# If you do not want that, don't use this script
-MNTPNT=$(echo -n "Y" \
-		| hdid -plist "$FILENAME" 2>/dev/null \
-		| fgrep '/Volumes/' \
-		| sed 's#</string>##g ; s#.*<string>##g')
+MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-		# Quit app, if running
+
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 		exit 1
 	fi
-
 fi
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+echo "$NAME: installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO"
 
 ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
@@ -222,16 +200,18 @@ EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
-else
-	echo "$NAME: ditto failed"
+	echo "$NAME: Installed $INSTALL_TO successfully"
 
-	exit 1
+	[[ "$LAUNCH" == "yes" ]] && open "$INSTALL_TO" && echo "$NAME: re-launched $INSTALL_TO"
+
+	diskutil eject "$MNTPNT"
+
+else
+	echo "$NAME: Installation failed (\$EXIT = $EXIT)"
+
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #

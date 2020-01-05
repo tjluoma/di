@@ -5,18 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-06
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/BackupLoupe.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/BackupLoupe.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -27,6 +15,8 @@ else
 fi
 
 XML_FEED='https://www.soma-zone.com/BackupLoupe/a/appcast_update.xml'
+
+INSTALL_TO='/Applications/BackupLoupe.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
 
@@ -107,7 +97,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Installing $FILENAME to $UNZIP_TO"
 
@@ -129,13 +119,13 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 		exit 1
 	fi
 fi
@@ -154,6 +144,7 @@ then
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
 
 exit 0
 #EOF

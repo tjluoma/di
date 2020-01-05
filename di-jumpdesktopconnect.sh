@@ -7,9 +7,6 @@
 
 NAME="$0:t:r"
 
-	# installed by pkg
-INSTALL_TO='/Applications/Jump Desktop Connect.app'
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -18,6 +15,8 @@ else
 fi
 
 XML_FEED='https://s3.amazonaws.com/jumpdesktop.com/downloads/connect/connect-mac.xml'
+
+INSTALL_TO='/Applications/Jump Desktop Connect.app'
 
 INFO=$(curl -sfLS "$XML_FEED" | tr -s '\t|\012' ' ')
 

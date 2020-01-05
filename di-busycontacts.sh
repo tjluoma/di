@@ -1,26 +1,13 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Busy Contacts
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-10
 
-	# installed by pkg
-INSTALL_TO='/Applications/BusyContacts.app'
-TRASH="/.Trashes/$UID"
-
-if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-then
-	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://apps.apple.com/us/app/busycontacts/id964258399?mt=12> or"
-	echo "	<macappstore://apps.apple.com/us/app/busycontacts/id964258399>"
-	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-	exit 0
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/BusyContacts.app'
 
 HOMEPAGE="https://www.busymac.com/busycontacts/"
 
@@ -87,6 +74,15 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/busycontacts/id964258399?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/busycontacts/id964258399>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
+
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
@@ -121,7 +117,7 @@ cd "$FILENAME:h"
 
 ditto --noqtn -xk -v --rsrc --extattr "$FILENAME" . || die "ditto failed"
 
-mv -f "$FILENAME" "$TRASH/"
+mv -f "$FILENAME" "$HOME/.Trash/"
 
 mv -vf "BusyContacts Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 
@@ -142,7 +138,7 @@ then
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# If there's an existing installation, move it to the trash
-		mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
 	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'

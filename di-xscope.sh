@@ -15,17 +15,7 @@ DOWNLOAD_PAGE="https://xscopeapp.com"
 
 SUMMARY="xScope is a powerful set of tools that are ideal for measuring, inspecting & testing on-screen graphics and layouts in both Mac OS X and iOS."
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/xScope.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/xScope.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/xScope.app'
 
 if [ -e "$HOME/.path" ]
 then
@@ -151,16 +141,16 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$$TRASH/$UID/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$$TRASH/$UID/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $$TRASH/$UID/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi

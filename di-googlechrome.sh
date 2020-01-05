@@ -15,6 +15,7 @@ else
 fi
 
 	# must be in /Applications/ for 1Password
+
 INSTALL_TO='/Applications/Google Chrome.app'
 
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
@@ -139,6 +140,7 @@ then
 	fi
 fi
 
+
 ###############################################################################################
 ## Here is where we move the old version (if it exists) to the trash
 
@@ -149,7 +151,7 @@ then
 		## which would be very bad to interrupt by quitting suddenly
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 
 	EXIT="$?"
 

@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/SuperDuper!.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/SuperDuper!.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/SuperDuper!.app'
 
 HOMEPAGE="https://www.shirt-pocket.com/SuperDuper/SuperDuperDescription.html"
 
@@ -122,37 +112,33 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 
 ## Release Notes END
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
+echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
 	## exit 22 means 'the file was already fully downloaded'
-[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
-
-[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
-
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download failed (EXIT = $EXIT)" && exit 0
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	## Don't try to quit SuperDuper if running, that would risk being bad
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app" \
-	|| sudo mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app" \
+	|| sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'" >>/dev/stderr
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/" >>/dev/stderr
 
 		exit 1
 	fi

@@ -27,10 +27,6 @@ fi
 INSTALL_V6_TO='/Applications/1Password 6.app'
 INSTALL_V7_TO='/Applications/1Password 7.app'
 
-TRASH="/.Trashes/$UID"
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 function do_os_check {
 
 	OS_VER=$(sw_vers -productVersion)
@@ -338,23 +334,23 @@ else
 		&& LAUNCH='yes' \
 		&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-		mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
 		if [[ "$EXIT" != "0" ]]
 		then
 
-			echo "$NAME: failed to move existing '$INSTALL_TO' to $TRASH/"
+			echo "$NAME: failed to move existing '$INSTALL_TO' to $HOME/.Trash/"
 
 			read -t 30 "?Do you want to use ’sudo’ to try to move the outdated ‘$INSTALL_TO’? [y/N] " ANSWER
 
 			case "$ANSWER" in
 
 				Y*|y*)
-						sudo mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+						sudo mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 						EXIT="$?"
 

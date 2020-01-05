@@ -7,8 +7,7 @@
 
 NAME="$0:t:r"
 
-	# Installed by pkg
-INSTALL_TO='/Applications/OneDrive.app'
+INSTALL_TO="/Applications/OneDrive.app"
 
 HOMEPAGE="https://onedrive.live.com/about/en-us/"
 

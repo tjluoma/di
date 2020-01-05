@@ -1,23 +1,13 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install Charles proxy v3 (if installed) or 4 from <https://www.charlesproxy.com>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-02
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Charles.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Charles.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
-
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/Charles.app'
 
 HOMEPAGE="https://www.charlesproxy.com"
 
@@ -105,8 +95,6 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
-
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
@@ -118,62 +106,47 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+if [ -e "$INSTALL_TO" ]
+then
+		# Quit app, if running
+	pgrep -xq "Charles" \
+	&& LAUNCH='yes' \
+	&& osascript -e 'tell application "Charles" to quit'
 
-echo "$NAME: Mounting $FILENAME:"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Charles.$INSTALLED_VERSION.app"
+fi
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
+echo "$NAME: Accepting EULA and mounting '$FILENAME':"
+
+	# Note that this will automatically accept the EULA without reading it
+	# just like you would have done :-)
+MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
 	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+echo "$NAME: Installing '$MNTPNT/Charles.app' to '$INSTALL_TO:h/':"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
-fi
-
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
-
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+	# Extract from the .zip file and install (this will leave the .zip file in place)
+ditto --noqtn -v "$MNTPNT/Charles.app" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
-else
-	echo "$NAME: ditto failed"
+	echo "$NAME: Installation of $INSTALL_TO was successful."
 
-	exit 1
+	[[ "$LAUNCH" == "yes" ]] && open -a "$INSTALL_TO"
+
+else
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+diskutil eject "$MNTPNT"
 
 exit 0
 #EOF

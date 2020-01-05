@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install/update the latest version of "RansomWhere"
 #
 # From:	Timothy J. Luoma
@@ -22,7 +22,6 @@ RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/RansomWhere.txt
 
 SUMMARY="By continually monitoring the file-system for the creation of encrypted files by suspicious processes, RansomWhere? aims to protect your personal files, generically stopping ransomware in its tracks."
 
-	# Installed via pkg
 INSTALL_TO='/Library/Objective-See/RansomWhere/RansomWhere'
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \

@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Time Machine Editor
 #
 # From:	Timothy J. Luoma
@@ -6,9 +6,6 @@
 # Date:	2018-11-13
 
 NAME="$0:t:r"
-
-	# Installed via pkg
-INSTALL_TO='/Applications/TimeMachineEditor.app'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -18,6 +15,8 @@ else
 fi
 
 HOMEPAGE='https://tclementdev.com/timemachineeditor/'
+
+INSTALL_TO='/Applications/TimeMachineEditor.app'
 
 FEED='https://tclementdev.com/timemachineeditor/updates2.plist'
 

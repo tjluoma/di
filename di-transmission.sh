@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install latest version of Transmission
 #
 # From:	Timothy J. Luoma
@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Transmission.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Transmission.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/Transmission.app'
 
 XML_FEED='https://update.transmissionbt.com/appcast.xml'
 
@@ -111,7 +101,7 @@ then
 
 fi
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
+echo "$NAME: Downloading $URL to $FILENAME"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
@@ -120,50 +110,32 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+if [ -e "$INSTALL_TO" ]
+then
 
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+	### Quit app, if running
+	# 	pgrep -xq "Transmission" \
+	# 	&& LAUNCH='yes' \
+	# 	&& osascript -e 'tell application "Transmission" to quit'
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
-echo "$NAME: Mounting $FILENAME:"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/Transmission.$INSTALLED_VERSION.app"
+fi
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
+		| fgrep -A 1 '<key>mount-point</key>' \
+		| tail -1 \
+		| sed 's#</string>.*##g ; s#.*<string>##g')
 
 if [[ "$MNTPNT" == "" ]]
 then
 	echo "$NAME: MNTPNT is empty"
-	exit 1
-else
-	echo "$NAME: MNTPNT is $MNTPNT"
+	exit 0
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	# Copy from DMG to /Applications/
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
-
-fi
-
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+echo "$NAME: Installing $MNTPNT/$INSTALL_TO:t to $INSTALL_TO"
 
 ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
@@ -171,16 +143,15 @@ EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
+	echo "$NAME: Installation of $INSTALL_TO was successful."
+	exit 0
 else
-	echo "$NAME: ditto failed"
-
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+	# Eject DMG
+diskutil eject "$MNTPNT"
 
 exit 0
 #EOF

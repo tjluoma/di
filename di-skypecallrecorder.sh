@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of Skype Call Recorder
 #
 # From:	Timothy J. Luoma
@@ -204,7 +204,7 @@ echo "$NAME: Found it at: '$APP'. Launching it now. Requires manual installation
 	# the app is an installer which needs user intervention, so the most we can do is just open it
 open "$APP"
 
-if [ ! -d "/Applications/Skype.app" -a ! -d "$HOME/Applications/Skype.app" -a ! -d "/Volumes/Applications/Skype.app" ]
+if [ ! -d "/Applications/Skype.app" -a ! -d "$HOME/Applications/Skype.app" ]
 then
 
 	if (( $+commands[di-skype.sh] ))

@@ -5,9 +5,6 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-12-20
 
-	# Installed via pkg
-INSTALL_TO='/Applications/ChronoSync.app'
-
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -16,6 +13,8 @@ then
 else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
+
+INSTALL_TO='/Applications/ChronoSync.app'
 
 URL='https://downloads.econtechnologies.com/updates/CS4_Download.dmg'
 

@@ -1,21 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install/update the latest version of "Lockdown"
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-23
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Lockdown.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Lockdown.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 NAME="$0:t:r"
 
@@ -33,6 +21,8 @@ DOWNLOAD_PAGE="https://objective-see.com/products/lockdown.html"
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Lockdown.txt'
 
 SUMMARY="Lockdown is an open-source tool for El Capitan that audits and remediates security configuration settings."
+
+INSTALL_TO='/Applications/Lockdown.app'
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 		| gunzip -f -c \
@@ -127,6 +117,7 @@ else
 	exit 1
 fi
 
+
 ##
 
 OS_VER=$(sw_vers -productVersion | cut -d. -f2)
@@ -138,7 +129,10 @@ then
 	exit 0
 fi
 
-	## make sure that the .zip is valid before we proceed
+##
+
+
+## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
@@ -150,15 +144,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$TRASH/"
+	mv -fv "$FILENAME" "$HOME/.Trash/"
 
-	mv -fv "$FILENAME:r".* "$TRASH/"
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
 
 	exit 0
+
 fi
 
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -183,16 +178,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
 		exit 1
 	fi
@@ -217,7 +212,6 @@ else
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
 
 exit 0
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install latest LaunchControl
 #
 # From:	Timothy J. Luoma
@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/LaunchControl.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/LaunchControl.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO='/Applications/LaunchControl.app'
 
 HOMEPAGE="http://www.soma-zone.com/LaunchControl/"
 
@@ -105,8 +95,6 @@ then
 
 fi
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
-
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
@@ -114,29 +102,25 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
-
-[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
 if [[ -e "$INSTALL_TO" ]]
 then
-	mv -vn "$INSTALL_TO" "$TRASH/LaunchControl-$INSTALLED_VERSION.app"
+	mv -vn "$INSTALL_TO" "$HOME/.Trash/LaunchControl-$INSTALLED_VERSION.app"
 fi
 
-echo "$NAME: Installing '$FILENAME' to '$INSTALL_TO'..."
+	# Unpack and Install the .tbz2 file to /Applications/
 
-tar -C "$INSTALL_TO:h" -j -x -f "$FILENAME"
+echo "$NAME: Installing $FILENAME to $INSTALL_TO..."
+
+tar -C "/Applications/" -j -x -f "$FILENAME"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of '$INSTALL_TO' was successful."
+	echo "$NAME: Installation of $INSTALL_TO was successful."
 	exit 0
 else
-	echo "$NAME: Installation of '$INSTALL_TO' failed (\$EXIT = $EXIT)\nThe downloaded file can be found at '$FILENAME'."
+	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
 	exit 1
 fi
 

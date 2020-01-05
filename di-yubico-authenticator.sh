@@ -100,9 +100,7 @@ then
 
 else
 
-	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en \
-	| tee -a "$FILENAME:r.install.log" || open -R "$FILENAME"
-
+	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log" || open -R "$FILENAME"
 fi
 
 exit 0

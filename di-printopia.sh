@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install/update the latest version of Printopia v3
 #
 # From: Timothy J. Luoma
@@ -7,17 +7,7 @@
 
 NAME="$0:t:r"
 
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/Printopia.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/Printopia.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
+INSTALL_TO="/Applications/Printopia.app"
 
 XML_FEED="https://www.decisivetactics.com/api/checkupdate?app_id=com.decisivetactics.printopia"
 
@@ -42,13 +32,13 @@ function check_bytes { ACTUAL_BYTES=$(zstat -L +size "$FILENAME" 2>/dev/null || 
 function trash_our_files {
 
 		# if the file FILENAME exists, put it in the trash with a warning to leave it alone
-	[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$TRASH/$FILENAME:t:r.Corrupted-Do-Not-Use.$ACTUAL_SHASUM256.zip"
+	[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$HOME/.Trash/$FILENAME:t:r.Corrupted-Do-Not-Use.$ACTUAL_SHASUM256.zip"
 
 		# put the checksum file in the trash too
-	[[ -e "$SHASUM_FILENAME" ]] && mv -vf "$SHASUM_FILENAME" "$TRASH/"
+	[[ -e "$SHASUM_FILENAME" ]] && mv -vf "$SHASUM_FILENAME" "$HOME/.Trash/"
 
 		# if we created a $RELEASE_NOTES_FILE, then we move that to the trash also
-	[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$TRASH/"
+	[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
 
 }
 
@@ -342,7 +332,7 @@ fi
 # now we need to unzip it and install it
 
 	# create a temporary directory that we can use to unzip the $FILENAME into
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 	# tell the user what we are doing:
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
@@ -505,10 +495,10 @@ then
 	&& pkill -f "$PRINTOPIA_SERVER"
 
 		# tell the user we are trashing their old installation
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
 		# move the existing installation to the trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	if [[ -e "$INSTALL_TO" ]]
 	then

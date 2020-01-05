@@ -15,7 +15,6 @@ else
 fi
 
 	# Yes, they really put an '(R)' in the app name. 🙄
-	# Installed via pkg
 INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
 
 HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"

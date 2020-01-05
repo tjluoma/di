@@ -7,11 +7,10 @@
 
 NAME="$0:t:r"
 
-	# Installed via Installer
-INSTALL_TO='/Applications/VMware Fusion.app'
+INSTALL_TO="/Applications/VMware Fusion.app"
 
-	## This file is an attractive nuisance, but not useful
-	# XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
+## This file is an attractive nuisance, but not useful
+# XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
 
 HOMEPAGE="https://www.vmware.com/products/fusion.html"
 

@@ -14,7 +14,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Installed via pkg, can't move
 INSTALL_TO='/Applications/Power Manager.app'
 
 XML_FEED='https://version.dssw.co.uk/powermanager/mac'

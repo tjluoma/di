@@ -1,30 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install the latest version of OmniPlan (3)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2016-05-10
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OmniPlan.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/OmniPlan.app'
-	TRASH="/.Trashes/$UID"
-
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/omniplan-3/id1040002810?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/omniplan-3/id1040002810>"
-		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-		exit 0
-	fi
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [ -e "$HOME/.path" ]
 then
@@ -34,6 +13,8 @@ else
 fi
 
 NAME="$0:t:r"
+
+INSTALL_TO='/Applications/OmniPlan.app'
 
 HOMEPAGE="https://www.omnigroup.com/omniplan"
 
@@ -96,6 +77,14 @@ then
 
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/omniplan-3/id1040002810?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/omniplan-3/id1040002810>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
 fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.tbz2"
@@ -124,7 +113,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: unpacking '$FILENAME' to '$UNZIP_TO/':"
 
@@ -148,27 +137,27 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 		exit 1
 	fi
 fi
 
 mv -vf "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
-if [[ "$EXIT" == "0" ]]
+if [ "$EXIT" = "0" ]
 then
 
-	echo "$NAME: Installation of '$INSTALL_TO' successful"
+	echo "$NAME: Installation of $INSTALL_TO successful"
 	exit 0
 
 else
-	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)"
+	echo "$NAME: tar failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi

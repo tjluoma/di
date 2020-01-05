@@ -1,21 +1,9 @@
-#!/usr/bin/env zsh -f
+#!/bin/zsh -f
 # Purpose: Download and install OmniOutliner 4 or 5
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-21
-
-	# This is where the app will be installed or updated.
-if [[ -d '/Volumes/Applications' ]]
-then
-	INSTALL_TO='/Volumes/Applications/OmniOutliner.app'
-	TRASH="/Volumes/Applications/.Trashes/$UID"
-else
-	INSTALL_TO='/Applications/OmniOutliner.app'
-	TRASH="/.Trashes/$UID"
-fi
-
-[[ ! -w "$TRASH" ]] && TRASH="$HOME/.Trash"
 
 if [ -e "$HOME/.path" ]
 then
@@ -31,6 +19,8 @@ HOMEPAGE="https://www.omnigroup.com/omnioutliner"
 DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnioutliner/"
 
 SUMMARY="Create perfect outlines with a powerful, productive app. This is your all-purpose tool for Mac with smart columns, scriptability, custom styles, templates, and more."
+
+INSTALL_TO='/Applications/OmniOutliner.app'
 
 LAUNCH='no'
 
@@ -154,7 +144,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unpacking $FILENAME to $UNZIP_TO"
 
@@ -176,19 +166,19 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
-		echo "$NAME: failed to move existing $INSTALL_TO to $TRASH/"
+		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 		exit 1
 	fi
 fi
 
 	# Note difference in names
-mv -vf "$UNZIP_TO/OmniOutliner.app" "$INSTALL_TO/"
+mv -vf "$UNZIP_TO//OmniOutliner.app" "$INSTALL_TO/"
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
