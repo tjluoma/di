@@ -37,6 +37,14 @@ then
 	exit 0
 fi
 
+	####################################################################################################
+	####################################################################################################
+	## Another way of getting the URL
+	##
+	##		curl --silent "https://www.amazon.com/kindlemacdownload/ref=klp_hz_mac" \
+	##		| tr -d '\r|\n' \
+	##		| sed 's#.*http#http#g ; s#.dmg.*#.dmg#g'
+	#
 	# NOTE: We do not want to use 'curl --location' here because that will not give us the information we need
 	# We _want_ to get the basic HTML redirection page, because that has the actual, current URL in it
 	#
