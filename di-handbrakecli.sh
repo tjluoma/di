@@ -14,17 +14,26 @@ else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-REMOTE_FILENAME=$(curl -sfLS 'https://handbrake.fr/downloads2.php' | tr '"|=' '\012' | egrep -i '^HandBrakeCLI-.*\.dmg$')
-	LATEST_VERSION=$(echo "$REMOTE_FILENAME:r" | tr -dc '[0-9]\.')
+# REMOTE_FILENAME=$(curl -sfLS 'https://handbrake.fr/downloads2.php' | tr '"|=' '\012' | egrep -i '^HandBrakeCLI-.*\.dmg$')
+# 	LATEST_VERSION=$(echo "$REMOTE_FILENAME:r" | tr -dc '[0-9]\.')
+# 		RELEASE_NOTES_URL="https://github.com/HandBrake/HandBrake/releases/tag/$LATEST_VERSION"
+#
+# if [[ "$REMOTE_FILENAME" == "" ]]
+# then
+# 	echo "$NAME: '$REMOTE_FILENAME' is empty." >>/dev/stderr
+# 	exit 1
+# fi
+#
+# URL="https://download2.handbrake.fr/${LATEST_VERSION}/HandBrakeCLI-${LATEST_VERSION}.dmg"
+
+FILE_PATH=$(curl -sfLS "https://github.com/HandBrake/HandBrake/releases/latest" \
+			| tr '"' '\012' \
+			| egrep '^/HandBrake/HandBrake/releases/download/.*/HandBrakeCLI-.*.dmg$')
+
+URL="https://github.com${FILE_PATH}"
+	REMOTE_FILENAME=$(echo "$URL:t")
+	LATEST_VERSION=$(echo "$URL:r:t" | tr -dc '[0-9]\.')
 		RELEASE_NOTES_URL="https://github.com/HandBrake/HandBrake/releases/tag/$LATEST_VERSION"
-
-if [[ "$REMOTE_FILENAME" == "" ]]
-then
-	echo "$NAME: '$REMOTE_FILENAME' is empty." >>/dev/stderr
-	exit 1
-fi
-
-URL="https://download2.handbrake.fr/${LATEST_VERSION}/HandBrakeCLI-${LATEST_VERSION}.dmg"
 
 if (( $+commands[HandBrakeCLI] ))
 then
