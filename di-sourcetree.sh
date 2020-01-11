@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of Sourcetree from <https://www.sourcetreeapp.com/>
 #
 # From:	Timothy J. Luoma
