@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Skim from <https://skim-app.sourceforge.io>
 #
 # From:	Timothy J. Luoma
@@ -15,7 +15,7 @@ DOWNLOAD_PAGE="https://skim-app.sourceforge.io"
 
 SUMMARY="Skim is a PDF reader and note-taker for OS X. It is designed to help you read and annotate scientific papers in PDF, but is also great for viewing any PDF file. Stop printing and start skimming."
 
-XML_FEED="http://skim-app.sourceforge.net/skim.xml"
+XML_FEED="https://skim-app.sourceforge.io/skim.xml"
 
 if [ -e "$HOME/.path" ]
 then
