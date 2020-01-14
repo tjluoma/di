@@ -14,8 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Yes, they really put an '(R)' in the app name. 🙄
-INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
+	## Yes, they really put an '(R)' in the app name. 🙄
+	## 2020-01-13 - they seem to have stopped that
+#INSTALL_TO='/Applications/Intel Power Gadget/Intel(R) Power Gadget.app'
+
+INSTALL_TO='/Applications/Intel Power Gadget/Intel Power Gadget.app'
 
 HOMEPAGE="https://software.intel.com/en-us/articles/intel-power-gadget"
 
