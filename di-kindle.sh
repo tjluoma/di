@@ -117,7 +117,19 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 1
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "1" ]]
+then
+
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+
+fi
 
 echo "$NAME: Mounting $FILENAME:"
 
@@ -182,6 +194,9 @@ INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVer
   INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 mv -vf "$FILENAME" "$FILENAME:h/$INSTALL_TO:t:r-${INSTALLED_VERSION}_${INSTALLED_BUILD}.dmg"
+
+mv -vf "$FILENAME:r.txt" "$FILENAME:h/$INSTALL_TO:t:r-${INSTALLED_VERSION}_${INSTALLED_BUILD}.txt"
+
 
 exit 0
 #
