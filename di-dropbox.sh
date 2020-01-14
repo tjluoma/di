@@ -7,8 +7,6 @@
 
 NAME="$0:t:r"
 
-## @TODO - the installer app may default to /Applications/
-
 INSTALL_TO='/Applications/Dropbox.app'
 
 HOMEPAGE="https://www.dropbox.com"
@@ -73,8 +71,6 @@ fi
 #		Get the version number for the installed version of Dropbox
 #
 
-
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -98,6 +94,12 @@ then
 
 	msg  "Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
 fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
