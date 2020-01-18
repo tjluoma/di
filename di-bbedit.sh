@@ -163,6 +163,13 @@ then
 
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
+
 fi
 
 ################################################################################################################################################
