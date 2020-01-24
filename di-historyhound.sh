@@ -27,8 +27,9 @@ URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
 
 RELEASE_NOTES_URL=$(echo "$INFO" | sed -e 's#.*<sparkle:releaseNotesLink xml:lang="en">##g' -e 's#</sparkle:releaseNotesLink>.*##')
 
-	# No BUILD info in feed, but both are identical in app anyway, so it's moot
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
+LATEST_BUILD=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e 's#" .*##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$RELEASE_NOTES_URL" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -48,28 +49,41 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
 
 else
 
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 if (( $+commands[lynx] ))
 then
