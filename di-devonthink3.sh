@@ -73,7 +73,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
+FILENAME="$HOME/Downloads/DevonThink-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
