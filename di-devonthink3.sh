@@ -82,7 +82,7 @@ then
 		| sed -e 's#.*\[CDATA\[##g' -e 's#\]\]><\/description>.*##g' \
 		| lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin)
 
-	echo "${RELEASE_NOTES}\n\nURL: $URL"
+	echo "${RELEASE_NOTES}\n\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 
