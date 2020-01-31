@@ -1,15 +1,15 @@
-#!/bin/zsh -f
-# Purpose: Download and install (or update) the latest version of Fantastical 2
+#!/usr/bin/env zsh -f
+# Purpose: Download and install (or update) the latest version of Fantastical
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-12-30
+# Date:	2015-12-30 ; 2020-01-31 (v3)
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Fantastical 2.app'
+INSTALL_TO='/Applications/Fantastical.app'
 
-XML_FEED='https://flexibits.com/fantastical/appcast2.php'
+XML_FEED='https://dev.flexibits.com/fantastical/appcast3.xml'
 
 HOMEPAGE="https://flexibits.com/fantastical/"
 
@@ -17,7 +17,7 @@ DOWNLOAD_PAGE="https://flexibits.com/fantastical/download"
 
 SUMMARY="The calendar app you won’t be able to live without."
 
-RELEASE_NOTES_URL='https://flexibits.com/fantastical/appcast2.php'
+RELEASE_NOTES_URL="$XML_FEED"
 
 if [ -e "$HOME/.path" ]
 then
@@ -134,7 +134,7 @@ if [[ -e "$INSTALL_TO" ]]
 then
 	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
@@ -150,7 +150,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
