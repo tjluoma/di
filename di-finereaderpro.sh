@@ -5,7 +5,15 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-09 ; 2019-11-14 update
 
+
 NAME="$0:t:r"
+
+echo "$NAME: I hate this stupid app and it's stupid updating system. I give up (for now). @todo"
+
+exit 0
+
+
+
 
 INSTALL_TO='/Applications/FineReader.app'
 
