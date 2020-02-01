@@ -115,6 +115,27 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
+egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "1" ]]
+then
+
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+
+fi
+
+if [ -e "$INSTALL_TO" -a ! -w "$INSTALL_TO" ]
+then
+	echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+	exit 2
+fi
+
 cd "$FILENAME:h"
 
 # This is where we
@@ -122,7 +143,7 @@ cd "$FILENAME:h"
 # move the .zip to the trash
 # rename the .pkg according to how we want it named
 
-ditto --noqtn -xk -v --rsrc --extattr "$FILENAME" . || die "ditto failed"
+ditto --noqtn -xk -V --rsrc --extattr "$FILENAME" . || die "ditto failed"
 
 mv -f "$FILENAME" "$HOME/.Trash/"
 
@@ -145,10 +166,11 @@ then
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# If there's an existing installation, move it to the trash
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		echo "$NAME: moving '$INSTALL_TO' to Trash..."
+		mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
-	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'
+	mv -f "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'
 
 elif (( $+commands[pkginstall.sh] ))
 then
