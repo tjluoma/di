@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Busy Contacts
 #
 # From:	Timothy J. Luoma
@@ -138,7 +138,8 @@ then
 	if [[ -e "$INSTALL_TO" ]]
 	then
 			# If there's an existing installation, move it to the trash
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+		echo "$NAME: moving '$INSTALL_TO' to Trash..."
+		mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 	fi
 
 	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'
