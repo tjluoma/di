@@ -1,5 +1,5 @@
-#!/bin/zsh -f
-# Purpose: Download and install the latest version of CardHop from <https://flexibits.com/cardhop/>
+#!/usr/bin/env zsh -f
+# Purpose: Download and install the latest version of Cardhop from <https://flexibits.com/cardhop/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/CardHop.app'
+INSTALL_TO='/Applications/Cardhop.app'
 
 HOMEPAGE="https://flexibits.com/cardhop"
 
@@ -140,9 +140,9 @@ fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Moving existing (old) \"$INSTALL_TO\" to \"$HOME/.Trash/\"."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
@@ -158,7 +158,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
