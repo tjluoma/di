@@ -3,29 +3,8 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2015-11-09 ; 2019-11-14 update
+# Date:	2015-11-09 ; 2019-11-14 update ; 2020-01-31 ne URL and method of downloading
 
-
-NAME="$0:t:r"
-
-echo "$NAME: I hate this stupid app and it's stupid updating system. I give up (for now). @todo"
-
-exit 0
-
-
-
-
-INSTALL_TO='/Applications/FineReader.app'
-
-HOMEPAGE="https://www.abbyy.com/en-us/finereader/pro-for-mac/"
-
-RELEASE_NOTES_URL='https://support.abbyy.com/hc/en-us/articles/360001026229-FineReader-Pro-for-Mac-Change-Log'
-
-DOWNLOAD_PAGE="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
-
-SUMMARY="Easily transform paper documents, PDFs and digital photos of text into editable and searchable files. No more manual retyping or reformatting. Instead you can search, share, archive, and copy information from documents for reuse and quotation — saving you time, effort and hassles."
-
-URL="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
 
 if [ -e "$HOME/.path" ]
 then
@@ -34,18 +13,25 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-LATEST_VERSION=$(curl -sfLS "https://www.abbyy.com/finereader-pro-mac-downloads/" | fgrep 'Build #:' | sed 's#</p>##g ; s#.*>##g' | tr -dc '[0-9]\.')
+NAME="$0:t:r"
 
-URL="http://fr7.abbyy.com/mac/fr/ABBYY_FineReader_Pro_ESD.dmg"
+RELEASE_NOTES_URL='https://support.abbyy.com/hc/en-us/articles/360001026229-FineReader-Pro-for-Mac-Change-Log'
+
+INSTALL_TO='/Applications/FineReader.app'
+
+LATEST_VERSION=$(curl -sfLS "https://www.abbyy.com/finereader-pro-mac-downloads/" | fgrep 'Build #:' | sed 's#.*</strong> ##g ; s#</p>##g')
+
+	# https://downloads.abbyy.com/fr/fr_mac/current/ABBYYFineReaderPro.dmg by itself is not enough
+URL=$(curl -sfLS "https://www.abbyy.com/finereader-pro-mac-downloads/" | egrep -i 'https:.*\.dmg' | sed 's#" .*##g ; s#.*"https#https#g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	SHORT_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+	INSTALLED_VERSION_PART1=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
 
-	BUNDLE_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	INSTALLED_VERSION_PART2=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion)
 
-	INSTALLED_VERSION=$(echo "$SHORT_VERSION.$BUNDLE_VERSION")
+	INSTALLED_VERSION="${INSTALLED_VERSION_PART1}.${INSTALLED_VERSION_PART2}"
 
 	autoload is-at-least
 
@@ -63,12 +49,19 @@ then
 
 	FIRST_INSTALL='no'
 
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
+
 else
 
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/FineReader-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -78,7 +71,6 @@ then
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin -nonumbers -nolist)
 
 	echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\n\nURL: $URL" | tee "$FILENAME:r.txt"
-
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -94,7 +86,17 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "1" ]]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
 echo "$NAME: Mounting $FILENAME:"
 
@@ -119,7 +121,8 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	echo "$NAME: Moving old '$INSTALL_TO' to Trash..."
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app.$RANDOM"
 
 	EXIT="$?"
 
