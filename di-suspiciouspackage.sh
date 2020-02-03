@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Suspicious Package from <http://www.mothersruin.com/software/SuspiciousPackage/>
 #
 # From:	Timothy J. Luoma
@@ -22,15 +22,33 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-	# Note the URL is a plist not your ususal RSS/XML file for Sparkle
-INFO=$(curl -sfL "http://www.mothersruin.com/software/SuspiciousPackage/data/SuspiciousPackageVersionInfo.plist")
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-LATEST_VERSION=$(echo "$INFO" | fgrep -A1 "<key>CFBundleShortVersionString</key>" | tr -dc '[0-9]\.')
+if [ "$OS_VER" = "11" -o "$OS_VER" = "12"  ]
+then
+		# For macOS 10.12 (Sierra) or OS X 10.11 (El Capitan), use Version 3.4.1.
+	URL='https://www.mothersruin.com/software/downloads/SuspiciousPackage-3.4.1.dmg'
 
-LATEST_BUILD=$(echo "$INFO" | fgrep -A1 "<key>CFBundleVersion</key>" | tr -dc '[0-9]\.')
+	LATEST_VERSION='3.4.1'
 
-	# $INFO does not contain any download URLs
-URL='http://www.mothersruin.com/software/downloads/SuspiciousPackage.dmg'
+	LATEST_BUILD='395'
+
+	RELEASE_NOTES_URL=""
+
+else
+		# Note the URL is a plist not your ususal RSS/XML file for Sparkle
+	INFO=$(curl -sfL "http://www.mothersruin.com/software/SuspiciousPackage/data/SuspiciousPackageVersionInfo.plist")
+
+	LATEST_VERSION=$(echo "$INFO" | fgrep -A1 "<key>CFBundleShortVersionString</key>" | tr -dc '[0-9]\.')
+
+	LATEST_BUILD=$(echo "$INFO" | fgrep -A1 "<key>CFBundleVersion</key>" | tr -dc '[0-9]\.')
+
+		# $INFO does not contain any download URLs
+	URL='http://www.mothersruin.com/software/downloads/SuspiciousPackage.dmg'
+
+	RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
+
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -65,17 +83,18 @@ fi
 
 FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
-if (( $+commands[lynx] ))
+if [[ "$RELEASE_NOTES_URL" != "" ]]
 then
+	if (( $+commands[lynx] ))
+	then
 
-	RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
-
-	( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
-	curl -sfL "$RELEASE_NOTES_URL" \
-	| sed '1,/<tbody>/d; /<\/tr>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed G ;
-	echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
+		curl -sfL "$RELEASE_NOTES_URL" \
+		| sed '1,/<tbody>/d; /<\/tr>/,$d' \
+		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
+		| sed G ;
+		echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -110,7 +129,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 fi
 
 echo "$NAME installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO':"
