@@ -184,10 +184,15 @@ FILENAME="$HOME/Downloads/${INSTALL_TO:t:r}-${LATEST_VERSION}.zip"
 	## Release Notes - start
 if [[ "$RELEASE_NOTES_URL" != '' ]]
 then
-	( echo -n "$NAME: Release Notes for iTerm version $LATEST_VERSION ${PREFERS}\n\n" ;
-	  curl -sfL "$RELEASE_NOTES_URL" ;
-	  echo "\nSource: <$RELEASE_NOTES_URL>\nHome: ${HOMEPAGE} \nDownloads: ${DOWNLOAD_PAGE} \nSummary: ${SUMMARY} \nURL: ${URL} \nXML_FEED: ${XML_FEED}" ) \
-	  | tee "$FILENAME:r.txt"
+
+	if [[ ! -e "$FILENAME:r.txt" ]]
+	then
+		( echo -n "$NAME: Release Notes for iTerm version $LATEST_VERSION ${PREFERS}\n\n" ;
+		  curl -sfL "$RELEASE_NOTES_URL" ;
+		  echo "\nSource: <$RELEASE_NOTES_URL>\nHome: ${HOMEPAGE} \nDownloads: ${DOWNLOAD_PAGE} \nSummary: ${SUMMARY} \nURL: ${URL} \nXML_FEED: ${XML_FEED}" ) \
+		  | tee "$FILENAME:r.txt"
+	fi
+
 fi
 	## Release Notes - end
 
@@ -205,7 +210,19 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 	# save the sha256 checksum to a file
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "1" ]]
+then
+
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+
+fi
 
 	# make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
