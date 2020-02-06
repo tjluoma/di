@@ -65,7 +65,7 @@ LOG="$HOME/Library/Logs/$NAME.$DATE.log"
 
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
-LOCKFILE="$HOME/.$NAME.lock"
+LOCKFILE="/tmp/.${NAME}.${LOGNAME}.lock"
 
 if [[ -e "$LOCKFILE" ]]
 then
