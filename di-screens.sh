@@ -105,19 +105,13 @@ FILENAME="$HOME/Downloads/Screens-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 if (( $+commands[lynx] ))
 then
 
-	### These release notes seem to be for the entire 4.0 release, with no clear way to tell what happened with one particular version
+	## 2020-02-06 - the release notes are now in the XML_FEED itself, not a separate URL
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| egrep '<sparkle:releaseNotesLink>https://updates.devmate.com/releasenotes/.*/com.edovia.screens4.mac.html</sparkle:releaseNotesLink>' \
-		| head -1 \
-		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
+	RELEASE_NOTES=$(curl -sfLS "$XML_FEED" \
+		| sed '1,/\[CDATA\[/d; /\]\]/,$d' \
+		| lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nonumbers -nolist)
 
-	echo "	$NAME: Saving '$RELEASE_NOTES_URL' to '$FILENAME:h/'"
-
-	lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist "$RELEASE_NOTES_URL" \
-	| sed 's#____*____##g' > "$FILENAME:r.txt"
-
-	curl -sfL "$RELEASE_NOTES_URL" > "$FILENAME:r.html"
+	echo "${RELEASE_NOTES}\n\nURL: $URL" | tee "$FILENAME:r.txt"
 
 fi
 
