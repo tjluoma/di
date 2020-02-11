@@ -144,7 +144,7 @@ then
 		if [[ -e "$INSTALL_TO" ]]
 		then
 				# move installed version to trash
-			mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
+			mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
 		fi
 
 		echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
@@ -207,7 +207,7 @@ then
 
 			echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-			mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+			mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 			EXIT="$?"
 
@@ -223,7 +223,7 @@ then
 		echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 			# Move the file out of the folder
-		mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+		mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 		EXIT="$?"
 
@@ -300,7 +300,7 @@ then
 	then
 		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
@@ -316,7 +316,7 @@ then
 	echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 		# Move the file out of the folder
-	mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+	mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 	EXIT="$?"
 
@@ -455,7 +455,7 @@ else
 
 		echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-		mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 		EXIT="$?"
 
@@ -471,7 +471,7 @@ else
 	echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 		# Move the file out of the folder
-	mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+	mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 	EXIT="$?"
 
