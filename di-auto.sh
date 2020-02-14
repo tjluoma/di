@@ -25,36 +25,36 @@ function timestamp { strftime "%Y-%m-%d @ %H:%M:%S" "$EPOCHSECONDS" }
 
 LASTRUN="$HOME/.$NAME.lastrun.txt"
 
+LOCKFILE="/tmp/.${NAME}.${LOGNAME}.lock"
+
 [[ ! -e "$LASTRUN" ]] && echo '0' > "$LASTRUN"
 
-if [[ "$1" != "--force" ]]
+[[ "$1" == "--force" ]] && echo '0' > "$LASTRUN" && rm -f "$LOCKFILE"
+
+LASTRUN_TIME=$(tail "$LASTRUN" | egrep '[0-9]' | tail -1 | awk '{print $1}')
+
+DIFF=$(($EPOCHSECONDS - $LASTRUN_TIME))
+
+	# unless "forced" don't run if we've run in the last 59 minutes
+if [ "$DIFF" -lt "3540" ]
 then
 
-	LASTRUN_TIME=$(tail "$LASTRUN" | egrep '[0-9]' | tail -1 | awk '{print $1}')
+	TIME_AGO_READABLE=$(seconds2readable.sh "$DIFF")
 
-	DIFF=$(($EPOCHSECONDS - $LASTRUN_TIME))
+	growlnotify  \
+		--appIcon "iTerm" \
+		--identifier "$NAME" \
+		--message "${TIME_AGO_READABLE} ago" \
+		--title "$NAME not running.
+				Last ran: "
 
-		# unless "forced" don't run if we've run in the last 59 minutes
-	if [ "$DIFF" -lt "3540" ]
-	then
+	MSG="$NAME not running. Ran $TIME_AGO_READABLE ago."
 
-		TIME_AGO_READABLE=$(seconds2readable.sh "$DIFF")
+	echo "$MSG" >>/dev/stderr
 
-		growlnotify  \
-			--appIcon "iTerm" \
-			--identifier "$NAME" \
-			--message "${TIME_AGO_READABLE} ago" \
-			--title "$NAME not running.
-					Last ran: "
+	po.sh "$MSG"
 
-		MSG="$NAME not running. Ran $TIME_AGO_READABLE ago."
-
-		echo "$MSG" >>/dev/stderr
-
-		po.sh "$MSG"
-
-		exit 0
-	fi
+	exit 0
 fi
 
 DATE=`strftime "%Y-%m-%d" "$EPOCHSECONDS"`
@@ -64,8 +64,6 @@ LOG="$HOME/Library/Logs/$NAME.$DATE.log"
 [[ -e "$LOG" ]]   || touch "$LOG"       # Create log file if needed
 
 function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
-
-LOCKFILE="/tmp/.${NAME}.${LOGNAME}.lock"
 
 if [[ -e "$LOCKFILE" ]]
 then
