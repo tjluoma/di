@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download Logos 8 (since 7 and lower are no longer supported)
 #
 # From:	Timothy J. Luoma

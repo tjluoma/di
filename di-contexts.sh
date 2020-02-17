@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of Contexts from https://contexts.co/
 #
 # From:	Timothy J. Luoma

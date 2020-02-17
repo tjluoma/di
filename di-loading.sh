@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Loading - Simple network activity monitor for OS X
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Get the latest version of Stop The News
 #
 # From:	Timothy J. Luoma

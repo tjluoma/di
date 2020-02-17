@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Radio Silence <https://radiosilenceapp.com>
 # Warning! Requires 'sudo installer' so it cannot be run un-attended.
 #

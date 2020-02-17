@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download latest version of Chatology from https://flexibits.com/chatology/
 #
 # From:	Timothy J. Luoma

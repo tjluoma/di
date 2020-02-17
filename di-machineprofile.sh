@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install latest version of MachineProfile <https://www.micromat.com/products/machineprofile>
 #
 # From:	Timothy J. Luoma

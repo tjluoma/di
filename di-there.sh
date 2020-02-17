@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Keeps track of people or place's timezones (https://there.pm or https://there.team)
 #
 # From:	Timothy J. Luoma

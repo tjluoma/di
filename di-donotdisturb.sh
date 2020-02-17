@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of "Do Not Disturb"
 #
 # From:	Timothy J. Luoma

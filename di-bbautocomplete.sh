@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of BBAutoComplete from https://c-command.com/bbautocomplete/
 #
 # From:	Timothy J. Luoma

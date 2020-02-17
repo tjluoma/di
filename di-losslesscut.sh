@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Save space by quickly and losslessly trimming video and audio files
 #
 # From:	Timothy J. Luoma

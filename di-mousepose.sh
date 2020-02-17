@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Mousepose from <https://boinx.com/mousepose/overview/>
 #
 # From:	Timothy J. Luoma

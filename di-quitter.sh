@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of Quitter
 #
 # From:	Timothy J. Luoma

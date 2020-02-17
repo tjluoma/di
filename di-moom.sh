@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of Moom from <https://manytricks.com/moom/>
 #
 # From:	Timothy J. Luoma

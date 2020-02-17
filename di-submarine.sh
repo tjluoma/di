@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Submarine - Dive in and find subtitles online
 #
 # From:	Timothy J. Luoma

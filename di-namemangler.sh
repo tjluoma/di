@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install Name Mangler v3 from <https://manytricks.com/namemangler/>
 #
 # From:	Timothy J. Luoma

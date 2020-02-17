@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose:  Download and install/update the latest version of 'Paparazzi!' from <https://derailer.org/paparazzi/>
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: PermissionScanner – searches folders for files which are either not writable or not readable
 #
 # From:	Timothy J. Luoma

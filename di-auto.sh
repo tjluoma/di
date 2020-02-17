@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: 	Checks all di-*.sh scripts in same directory to see if the corresponding apps are installed.
 #
 # From: 	Alister Forbes

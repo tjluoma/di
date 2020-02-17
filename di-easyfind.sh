@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of EasyFind
 #
 # From:	Timothy J. Luoma

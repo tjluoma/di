@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Consolation – a log browser for macOS Sierra, High Sierra, and Mojave - https://eclecticlight.co/consolation-t2m2-and-log-utilities/
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of PhoneView from <https://www.ecamm.com/mac/phoneview/>
 #
 # From:	Tj Luo.ma

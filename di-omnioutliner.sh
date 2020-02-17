@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install OmniOutliner 4 or 5
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of Changes.app
 #
 # From:	Timothy J. Luoma

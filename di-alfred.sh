@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Updated for Alfred 4
 #
 # From:	Timothy J. Luoma

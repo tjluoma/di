@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: https://www.shotcut.org - Shotcut is a free, open source, cross-platform video editor.
 #
 # From:	Timothy J. Luoma

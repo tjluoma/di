@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download Nalaprop.app from https://eclecticlight.co/text-utilities-nalaprop-dystextia-and-others/
 #
 # From:	Timothy J. Luoma

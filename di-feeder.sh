@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of Feeder 3 from <https://reinventedsoftware.com/feeder/>
 #
 # From:	Tj Luo.ma

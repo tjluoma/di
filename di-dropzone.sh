@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: https://aptonic.com/dropzone3/latest
 #
 # From:	Timothy J. Luoma

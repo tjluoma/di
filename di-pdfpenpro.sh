@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install PDFPenPro version 8, 9, or 10 from <https://smilesoftware.com/pdfpenpro/>
 #
 # From:	Timothy J. Luoma

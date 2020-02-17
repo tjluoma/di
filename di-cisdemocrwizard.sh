@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download latest version of Cisdem OCRWizard from https://www.cisdem.com/ocr-wizard-mac.html
 #
 # From:	Timothy J. Luoma

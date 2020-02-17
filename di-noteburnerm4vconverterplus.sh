@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of NoteBurner M4V Converter Plus (removes iTunes Video DRM)
 #
 # From:	Timothy J. Luoma

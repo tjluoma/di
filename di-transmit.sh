@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Transmit 5 from <https://www.panic.com/transmit/>
 #
 # From:	Timothy J. Luoma

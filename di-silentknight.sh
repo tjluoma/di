@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: SilentKnight (previously 'EFIcienC') – automatic checking of security systems
 #
 # From:	Timothy J. Luoma

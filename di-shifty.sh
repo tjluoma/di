@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Shifty from <https://shifty.natethompson.io/en/>
 #
 # From:	Timothy J. Luoma

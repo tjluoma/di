@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install Coda (2.5)
 #
 # From:	Tj Luo.ma

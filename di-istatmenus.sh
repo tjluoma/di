@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install iStat Menus 5 or 6 from <https://bjango.com/mac/istatmenus/>
 #
 # From:	Timothy J. Luoma

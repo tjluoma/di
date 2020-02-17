@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install GitHub’s Mac app (now referred to as “Classic” since they have a new Electron-based version now.)
 #
 # From:	Tj Luo.ma

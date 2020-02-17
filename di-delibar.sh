@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: http://www.shinyfrog.net/delibar_pixa.html
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Clipy from https://clipy-app.com/
 #
 # From:	Timothy J. Luoma

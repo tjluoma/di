@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Install Bartender 2 or 3 depending on OS version or what's installed already
 #
 # From:	Timothy J. Luoma

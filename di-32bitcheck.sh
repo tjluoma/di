@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: 32-bitCheck https://eclecticlight.co
 #
 # From:	Timothy J. Luoma

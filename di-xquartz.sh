@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install (or update) Xquartz
 #
 # From:	Timothy J. Luoma

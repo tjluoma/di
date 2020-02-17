@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: The Missing Bluetooth Manager
 #
 # From:	Timothy J. Luoma

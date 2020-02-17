@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of SmartGit from <https://www.syntevo.com/smartgit/>
 #
 # From:	Timothy J. Luoma

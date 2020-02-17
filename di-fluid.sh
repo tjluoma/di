@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Fluid (1 or 2, depending on which, if either, is installed)
 #
 # From:	Timothy J. Luoma

@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of DropDMG from https://c-command.com/dropdmg/
 #
 # From:	Timothy J. Luoma

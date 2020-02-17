@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Spectacle from <https://spectacleapp.com>
 #
 # From:	Timothy J. Luoma

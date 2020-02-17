@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: get the latest version of Jump Desktop
 #
 # From:	Timothy J. Luoma

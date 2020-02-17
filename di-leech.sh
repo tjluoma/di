@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Leech from <https://manytricks.com/leech/>
 #
 # From:	Timothy J. Luoma

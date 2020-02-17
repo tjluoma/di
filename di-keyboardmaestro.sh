@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Keyboard Maestro from <http://www.keyboardmaestro.com> (including betas, if enabled)
 #
 # From:	Timothy J. Luoma

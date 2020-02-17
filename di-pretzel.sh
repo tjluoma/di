@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download latest version of Pretzel from <https://www.amie-chen.com/pretzel/>
 # Note: Only works with a small handful of apps: <https://www.amie-chen.com/pretzel/supported-apps>
 #

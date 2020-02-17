@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download Gitbox from from <http://gitboxapp.com/>
 #
 # From:	Timothy J. Luoma

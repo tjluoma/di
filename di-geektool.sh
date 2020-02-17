@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of GeekTool from <https://www.tynsoe.org/v2/geektool/>
 #
 # From:	Timothy J. Luoma

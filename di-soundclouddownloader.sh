@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install/update the latest version of SoundCloud Downloader.app from https://birdicode.com/app/SCD2/
 #
 # From:	Timothy J. Luoma

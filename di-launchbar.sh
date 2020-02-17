@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install/update the latest version of LaunchBar
 #
 # From:	Timothy J. Luoma

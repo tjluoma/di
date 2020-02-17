@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: https://git-fork.com
 #
 # From:	Timothy J. Luoma

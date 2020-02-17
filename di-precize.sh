@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Precize – looks deep into files, bundles and folders to show their full size including extended attributes, provides macOS Bookmarks and volfs paths as enduring file references, and detailed information contained in Bookmarks and Aliases
 #
 # From:	Timothy J. Luoma

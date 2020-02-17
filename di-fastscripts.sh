@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of FastScripts from https://red-sweater.com/fastscripts/
 #
 # From:	Timothy J. Luoma

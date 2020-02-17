@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install latest version of Optimage.app from https://getoptimage.com
 #
 # From:	Timothy J. Luoma

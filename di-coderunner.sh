@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install CodeRunner from <https://coderunnerapp.com/>
 #
 # Date:		2014-12-13

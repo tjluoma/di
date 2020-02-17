@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Übersicht from <https://github.com/felixhageloh/uebersicht>
 #
 # From:	Timothy J. Luoma

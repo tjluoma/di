@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install the latest version of Choosy
 #
 # From:	Timothy J. Luoma

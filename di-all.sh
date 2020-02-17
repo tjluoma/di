@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Runs all di- scripts found in the same directory
 #
 # From:	Timothy J. Luoma

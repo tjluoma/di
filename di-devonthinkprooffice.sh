@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: download and install latest version of DevonThink Pro Office
 #
 # From:	Tj Luo.ma

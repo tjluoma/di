@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Ubar from <https://brawersoftware.com/products/ubar>
 #
 # From:	Timothy J. Luoma

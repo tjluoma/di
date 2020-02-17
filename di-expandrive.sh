@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and Install the latest version of ExpanDrive for Mac from <http://www.expandrive.com>
 #
 # From:	Tj Luo.ma

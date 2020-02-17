@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the last _non Mac App Store_ version of ScreenSharingMenulet
 #
 # From:	Timothy J. Luoma

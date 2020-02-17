@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Taccy – troubleshoot privacy problems
 #
 # From:	Timothy J. Luoma

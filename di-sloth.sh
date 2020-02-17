@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of Sloth (GUI for lsof) from <http://sveinbjorn.org/sloth>
 #
 # From:	Timothy J. Luoma

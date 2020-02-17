@@ -1,4 +1,4 @@
-#!/bin/zsh -f
+#!/usr/bin/env zsh -f
 # Purpose: Download the latest version of RDM from <https://github.com/avibrazil/RDM/>
 #
 # From:	Timothy J. Luoma
