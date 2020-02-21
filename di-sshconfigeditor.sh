@@ -103,8 +103,12 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${
 
 if (( $+commands[lynx] ))
 then
-	if [[ ! -e "$FILENAME:r.txt" ]]
+	if [[ -e "$FILENAME:r.txt" ]]
 	then
+
+		cat "$FILENAME:r.txt"
+
+	else
 		RELEASE_NOTES=$(lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL")
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion : ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: $URL" | tee "$FILENAME:r.txt"
