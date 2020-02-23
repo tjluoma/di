@@ -25,6 +25,11 @@ fi
 function use_v5 {
 		# This lacks 5.1.5, don't use it --> XML_FEED='https://updates.devmate.com/com.smileonmymac.textexpander.xml'
 
+ # url="http://cdn.textexpander.com/mac/TextExpander_5.1.5.zip"
+ # sparkle:version="515.0"
+ # sparkle:shortVersionString="5.1.5"
+ # sparkle:dsaSignature="MCwCFAvdJJfHkOYY+kvpMpMGTSTAJNPVAhRdgIEoEFf+/SFUFT2LjSfTTQ4Neg=="/>
+
 	XML_FEED=http://smilesoftware.com/appcast/TextExpander5.xml
 	USE_VERSION='5'
 	ASTERISK='(Note that version 6 is also available.)'
