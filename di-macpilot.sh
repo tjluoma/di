@@ -175,7 +175,7 @@ then
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
 		| sed G ; \
-	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+	echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>\n\nURL: ${URL}" ) | tee "$FILENAME:r.txt"
 
 fi
 
@@ -192,7 +192,17 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$RELEASE_NOTES" 2>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "1" -o ! -e "$RELEASE_NOTES" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$RELEASE_NOTES"
+fi
 
 echo "$NAME: Mounting $FILENAME:"
 
@@ -215,7 +225,7 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app.$RANDOM"
 fi
 
 echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
