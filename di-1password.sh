@@ -86,7 +86,7 @@ fi
 	## 		https://c.1password.com/dist/1P/mac7/1Password-7.4.3.pkg
 	## The .pkg is smarter, despite being more complex to deal with
 
-FILENAME="${DOWNLOAD_DIR-\$HOME/Downloads}/1Password-${LATEST_VERSION}.pkg"
+FILENAME="${DOWNLOAD_DIR-$HOME/Downloads}/1Password-${LATEST_VERSION}.pkg"
 
 RELEASE_NOTES="$FILENAME:r.txt"
 
