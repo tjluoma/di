@@ -28,16 +28,6 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-if [[ -d "/System/Volumes/Data/.Trashes/$UID" ]]
-then
-	TRASH="/System/Volumes/Data/.Trashes/$UID"
-elif [[ -d "/.Trashes/$UID" ]]
-then
-	TRASH="/.Trashes/$UID"
-else
-	TRASH="$HOME/.Trash"
-fi
-
 ###############################################################################################
 
 RELEASE_NOTES_URL='https://app-updates.agilebits.com/product_history/OPM7'
@@ -159,7 +149,7 @@ if [[ "$IS_AT_LEAST" != "0" ]]
 then
 
 	echo "$NAME: Cannot use 1Password 7 with '$OS_VER' (requires at least '$OS_MINIMUM'). Use 1Password 6 instead." \
-	| tee -a "${ERROR_DIR-\$HOME/Desktop/${NAME}.error.txt"
+	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.error.txt"
 
 	exit 1
 fi
@@ -189,10 +179,10 @@ then
 	open -R "${FILENAME}"
 
 	echo "$NAME: installation failed on '$FILENAME' (\$EXIT = $EXIT)" \
-	| tee -a "${ERROR_DIR-\$HOME/Desktop/${NAME}.${HOST}.error.txt"
+	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.${HOST}.error.txt"
 
 		# move the installer log to the ERROR_DIR/Desktop
-	[[ -e "$INSTALLER_LOG" ]] && mv -vn "$INSTALLER_LOG" "${ERROR_DIR-\$HOME/Desktop/"
+	[[ -e "$INSTALLER_LOG" ]] && mv -vn "$INSTALLER_LOG" "${ERROR_DIR-$HOME/Desktop/"
 
 	exit 1
 fi
