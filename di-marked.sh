@@ -24,6 +24,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+TRASH="$HOME/.Trash"
+
 INFO=$(curl -sfLS "$XML_FEED" \
 		| awk '/<item>/{i++}i==1' \
         | sed 's#^[      ]*##g' \
