@@ -159,6 +159,8 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
+RELEASE_NOTES="$FILENAME:r.txt"
+
 if (( $+commands[lynx] ))
 then
 
