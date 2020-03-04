@@ -271,11 +271,11 @@ then
 		echo "$NAME: checksum failed (\$SHASUM_EXIT = $SHASUM_EXIT)"
 		echo "$NAME: Moving '$FILENAME' and related files to the Trash, as they may be unsafe."
 
-		[[ -e "$FILENAME" ]] && mv -vf "$FILENAME" "$HOME/.Trash/"
+		[[ -e "$FILENAME" ]] && mv -f "$FILENAME" "$HOME/.Trash/"
 
-		[[ -e "$RELEASE_NOTES_FILE" ]] && mv -vf "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
+		[[ -e "$RELEASE_NOTES_FILE" ]] && mv -f "$RELEASE_NOTES_FILE" "$HOME/.Trash/"
 
-		[[ -e "$SHA256_FILE" ]] && mv -vf "$SHA256_FILE" "$HOME/.Trash/"
+		[[ -e "$SHA256_FILE" ]] && mv -f "$SHA256_FILE" "$HOME/.Trash/"
 
 		exit 1
 	fi
@@ -309,7 +309,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
