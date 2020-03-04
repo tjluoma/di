@@ -106,5 +106,16 @@ fi
 	## this will quit it. If you do want that, remove or comment-out the next line.
 osascript -e 'tell application "zoom.us" to quit' 2>/dev/null || true
 
+LEFTOVER="$HOME/Downloads/MacRetinaRes.zip"
+
+if [[ -e "$LEFTOVER" ]]
+then
+	zmodload zsh/datetime
+
+	TIME=$(strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS")
+
+	mv -vn "$LEFTOVER" "$HOME/.Trash/MacRetinaRes.$TIME.zip"
+fi
+
 exit 0
 #EOF
