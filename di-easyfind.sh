@@ -13,6 +13,8 @@ HOMEPAGE="https://www.devontechnologies.com/apps/freeware"
 
 DOWNLOAD_PAGE="https://www.devontechnologies.com/apps/freeware"
 
+ITUNES_URL='apps.apple.com/us/app/easyfind/id411673888'
+
 SUMMARY="Spotlight is great, but sometimes you need something more specialized. EasyFind finds files and folders by name or content using advanced Boolean operators similar to DEVONthink and DEVONagent, wildcards, and phrases. It does not require indexing, is fast, and uses very little memory. Of course EasyFind doesn't just give you the files, it also shows previews and gives you many other options to work with them. And it's free."
 
 if [[ -e "$HOME/.path" ]]
@@ -46,6 +48,21 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+
+		if [[ "$ITUNES_URL" != "" ]]
+		then
+			echo "	See <https://$ITUNES_URL?mt=12> or"
+			echo "	<macappstore://$ITUNES_URL>"
+		fi
+
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+
+	fi
 
 else
 
