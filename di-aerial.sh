@@ -14,7 +14,22 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO="$HOME/Library/Screen Savers/Aerial.saver"
+if [[ -d "$HOME/Library/Screen Savers/Aerial.saver" ]]
+then
+		# if the user has it installed, use that
+	INSTALL_TO="$HOME/Library/Screen Savers/Aerial.saver"
+
+elif [[ -d "/Library/Screen Savers/Aerial.saver" ]]
+then
+		# if there is already a system-wide installation, use that
+	INSTALL_TO="/Library/Screen Savers/Aerial.saver"
+else
+		# if neither is install, do a local install
+	INSTALL_TO="$HOME/Library/Screen Savers/Aerial.saver"
+
+fi
+
+## @TODO - potential bug? What happens if is installed _both_ places? What _should_ happen?
 
 XML_FEED='https://github.com/JohnCoates/Aerial/releases.atom'
 
@@ -24,7 +39,7 @@ DOWNLOAD_PAGE="https://github.com/JohnCoates/Aerial/releases/latest"
 
 SUMMARY="Apple TV Aerial Screensaver for Mac."
 
-LATEST_RELEASE_URL=$(curl -sfLS --head https://github.com/JohnCoates/Aerial/releases/latest \
+LATEST_RELEASE_URL=$(curl -sfLS --head "$DOWNLOAD_PAGE" \
 				| awk -F' |\r' '/^.ocation:/{print $2}' \
 				| tail -1)
 
@@ -115,7 +130,7 @@ then
 
 	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
@@ -131,7 +146,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
