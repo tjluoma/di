@@ -31,6 +31,8 @@ LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e
 
 URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
 
+TRASH="$HOME/.Trash"
+
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
