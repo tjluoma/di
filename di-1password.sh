@@ -6,6 +6,9 @@
 # Date:	2018-08-19; 2020-02-22 removed 1Password 6 support
 # 		(use https://github.com/tjluoma/di/blob/master/discontinued/di-1password6.sh if needed)
 
+
+# @TODO - find unmatched '"' after IS_AT_LEAST
+
 NAME="$0:t:r"
 
 PREFLIGHT="$HOME/.config/di/preflight.sh"
@@ -135,24 +138,24 @@ then
 	)  >>| "$RELEASE_NOTES"
 fi
 
-OS_VER=$(sw_vers -productVersion)
-
-OS_MINIMUM='10.12.6'
-
-autoload is-at-least
-
-is-at-least "$OS_MINIMUM" "$OS_VER"
-
-IS_AT_LEAST="$?"
-
-if [[ "$IS_AT_LEAST" != "0" ]]
-then
-
-	echo "$NAME: Cannot use 1Password 7 with '$OS_VER' (requires at least '$OS_MINIMUM'). Use 1Password 6 instead." \
-	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.error.txt"
-
-	exit 1
-fi
+# OS_VER=$(sw_vers -productVersion)
+#
+# OS_MINIMUM='10.12.6'
+#
+# autoload is-at-least
+#
+# is-at-least "$OS_MINIMUM" "$OS_VER"
+#
+# IS_AT_LEAST="$?"
+#
+# if [[ "$IS_AT_LEAST" != "0" ]]
+# then
+#
+# 	echo "$NAME: Cannot use 1Password 7 with '$OS_VER' (requires at least '$OS_MINIMUM'). Use 1Password 6 instead." \
+# 	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.error.txt"
+#
+# 	exit 1
+# fi
 
 if (( $+commands[pkginstall.sh] ))
 then
@@ -171,25 +174,25 @@ else
 	| tee -a "$INSTALLER_LOG"
 fi
 
-EXIT="$?"
-
-if [[ "$EXIT" != "0" ]]
-then
-
-	open -R "${FILENAME}"
-
-	echo "$NAME: installation failed on '$FILENAME' (\$EXIT = $EXIT)" \
-	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.${HOST}.error.txt"
-
-		# move the installer log to the ERROR_DIR/Desktop
-	[[ -e "$INSTALLER_LOG" ]] && mv -vn "$INSTALLER_LOG" "${ERROR_DIR-$HOME/Desktop/"
-
-	exit 1
-fi
-
-POSTFLIGHT="$HOME/.config/di/postflight.sh"
-
-[[ -s "$POSTFLIGHT" ]] && source "$POSTFLIGHT"
+# EXIT="$?"
+#
+# if [[ "$EXIT" != "0" ]]
+# then
+#
+# 	open -R "${FILENAME}"
+#
+# 	echo "$NAME: installation failed on '$FILENAME' (\$EXIT = $EXIT)" \
+# 	| tee -a "${ERROR_DIR-$HOME/Desktop/${NAME}.${HOST}.error.txt"
+#
+# 		# move the installer log to the ERROR_DIR/Desktop
+# 	[[ -e "$INSTALLER_LOG" ]] && mv -vn "$INSTALLER_LOG" "${ERROR_DIR-$HOME/Desktop/"
+#
+# 	exit 1
+# fi
+#
+# POSTFLIGHT="$HOME/.config/di/postflight.sh"
+#
+# [[ -s "$POSTFLIGHT" ]] && source "$POSTFLIGHT"
 
 exit 0
 #EOF
