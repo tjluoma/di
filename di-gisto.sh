@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: 'https://github.com/Gisto/Gisto/releases.atom'
+# Purpose: { Gisto } is a code snippet manager that runs on GitHub Gists and adds additional features such as searching, tagging and sharing gists while including a rich code editor.
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,16 +16,26 @@ fi
 
 INSTALL_TO='/Applications/Gisto.app'
 
-XML_FEED='https://github.com/Gisto/Gisto/releases.atom'
+TRASH="$HOME/.Trash"
 
-LATEST_VERSION=$(curl -sfLS "$XML_FEED" \
-| fgrep '<link rel="alternate" type="text/html" href="https://github.com/Gisto/Gisto/' \
-| sed 's#.*github.com/Gisto/Gisto/releases/tag/v##; s#".*##g' \
-| head -1)
+## 2020-03-20 - there are releases which don't have a Mac build, so this is not reliable
+#
+# XML_FEED='https://github.com/Gisto/Gisto/releases.atom'
+#
+# LATEST_VERSION=$(curl -sfLS "$XML_FEED" \
+# | fgrep '<link rel="alternate" type="text/html" href="https://github.com/Gisto/Gisto/' \
+# | sed 's#.*github.com/Gisto/Gisto/releases/tag/v##; s#".*##g' \
+# | head -1)
+#
+# URL="https://github.com/Gisto/Gisto/releases/download/v${LATEST_VERSION}/Gisto-${LATEST_VERSION}.zip"
+#
+# CHANGELOG='https://raw.githubusercontent.com/Gisto/Gisto/master/CHANGELOG.md'
 
-URL="https://github.com/Gisto/Gisto/releases/download/v${LATEST_VERSION}/Gisto-${LATEST_VERSION}.zip"
+STUB=$(curl -sfLS "https://github.com/Gisto/Gisto/releases" | tr '"' '\012' | egrep '^/Gisto/.*\.dmg$' | head -1)
 
-CHANGELOG='https://raw.githubusercontent.com/Gisto/Gisto/master/CHANGELOG.md'
+URL=$(echo "https://github.com${STUB}")
+
+LATEST_VERSION=$(echo "$URL" | sed 's#.*/download/v##; s#/.*##g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -53,9 +63,11 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
-( curl -sfLS "$CHANGELOG" | awk '/###/{i++}i==1' ) | tee "$FILENAME:r.txt"
+	## 		2020-03-20 - need to change this to something like
+	## 		"https://github.com/Gisto/Gisto/releases/tag/v${LATEST_VERSION}"
+	# ( curl -sfLS "$CHANGELOG" | awk '/###/{i++}i==1' ) | tee "$FILENAME:r.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -70,65 +82,73 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
 then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 -p "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
+echo "$NAME: Mounting $FILENAME:"
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	echo "$NAME: moving old installed version to '$TRASH'..."
+	mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
