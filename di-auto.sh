@@ -217,4 +217,31 @@ fi
 
 rm -f "$LOCKFILE"
 
+MACUPDATER_LAST_TIME=$(defaults read com.corecode.MacUpdater LastFullScans 2>/dev/null \
+						| egrep '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' \
+						| tail -1 \
+						| sed 's#"$##g ; s#.*"##g')
+
+if [[ "$MACUPDATER_LAST_TIME" != "" ]]
+then
+
+	TIME_UTC_EPOCH=$(TZ=UTC strftime -r "%Y-%m-%d %H:%M:%S +0000" "$MACUPDATER_LAST_TIME")
+
+	DIFF_TIME_SINCE_MACUPDATER=$(($EPOCHSECONDS - $TIME_UTC_EPOCH))
+
+	DIFF_READABLE=$(seconds2readable.sh "$DIFF_TIME_SINCE_MACUPDATER")
+
+	if [[ "$DIFF_TIME_SINCE_MACUPDATER" -gt "86400" ]]
+	then
+
+		echo "$NAME: MacUpdater last ran ${DIFF_READABLE} ago. Running now..."
+
+		open -g -j -b com.corecode.MacUpdater
+	else
+
+		echo "$NAME: MacUpdater last ran ${DIFF_READABLE} ago. Not running yet."
+	fi
+
+fi
+
 exit 0
