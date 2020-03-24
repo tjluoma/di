@@ -75,6 +75,12 @@ then
 	XML_FEED='https://www.maintain.se/downloads/sparkle/mojave/mojave.xml'
 	RELEASE_NOTES_URL='https://www.maintain.se/downloads/sparkle/mojave/ReleaseNotes.html'
 
+elif [ "$OS_VER" = "10.15" ]
+then
+
+	XML_FEED='https://www.maintain.se/downloads/sparkle/catalina/catalina.xml'
+	RELEASE_NOTES_URL='https://www.maintain.se/downloads/sparkle/catalina/ReleaseNotes.html'
+
 else
 
 	echo "$NAME: Don't know what to do for $OS_VER."
