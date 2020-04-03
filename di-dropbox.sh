@@ -147,6 +147,68 @@ fi
 if [ -e "$MNTPNT/Dropbox.app" ]
 then
    open "$MNTPNT/Dropbox.app"
+
+
+	EXIT="$?"
+
+	if [[ "$EXIT" == "0" ]]
+	then
+		# the 'open' command, if it works, will take care of the rest of the
+		# installation process.
+
+		exit 0
+
+	else
+
+		if [[ -e "$INSTALL_TO" ]]
+		then
+
+			TRASH="$HOME/.Trash"
+
+				# Quit app, if running
+				# normally we would use 'osascript' for this, but Dropbox now refuses to
+				# quit when asked politely, so we use 'pkill' instead
+			pgrep -xq "$INSTALL_TO:t:r" \
+			&& LAUNCH='yes' \
+			&& pkill -f "$INSTALL_TO/Contents/MacOS/Dropbox"
+
+				# move installed version to trash
+			echo "$NAME: moving old installed version to '$TRASH'..."
+			mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+			EXIT="$?"
+
+			if [[ "$EXIT" != "0" ]]
+			then
+
+				echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+
+				exit 1
+			fi
+		fi
+
+		echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+		ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+		EXIT="$?"
+
+		if [[ "$EXIT" == "0" ]]
+		then
+			echo "$NAME: Successfully installed $INSTALL_TO"
+		else
+			echo "$NAME: ditto failed"
+
+			exit 1
+		fi
+
+		[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+		echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
+	fi
+
+
 else
 	die "Did not find anything at $MNTPNT/Dropbox.app"
 	exit 1
