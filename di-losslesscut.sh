@@ -16,15 +16,18 @@ fi
 
 INSTALL_TO='/Applications/LosslessCut.app'
 
-LATEST_RELEASE_URL=$(curl -sfLS --head "https://github.com/mifi/lossless-cut/releases/latest" \
-					| awk -F' |\r' '/^.ocation:/{print $2}' \
-					| tail -1)
+LC_ALL=C
 
-LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
+LATEST_RELEASE_URL_RAW=$(curl -sfLS "https://github.com/mifi/lossless-cut/releases" \
+	| tr '"' '\012' \
+	| egrep '^/mifi/.*/LosslessCut-mac.dmg$' \
+	| head -1)
 
-URL_PATH=$(curl -sfLS "$LATEST_RELEASE_URL"| tr '"' '\012' | egrep '/.*\.dmg$')
+LATEST_RELEASE_URL=$(echo "https://github.com${LATEST_RELEASE_URL_RAW}")
 
-URL=$(echo "https://github.com${URL_PATH}")
+URL="$LATEST_RELEASE_URL"
+
+LATEST_VERSION=$(echo "${LATEST_RELEASE_URL}" | sed 's#/LosslessCut-mac.dmg##g; s#.*/v##g')
 
 HOMEPAGE="https://github.com/mifi/lossless-cut"
 
