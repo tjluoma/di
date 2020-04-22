@@ -14,6 +14,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+echo "$NAME: This needs to be updated for version 1.0"
+
+exit 0
+
 HOMEPAGE="https://objective-see.com/products/blockblock.html"
 
 DOWNLOAD_PAGE="https://objective-see.com/products/blockblock.html"
