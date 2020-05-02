@@ -17,6 +17,23 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+
+PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
+
+if [ "$PPID_NAME" = "/sbin/launchd" ]
+then
+	# this was launched via launchd
+
+	IS_LAUNCHD='yes'
+
+else
+
+	IS_LAUNCHD='no'
+
+fi
+
+
+
 NAME="$0:t:r"
 
 zmodload zsh/datetime
@@ -182,26 +199,31 @@ fi
 
 log "Finished. ${ELAPSED_TIME}. Error count is ${COUNT}."
 
-if [[ "$COUNT" != "0" ]]
+if [[ "IS_LAUNCHD" == "no" ]]
 then
 
-	growlnotify --sticky \
-		--appIcon "Console" \
-		--identifier "di-auto-errors" \
-		--message "$ELAPSED_TIME" \
-		--title "$NAME: With Errors ($COUNT)"
+	if [[ "$COUNT" != "0" ]]
+	then
 
-	open -g -j -a Console "$LOG"
+		growlnotify --sticky \
+			--appIcon "Console" \
+			--identifier "di-auto-errors" \
+			--message "$ELAPSED_TIME" \
+			--title "$NAME: With Errors ($COUNT)"
 
-else
+		open -g -j -a Console "$LOG"
 
-	growlnotify \
-		--appIcon "Console" \
-		--identifier "di-auto-errors" \
-		--message "$ELAPSED_TIME" \
-		--title "$NAME: No Errors"
+	else
 
+		growlnotify \
+			--appIcon "Console" \
+			--identifier "di-auto-errors" \
+			--message "$ELAPSED_TIME" \
+			--title "$NAME: No Errors"
+
+	fi
 fi
+
 
 if (( $+commands[di-local.sh] ))
 then
