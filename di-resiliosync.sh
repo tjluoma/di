@@ -95,9 +95,9 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM"
 #
 # URL=`awk -F'"' '/url/{print $2}' "$TEMPFILE"`
 
-URL='http://internal.resilio.com/support/debug/sync/2.6.10070/Resilio-Sync.dmg'
+URL='http://internal.resilio.com/support/debug/sync/2.6.10073/Resilio-Sync.dmg'
 
-LATEST_VERSION='2.6.10070'
+LATEST_VERSION='2.6.10073'
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -204,6 +204,8 @@ fi
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
+open -a "$INSTALL_TO:t:r"
 
 exit 0
 #
