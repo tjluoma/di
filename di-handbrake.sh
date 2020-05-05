@@ -71,7 +71,8 @@ else
 	# URL=$(echo "$INFO[3]" | sed 's#\&amp;#\&#g')
 	# https://download.handbrake.fr/releases/1.2.2/HandBrake-1.2.2.dmg"
 
-	URL="https://download.handbrake.fr/releases/$LATEST_VERSION/HandBrake-$LATEST_VERSION.dmg"
+	# URL="https://download.handbrake.fr/releases/$LATEST_VERSION/HandBrake-$LATEST_VERSION.dmg"
+	URL="https://github.com/HandBrake/HandBrake/releases/download/$LATEST_VERSION/HandBrake-$LATEST_VERSION.dmg"
 
 		# If any of these are blank, we should not continue
 	if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
