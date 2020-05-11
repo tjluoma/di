@@ -28,48 +28,6 @@ NAME="$0:t:r"
 
 zmodload zsh/datetime
 
-	# I cannot figure out where the '33685507' comes from
-	# but I'll use it until it breaks
-# URL="http://update.getsync.com/cfu.php?cl=BitTorrent%20Sync&pl=osx&v=33685507&cmp=0&lang=en&sysver=10.13.0"
-
-URL="https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33882125"
-
-# curl "https://update.resilio.com/cfu.php?b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33947648" \
-#   -H "Accept: application/rss+xml,*/*;q=0.1" \
-#   -H "Accept-Language: en-us" \
-#   -H "User-Agent: Resilio Sync/2.6.0 Sparkle/1.16.0"
-#
-# got '<rss></rss>'
-#
-# Is that just because we're up to date?
-
-#
-# out of date
-#
-# first sent this
-#
-#
-# curl "https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=19&sysver=10.13.6&v=33882125" \
-#   -H "Accept: application/rss+xml,*/*;q=0.1" \
-#   -H "Accept-Language: en-us" \
-#   -H "User-Agent: Resilio Sync/2.5.13 Sparkle/1.16.0"
-#
-# which gave me the non-changelog information -- URL, versions, etc
-#
-# Then sent this
-#
-# curl "https://update.resilio.com/cfu.php?v=33882125&pl=osx&relnotes=1&forced=1&beta=0" \
-#   -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-#   -H "Accept-Language: en-us" \
-#   -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko)"
-#
-# which gave me the changelog
-#
-#
-# when mounted, it's /Volumes/Resilio\ Sync/Resilio\ Sync.app/
-#
-
-
 LOG="$HOME/Library/Logs/${NAME}.log"
 
 [[ -d "$LOG:h" ]] || mkdir -p "$LOG:h"
@@ -81,23 +39,25 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM"
 
-####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
-#
-#		Check to see what the latest version is
-#
+	# 2020-05-09 new update!
+XML_FEED='https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=81&sysver=10.15.4&v=33957721'
 
-## TEMP - manually setting latest version
-# curl -sfL "$URL" \
-# | sed '1,/<item>/d; /<\/item>/,$d' \
-# | tr -s ' |\t' '\012' > "$TEMPFILE"
-#
-# LATEST_VERSION=`awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE"`
-#
-# URL=`awk -F'"' '/url/{print $2}' "$TEMPFILE"`
+	# both Sparkle versions are identical
+INFO=($(curl -sfLS \
+	-H "Accept: application/rss+xml,*/*;q=0.1" \
+	-H "Accept-Language: en-us" \
+	-H "User-Agent: Resilio Sync/2.6.10073 Sparkle/1.16.0" \
+	"${XML_FEED}" \
+	| egrep -i 'releasenoteslink>|url=|sparkle:version=' \
+	| sort \
+	| tr -d '\r' \
+	| sed -e 's#.*="##g' -e 's#"$##g' -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>##g' -e 's#amp\;##g'))
 
-URL='http://internal.resilio.com/support/debug/sync/2.6.10073/Resilio-Sync.dmg'
+LATEST_VERSION="$INFO[1]"
 
-LATEST_VERSION='2.6.10073'
+URL="$INFO[2]"
+
+RELEASE_NOTES_URL="$INFO[3]"
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
@@ -146,6 +106,23 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 #
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+
+if [[ -e "$FILENAME:r.txt" ]]
+then
+
+	cat "$FILENAME:r.txt"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(lynx -assume_charset=UTF-8 -pseudo_inlines -nolist -dump -nomargins -nonumbers -width=10000 "$RELEASE_NOTES_URL")
+
+		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion : ${LATEST_VERSION}\nURL: $URL" | tee "$FILENAME:r.txt"
+
+	fi
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -201,7 +178,7 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO:t:r"
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
