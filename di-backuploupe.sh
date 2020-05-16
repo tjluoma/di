@@ -14,7 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://www.soma-zone.com/BackupLoupe/a/appcast_update.xml'
+	# https://www.soma-zone.com/BackupLoupe/a/appcast_update.xml
+XML_FEED='https://www.soma-zone.com/BackupLoupe/a/appcast-update-3.xml'
 
 INSTALL_TO='/Applications/BackupLoupe.app'
 
