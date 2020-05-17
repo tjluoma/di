@@ -31,6 +31,10 @@ function die {
 	exit 1
 }
 
+	# I'm not installing Dropbox here, but I do have a Fluid.app
+	# for Dropbox.com which confuses this script.
+[[ "$HOST" == "pro.luo.ma" ]] && exit 0
+
 ## I found this URL via https://github.com/Homebrew/homebrew-cask/blob/master/Casks/dropbox.rb
 
 DL_URL='https://www.dropbox.com/download?plat=mac&full=1'
