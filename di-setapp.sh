@@ -182,7 +182,8 @@ else
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+open "$INSTALL_TO"
+
 
 exit 0
 #EOF
