@@ -169,17 +169,29 @@ then
 
 fi
 
+sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log"
 
-if (( $+commands[pkginstall.sh] ))
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
 then
 
-	pkginstall.sh "$FILENAME"
+		# when the app is updated like this, it ends up running as 'root' and none of the buttons are correct
+		# and the installer must be run as root. So the best I know to do is tell root to quit the app
+	sudo osascript -e 'tell application "Stream Deck" to quit'
 
 else
 
-	(sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log") || open -R "$FILENAME"
+		# if the installer failed, show the user the installer
+	open -R "$FILENAME"
 
+	echo "$NAME: failed (\$EXIT = $EXIT)"
+
+	exit 1
 fi
+
+
+
 
 exit 0
 #EOF
