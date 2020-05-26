@@ -27,9 +27,13 @@ fi
 	## XML_FEED='https://somazonecom.ipage.com/soma-zone.com/LaunchControl/a/appcast_update.xml'
 	##
 	## This one is even older:
-	## XML_URL='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
+	## XML_FEED='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
 
-XML_FEED='https://www.soma-zone.com/LaunchControl/a/appcast.xml'
+	# 2020-05-26 this is now 404
+# XML_FEED='https://www.soma-zone.com/LaunchControl/a/appcast.xml'
+
+	# 2020-05-26 this one is back
+XML_FEED='http://www.soma-zone.com/LaunchControl/a/appcast_update.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr '[:blank:]' '\012' \
