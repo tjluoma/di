@@ -68,7 +68,9 @@ function use_v11 {
 
 	LATEST_VERSION=$(curl -sfLS "$XML_FEED"| tr ' ' '\012' | egrep '^sparkle:version=' | head -1 | tr -dc '[0-9]\.')
 
-	URL='http://mirror.koingosw.com/products/macpilot/download/macpilot.dmg'
+	# URL='http://mirror.koingosw.com/products/macpilot/download/macpilot.dmg'
+
+	URL='https://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fmacpilot.dmg'
 
 }
 
