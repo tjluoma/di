@@ -28,19 +28,17 @@ OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 URL="https://www.titanium-software.fr/download/10${OS_VER}/OnyX.dmg"
 
 IFS=$'\n' INFO=($(curl -sfLS 'https://www.titanium-software.fr/en/onyx.html' \
-				| fgrep -i -B1 -A1 "https://www.titanium-software.fr/download/10${OS_VER}/OnyX.dmg" ))
+| tr -d '\r' \
+| fgrep -B2 -A1 "$URL" ))
 
-LATEST_VERSION=$(echo "$INFO[1]" | sed -e 's#.*<h1>OnyX ##g' -e 's# for .*##g')
-
-EXPECTED_SHA256=$(echo "$INFO[3]" | sed -e 's#.* ##g' -e 's#<.*##g')
+LATEST_VERSION=$(echo "$INFO" | egrep "OnyX .* for macOS " | sed -e 's#.*OnyX ##g' -e 's# .*##g')
 
 	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA256" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	EXPECTED_SHA256: $EXPECTED_SHA256
 	"
 
 	exit 1
@@ -74,7 +72,7 @@ fi
 
 FILENAME="$HOME/Downloads/OnyX-${LATEST_VERSION}-for-OS-10.${OS_VER}.dmg"
 
-SHA_FILE="$HOME/Downloads/OnyX-${LATEST_VERSION}-for-OS-10.${OS_VER}.sha256.txt"
+# SHA_FILE="$HOME/Downloads/OnyX-${LATEST_VERSION}-for-OS-10.${OS_VER}.sha256.txt"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -91,25 +89,25 @@ EXIT="$?"
 
 ##
 
-echo "$EXPECTED_SHA256 ?$FILENAME:t" > "$SHA_FILE"
-
-cd "$FILENAME:h"
-
-echo -n "$NAME: Verifying sha256 of '$FILENAME': "
-
-shasum -c "$SHA_FILE"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-	echo "$NAME: Verification successful"
-
-else
-	echo "$NAME: Verification failed (\$EXIT = $EXIT)"
-
-	exit 1
-fi
+# echo "$EXPECTED_SHA256 ?$FILENAME:t" > "$SHA_FILE"
+#
+# cd "$FILENAME:h"
+#
+# echo -n "$NAME: Verifying sha256 of '$FILENAME': "
+#
+# shasum -c "$SHA_FILE"
+#
+# EXIT="$?"
+#
+# if [ "$EXIT" = "0" ]
+# then
+# 	echo "$NAME: Verification successful"
+#
+# else
+# 	echo "$NAME: Verification failed (\$EXIT = $EXIT)"
+#
+# 	exit 1
+# fi
 
 
 ##
