@@ -213,13 +213,22 @@ if [[ "$USE_VERSION" == "3" ]]
 then
 
 
-		# lynx can parse the HTML just fine, but its output is sort of ugly,
-		# so we'll use html2text if it's available
-	if (( $+commands[html2text] ))
+	if (( $+commands[pandoc] ))
 	then
+		# pandoc is better than lynx or html2text
 
 		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-		curl -sfL "${RELEASE_NOTES_URL}" | html2text ;
+		curl -sfLS "$RELEASE_NOTES_URL" \
+		| pandoc --from html --to markdown --wrap=none ;
+		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
+
+	elif (( $+commands[html2text] ))
+	then
+		# lynx can parse the HTML just fine, but its output is sort of ugly,
+		# so we'll use html2text if it's available
+
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		curl -sfL "${RELEASE_NOTES_URL}" | html2text -nobs ;
 		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
 
 	elif (( $+commands[lynx] ))
