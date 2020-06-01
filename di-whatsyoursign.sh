@@ -33,17 +33,14 @@ INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
 
 URL="$INFO[1]"
 
-EXPECTED_SHA1="$INFO[2]"
-
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	EXPECTED_SHA1: $EXPECTED_SHA1
 	"
 
 	exit 1
@@ -77,10 +74,6 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
-
-echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
-
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
 	| gunzip -f -c) | tee "$FILENAME:r.txt"
 
@@ -107,23 +100,23 @@ EXIT="$?"
 
 ##
 
-echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
-
-cd "$FILENAME:h"
-
-shasum -c "$SHA_FILE"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-	echo "$NAME: SHA-1 verification passed"
-
-else
-	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
-
-	exit 1
-fi
+# echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
+#
+# cd "$FILENAME:h"
+#
+# shasum -c "$SHA_FILE"
+#
+# EXIT="$?"
+#
+# if [ "$EXIT" = "0" ]
+# then
+# 	echo "$NAME: SHA-1 verification passed"
+#
+# else
+# 	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+#
+# 	exit 1
+# fi
 
 ##
 
