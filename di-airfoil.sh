@@ -34,7 +34,7 @@ INFO=($(curl -sSfL "${XML_FEED}" \
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
-URL="https://rogueamoeba.com/airfoil/download/Airfoil.zip"
+URL="https://rogueamoeba.com/airfoil/mac/download/Airfoil.zip"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
