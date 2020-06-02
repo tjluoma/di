@@ -215,11 +215,13 @@ then
 
 	if (( $+commands[pandoc] ))
 	then
-		# pandoc is better than lynx or html2text
-
+			# pandoc is better than lynx or html2text
+			# but it also unnecessarily escapes ' and some other
+			# characters. Hence the 'tr'
 		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
 		curl -sfLS "$RELEASE_NOTES_URL" \
-		| pandoc --from html --to markdown --wrap=none ;
+		| pandoc --from html --to markdown --wrap=none \
+		tr -d '\\';
 		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
 
 	elif (( $+commands[html2text] ))
