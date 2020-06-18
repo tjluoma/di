@@ -14,7 +14,7 @@ else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-# └─(mba:%) curl -sfLS "https://github.com/insidegui/NoiseBuddy/releases.atom"|less
+#  curl -sfLS "https://github.com/insidegui/NoiseBuddy/releases.atom" | less
 
 
 
