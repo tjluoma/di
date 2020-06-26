@@ -16,8 +16,14 @@ fi
 
 INSTALL_TO='/Applications/PDF Expert.app'
 
-# https://d1ke680phyeohy.cloudfront.net/release/appcast.xml
-XML_FEED='https://readdle-test-binaries.s3.amazonaws.com/release/appcast.xml'
+	## this is the one from casks
+	# XML_FEED='https://d1ke680phyeohy.cloudfront.net/release/appcast.xml'
+
+	## this is older as of 2020-06-25
+	# XML_FEED='https://readdle-test-binaries.s3.amazonaws.com/release/appcast.xml'
+
+	## this is current as of 2020-06-25
+XML_FEED='https://downloads.pdfexpert.com/release/appcast.xml'
 
 RELEASE_NOTES_URL='https://pdfexpert.com/changelog.html'
 
