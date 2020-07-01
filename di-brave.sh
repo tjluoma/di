@@ -9,6 +9,9 @@
 
 INSTALL_TO='/Applications/Brave Browser.app'
 
+XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
+
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -25,9 +28,6 @@ DOWNLOAD_PAGE="https://brave.com/download/"
 SUMMARY="Much more than a browser, Brave is a new way of thinking about how the web works."
 
 RELEASE_NOTES_URL='https://github.com/brave/brave-browser/blob/master/CHANGELOG_DESKTOP.md'
-
-XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
-
 
 INFO=$(curl -sfLS "$XML_FEED" \
 | tr -s '\012' ' ' \
