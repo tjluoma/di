@@ -27,7 +27,10 @@ SUMMARY="
 * Edit archived files in an external application and BetterZip can update your archive.
 "
 
-XML_FEED="https://macitbetter.com/BetterZip4.rss"
+# XML_FEED="https://macitbetter.com/BetterZip4.rss"
+
+
+
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
