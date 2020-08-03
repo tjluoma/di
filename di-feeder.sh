@@ -67,7 +67,7 @@ then
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Mis-match: Installed = $INSTALLED_VERSION/$INSTALLED_BUILD vs Latest = $LATEST_VERSION/$LATEST_BUILD"
 
 	autoload is-at-least
 
@@ -75,7 +75,7 @@ then
 
 	if [ "$?" = "0" ]
 	then
-		echo "$NAME: Installed version ($INSTALLED_BUILD) is ahead of official version $LATEST_BUILD"
+		echo "$NAME: Installed version (Build: $INSTALLED_BUILD) is ahead of official version (Build: $LATEST_BUILD)"
 		exit 0
 	fi
 
