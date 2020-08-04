@@ -22,7 +22,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-XML_FEED="https://updates.blackpixel.com/updates?app=ks"
+## 2020-08-04 - this seems to be no longer in use and the SSL certificate expired
+# XML_FEED="https://updates.blackpixel.com/updates?app=ks"
+
+XML_FEED='https://appcasts.hypergiant.com/ks/prod/updates'
 
 INFO=($(curl -sSfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
