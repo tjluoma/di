@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Version 4
+# Purpose: Version 5
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,12 +16,22 @@ fi
 
 INSTALL_TO='/Applications/SoundSource.app'
 
-XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.soundsource&system=10144&platform=osx&arch=x86_64&version=4008000"
+## Version 4
+# XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.soundsource&system=10144&platform=osx&arch=x86_64&version=4008000"
+#
+## Version 4
+# USER_AGENT='SoundSource/4.0.0 Sparkle/1.5'
+
+## Version 5
+XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.soundsource&system=10156&platform=osx&arch=x86_64&version=5008000"
+
+## Version 5
+USER_AGENT='SoundSource/5.0.0 Sparkle/1.5'
 
 LATEST_VERSION=$(curl -sfLS "$XML_FEED" \
   -H "Accept: */*" \
   -H "Accept-Language: en-us" \
-  -H "User-Agent: SoundSource/4.0.0 Sparkle/1.5" \
+  -H "User-Agent: ${USER_AGENT}" \
 | fgrep -i '<enclosure sparkle:version="' \
 | head -1 \
 | sed 's#.*sparkle:version="##; s#" .*##g')
