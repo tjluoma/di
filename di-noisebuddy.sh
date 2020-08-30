@@ -16,7 +16,7 @@ fi
 
 #  curl -sfLS "https://github.com/insidegui/NoiseBuddy/releases.atom" | less
 
-# @TODO - fill this out and find minver
+# @TODO - fill this out and find minversion
 
 exit 0
 #EOF
