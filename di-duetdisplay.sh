@@ -27,32 +27,35 @@ fi
 	## There are two ways of finding the current version.
 	## Try them both and compare them to see which is higher
 
-	# First Way
-URL1=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
+#		## First Way
+# 	URL1=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
+#
+# 	LV1=$(echo "$URL1:t:r" | sed 's#duet-##g; s#-#.#g')
+#
+# 		## Second Way
+# 	URL2=$(curl -sfLS "https://www.duetdisplay.com/help-center/mac-release-notes" | tr '"' '\012' | egrep 'https.*\.zip$')
+#
+# 	LV2=$(echo "$URL2:t:r" | sed 's#duet-##g; s#-#.#g')
+#
+# 		## Compare Them
+# 	autoload is-at-least
+#
+# 	is-at-least "$LV1" "$LV2"
+#
+# 	EXIT="$0"
+#
+# 	if [[ "$EXIT" == "0" ]]
+# 	then
+# 		LATEST_VERSION="$LV1"
+# 		URL="$URL1"
+# 	else
+# 		LATEST_VERSION="$LV2"
+# 		URL="$URL2"
+# 	fi
 
-LV1=$(echo "$URL1:t:r" | sed 's#duet-##g; s#-#.#g')
+URL=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
 
-	# Second Way
-URL2=$(curl -sfLS "https://www.duetdisplay.com/help-center/mac-release-notes" | tr '"' '\012' | egrep 'https.*\.zip$')
-
-LV2=$(echo "$URL2:t:r" | sed 's#duet-##g; s#-#.#g')
-
-	# Compare Them
-autoload is-at-least
-
-is-at-least "$LV1" "$LV2"
-
-EXIT="$0"
-
-if [[ "$EXIT" == "0" ]]
-then
-	LATEST_VERSION="$LV1"
-	URL="$URL1"
-else
-	LATEST_VERSION="$LV2"
-	URL="$URL2"
-fi
-
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
 
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
