@@ -23,7 +23,7 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-OS_VER=`sw_vers -productVersion`
+OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`
 
 function use_v2 {
 	XML_FEED="https://updates.fournova.com/updates/tower2-mac/stable/?os_version=$OS_VER"

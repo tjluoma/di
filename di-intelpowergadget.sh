@@ -29,7 +29,7 @@ SUMMARY="Intel Power Gadget is a software-based power usage monitoring tool enab
 	# this just gives the part after the '10.'
 	# i.e. 	for 10.11.6 it gives '11'
 	# 		for 10.14 it gives '14'
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [[ "$OS_VER" -ge "13" ]]
 then

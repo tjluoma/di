@@ -36,9 +36,9 @@ else
 	INSTALLED_VERSION='0'
 fi
 
-OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d '.' -f 1,2)
 
-ACTUAL_OS_VERSION=$(sw_vers -productVersion | cut -d '.' -f 2)
+ACTUAL_OS_VERSION=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d '.' -f 2)
 
 if [[ "$OS_VER" == "" ]]
 then
@@ -355,9 +355,9 @@ else
 		## NOTE: If nothing is installed, we need to pretend we have at least version 5000
 	INSTALLED_BUILD=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '5000'`
 
-	OS_MINOR=`sw_vers -productVersion | cut -d. -f 2`
+	OS_MINOR=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f 2`
 
-	OS_BUGFIX=`sw_vers -productVersion | cut -d. -f 3`
+	OS_BUGFIX=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f 3`
 
 	XML_FEED="https://bombich.com/software/updates/ccc.php?os_minor=$OS_MINOR&os_bugfix=$OS_BUGFIX&ccc=$INSTALLED_BUILD&beta=0&locale=en"
 

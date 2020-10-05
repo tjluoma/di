@@ -22,7 +22,7 @@ HOMEPAGE="https://www.barebones.com/products/bbedit/"
 DOWNLOAD_PAGE="https://www.barebones.com/support/bbedit/updates.html"
 
 	# This is the current version of macOS that this computer is running
-OS_VER=$(sw_vers -productVersion)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
 	# a zsh-specific function for comparing numbers, including version numbers
 autoload is-at-least

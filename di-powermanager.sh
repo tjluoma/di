@@ -105,7 +105,7 @@ EXIT="$?"
 
 MIN_REQUIRED='10.12'
 
-OS_VER=$(sw_vers -productVersion)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
 autoload is-at-least
 

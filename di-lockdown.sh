@@ -120,7 +120,7 @@ fi
 
 ##
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [ "$OS_VER" != "11" ]
 then

@@ -36,10 +36,19 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# for Mac OS X '10.11.6' this will give us '11' since we need to test the major version
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
-if [ "$OS_VER" -ge "12" ]
+	# for Mac OS X '10.11.6' this will give us '11' since we need to test the major version
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+
+echo "$NAME: OS_VER is $OS_VER"
+
+if [ "$OS_VER" -ge "16" ]
+then
+
+	echo "$NAME: Not ready for Big Sur"
+	exit 0
+
+elif [ "$OS_VER" -ge "12" ]
 then
 
 	INFO=($(curl -sfL "$XML_FEED" \

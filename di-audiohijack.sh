@@ -27,7 +27,7 @@ zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
-OS_VER=$(sw_vers -productVersion | tr -d '.')
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -d '.')
 
 XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=$OS_VER&platform=osx&arch=x86_64&version=3548000"
 

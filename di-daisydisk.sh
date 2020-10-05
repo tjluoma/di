@@ -22,7 +22,7 @@ DOWNLOAD_PAGE="https://daisydiskapp.com/downloads/DaisyDisk.zip"
 
 SUMMARY="DaisyDisk also gives you a great overview of all connected disks, be it Macintosh HD, Thunderbolt disk, flash, network storage, you name it."
 
-OS_VER=`sw_vers -productVersion`
+OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`
 
 	# If we don't tell it we are using at least version 4, we get an empty feed
 MAJOR_VERSION='4'

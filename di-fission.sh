@@ -24,14 +24,14 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-OS_MAJOR_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_MAJOR_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [[ "$OS_MAJOR_VER" -ge "12" ]]
 then
 
 	TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
 
-	OS_SMUSH=$(sw_vers -productVersion | tr -dc '[0-9]')
+	OS_SMUSH=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -dc '[0-9]')
 
 		# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
 	curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
@@ -233,7 +233,7 @@ exit 0
 
 # INSTALLED_VERSION_RAW=`echo "$INSTALLED_VERSION" | tr -dc '[0-9]'`
 #
-# OS=`sw_vers -productVersion | tr -dc '[0-9]'`
+# OS=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -dc '[0-9]'`
 #
 # XML="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS}&platform=osx&arch=x86_64&version=${INSTALLED_VERSION_RAW}8000"
 #

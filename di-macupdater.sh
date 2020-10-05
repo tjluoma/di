@@ -24,7 +24,7 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [[ "$OS_VER" -ge "13" ]]
 then
@@ -71,6 +71,8 @@ then
 	LATEST_BUILD='6425'
 
 else
+
+	SYSTEM_VERSION_COMPAT=1
 
 	echo "$NAME: MacUpdater requires macOS 10.13 or higher for versions above 1.5." >>/dev/stderr
 	echo "$NAME: macOS 10.11 or 10.12 can use version 1.4.18." >>/dev/stderr

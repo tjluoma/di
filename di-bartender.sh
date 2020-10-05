@@ -24,7 +24,7 @@ INSTALL_V1_TO="/Applications/Bartender.app"
 INSTALL_V2_TO="/Applications/Bartender 2.app"
 INSTALL_V3_TO='/Applications/Bartender 3.app'
 
-OS_VER=$(sw_vers -productVersion | cut -d '.' -f 2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d '.' -f 2)
 
 function use_v1 {
 

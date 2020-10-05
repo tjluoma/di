@@ -65,7 +65,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [ "$OS_VER" -lt "14" ]
 then

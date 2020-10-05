@@ -97,7 +97,7 @@ EXIT="$?"
 	# Check to make sure we are running minimum required version of macOS
 MIN_REQUIRED=$(echo "$INFO" | awk -F' ' '/^minSystemVersion/{print $NF}')
 
-OS_VER=$(sw_vers -productVersion)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
 autoload is-at-least
 

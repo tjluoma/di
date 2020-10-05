@@ -26,6 +26,10 @@ else
 	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
+
+[[ "$OS_VER" == "11.0" ]] && exit 0
+
 if [ -e "/Library/PreferencePanes/Hazel.prefPane" -a -e "$HOME/Library/PreferencePanes/Hazel.prefPane" ]
 then
 
@@ -91,7 +95,7 @@ function check_install_location {
 	fi
 }
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
 if [[ "$OS_VER" -lt "12" ]]
 then

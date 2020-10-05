@@ -143,7 +143,7 @@ exit 0
 
 # 2018-08-26 - We don't really need to calculate any of this anymore, since the app is EOL. But here's how it worked:
 
-# OS_VER=`sw_vers -productVersion || echo '10.11'`
+# OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion || echo '10.11'`
 # 	# If you are Up-To-Date, you get an empty document with a 204 response code
 # RESPONSE=`curl --head -sfL "https://central.github.com/api/mac/latest?version=${INSTALLED_VERSION}&os_version=${OS_VER}" | awk -F' ' '/^HTTP/{print $2}'`
 #

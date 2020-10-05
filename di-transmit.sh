@@ -40,7 +40,7 @@ DARWIN_VERSION=$(uname -r)
 
 CFNETWORK_VER=$(defaults read "/System/Library/Frameworks/CFNetwork.framework/Versions/A/Resources/Info.plist" CFBundleShortVersionString)
 
-OS_VER=$(sw_vers -productVersion)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
 	# the feed reports itself as 'http://www.panic.com/updates/transmit/transmit-en.xml' but that URL is 404
 XML_FEED="https://www.panic.com/updates/update.php?osVersion=${OS_VER}&cputype=7&cpu64bit=1&cpusubtype=8&model=${MAC_TYPE}&ncpu=4&lang=en-US&appName=Transmit&appVersion=${INSTALLED_BUILD}&cpuFreqMHz=1600&ramMB=16384"

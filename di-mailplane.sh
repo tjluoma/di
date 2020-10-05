@@ -16,7 +16,7 @@ SUMMARY="The best way to use Gmail on your Mac."
 
 INSTALL_TO="/Applications/Mailplane.app"
 
-OS_VER=$(sw_vers -productVersion)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
 INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '4.0.0')
 

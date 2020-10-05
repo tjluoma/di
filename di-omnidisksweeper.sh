@@ -54,7 +54,7 @@ then
 	exit 1
 fi
 
-OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f1,2)
 
 case "$OS_VER" in
 	'10.13')
