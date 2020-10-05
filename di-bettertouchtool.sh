@@ -12,6 +12,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+autoload is-at-least
+
 NAME="$0:t:r"
 
 HOMEPAGE="https://folivora.ai"
@@ -24,22 +26,21 @@ INSTALL_TO="/Applications/BetterTouchTool.app"
 
 RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
 
-## 2019-05-23 - https://updates.bettertouchtool.net/appcast.xml is outdated
-
-# URL=$(curl -sfL "$RELEASE_NOTES_URL" \
-# 	| awk -F'"' '/http.*\.zip/{print $2}' \
-# 	| head -1)
-
 FILENAME=$(curl -sfL 'https://bettertouchtool.net/releases/' | fgrep -i .zip | head -1 | sed 's#</a>.*##g ; s#.*>##g')
 
 URL="https://bettertouchtool.net/releases/$FILENAME"
 
-LATEST_VERSION=`echo "$FILENAME:t:r" | tr -dc '[0-9]\.'`
+VERSION_INFO=($(echo "$FILENAME:t:r" | sed 's#btt##g ; s#-# #g'))
+
+LATEST_VERSION="$VERSION_INFO[1]"
+
+LATEST_BUILD="$VERSION_INFO[2]"
+
 
 	# If any of these are blank, we should not continue
-if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$FILENAME" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nLATEST_VERSION: ${LATEST_VERSION}\nURL: ${URL}"
+	echo "$NAME: Error: bad data received:\nLATEST_VERSION: ${LATEST_VERSION}\nLATEST_BUILD: ${LATEST_BUILD}\nFILENAME: ${FILENAME}"
 	exit 1
 fi
 
@@ -48,28 +49,39 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	autoload is-at-least
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
 
 else
 
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
@@ -97,7 +109,18 @@ EXIT="$?"
 
 ####################################################################################
 
-(cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
+
 
 ####################################################################################
 
