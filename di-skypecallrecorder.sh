@@ -5,55 +5,55 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-22
 
-	## You need to provide your own private URL to download Skype Call Recorder. You should have received this
-	## in an email when you first registered it. So the question is: “How do you share a public script with private
-	## information in it?”
-	##
-	## Answer: Put the secret bit in a separate file which is read into the main script.
-	##
-	## So, create a file "$HOME/.config/di/private/di-skypecallrecorder.txt" with a line like this in it:
-	##
-	## 	https://www.ecamm.com/cgi-bin/customercenter?u=you%40example%2Ecom&c=ABCDEF
-	##
-	#### Replace that with your actual URL
-PRIVATE_FILE="$HOME/.config/di/private/di-skypecallrecorder.txt"
 
+	# you MUST customize this URL to be your URL from ECamm
+	# it ends with your email address (URL encoded) and a 6 digit personal code
+PRIVATE_URL='https://www.ecamm.com/cgi-bin/customercenter?u=USER%40EXAMPLE%2ECOM&c=XXXXXX'
+
+PRIVATE_URL='https://www.ecamm.com/cgi-bin/customercenter?u=me%40tjluoma%2Ecom&c=YPJ349'
+
+## you should not have to change anything below this line
+
+
+
+	# This is the public RSS feed for call recorder which we use for release notes
 XML_FEED='https://www.ecamm.com/appcasts/callrecorder.xml'
 
-HOMEPAGE="https://www.ecamm.com/mac/callrecorder/"
-
-DOWNLOAD_PAGE="http://downloads.ecamm.com/CallRecorder.zip"
-
-SUMMARY="Call Recorder records Skype audio and video calls directly to your Mac. (Note: Download page is for demo version.)"
+	# this helps curl pretend that it's Safari
+UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Safari/605.1.15'
 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo
-	# But we can get the version number from it.
-LATEST_VERSION=$(curl -sfLS "$XML_FEED" | tr ' |/' '\012' | awk -F'"' '/sparkle:version/{print $2}')
+	# this will get us the actual URL for the actual download
+URL=$(curl --user-agent "$UA" -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/CallRecorder.*\.zip')
 
-	# And the release-notes URL
+	# we parse out the version number from that URL
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+	# this is the URL to the release notes
+RELEASE_NOTES_URL=$(curl --user-agent "$UA" -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
-if [[ "$LATEST_VERSION" = "" ]]
+
+if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME [Fatal Error]: \$LATEST_VERSION is empty. Cannot continue."
+	echo "$NAME [Fatal Error]: \$URL is '$URL' and \$LATEST_VERSION is '$LATEST_VERSION'. Cannot continue."
 	exit 1
 fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Library/Audio/Plug-Ins/HAL/EcammAudioLoader.plugin/Contents/Plugins/CallRecorder.plugin"
+	# this is where Call Recorder gets installed to
+INSTALL_TO="/Library/Application Support/EcammVideoPlugins/CallRecorder.plugin"
 
+	## if Call Recorder is already installed
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -75,48 +75,18 @@ then
 
 fi
 
-[[ -e "$PRIVATE_FILE" ]] && PRIVATE_URL=$(egrep -i '^http.*//www.ecamm.com/' "$PRIVATE_FILE")
-
-if [ "$PRIVATE_URL" != "" ]
-then
-		# This is what we hope for:
-		# if we get to this point, we know we need to do either an install or an update
-		# AND we have an URL to work with.
-
-	URL=$(curl -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/CallRecorder.*\.zip' | fgrep "$LATEST_VERSION")
-
-else
-	# These are the less-desirable options. All of these end with 'exit 1'
-
-	if [ ! -e "$PRIVATE_FILE" ]
-	then
-			# no PRIVATE_FILE exists.
-
-		echo "$NAME: Fatal Error. '\$PRIVATE_FILE' does not exist at '$PRIVATE_FILE'. Cannot continue. See '$0' for details on how to create it."
-
-	elif [ "$PRIVATE_URL" = "" ]
-	then
-			# the PRIVATE_FILE exists
-			# but the PRIVATE_URL is empty
-		echo "$NAME: Fatal Error. '$PRIVATE_FILE' exists but does not contain a URL. Cannot continue."
-	else
-			# I'm not sure how we'd ever get here, but just in case we do, we should say something, at least
-		echo "$NAME: Fatal Error. Cannot continue. (For unclear reasons, sorry.)"
-	fi
-
-	echo "$NAME: If you just want to download the demo version, you can do that here: <https://www.ecamm.com/mac/callrecorder/CallRecorder.zip>"
-
-	exit 1
-fi
+URL=$(curl --user-agent "$UA" -sfLS "$PRIVATE_URL" | tr '"' '\012' | egrep -i '^https://www.ecamm.com/.*/CallRecorder.*\.zip' | fgrep "$LATEST_VERSION")
 
 FILENAME="$HOME/Downloads/SkypeCallRecorder-${LATEST_VERSION}.zip"
 
 if (( $+commands[lynx] ))
 then
-
+		# if you have Lynx installed, this will show you release notes
 	(lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;
 	 echo "\nSource: <$RELEASE_NOTES_URL>") | tee "$FILENAME:r.txt"
-
+else
+		# if you don't have Lynx, a URL to the release notes
+	echo "Release Notes can be found at $RELEASE_NOTES_URL"  | tee "$FILENAME:r.txt"
 fi
 
 	# The server doesn't do continued downloads, so if we find something where our download is supposed to go,
@@ -151,14 +121,14 @@ then
 	fi
 fi
 
+	# If we don't have the file, download the file
 if [[ ! -e "$FILENAME" ]]
 then
 
 	echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15'
-
-	curl -A "$UA" --fail --location --output "$FILENAME" "$URL"
+		# here's where the downloading happens
+	curl --user-agent "$UA" --fail --location --output "$FILENAME" "$URL"
 
 	EXIT="$?"
 
@@ -171,6 +141,7 @@ then
 
 fi
 
+	# Now that we have it downloaded, lets unpack it
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
@@ -202,23 +173,8 @@ fi
 echo "$NAME: Found it at: '$APP'. Launching it now. Requires manual installation from here."
 
 	# the app is an installer which needs user intervention, so the most we can do is just open it
-open "$APP"
-
-if [ ! -d "/Applications/Skype.app" -a ! -d "$HOME/Applications/Skype.app" ]
-then
-
-	if (( $+commands[di-skype.sh] ))
-	then
-
-		echo "$NAME: Skype is not installed. Running 'di-skype.sh' to install it."
-
-		di-skype.sh
-
-	else
-		echo "$NAME: Skype is not installed. Go to <https://www.skype.com/en/get-skype/> for more information,"
-		echo "	or use this link to download it directly: <https://get.skype.com/go/getskype-skypeformac>"
-	fi
-fi
+	# if it doesn't open, at least reveal it in the Finder
+open "$APP" || open -R "$APP"
 
 exit 0
 #
