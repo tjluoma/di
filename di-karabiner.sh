@@ -7,8 +7,8 @@
 
 NAME="$0:t:r"
 
-# It doesn't really matter which one we check, they both have the same version information
-#INSTALL_TO="/Applications/Karabiner-EventViewer.app"
+	# It doesn't really matter which one we check, they both have the same version information
+	#INSTALL_TO="/Applications/Karabiner-EventViewer.app"
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
 HOMEPAGE="https://pqrs.org/osx/karabiner/"
@@ -17,18 +17,6 @@ DOWNLOAD_PAGE="https://pqrs.org/osx/karabiner/"
 
 SUMMARY="A powerful and stable keyboard customizer for macOS."
 
-	# if you want to install beta releases
-	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/karabiner-elements-prefer-betas.txt"
-
-if [[ -e "$PREFERS_BETAS_FILE" ]]
-then
-	XML_FEED="https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast-devel.xml"
-	NAME="$NAME (beta releases)"
-else
-	XML_FEED="https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml"
-fi
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -36,58 +24,55 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
-	# for Mac OS X '10.11.6' this will give us '11' since we need to test the major version
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+autoload is-at-least
 
-echo "$NAME: OS_VER is $OS_VER"
+is-at-least "10.15" "$OS_VER"
 
-if [ "$OS_VER" -ge "16" ]
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
 then
+	# This is Catalina
+	LOOKFOR='10.15.0'
+else
 
-	echo "$NAME: Not ready for Big Sur"
-	exit 0
+	is-at-least "10.12" "$OS_VER"
 
-elif [ "$OS_VER" -ge "12" ]
-then
+	EXIT="$?"
 
-	INFO=($(curl -sfL "$XML_FEED" \
-		| tr -s ' |\t' '\012' \
-		| egrep -i '^(sparkle:version|url)=' \
-		| head -2 \
-		| sort \
-		| awk -F'"' '//{print $2}'))
-
-	LATEST_VERSION="$INFO[1]"
-
-	URL="$INFO[2]"
-
-		# If any of these are blank, we should not continue
-	if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+	if [[ "$EXIT" == "0" ]]
 	then
-		echo "$NAME: Error: bad data received:
-		INFO: $INFO
-		LATEST_VERSION: $LATEST_VERSION
-		URL: $URL
-		"
-
+		LOOKFOR='10.12.0'
+	else
+		echo "$NAME: Cannot use '$0' with $OS_VER. Needs to be at least version 10.12"
+		echo "Mac OS X 10.11 can use Karabiner version 11.6.0"
+		echo "https://karabiner-elements.pqrs.org/docs/releasenotes/#karabiner-elements-1160"
+		echo "https://github.com/pqrs-org/Karabiner-Elements/releases/download/v11.6.0/Karabiner-Elements-11.6.0.dmg"
 		exit 1
 	fi
-
-elif [ "$OS_VER" -lt "12" ]
-then
-		# n.b. Not sure how far back Karabiner version 10.22 supports.
-	INSTALL_TO="/Applications/Karabiner.app"
-	LATEST_VERSION="10.22.0"
-	URL="https://pqrs.org/osx/karabiner/files/Karabiner-10.22.0.dmg"
-
-	echo "$NAME [info]: Using Karabiner version 10.22.0 for Mac OS X 10.$OS_VER."
-
-else
-	echo "$NAME: Don't know what to do for OS_VER = '$OS_VER'."
-	exit 1
-
 fi
+
+XML_FEED='https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml'
+
+INFO=($(curl -sfLS "$XML_FEED" \
+| tr -s '\012' ' ' \
+| sed -e 's#<item>#\
+<item>#g' -e 's#</item>#<item>\
+#g' \
+| fgrep "<sparkle:minimumSystemVersion>$LOOKFOR</sparkle:minimumSystemVersion>"))
+
+
+URL=$(echo "$INFO" | sed -e 's#.dmg.*#.dmg#g' -e 's#.*http#http#g')
+
+LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#" .*##g')
+
+PUB_DATE=$(echo "$INFO" | sed -e 's#.*<pubDate>##g' -e 's#</pubDate>.*##g')
+
+HTML_RELEASE_NOTES=$(echo "$INFO" | sed -e 's#.*<!\[CDATA\[##g' -e 's#\]\]\>.*##g')
+
+MORE_URL='https://karabiner-elements.pqrs.org/docs/releasenotes/'
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -117,19 +102,16 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
-if [[ "$XML_FEED" != "" ]]
+if [[ "$HTML_RELEASE_NOTES" != "" ]]
 then
 	if (( $+commands[lynx] ))
 	then
 
-		RELEASE_NOTES_URL="$XML_FEED"
+		RELEASE_NOTES=$(echo "$HTML_RELEASE_NOTES" \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nolist -nomargins -nonumbers)
 
-		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-		curl -sfL "$XML_FEED" \
-		| sed '1,/ update-description-begin /d; / update-description-end /,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: XML_FEED <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
-
+		echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n\nDate: ${PUB_DATE}\n\n${RELEASE_NOTES}\n${MORE_URL}" \
+		| tee "$FILENAME:r.txt"
 	fi
 fi
 
@@ -203,4 +185,3 @@ fi
 
 exit 0
 #EOF
-
