@@ -100,12 +100,11 @@ then
 
 	RELEASE_NOTES_URL="$XML_FEED"
 
-	(echo -n "$NAME: Release Notes for " ;
-	curl -sfL "$XML_FEED" \
-	| sed '1,/<item>/d; /<\/description>/,$d ; s#<!\[CDATA\[##g ; s#\]\]>##g' \
-	| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| sed '/./,/^$/!d' ;
-	echo "\nSource: XML_FEED <$XML_FEED>" ) | tee "$FILENAME:r.txt"
+	(echo -n "$NAME: Release Notes\n\n" ;
+	curl -sfLS "$RELEASE_NOTES_URL" \
+	| sed '1,/<description>/d; /<\/description>/,$d' \
+	| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins \
+	; echo "\nSource: XML_FEED <$XML_FEED>" ) | tee "$FILENAME:r.txt"
 
 fi
 
@@ -121,6 +120,18 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
