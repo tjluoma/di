@@ -114,7 +114,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r:r.txt"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r:r.txt"
 
 # Note: while macOS does not have a separate `xz` command, the `tar` command apparently understands how to deal
 # with a .tar.xz file, going back at least to 10.11

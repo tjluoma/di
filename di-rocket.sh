@@ -188,7 +188,7 @@ echo "$NAME: Release Notes from '$RELEASE_NOTES_URL' are too long to show, savin
 
 curl -sfLS "$RELEASE_NOTES_URL" >| "$FILENAME:r.html"
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 
 ## OK, so now we have a valid download, but is it a ZIP or a DMG? We don't know!

@@ -112,7 +112,7 @@ EXIT="$?"
 
 echo "\nURL: ${URL}" >>| "$FILENAME:r.txt"
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 ## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null

@@ -137,7 +137,7 @@ if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
 then
 	(cd "$FILENAME:h" ; \
 	echo "\n\nLocal sha256:" ; \
-	shasum -a 256 -p "$FILENAME:t" \
+	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 fi
 

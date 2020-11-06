@@ -71,7 +71,7 @@ EXIT="$?"
 
 (curl -sfLS "$RELEASE_NOTES_URL" | awk '/^# Version/{i++}i==1' ) | tee "$FILENAME:r.txt"
 
-(cd "$FILENAME:h" ; echo "\n\nURL:\t${URL}\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\n\nURL:\t${URL}\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$NAME: Mounting $FILENAME:"
 

@@ -125,7 +125,7 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 	## We have an actual checksum from the XML_FEED, so we'll use that instead
-	# (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+	# (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 echo "$CHECKSUM ?$FILENAME:t" >| "$CHECKSUM_FILE"
 
