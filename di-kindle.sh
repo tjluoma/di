@@ -62,7 +62,9 @@ URL=$(curl --silent 'https://www.amazon.com/kindlemacdownload' | awk -F'"' '/htt
 
 [[ "$URL" == "" ]] && die "URL is empty."
 
-LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]'`
+# LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]'`
+
+LATEST_VERSION=$(echo "$URL" | awk -F'/' '/^https/{print $5}')
 
 [[ "$LATEST_VERSION" == "" ]] && die "LATEST_VERSION is empty."
 
@@ -126,7 +128,7 @@ then
 
 	(cd "$FILENAME:h" ; \
 	echo "\n\nLocal sha256:" ; \
-	shasum -a 256 -p "$FILENAME:t" \
+	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 
 fi
