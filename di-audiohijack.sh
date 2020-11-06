@@ -27,7 +27,9 @@ zmodload zsh/datetime
 
 function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -d '.')
+# OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -d '.')
+
+OS_VER='10157'
 
 XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=$OS_VER&platform=osx&arch=x86_64&version=3548000"
 
@@ -106,7 +108,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 -p "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
