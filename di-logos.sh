@@ -1,12 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download Logos 8 (since 7 and lower are no longer supported)
+# Purpose: Download Logos 9
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-20
 
 	# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
-XML_FEED='https://clientservices.logos.com/update/v1/feed/logos8-mac/stable.xml'
+XML_FEED='https://clientservices.logos.com/update/v1/feed/logos9-mac/stable.xml'
 
 NAME="$0:t:r"
 
