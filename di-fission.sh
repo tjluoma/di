@@ -33,6 +33,8 @@ then
 
 	OS_SMUSH=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -dc '[0-9]')
 
+	OS_SMUSH='10157'
+
 		# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
 	curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
 	"https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
@@ -175,6 +177,18 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 1
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 1
+
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
