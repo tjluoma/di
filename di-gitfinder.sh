@@ -16,16 +16,6 @@ fi
 
 INSTALL_TO='/Applications/GitFinder.app'
 
-if [[ -d "/System/Volumes/Data/.Trashes/$UID" ]]
-then
-	TRASH="/System/Volumes/Data/.Trashes/$UID"
-elif [[ -d "/.Trashes/$UID" ]]
-then
-	TRASH="/.Trashes/$UID"
-else
-	TRASH="$HOME/.Trash"
-fi
-
 XML_FEED='https://zigz.ag/GitFinder/updates/stablecast.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
@@ -160,14 +150,14 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi

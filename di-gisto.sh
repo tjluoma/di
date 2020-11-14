@@ -16,8 +16,6 @@ fi
 
 INSTALL_TO='/Applications/Gisto.app'
 
-TRASH="$HOME/.Trash"
-
 ## 2020-03-20 - there are releases which don't have a Mac build, so this is not reliable
 #
 # XML_FEED='https://github.com/Gisto/Gisto/releases.atom'
@@ -117,15 +115,15 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	echo "$NAME: moving old installed version to '$TRASH'..."
-	mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	echo "$NAME: moving old installed version to '$HOME/.Trash'..."
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi

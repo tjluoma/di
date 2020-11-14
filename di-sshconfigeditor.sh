@@ -20,16 +20,6 @@ fi
 
 INSTALL_TO='/Applications/SSH Config Editor.app'
 
-if [[ -d "/System/Volumes/Data/.Trashes/$UID" ]]
-then
-	TRASH="/System/Volumes/Data/.Trashes/$UID"
-elif [[ -d "/.Trashes/$UID" ]]
-then
-	TRASH="/.Trashes/$UID"
-else
-	TRASH="$HOME/.Trash"
-fi
-
 XML_FEED='https://hejki.org/download/ssheditor/appcast.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
@@ -152,15 +142,15 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$TRASH/"
+	mv -fv "$FILENAME" "$HOME/.Trash/"
 
-	mv -fv "$FILENAME:r".* "$TRASH/"
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
 
 	exit 0
 fi
 
 	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "$HOME/.Trash/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -185,16 +175,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash'."
 
 		exit 1
 	fi

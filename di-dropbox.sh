@@ -164,8 +164,6 @@ then
 		if [[ -e "$INSTALL_TO" ]]
 		then
 
-			TRASH="$HOME/.Trash"
-
 				# Quit app, if running
 				# normally we would use 'osascript' for this, but Dropbox now refuses to
 				# quit when asked politely, so we use 'pkill' instead
@@ -174,15 +172,15 @@ then
 			&& pkill -f "$INSTALL_TO/Contents/MacOS/Dropbox"
 
 				# move installed version to trash
-			echo "$NAME: moving old installed version to '$TRASH'..."
-			mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+			echo "$NAME: moving old installed version to '$HOME/.Trash'..."
+			mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 			EXIT="$?"
 
 			if [[ "$EXIT" != "0" ]]
 			then
 
-				echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+				echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
 
 				exit 1
 			fi

@@ -31,8 +31,6 @@ LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e
 
 URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
 
-TRASH="$HOME/.Trash"
-
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
@@ -148,14 +146,14 @@ then
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
 		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to '$TRASH'. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
