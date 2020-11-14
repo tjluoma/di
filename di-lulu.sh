@@ -24,20 +24,15 @@ SUMMARY="In today's connected world, it is rare to find an application or piece 
 
 INSTALL_TO='/Applications/Lulu.app'
 
-INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
-		| gunzip -f -c \
-		| tr -s '"|\047' '\012' \
-		| egrep '^http.*\.zip|sha-1:' \
-		| awk '{print $NF}' \
-		| head -2))
+INFO=$(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" | gunzip -f -c)
 
-URL="$INFO[1]"
+URL=$(echo "$INFO" | tr '"' '\012' | egrep 'http.*\.dmg$' | head -1)
 
-EXPECTED_SHA1="$INFO[2]"
+EXPECTED_SHA1=$(echo "$INFO" | fgrep 'SHA-1' | sed -e 's#</span>##g' | awk '{print $NF}')
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
-	# If any of these are blank, we cannot continue
+# If any of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
 then
 	echo "$NAME: Error: bad data received:
@@ -75,20 +70,20 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
 
-echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+echo "$EXPECTED_SHA1  $FILENAME:t" >| "$SHA_FILE"
 
 ( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
 	| gunzip -f -c) | tee "$FILENAME:r.txt"
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
-if [ "$OS_VER" -lt "12" ]
+if [ "$OS_VER" -lt "15" ]
 then
-	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.12 and higher (you are using 10.$OS_VER)."
+	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.15 and higher (you are using 10.$OS_VER)."
 	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
 fi
 
@@ -127,62 +122,61 @@ fi
 
 ##
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+echo "$NAME: Mounting $FILENAME:"
 
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
+fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+	# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+	# move installed version to trash
+	echo "$NAME: moving old installed version to '$HOME/.Trash'..."
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Unzip successful"
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
-## 2019-12-08 - now the installer app is called "LuLu.app" but the full path is
-## 				'LuLu.app/Contents/MacOS/LuLu Installer'
-#
-# INSTALLER="$UNZIP_TO/LuLu Installer.app"
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-INSTALLER=$(find "$UNZIP_TO" -iname '*.app' -maxdepth 1 -print)
-
-if [[ "$INSTALLER" == "" ]]
-then
-	MSG="$NAME: 'INSTALLER' variable is empty."
-	po.sh "$MSG"
-	echo "$MSG" >>/dev/stderr
-	exit 1
-
-fi
-
-	# Check to see if the installer is already running
-pgrep -qfl "$INSTALLER:t"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-	MSG="$NAME: '$INSTALLER:t' is already running."
-
-	po.sh "$MSG"
-
-	echo "$MSG" >>/dev/stderr
-
-	exit 1
-
-fi
-
-echo "$NAME: launching custom installer/updater: '$INSTALLER'"
-
-	# launch the custom installer app and wait for it to finish.
-open -a "$INSTALLER"
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
-#
-#EOF
+
