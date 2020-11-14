@@ -29,9 +29,9 @@ function timestamp { strftime "%Y-%m-%d at %H:%M:%S" "$EPOCHSECONDS" }
 
 # OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -d '.')
 
-OS_VER='10157'
+# OS_VER='10157'
 
-XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=$OS_VER&platform=osx&arch=x86_64&version=3548000"
+XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.audiohijack3&system=10160&platform=osx&arch=x86_64&version=3762003"
 
 	# sparkle:version= is the only version information in feed
 LATEST_VERSION=`curl -sfL "$XML_FEED" | awk -F'"' '/sparkle:version=/{print $2}'`
