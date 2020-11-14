@@ -20,11 +20,17 @@ XML_FEED="https://uds.reincubate.com/release-notes/camo/?format=sparkle"
 
 INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1')
 
-URL=$(echo $INFO | awk -F'"' '/<enclosure /{print $2}' | sed 's# #%20#g')
+URL=$(echo "$INFO" \
+	| fgrep '<enclosure' \
+	| sed 	-e 's#.*http#http#g' \
+			-e 's#" .*##g' \
+			-e 's# #%20#g' \
+			-e 's#\[#%5B#g' \
+			-e 's#\]#%5D#g')
 
-LATEST_VERSION=$(echo "$INFO" | awk -F'"' '/<enclosure /{print $4}')
+LATEST_VERSION=$(echo "$INFO"  | fgrep '<enclosure' | sed -e 's#.*shortVersionString="##g' -e 's#".*##g')
 
-LATEST_BUILD=$(echo "$INFO" | awk -F'"' '/<enclosure /{print $6}')
+LATEST_BUILD=$(echo "$INFO" | fgrep '<enclosure' | sed -e 's#.*sparkle:version="##g' -e 's#" .*##g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -71,11 +77,15 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${
 if (( $+commands[lynx] ))
 then
 
-	RELEASE_NOTES_HTML=$(echo "${INFO}" | tr '\012' ' ' | sed 's#.*CDATA\[##g ; s#\]\].*##g')
+	# RELEASE_NOTES_HTML=$(echo "${INFO}" | tr '\012' ' ' | sed 's#.*CDATA\[##g ; s#\]\].*##g')
 
-	RELEASE_NOTES=$(echo "${RELEASE_NOTES_HTML}" | lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+	RELEASE_NOTES=$(echo "$INFO" \
+					| tr '\012' ' ' \
+					| sed 's#.*CDATA\[##g ; s#\]\].*##g' \
+					| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins;
+					echo "\nURL: $URL" )
 
-	echo "${RELEASE_NOTES}" >| "$FILENAME:r.txt"
+	echo "${RELEASE_NOTES}" | tee -a "$FILENAME:r.txt"
 
 fi
 
@@ -118,16 +128,16 @@ then
 else
 	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	mv -fv "$FILENAME" "$TRASH/"
+	mv -fv "$FILENAME" "$HOME/.Trash/"
 
-	mv -fv "$FILENAME:r".* "$TRASH/"
+	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
 
 	exit 0
 
 fi
 
 	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TRASH}/${NAME}-XXXXXXXX")
+UNZIP_TO=$(mktemp -d "${HOME}/.Trash/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -152,16 +162,16 @@ then
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TRASH/'."
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
 
-	mv -f "$INSTALL_TO" "$TRASH/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TRASH'."
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash'."
 
 		exit 1
 	fi
