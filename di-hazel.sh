@@ -28,7 +28,7 @@ fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
-[[ "$OS_VER" == "10.16" ]] && echo "$NAME: Not ready for Big Sur yet" && exit 0
+[[ "$OS_VER" == "10.16" ]] && echo "$NAME: Not compatible with Big Sur." && exit 0
 
 if [ -e "/Library/PreferencePanes/Hazel.prefPane" -a -e "$HOME/Library/PreferencePanes/Hazel.prefPane" ]
 then
