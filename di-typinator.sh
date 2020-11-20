@@ -14,7 +14,7 @@ else
 	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
-INSTALL_TO="${APP_INSTALL_DIR-/Applications}/Typinator.app"
+INSTALL_TO="/Applications/Typinator.app"
 
 XML_FEED='https://update.ergonis.com/vck/typinator.xml'
 
