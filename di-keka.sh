@@ -20,9 +20,9 @@ XML_FEED="https://u.keka.io"
 
 INFO=($(curl -sfLS "$XML_FEED" \
 | awk '/<item>/{i++}i==1' \
-| sed -e '/<sparkle:deltas>/,$d' -e 's#^\t*##g' \
+| sed -e '/<sparkle:deltas>/,$d' -e 's#^	*##g' \
 | egrep '<sparkle:releaseNotesLink>|url="|sparkle:shortVersionString="|sparkle:version="' \
-| sort \
+| sort --dictionary-order \
 | sed 	-e 's#<sparkle:releaseNotesLink>##g' \
 		-e 's#</sparkle:releaseNotesLink>##g' \
 		-e 's#sparkle:shortVersionString="##g' \
@@ -35,6 +35,7 @@ RELEASE_NOTES_URL="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
 LATEST_BUILD="$INFO[3]"
 URL="$INFO[4]"
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
