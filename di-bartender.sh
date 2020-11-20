@@ -23,8 +23,9 @@ fi
 INSTALL_V1_TO="/Applications/Bartender.app"
 INSTALL_V2_TO="/Applications/Bartender 2.app"
 INSTALL_V3_TO='/Applications/Bartender 3.app'
+INSTALL_V4_TO='/Applications/Bartender 4.app'
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d '.' -f 2)
+OS_VER=$(sw_vers -productVersion | cut -d '.' -f 1,2)
 
 function use_v1 {
 
@@ -116,38 +117,102 @@ function use_v3 {
 }
 
 
-if [ "$OS_VER" -lt "10" ]
+function use_v4 {
+
+	if [ "$CAN_USE_4" = "yes" ]
+	then
+
+		USE_VERSION='4'
+
+		INSTALL_TO='/Applications/Bartender 4.app'
+
+				# if you want to install beta releases
+				# create a file (empty, if you like) using this file name/path:
+		PREFERS_BETAS_FILE="$HOME/.config/di/bartender4-prefer-betas.txt"
+
+		if [[ -e "$PREFERS_BETAS_FILE" ]]
+		then
+
+			if [[ "$NAME" == "$0:t:r" ]]
+			then
+				NAME="$NAME (beta releases)"
+			fi
+
+				# Reports itself as 'http://macbartender.com/B2/updates/TestAppcast.xml'
+			XML_FEED='https://www.macbartender.com/B2/updates/TestUpdatesB4.php'
+
+		else
+				# This is for non-beta
+				# Feed reports itself as 'http://macbartender.com/B2/updates/Appcast.xml'
+				# which is weird because it's for Bartender 3, not 2. But OK.
+			XML_FEED='https://www.macbartender.com/B2/updates/updatesB4.php'
+		fi
+
+		INFO=($(curl -sSfL "${XML_FEED}" \
+				| tr -s ' ' '\012' \
+				| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
+				| tail -3 \
+				| sort \
+				| awk -F'"' '/^/{print $2}'))
+
+			# "Sparkle" will always come before "url" because of "sort"
+		LATEST_VERSION="$INFO[1]"
+		LATEST_BUILD="$INFO[2]"
+		URL="$INFO[3]"
+	else
+		echo "$NAME: Version 4 requires macOS 11. See <https://www.macbartender.com/faq/> for more information."
+		exit 0
+	fi
+}
+
+
+
+case "$OS_VER" in
+	11.*)
+		CAN_USE_3='no'
+		CAN_USE_2='no'
+		CAN_USE_4='yes'
+		use_v4
+	;;
+
+	10.13|10.14|10.15)
+		CAN_USE_4='no'
+		CAN_USE_3='yes'
+		CAN_USE_2='no'
+		use_v3
+	;;
+
+	10.12)
+		CAN_USE_4='no'
+		CAN_USE_3='yes'
+		CAN_USE_2='yes'
+	;;
+
+	10.10|10.11)
+		CAN_USE_4='no'
+		CAN_USE_3='no'
+		CAN_USE_2='yes'
+		use_v2
+	;;
+
+	10.9|10.8|10.7|10.6)
+		CAN_USE_4='no'
+		CAN_USE_3='no'
+		CAN_USE_2='no'
+		use_v1
+	;;
+
+	*)
+		echo "$NAME: There is no version of Bartender for $OS_VER." >>/dev/stderr
+		exit 2
+	;;
+
+esac
+
+ if [[ -e "$INSTALL_V4_TO" ]]
 then
-
-	CAN_USE_3='no'
-	CAN_USE_2='no'
-
-	use_v1
-
-else
-
-	case "$OS_VER" in
-		13|14|15)
-			CAN_USE_3='yes'
-			CAN_USE_2='no'
-			use_v3
-		;;
-
-		12)
-			CAN_USE_3='yes'
-			CAN_USE_2='yes'
-		;;
-
-		10|11)
-			CAN_USE_3='no'
-			CAN_USE_2='yes'
-			use_v2
-		;;
-	esac
-fi
-
-
-if [[ -e "$INSTALL_V3_TO" ]]
+	use_v4
+elif [[ -e "$INSTALL_V3_TO" ]]
 then
 	use_v3
 elif [[ -e "$INSTALL_V2_TO" ]]
