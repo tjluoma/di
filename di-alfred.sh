@@ -14,7 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-XML_FEED='https://www.alfredapp.com/app/update4/general.xml'
+	## Regular Releases
+# XML_FEED='https://www.alfredapp.com/app/update4/general.xml'
+
+	## Beta Releases
+XML_FEED='https://www.alfredapp.com/app/update4/prerelease.xml'
 
 PLIST="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
