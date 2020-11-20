@@ -274,7 +274,7 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" | awk -F'>|<' '/sparkle:releaseNotesLi
 
 FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-if [[ "$USE_VERSION" == "3" ]]
+if [[ "$USE_VERSION" == "4" ]]
 then
 
 
