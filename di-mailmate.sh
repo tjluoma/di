@@ -27,33 +27,37 @@ fi
 
 LAUNCH='no'
 
-	# if you want to install beta releases
-	# create a file (empty, if you like) using this file name/path:
-#PREFERS_BETAS_FILE="$HOME/.config/di/prefers/mailmate-prefer-betas.txt"
-
-# if [[ -e "$PREFERS_BETAS_FILE" ]]
-# then
-# 	XML_FEED='http://updates.mailmate-app.com/beta'
-# 	NAME="$NAME (beta releases)"
-# else
-# 		## This is for official, non-beta versions
-# 	XML_FEED='http://updates.mailmate-app.com/'
-# fi
-#
-# 	# Very minimal feed. Uses same version # as CFBundleVersion
-# INFO=($(curl -sfL "$XML_FEED" | awk '{print $4" " $7}' | tr -d "'|;"))
-#
-# URL="$INFO[1]"
-#
-# LATEST_VERSION="$INFO[2]"
 
 ## 2020-11-20 - this is where the actual latest builds are found
+## 2020-11-22 - too beta for me
+##
+# URL=$(curl -sfLS "https://updates.mailmate-app.com/archives/" \
+# 	| awk -F'"' '/tbz/{print "https://updates.mailmate-app.com/archives/"$8}' \
+# 	| tail -1)
+#
+# LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]')
 
-URL=$(curl -sfLS "https://updates.mailmate-app.com/archives/" \
-	| awk -F'"' '/tbz/{print "https://updates.mailmate-app.com/archives/"$8}' \
-	| tail -1)
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]')
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/prefers/mailmate-prefer-betas.txt"
+
+if [[ -e "$PREFERS_BETAS_FILE" ]]
+then
+	XML_FEED='http://updates.mailmate-app.com/beta'
+	NAME="$NAME (beta releases)"
+else
+		## This is for official, non-beta versions
+	XML_FEED='http://updates.mailmate-app.com/'
+fi
+
+	# Very minimal feed. Uses same version # as CFBundleVersion
+INFO=($(curl -sfL "$XML_FEED" | awk '{print $4" " $7}' | tr -d "'|;"))
+
+URL="$INFO[1]"
+
+LATEST_VERSION="$INFO[2]"
+
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
