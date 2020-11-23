@@ -95,7 +95,10 @@ then
 	## if we get here, we need to check for the latest version of BBEdit
 
 		## this is the feed wherein the latest information is made available from Barebones
-	XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+
+		## Beta Feed?
+	XML_FEED='https://versioncheck.barebones.com/BBEdit-415.xml'
 
 		## this is where we process that feed. There may be a better way of doing this,
 		## and I'm open to suggestions. But this works, even on a Mac without any special tools installed.
@@ -253,7 +256,7 @@ then
 		# into a text file with the full path of the filename of the file we just downloaded
 		# and then we can check it with 'shasum --check'
 		##
-	echo "$SHA256_EXPECTED ?$FILENAME:t" >| "$SHA256_FILE"
+	echo "${SHA256_EXPECTED}  $FILENAME:t" >| "$SHA256_FILE"
 
 	echo -n "$NAME: Verifying sha256 checksum of '$FILENAME': "
 
