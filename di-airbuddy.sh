@@ -22,6 +22,11 @@ INSTALL_TO='/Applications/AirBuddy.app'
 ## This was for version 1
 # XML_FEED='https://su.airbuddy.app/appcast_shelby.xml'
 
+
+# @TODO - needs release notes support
+# <sparkle:releaseNotesLink>https://su.airbuddy.app/kCRSAmcjBc/kEYpQtkjyB-AirBuddy_v2.1-245.html</sparkle:releaseNotesLink>
+
+
 XML_FEED='https://su.airbuddy.app/kCRSAmcjBc/appcast_hyeon.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" \
