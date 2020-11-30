@@ -5,6 +5,12 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-10-15
 
+
+
+# See note at EOF
+
+
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -98,34 +104,7 @@ then
 	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
 		## Beta Feed?
-	XML_FEED='https://versioncheck.barebones.com/BBEdit-415.xml'
-
-		## this is where we process that feed. There may be a better way of doing this,
-		## and I'm open to suggestions. But this works, even on a Mac without any special tools installed.
-	INFO=($(curl -sfL "$XML_FEED" \
-			| egrep -A1 '<key>(SUFeedEntryShortVersionString|SUFeedEntryVersion|SUFeedEntryDownloadChecksum|SUFeedEntryDownloadURL)</key>' \
-			| tail -11 \
-			| tr -s '\t|\012' ' ' \
-			| perl -p -e 's/^ // ; s/ -- /\n/ ; s/ -- /\n/  ; s/ -- /\n/ ' \
-			| sed 's#<string>##g ; s#<\/string>##g ; s#<key>##g ; s#<\/key>##g' \
-			| sort))
-
-	## ok, so with the 'sort' this guarantees that the items will always be in this order:
-	#
-	#	SUFeedEntryDownloadChecksum
-	#	SUFeedEntryDownloadURL
-	#	SUFeedEntryShortVersionString
-	#	SUFeedEntryVersion
-
-	SHA256_EXPECTED="$INFO[2]"
-	URL="$INFO[4]"
-	LATEST_VERSION="$INFO[6]"
-	LATEST_BUILD="$INFO[8]"
-
-		## As long as Barebones keeps using this URL format, we don't need to calculate it each time
-	RELEASE_NOTES_URL="https://www.barebones.com/support/bbedit/notes-$LATEST_VERSION.html"
-
-		## this is where the file will be downloaded and what it will be named
+			## this is where the file will be downloaded and what it will be named
 	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 else
@@ -357,3 +336,31 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
+
+
+
+
+
+
+
+XML_FEED='https://versioncheck.barebones.com/BBEdit-415.xml'
+
+PLIST="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.plist"
+
+curl -sfLS "https://versioncheck.barebones.com/BBEdit-414.xml" \
+| sed -e '1,/<array>/d' -e '/<\/array>/,$d' \
+| tr -d '\t|\r\n' \
+| sed 's#<dict>#\
+<dict>#g' \
+| tail -1 > "${PLIST}"
+
+LC_ALL=C
+
+RELEASE_NOTES_URL=$(sed -e 's#</data>.*##g' -e 's#.*<data>##g' "$PLIST" \
+| base64 --decode \
+| sed 's#"#\
+#g' \
+| egrep --text '^http')
+
+echo ">$RELEASE_NOTES_URL<"
+
