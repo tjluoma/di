@@ -27,7 +27,7 @@ DOWNLOAD_PAGE="https://brave.com/download/"
 
 SUMMARY="Much more than a browser, Brave is a new way of thinking about how the web works."
 
-RELEASE_NOTES_URL='https://github.com/brave/brave-browser/blob/master/CHANGELOG_DESKTOP.md'
+RELEASE_NOTES_URL='https://raw.githubusercontent.com/brave/brave-browser/master/CHANGELOG_DESKTOP.md'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 | tr -s '\012' ' ' \
@@ -36,11 +36,30 @@ INFO=$(curl -sfLS "$XML_FEED" \
 | egrep '^<item>' \
 | tail -1)
 
-URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#".*##g')
 
-LATEST_BUILD=$(echo "$INFO" | sed 's#.* sparkle:version="##g ; s#".*##g')
+XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
 
-LATEST_VERSION=$(echo "$INFO" | sed 's#.* sparkle:shortVersionString="##g ; s#".*##g')
+INFO=($(curl -sfLS "$XML_FEED" \
+| tr -s '\012' ' ' \
+| sed 's# <item> #\
+<item>#g' \
+| egrep '^<item>' \
+| tail -1 \
+| sed 's#> <#>\
+<#g' \
+| sed -e '/<sparkle:deltas>/,$d' -e 's# #\
+#g' \
+| sort \
+| egrep '^(url|sparkle:version|sparkle:shortVersionString)' \
+| awk -F'"' '//{print $2}'))
+
+URL="$INFO[3]"
+
+LATEST_BUILD="$INFO[2]"
+
+LATEST_VERSION="$INFO[1]"
+
+
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -89,17 +108,18 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
-if (( $+commands[lynx] ))
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-# DO NOT INDENT THAT ONE LINE
-	RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
-	| sed -e 's#<#\
-<#g' -e '1,/<article/d' -e '/<\/ul>/,$d' \
-	| tr -d '\012' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin -hiddenlinks=ignore)
+	cat "$RELEASE_NOTES_TXT"
 
-	echo "$RELEASE_NOTES\n\nSource: ${RELEASE_NOTES_URL}\nURL: ${URL}" | tee "$FILENAME:r.txt"
+else
+
+	RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" | awk '/^## /{i++}i==1')
+
+	echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
 
 fi
 
