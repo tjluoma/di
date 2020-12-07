@@ -34,7 +34,7 @@ fi
 
 INSTALL_TO='/Applications/Alfred 4.app'
 
-RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata)
+RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata | awk '/^## /{i++}i==1')
 
 LATEST_BUILD=$(defaults read "${PLIST}" build)
 
