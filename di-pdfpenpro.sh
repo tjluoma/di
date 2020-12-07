@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-21
 
+
+## @todo - feed is now at 'https://smilesoftware.com/cgi-bin/pdfpenpro_update.pl' as of 2020-11-30
+
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/PDFpenPro.app'
