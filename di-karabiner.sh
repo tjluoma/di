@@ -5,6 +5,10 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-11
 
+
+## @todo - Dec 8 - download failed / URL incorrect
+
+
 NAME="$0:t:r"
 
 	# It doesn't really matter which one we check, they both have the same version information
