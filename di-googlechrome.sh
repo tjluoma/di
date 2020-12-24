@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose:	Download and install/update the latest version Google Chrome
+# Purpose: Download and install/update the latest version Google Chrome
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -15,7 +15,6 @@ else
 fi
 
 	# must be in /Applications/ for 1Password
-
 INSTALL_TO='/Applications/Google Chrome.app'
 
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
@@ -29,13 +28,6 @@ then
 	echo "$NAME: Unable to determine latest version of Google Chrome."
 	exit 1
 fi
-
-## 2019-08-26 - LV1 is updated faster than LV2
-
-	## Alternative way to find the latest version number
-# LV2=$(curl -A "$UA_SAFARI" -sfLS "https://www.whatismybrowser.com/guides/the-latest-version/chrome" | fgrep -A1 'macOS' | tr -dc '[0-9]\.')
-#
-# echo "\n$NAME: LV1 = ${LATEST_VERSION}\n$NAME: LV2 = ${LV2}\n"
 
 
 if [[ -e "$INSTALL_TO" ]]
@@ -94,10 +86,6 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 echo "$NAME: Mounting $FILENAME:"
-
-	## Only need this if there's an EULA, which I don't think there is
-	## but I'm keeping it just in case I find out later that I'm wrong
-# MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
 MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
 	| fgrep -A 1 '<key>mount-point</key>' \
