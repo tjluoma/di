@@ -35,87 +35,69 @@ INSTALLED_BUILD=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/d
 	## Use installed version in User Agent when requesting Sparkle feed
 UA="Audiobook Builder/$INSTALLED_VERSION Sparkle/1.5"
 
-	## This is the 'regular' (non-beta) feed
-	## The feed does not include an 'enclosure url'
-#XML_FEED='http://www.splasm.com/versions/audiobookbuilder.xml'
-
-## This is the feed for version 2
-## Note that version 1 feed did not have build info
+	## This is the feed for version 2
 XML_FEED='https://www.splasm.com/versions/audiobookbuilder2x.xml'
 
 	# n.b. there is a beta feed but I'm not sure if it is used often and its format is different
 	#XML_FEED='http://www.splasm.com/special/audiobookbuilder/audiobookbuilderprerelease_sparkle.xml'
 
-INFO=($(curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
-| egrep '(<version>.*</version>|<bundleVersion>.*</bundleVersion>)' \
-| sort \
-| head -2 \
-| sed 's#</version>##g; s#.*<version>##g; s#</bundleVersion>##g ; s#.*<bundleVersion>##g'))
+INFO=$(curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
+		| egrep '(<version>.*</version>|<bundleVersion>.*</bundleVersion>)' \
+		| head -2 )
 
-LATEST_BUILD="$INFO[1]"
+LATEST_VERSION=$(echo "$INFO" | egrep '<version>.*</version>' | tr -dc '[0-9]\.')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_BUILD=$(echo "$INFO" | egrep '<bundleVersion>.*</bundleVersion>' | tr -dc '[0-9]\.')
 
+## 2020-12-18 - Old code moved to bottom of script. $INFO / $LATEST_VERSION / $LATEST_BUILD all better defined
 
-# if [[ "$LATEST_VERSION" == "" ]]
-# then
-# 		## if we didn't get a version string that way, try another way to check if maybe the XML/RSS feed is different
-# 		## This should work for the beta feed, but untested
-# 	LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
-# 	| tr -s ' ' '\012' \
-# 	| egrep '^sparkle:shortVersionString' \
-# 	| head -1 \
-# 	| tr -dc '[0-9].' `
-#
-# fi
-#
-# if [[ "$LATEST_VERSION" == "" ]]
-# then
-#
-# 		## if neither of those two worked, make an incredibly clumsy attempt to check raw HTML of update page
-# 		## this is extremely fragile and should never be used.
-#
-# 	LATEST_VERSION=`curl --connect-timeout 10 -A Safari -sfL http://www.splasm.com/audiobookbuilder/update.html \
-# 			| fgrep -A1 'id="productdesc"' \
-# 			| sed 's#<br>##g; s#.*>##g' \
-# 			| tr -dc '[0-9].'`
-# fi
-
-	## If none of that worked, give up
-if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Failed to find LATEST_VERSION or LATEST_BUILD from $XML_FEED ($LATEST_VERSION/$LATEST_BUILD)"
-	exit 0
-fi
 
-	# If we get here, we got at least _something_ for LATEST_VERSION
-	# so compare that against installed version
-if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
-then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-	exit 0
-fi
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-# autoload is-at-least
-#
-# is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-#
-# if [ "$?" = "0" ]
-# then
-# 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-# 	exit 0
-# fi
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
-	## If we get here, we need to update
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	autoload is-at-least
 
-if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
-then
-	echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-	echo "	See <https://apps.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
-	echo "	<macappstore://apps.apple.com/us/app/audiobook-builder/id406226796>"
-	echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
-	exit 0
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+		## If we get here, we need to update
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	then
+		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
+		echo "	See <https://apps.apple.com/us/app/audiobook-builder/id406226796?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/audiobook-builder/id406226796>"
+		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
+		exit 0
+	fi
+
+	FIRST_INSTALL='no'
+
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
+
+else
+
+	FIRST_INSTALL='yes'
 fi
 
 	## Save the DMG but put the version number in the filename
@@ -194,3 +176,57 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
+
+
+
+
+## 2020-12-18 old code below
+
+# if [[ "$LATEST_VERSION" == "" ]]
+# then
+# 		## if we didn't get a version string that way, try another way to check if maybe the XML/RSS feed is different
+# 		## This should work for the beta feed, but untested
+# 	LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
+# 	| tr -s ' ' '\012' \
+# 	| egrep '^sparkle:shortVersionString' \
+# 	| head -1 \
+# 	| tr -dc '[0-9].' `
+#
+# fi
+#
+# if [[ "$LATEST_VERSION" == "" ]]
+# then
+#
+# 		## if neither of those two worked, make an incredibly clumsy attempt to check raw HTML of update page
+# 		## this is extremely fragile and should never be used.
+#
+# 	LATEST_VERSION=`curl --connect-timeout 10 -A Safari -sfL http://www.splasm.com/audiobookbuilder/update.html \
+# 			| fgrep -A1 'id="productdesc"' \
+# 			| sed 's#<br>##g; s#.*>##g' \
+# 			| tr -dc '[0-9].'`
+# fi
+
+	## If none of that worked, give up
+if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
+then
+	echo "$NAME: Failed to find LATEST_VERSION or LATEST_BUILD from $XML_FEED ($LATEST_VERSION/$LATEST_BUILD)"
+	exit 0
+fi
+
+	# If we get here, we got at least _something_ for LATEST_VERSION
+	# so compare that against installed version
+if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
+then
+	echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+	exit 0
+fi
+
+# autoload is-at-least
+#
+# is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+#
+# if [ "$?" = "0" ]
+# then
+# 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
+# 	exit 0
+# fi
