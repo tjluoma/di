@@ -5,6 +5,7 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-10-15
 
+## @todo - failed to clean download 
 
 
 # See note at EOF
@@ -101,7 +102,7 @@ then
 	## if we get here, we need to check for the latest version of BBEdit
 
 		## this is the feed wherein the latest information is made available from Barebones
-	#  XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
+	 XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
 		## Beta Feed?
 			## this is where the file will be downloaded and what it will be named
