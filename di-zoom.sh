@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-21
 
+
+## m1 is separate download: https://zoom.us/client/latest/Zoom.pkg?archType=arm64
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
@@ -18,8 +21,29 @@ INSTALL_TO='/Applications/zoom.us.app'
 
 RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'
 
-	# this assumes that 'https://zoom.us/client/latest/Zoom.pkg' won't change
-URL=$(curl -sfLS --head https://zoom.us/client/latest/Zoom.pkg | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+	## 2020-12-22 THIS IS A HACK to check to see if we are running on an ARM Mac or not
+	## the `arch` command cannot be trusted because the terminal emulator may be running
+	## under Rosetta, especially since right now that is how `brew` must be configured
+	## to work right.
+	##
+	## I'm not 100% sure this will work under all circumstances, but it's the best
+	## I can figure out for now.
+	##
+	## Once brew works on ARM I will probably just use `arch`
+	## or maybe Zoom will eventually release universal installers
+
+if [[ -e '/System/Library/Extensions/AppleARMPMU.kext/Contents/MacOS/AppleARMPMU' ]]
+then
+		# This is for ARM / M1 / Apple Silicon
+	PKG_URL='https://zoom.us/client/latest/Zoom.pkg?archType=arm64'
+	ARCH='arm64'
+else
+		## This is only for Intel
+	PKG_URL='https://zoom.us/client/latest/Zoom.pkg'
+	ARCH='intel'
+fi
+
+URL=$(curl -sfLS --head "$PKG_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
 
 LATEST_VERSION=$(echo "${URL}" | awk -F'/' '/http/{print $5}')
 
@@ -61,7 +85,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/Zoom-${LATEST_VERSION}.pkg"
+FILENAME="$HOME/Downloads/Zoom-${LATEST_VERSION}.${ARCH}.pkg"
 
 if (( $+commands[lynx] ))
 then
