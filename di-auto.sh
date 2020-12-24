@@ -52,8 +52,9 @@ LASTRUN_TIME=$(tail "$LASTRUN" | egrep '[0-9]' | tail -1 | awk '{print $1}')
 
 DIFF=$(($EPOCHSECONDS - $LASTRUN_TIME))
 
-	# unless "forced" don't run if we've run in the last 59 minutes
-if [ "$DIFF" -lt "3540" ]
+	# unless "forced" don't run if we've run in the last 59 minutes (3540 seconds)
+	# now 30 minutes (1800 seconds)
+if [ "$DIFF" -lt "1799" ]
 then
 
 	TIME_AGO_READABLE=$(seconds2readable.sh "$DIFF")
@@ -239,31 +240,13 @@ fi
 
 rm -f "$LOCKFILE"
 
-MACUPDATER_LAST_TIME=$(defaults read com.corecode.MacUpdater LastFullScans 2>/dev/null \
-						| egrep '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' \
-						| tail -1 \
-						| sed 's#"$##g ; s#.*"##g')
 
-if [[ "$MACUPDATER_LAST_TIME" != "" ]]
+if (( $+commands[macupdater.sh] ))
 then
 
-	TIME_UTC_EPOCH=$(TZ=UTC strftime -r "%Y-%m-%d %H:%M:%S +0000" "$MACUPDATER_LAST_TIME")
-
-	DIFF_TIME_SINCE_MACUPDATER=$(($EPOCHSECONDS - $TIME_UTC_EPOCH))
-
-	DIFF_READABLE=$(seconds2readable.sh "$DIFF_TIME_SINCE_MACUPDATER")
-
-	if [[ "$DIFF_TIME_SINCE_MACUPDATER" -gt "86400" ]]
-	then
-
-		echo "$NAME: MacUpdater last ran ${DIFF_READABLE} ago. Running now..."
-
-		open -g -j -b com.corecode.MacUpdater
-	else
-
-		echo "$NAME: MacUpdater last ran ${DIFF_READABLE} ago. Not running yet."
-	fi
+	macupdater.sh
 
 fi
+
 
 exit 0
