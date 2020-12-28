@@ -35,24 +35,27 @@ LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 	# which is the URL we need to download the latest version of the compiled app
 	# not source code
 
-ARCH=$(arch)
+ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
 
-if [[ "$ARCH" == "i386" ]]
+if [[ "$ARCH" == "ARM64" ]]
 then
 
 	URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-		| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
-		| fgrep -v 'arm64' \
-		| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
+			| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
+			| fgrep 'arm64' \
+			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
 
-else
-
+elif [[ "$ARCH" == "X86" ]]
+then
 	URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-		| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
-		| fgrep 'arm64' \
-		| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
-
+			| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
+			| fgrep -v 'arm64' \
+			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
+else
+	echo "Unknown arch returned: '$ARCH'" >>/dev/stderr
+	exit 2
 fi
+
 
 ## Debugging info, if needed
 # echo "
