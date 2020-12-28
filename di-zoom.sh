@@ -32,15 +32,19 @@ RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updat
 	## Once brew works on ARM I will probably just use `arch`
 	## or maybe Zoom will eventually release universal installers
 
-if [[ -e '/System/Library/Extensions/AppleARMPMU.kext/Contents/MacOS/AppleARMPMU' ]]
+ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
+
+if [[ "$ARCH" == "ARM64" ]]
 then
-		# This is for ARM / M1 / Apple Silicon
 	PKG_URL='https://zoom.us/client/latest/Zoom.pkg?archType=arm64'
 	ARCH='arm64'
-else
-		## This is only for Intel
+elif [[ "$ARCH" == "X86" ]]
+then
 	PKG_URL='https://zoom.us/client/latest/Zoom.pkg'
 	ARCH='intel'
+else
+	echo "Unknown arch returned: '$ARCH'" >>/dev/stderr
+	exit 2
 fi
 
 URL=$(curl -sfLS --head "$PKG_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
