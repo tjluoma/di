@@ -45,12 +45,18 @@ then
 			| fgrep 'arm64' \
 			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
 
+	ARCH='arm64'
+
 elif [[ "$ARCH" == "X86" ]]
 then
+
 	URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
 			| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
 			| fgrep -v 'arm64' \
 			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
+
+	ARCH='i386'
+
 else
 	echo "Unknown arch returned: '$ARCH'" >>/dev/stderr
 	exit 2
