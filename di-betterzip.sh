@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of BetterZip (for its quicklook plugin)
+# Purpose: Download and install the latest version of BetterZip (and its quicklook plugin)
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -27,10 +27,16 @@ SUMMARY="
 * Edit archived files in an external application and BetterZip can update your archive.
 "
 
-# XML_FEED="https://macitbetter.com/BetterZip4.rss"
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+##
+## 2020-12-29 - getting 'curl: (16) Error in the HTTP2 framing layer' when I try to use `curl` on $XML_FEED
+##				so I am setting it to use HTTP 1 instead
+##
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
+alias curl='/usr/bin/curl --http1.1'
 
-
+XML_FEED="https://macitbetter.com/BetterZip5.rss"
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
