@@ -35,7 +35,8 @@ EXIT="$?"
 
 if [[ "$EXIT" != "0" ]]
 then
-	echo "$NAME: Hazel 5 requires at least '$MIN_VERSION' and you're running '$OS_VER'. (\$EXIT = $EXIT)"
+	echo "$NAME: Hazel 5 requires at least '$MIN_VERSION' and you're running '$OS_VER'. (\$EXIT = $EXIT)" >>/dev/stderr
+	echo "$NAME: try 'di-hazel4.sh' instead." >>/dev/stderr
 	exit 2
 fi
 
