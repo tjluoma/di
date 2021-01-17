@@ -6,6 +6,9 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-23 (2016-04-22 - changed from .dmg to .zip)
 
+
+# @TODO @WAITING - 10.12 can use later than 4.3.5 but less than 5.0.3
+
 NAME="$0:t:r"
 
 HOMEPAGE="https://www.noodlesoft.com"
@@ -113,8 +116,6 @@ then
 	# sha256 = da9243ee965dbbbed1483373c047b48974135889db037e94fee15e2e695d1d9a
 	#    md5 = f77fd65a61d6b4164600f1e7e516b946
 
-	URL='https://s3.amazonaws.com/Noodlesoft/Hazel-sparkle-4.3.5.zip'
-	LATEST_VERSION='4.3.5'
 	RELEASE_NOTES='no'
 	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
 
