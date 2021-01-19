@@ -2,7 +2,7 @@
 # Purpose: 	Download and install the latest version of VLC
 #
 # Author:	Timothy J. Luoma
-# Email:		luomat at gmail dot com
+# Email:	luomat at gmail dot com
 # Date:		2011-10-26, verified 2018-08-07
 
 NAME="$0:t"
@@ -15,7 +15,28 @@ DOWNLOAD_PAGE="http://www.videolan.org/vlc/"
 
 SUMMARY="VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols."
 
-XML_FEED='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
+ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
+
+if [[ "$ARCH" == "ARM64" ]]
+then
+		# M1 / Apple Silicon / ARM
+	XML_FEED='https://update.videolan.org/vlc/sparkle/vlc-arm64.xml'
+	ARCH='arm64'
+
+elif [[ "$ARCH" == "X86" ]]
+then
+
+		# Intel Mac
+	XML_FEED='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
+	ARCH='intel'
+
+else
+
+	echo "$NAME: 'sysctl kern.version' returned unknown arch: '$ARCH'" >>/dev/stderr
+	exit 2
+
+fi
+
 
 if [ -e "$HOME/.path" ]
 then
@@ -73,7 +94,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${ARCH}.dmg"
 
 if (( $+commands[lynx] ))
 then
