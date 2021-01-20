@@ -62,9 +62,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-	## if this fails in the future, try
-	##  https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg
-URL='https://dl-ssl.google.com/chrome/mac/stable/CHFA/googlechrome.dmg'
+	# 2021-01-19 - this is a universal (Intel/Apple Silicon) build
+URL='https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg'
 
 	# We will assume, for now, at the version number is correct
 	# but then we'll verify it at the end
