@@ -14,6 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+# "https://github.com/obsidianmd/obsidian-releases/releases/download/v#{version}/Obsidian-#{version}.dmg"
+
 ## XML_FEED='https://github.com/obsidianmd/obsidian-releases/releases.atom'
 
 INSTALL_TO='/Applications/Obsidian.app'
@@ -29,38 +31,12 @@ ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.
 	# and throwing away everything except numbers and periods
 LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-	# parse the ACTUAL_RELEASE_URL page to look for a link which has the path
-	# /obsidianmd/obsidian-releases/releases/download/
-	# and ends with '.zip'
-	# which is the URL we need to download the latest version of the compiled app
-	# not source code
+	# 2021-01-21 - DMG is now a universal binary 
+DOWNLOAD_SUFFIX=$(curl -sfLS "$ACTUAL_RELEASE_URL" | tr '"' '\012' |  egrep -i '^/.*\.dmg$')
 
-ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
+DOWNLOAD_PREFIX='https://github.com'
 
-if [[ "$ARCH" == "ARM64" ]]
-then
-
-	URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-			| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
-			| fgrep 'arm64' \
-			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
-
-	ARCH='arm64'
-
-elif [[ "$ARCH" == "X86" ]]
-then
-
-	URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-			| egrep '.*a href=.*/obsidianmd/obsidian-releases/releases/download/.*\.dmg' \
-			| fgrep -v 'arm64' \
-			| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
-
-	ARCH='i386'
-
-else
-	echo "Unknown arch returned: '$ARCH'" >>/dev/stderr
-	exit 2
-fi
+URL="${DOWNLOAD_PREFIX}${DOWNLOAD_SUFFIX}"
 
 
 ## Debugging info, if needed
@@ -134,7 +110,7 @@ fi
 ############################################################################################################
 
 	# since there are different downloads for ARM and Intel, make sure we put $ARCH in filename
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${ARCH}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 	# this is the file we will use to store the release notes, if we have lynx installed
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
@@ -146,23 +122,31 @@ then
 
 else
 
-		# if we get here, we need to get the release notes but only if we have `lynx`
-		# because I am not going to write an HTML parser because I am not a masochist
-		# `lynx` isn't installed by default but can be installed via `brew`
+	RELEASE_NOTES_URL=$(curl -sfLS "$STATIC_RELEASE_URL" \
+		| tr '"' '\012' \
+		| fgrep -i 'https://forum.obsidian.md/' \
+		| egrep    '^https://forum.obsidian.md/' \
+		| sort -u)
 
-	if (( $+commands[lynx] ))
-	then
-			# get the HTML of the ACTUAL_RELEASE_URL web page
-			# use 'sed' to delete everything before and after the release notes
-			# and then send whatever is left over to `lynx` to parse it
-		RELEASE_NOTES=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-						| sed -e '1,/  <div class="commit-desc">/d' -e '/<summary>/,$d' \
-						| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+	echo "Release Notes: ${RELEASE_NOTES_URL}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+	
+		## if we get here, we need to get the release notes but only if we have `lynx`
+		## because I am not going to write an HTML parser because I am not a masochist
+		## `lynx` isn't installed by default but can be installed via `brew`
 
-			# now, save the release notes and other info that might be useful and save it to the file we defined
-		echo "${RELEASE_NOTES}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
-
-	fi
+	# if (( $+commands[lynx] ))
+	# then
+			## get the HTML of the ACTUAL_RELEASE_URL web page
+			## use 'sed' to delete everything before and after the release notes
+			## and then send whatever is left over to `lynx` to parse it
+		# RELEASE_NOTES=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
+		# 				| sed -e '1,/  <div class="commit-desc">/d' -e '/<summary>/,$d' \
+		#				| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+		#
+			## now, save the release notes and other info that might be useful and save it to the file we defined
+		# echo "${RELEASE_NOTES}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+		#
+	# fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
