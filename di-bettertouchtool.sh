@@ -24,18 +24,17 @@ SUMMARY="BetterTouchTool is a great, feature packed app that allows you to custo
 
 INSTALL_TO="/Applications/BetterTouchTool.app"
 
-RELEASE_NOTES_URL="https://updates.bettertouchtool.net/bettertouchtool_release_notes.html"
+RELEASE_NOTES_URL="http://updates.folivora.ai/bettertouchtool_release_notes.html"
 
-FILENAME=$(curl -sfL 'https://bettertouchtool.net/releases/' | fgrep -i .zip | head -1 | sed 's#</a>.*##g ; s#.*>##g')
+FILENAME=$(curl -sfL 'https://folivora.ai/releases/' | fgrep -i .zip | head -1 | sed 's#</a>.*##g ; s#.*>##g')
 
-URL="https://bettertouchtool.net/releases/$FILENAME"
+URL="https://folivora.ai/releases/$FILENAME"
 
 VERSION_INFO=($(echo "$FILENAME:t:r" | sed 's#btt##g ; s#-# #g'))
 
 LATEST_VERSION="$VERSION_INFO[1]"
 
 LATEST_BUILD="$VERSION_INFO[2]"
-
 
 	# If any of these are blank, we should not continue
 if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$FILENAME" = "" ]
