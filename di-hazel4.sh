@@ -4,10 +4,7 @@
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
-# Date:	2015-10-23 (2016-04-22 - changed from .dmg to .zip)
-
-
-# @TODO @WAITING - 10.12 can use later than 4.3.5 but less than 5.0.3
+# Date:	2015-10-23 (2016-04-22 - changed from .dmg to .zip ; 2021-01-23 updated to support versions 10.10, 10.11, and 10.12)
 
 NAME="$0:t:r"
 
@@ -19,25 +16,73 @@ OLDER='https://www.noodlesoft.com/old-versions/'
 
 SUMMARY="Hazel watches whatever folders you tell it to, automatically organizing your files according to the rules you create. Have Hazel move files around based on name, date, type, what site it came from and much more. Automatically sort your movies or file your bills. Keep your files off the desktop and put them where they belong."
 
-	## If you want to install Hazel for all users, replace 'INSTALL_TO=' with this line
-	# INSTALL_TO='/Library/PreferencePanes/Hazel.prefPane'
-
 if [ -e "$HOME/.path" ]
 then
 	source "$HOME/.path"
 else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
+############################################################################################################
 
-[[ "$OS_VER" == "10.16" ]] && echo "$NAME: Not compatible with Big Sur." && exit 0
+OS_VER=$(sw_vers -productVersion)
+
+case "$OS_VER" in
+	10.10*)
+		URL='https://www.noodlesoft.com/Downloads/Hazel-4.2.9.dmg'
+		LATEST_VERSION='4.2.9'
+		EXPECTED_SHA256='321f6a909a9b7a1969bf6237b2e42cc5fb4df2bef131cc46f5582e933166f734'
+	;;
+
+	10.11*)
+		URL='https://www.noodlesoft.com/Downloads/Hazel-4.3.5.dmg'
+		LATEST_VERSION='4.3.5'
+		EXPECTED_SHA256='a96240c700f4954c1c0f51a1cc3ae0d0e29129df0cb26810a1cbdade760f7ae2'
+	;;
+
+	10.12*)
+		URL='https://www.noodlesoft.com/Downloads/Hazel-4.4.5.dmg'
+		LATEST_VERSION='4.4.5'
+		EXPECTED_SHA256='19f0a193831b8d61b8b3a5e87ab08e5295e4e7680d13615ed5b14b34f60c3cef'
+	;;
+
+	10.*)
+
+		echo "$NAME: macOS versions older than 10.10 are not supported." >>/dev/stderr
+		echo "	See <https://www.noodlesoft.com/old-versions/> for downloads." >>/dev/stderr
+
+		exit 1
+	;;
+
+	*)
+		echo "$NAME: not compatible with macOS versions after 10.15 (Catalina)." >>/dev/stderr
+		echo "	Use version 5 for Big Sur and later <https://www.noodlesoft.com/>" >>/dev/stderr
+
+		exit 1
+	;;
+
+esac
+
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"
+
+	exit 1
+fi
+
+############################################################################################################
 
 if [ -e "/Library/PreferencePanes/Hazel.prefPane" -a -e "$HOME/Library/PreferencePanes/Hazel.prefPane" ]
 then
 
-	echo "$NAME: Hazel.prefPane is installed at _BOTH_ '/Library/PreferencePanes/Hazel.prefPane' and '$HOME/Library/PreferencePanes/Hazel.prefPane'.
-	Please remove one."
+	echo "$NAME: Hazel.prefPane is installed at _BOTH_ locations:" >>/dev/stderr
+	echo "	/Library/PreferencePanes/Hazel.prefPane" >>/dev/stderr
+	echo "	$HOME/Library/PreferencePanes/Hazel.prefPane" >>/dev/stderr
+	echo "Please remove at least one." >>/dev/stderr
 
 	exit 1
 
@@ -47,10 +92,14 @@ then
 	INSTALL_TO="/Library/PreferencePanes/Hazel.prefPane"
 
 else
+		## If you want to install Hazel for all users, replace 'INSTALL_TO=' with this line
+		# INSTALL_TO='/Library/PreferencePanes/Hazel.prefPane'
 
 	INSTALL_TO="$HOME/Library/PreferencePanes/Hazel.prefPane"
 
 fi
+
+############################################################################################################
 
 function check_install_location {
 
@@ -98,193 +147,100 @@ function check_install_location {
 	fi
 }
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
-
-if [[ "$OS_VER" -lt "12" ]]
-then
-
-	## the 'official' URL for version 4.3.5 is a DMG:
-	# 	URL='https://www.noodlesoft.com/Downloads/Hazel-4.3.5.dmg'
-	## but this script assumes a ZIP file not a DMG. My personal archived version is at
-	# 	URL='https://iusethis.luo.ma/hazel/old/Hazel-4.3.5.zip'
-	## but the one from Hazel's Sparkle feed is currently still available at
-	# 	URL='https://s3.amazonaws.com/Noodlesoft/Hazel-sparkle-4.3.5.zip'
-	## so we'll use that one for now.
-	#
-	## Checksum for Hazel-4.3.5.zip / Hazel-sparkle-4.3.5.zip:
-	#
-	# sha256 = da9243ee965dbbbed1483373c047b48974135889db037e94fee15e2e695d1d9a
-	#    md5 = f77fd65a61d6b4164600f1e7e516b946
-
-	RELEASE_NOTES='no'
-	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
-
-else
-
-	RELEASE_NOTES='yes'
-
-		# If there's no installed version, output 4.0.0 so the Sparkle feed will give us the proper download URL
-		## DO NOT SET TO ZERO
-	INSTALLED_VERSION=`defaults read ${INSTALL_TO}/Contents/Info CFBundleShortVersionString 2>/dev/null || echo '4.0.0'`
-
-	XML_FEED="https://www.noodlesoft.com/Products/Hazel/generate-appcast.php?version=$INSTALLED_VERSION"
-
-	INFO=($(curl -sfL "$XML_FEED" \
-				| tr -s ' ' '\012' \
-				| egrep '^(sparkle:version|url)=' \
-				| head -2 \
-				| awk -F'"' '/=/{print $2}'))
-
-	LATEST_VERSION="$INFO[1]"
-
-	URL="$INFO[2]"
-
-		# If any of these are blank, we should not continue
-	if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
-	then
-		echo "$NAME: Error: bad data received:
-		INFO: $INFO
-		LATEST_VERSION: $LATEST_VERSION
-		URL: $URL
-		"
-
-		exit 1
-	fi
-
-fi
+############################################################################################################
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-	if [ "$?" = "0" ]
+	VERSION_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version >$LATEST_VERSION<"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
-fi
+	FIRST_INSTALL='no'
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.zip"
-
-if [[ "$RELEASE_NOTES" == "yes" ]]
-then
-	if (( $+commands[lynx] ))
+	if [[ ! -w "$INSTALL_TO" ]]
 	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
 
-		RELEASE_NOTES_URL='https://www.noodlesoft.com/release_notes'
-
-		( echo -n "$NAME: Release Notes for Hazel " ;
-			(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<h1>/d; /<\/ul>/,$d' ; echo '</ul>') |\
-			lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-			echo "\nSource: <${RELEASE_NOTES_URL}>\nURL: $URL" ) | tee "$FILENAME:r.txt"
-	fi
-fi
-
-
-if [[ -f "$FILENAME" ]]
-then
-
-	## The server does not support resuming downloads, so if we have the zip file, we need to test it
-	## to see if it is valid. If yes, we keep it. If no, we delete it and download fresh
-
-	(command unzip -l "$FILENAME" 2>&1 )>/dev/null
-
-	EXIT="$?"
-
-	if [ "$EXIT" = "0" ]
-	then
-		echo "$NAME: '$FILENAME' is a valid zip file."
-
-	else
-		echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-		mv -fv "$FILENAME" "$HOME/.Trash/"
-
-		mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
+		exit 2
 	fi
 
+else
+
+	FIRST_INSTALL='yes'
 fi
 
-## so now if we do NOT have the filename, then we try to download it
+############################################################################################################
 
-if [[ ! -f "$FILENAME" ]]
-then
+SHORT="$URL:t"
 
-		# Server does not support continued downloads, so assume that this is incomplete and try again
-	[[ -f "$FILENAME" ]] && rm -f "$FILENAME"
+FILENAME="$HOME/Downloads/${SHORT}"
 
-	echo "$NAME: Downloading '$URL' to '$FILENAME':"
+echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-	curl --continue-at - --fail --location --output "$FILENAME" "$URL"
-
-	EXIT="$?"
-
-		## exit 22 means 'the file was already fully downloaded'
-	[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
-
-	[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
-
-	[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
-
-	(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
-		## make sure that the .zip is valid before we proceed
-	(command unzip -l "$FILENAME" 2>&1 )>/dev/null
-
-	EXIT="$?"
-
-	if [ "$EXIT" = "0" ]
-	then
-		echo "$NAME: '$FILENAME' is a valid zip file."
-
-	else
-		echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-		mv -fv "$FILENAME" "$HOME/.Trash/"
-
-		mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
-		exit 0
-
-	fi
-
-fi
-
-	# If we get here we are ready to install
-	# let's make sure we can
-check_install_location
-
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
-then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+	## exit 22 means 'the file was already fully downloaded'
+[ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
+[[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
+
+[[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+############################################################################################################
+
+ACTUAL_SHA256=$(shasum -a 256 "$FILENAME" | awk '{print $1}')
+
+if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]
+then
+
+	echo "$NAME: sha256 verification failed:" >>/dev/stderr
+	echo "$NAME: Actual sha256:		$ACTUAL_SHA256" >>/dev/stderr
+	echo "$NAME: Expected sha256:	$EXPECTED_SHA256" >>/dev/stderr
 	exit 1
+
 fi
+
+############################################################################################################
+
+echo "$NAME: Mounting $FILENAME:"
+
+	# Accept the EULA and mount the DMG
+MNTPNT=$(echo -n "Y" \
+		| hdid -plist "$FILENAME" 2>/dev/null \
+		| fgrep '/Volumes/' \
+		| sed 's#</string>##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
+fi
+
+############################################################################################################
+#
+# If we get here we are ready to install
+# let's make sure we can
+
+check_install_location
+
+############################################################################################################
 
 PID=$(pgrep -x 'HazelHelper')
 
@@ -301,6 +257,8 @@ then
 else
 	LAUNCH_HELPER='no'
 fi
+
+############################################################################################################
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -324,42 +282,28 @@ then
 	fi
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+############################################################################################################
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
-if [[ "$LAUNCH_HELPER" == "yes" ]]
-then
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-	if (is-growl-running-and-unpaused.sh)
-	then
-
-		growlnotify  \
-			--appIcon "HazelHelper" \
-			--identifier "$NAME" \
-			--message "Launching Hazel Helper" \
-			--title "$NAME" 2>/dev/null
-	fi
-
-	echo "$NAME: Launching HazelHelper..."
-
-	open -a "$INSTALL_TO/Contents/MacOS/HazelHelper.app"
-fi
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #
 #EOF
+############################################################################################################
