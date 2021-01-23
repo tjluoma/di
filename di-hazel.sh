@@ -14,16 +14,11 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INSTALL_TO='/Applications/Hazel.app'
-
-XML_FEED='https://www.noodlesoft.com/Products/Hazel/appcast'
-
-INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1')
-
-MIN_VERSION=$(echo "$INFO" \
-			| fgrep '<sparkle:minimumSystemVersion>' \
-			| sed 	-e 's#.*<sparkle:minimumSystemVersion>##g' \
-					-e 's#</sparkle:minimumSystemVersion>##g')
+	# MIN_VERSION=$(echo "$INFO" \
+	# 			| fgrep '<sparkle:minimumSystemVersion>' \
+	# 			| sed 	-e 's#.*<sparkle:minimumSystemVersion>##g' \
+	# 					-e 's#</sparkle:minimumSystemVersion>##g')
+MIN_VERSION='10.13'
 
 OS_VER=$(sw_vers -productVersion)
 
@@ -35,23 +30,33 @@ EXIT="$?"
 
 if [[ "$EXIT" != "0" ]]
 then
-	echo "$NAME: Hazel 5 requires at least '$MIN_VERSION' and you're running '$OS_VER'. (\$EXIT = $EXIT)" >>/dev/stderr
-	echo "$NAME: try 'di-hazel4.sh' instead." >>/dev/stderr
+	echo "$NAME: Hazel 5 requires at least '$MIN_VERSION' and you're running '$OS_VER'." >>/dev/stderr
+	echo "$NAME: try 'di-hazel4.sh' instead. You can find it at:" >>/dev/stderr
+	echo "https://github.com/tjluoma/di/blob/master/di-hazel4.sh" >>/dev/stderr
 	exit 2
 fi
 
-URL=$(curl --head -sfLS "https://www.noodlesoft.com/Products/Hazel/download" | awk -F' |\r' '/^Location: /{print $2}')
+INSTALL_TO='/Applications/Hazel.app'
+
+	## 2021-01-23 this now redirects to the .php URL below
+	# XML_FEED='https://www.noodlesoft.com/Products/Hazel/appcast'
+
+XML_FEED='https://www.noodlesoft.com/Products/Hazel/generate-appcast.php'
+
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1')
 
 RELEASE_NOTES_URL=$(echo "$INFO" | awk -F'>|<' '/description/{print $3}')
 
-LATEST_VERSION=$(echo $INFO | tr ' ' '\012' | awk -F'"' '/^sparkle:version=/{print $2}')
+LATEST_VERSION=$(echo "$INFO" | tr ' ' '\012' | awk -F'"' '/^sparkle:version=/{print $2}')
+
+	## 2021-01-23 - this is how I had been doing it previously, but trying new way
+	# URL=$(curl --head -sfLS "https://www.noodlesoft.com/Products/Hazel/download" | awk -F' |\r' '/^Location: /{print $2}')
+URL="https://s3.amazonaws.com/Noodlesoft/Hazel-${LATEST_VERSION}.dmg"
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
-
-	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
