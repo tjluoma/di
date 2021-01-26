@@ -31,7 +31,7 @@ ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.
 	# and throwing away everything except numbers and periods
 LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-	# 2021-01-21 - DMG is now a universal binary 
+	# 2021-01-21 - DMG is now a universal binary
 DOWNLOAD_SUFFIX=$(curl -sfLS "$ACTUAL_RELEASE_URL" | tr '"' '\012' |  egrep -i '^/.*\.dmg$')
 
 DOWNLOAD_PREFIX='https://github.com'
@@ -122,31 +122,22 @@ then
 
 else
 
-	RELEASE_NOTES_URL=$(curl -sfLS "$STATIC_RELEASE_URL" \
-		| tr '"' '\012' \
-		| fgrep -i 'https://forum.obsidian.md/' \
-		| egrep    '^https://forum.obsidian.md/' \
-		| sort -u)
+	if (( $+commands[lynx] ))
+	then
 
-	echo "Release Notes: ${RELEASE_NOTES_URL}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
-	
-		## if we get here, we need to get the release notes but only if we have `lynx`
-		## because I am not going to write an HTML parser because I am not a masochist
-		## `lynx` isn't installed by default but can be installed via `brew`
+		RELEASE_NOTES_URL=$(curl -sfLS "https://github.com/obsidianmd/obsidian-releases/releases/latest" \
+							| tr '"|>|<' '\012' \
+							| fgrep -i 'https://forum.obsidian.md/t/' \
+							| tail -1)
 
-	# if (( $+commands[lynx] ))
-	# then
-			## get the HTML of the ACTUAL_RELEASE_URL web page
-			## use 'sed' to delete everything before and after the release notes
-			## and then send whatever is left over to `lynx` to parse it
-		# RELEASE_NOTES=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-		# 				| sed -e '1,/  <div class="commit-desc">/d' -e '/<summary>/,$d' \
-		#				| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
-		#
-			## now, save the release notes and other info that might be useful and save it to the file we defined
-		# echo "${RELEASE_NOTES}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
-		#
-	# fi
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+						| sed "1,/<div class='post' itemprop='articleBody'>/d; /<meta itemprop='headline'/,\$d" \
+						| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+
+		echo "${RELEASE_NOTES}\n\n\nRelease Notes URL: ${RELEASE_NOTES_URL}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" \
+		| tee "$RELEASE_NOTES_TXT"
+
+	fi
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
