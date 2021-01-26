@@ -31,6 +31,9 @@ LATEST_VERSION=$(echo "${LATEST_RELEASE_URL}" | sed 's#/LosslessCut-mac.dmg##g; 
 
 HOMEPAGE="https://github.com/mifi/lossless-cut"
 
+RELEASE_NOTES_URL=$(curl --head -sfLS "https://github.com/mifi/lossless-cut/releases/latest" \
+					| awk -F' ' '/^.ocation:/{print $2}' | tr -d '\r')
+
 if [[ -e "$INSTALL_TO" ]]
 then
 
@@ -59,14 +62,25 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
-if (( $+commands[lynx] ))
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	( echo "Home:\t${HOMEPAGE}\nURL:\t${URL}\nNotes:\t${LATEST_RELEASE_URL}\nVer:\t${LATEST_VERSION}\n" ;
-	curl -sfLS "$LATEST_RELEASE_URL" \
-	| sed '1,/<div class="markdown-body">/d; /<details/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
-	) | tee "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		( echo "Home:\t${HOMEPAGE}\nURL:\t${URL}\nNotes:\t${RELEASE_NOTES_URL}\nVer:\t${LATEST_VERSION}\n" ;
+		curl -sfLS "https://github.com/mifi/lossless-cut/releases/latest" \
+		| sed '1,/<div class="markdown-body">/d; /<summary>/,$d' \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins \
+		| sed 's#^ *##g' ) | tee "$FILENAME:r.txt"
+
+	fi
 
 fi
 
