@@ -51,15 +51,18 @@ LATEST_BUILD=$(defaults read "$TEMPFILE" SUFeedEntryVersion)
 
 URL=$(defaults read "$TEMPFILE" SUFeedEntryDownloadURL)
 
-ENCODED_RELEASE_NOTES=$(sed '/<\/data>/,$d' "$TEMPFILE" | sed -e '1,/<data>/d' -e 's#^\t*##g')
+if (( $+commands[html2text.py] ))
+then
 
-RELEASE_NOTES=$(sed '/<\/data>/,$d' "$TEMPFILE" \
-| sed -e '1,/<data>/d' -e 's#^\t*##g' \
-| base64 --decode \
-| textutil -convert html -stdin -stdout \
-| html2text.py \
-| sed 's#^ *##g' \
-| uniq)
+	RELEASE_NOTES=$(sed '/<\/data>/,$d' "$TEMPFILE" \
+			| sed -e '1,/<data>/d' -e 's#^\t*##g' \
+			| base64 --decode \
+			| textutil -convert html -stdin -stdout \
+			| html2text.py \
+			| sed 's#^ *##g' \
+			| uniq)
+
+fi
 
 
 
