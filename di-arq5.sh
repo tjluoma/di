@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Arq
+# Purpose: Download and install the latest version of Arq 5
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
