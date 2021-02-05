@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of PathFinder 9 from <https://cocoatech.com/>
+# Purpose: Download and install the latest version of PathFinder 10 from <https://cocoatech.com/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -18,23 +18,24 @@ INSTALL_TO='/Applications/Path Finder.app'
 
 HOMEPAGE="https://cocoatech.com/"
 
-DOWNLOAD_PAGE="https://get.cocoatech.com/PF9.dmg"
+DOWNLOAD_PAGE="https://get.cocoatech.com/PF10.dmg"
 
 SUMMARY="File manager for macOS."
 
-	## http://sparkle.cocoatech.com/PF9.xml" is 403 forbidden as of 2019-11-11
-XML_FEED="http://sparkle.cocoatech.com/PF8.xml"
+	## 2021-02-05 verified feed URL for v10
+XML_FEED="https://get.cocoatech.com/releasecast.xml"
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| egrep '<(build|version|url)>' \
+INFO=($(curl -sfLS "$XML_FEED" \
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:version|sparkle:shortVersionString)' \
 		| sort \
-		| awk -F'>|<' '//{print $3}'))
+		| awk -F'"' '{print $2}'))
 
-LATEST_BUILD="$INFO[1]"
+LATEST_VERSION="$INFO[1]"
 
-URL="$INFO[2]"
+LATEST_BUILD="$INFO[2]"
 
-LATEST_VERSION="$INFO[3]"
+URL="$INFO[3]"
 
 if [[ -e "$INSTALL_TO" ]]
 then
