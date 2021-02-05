@@ -14,6 +14,8 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+INSTALL_TO='/Applications/Meet Cam.app'
+
 XML_FEED='https://downloads.meet.cam/updates/appcast.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" \
@@ -58,17 +60,6 @@ then
 	exit 2
 fi
 
-
-
-cat <<EOINPUT
-
-MINVERSION: $MINVERSION
-RELEASE_NOTES_URL: $RELEASE_NOTES_URL
-LATEST_VERSION: $LATEST_VERSION
-LATEST_BUILD: $LATEST_BUILD
-URL: $URL
-
-EOINPUT
 
 
 
