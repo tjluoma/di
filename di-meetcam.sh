@@ -42,6 +42,24 @@ URL="$INFO[5]"
 # 463
 # https://downloads.meet.cam/updates/meetcam-0.8.3-463.zip
 
+OS_VER=$(sw_vers -productVersion)
+
+autoload is-at-least
+
+is-at-least "$MINVERSION" "$OS_VER"
+
+EXIT="$?"
+
+if [[ "$EXIT" != "0" ]]
+then
+
+	echo "$NAME: $MINVERSION is required and you are running $OS_VER." >>/dev/stderr
+
+	exit 2
+fi
+
+
+
 cat <<EOINPUT
 
 MINVERSION: $MINVERSION
