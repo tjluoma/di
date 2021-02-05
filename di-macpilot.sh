@@ -66,7 +66,7 @@ function use_v11 {
 
 	XML_FEED='https://www.koingosw.com/postback/versioncheck.php?appname=macpilot&type=sparkle'
 
-	LATEST_VERSION=$(curl -sfLS "$XML_FEED"| tr ' ' '\012' | egrep '^sparkle:version=' | head -1 | tr -dc '[0-9]\.')
+	LATEST_VERSION=$(curl --insecure -sfLS "$XML_FEED"| tr ' ' '\012' | egrep '^sparkle:version=' | head -1 | tr -dc '[0-9]\.')
 
 	# URL='http://mirror.koingosw.com/products/macpilot/download/macpilot.dmg'
 
@@ -172,7 +172,7 @@ then
 		# The result of the first 'lynx' is regular HTML.
 		# Weird.
 
-	(curl -sfLS "$XML_FEED" \
+	(curl --insecure -sfLS "$XML_FEED" \
 		| awk '/<description>/{i++}i==2' \
 		| tr -d '\012| ' \
 		| sed 's#<description>##g ; s#</description>.*##g' \
@@ -185,7 +185,7 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl --insecure --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
