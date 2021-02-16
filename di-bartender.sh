@@ -277,8 +277,20 @@ FILENAME="$HOME/Downloads/Bartender-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 if [[ "$USE_VERSION" == "4" ]]
 then
 
+	if (( $+commands[html2text.py] ))
+	then
+			# lynx can parse the HTML just fine, but its output is sort of ugly,
+			# so we'll use html2text.py if it's available
 
-	if (( $+commands[pandoc] ))
+		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+		  curl -sfL "${RELEASE_NOTES_URL}" \
+		  | html2text.py \
+		  | sed 's#^ *##g' \
+		  | uniq ;
+		  echo "\nSource: ${RELEASE_NOTES_URL}\nURL: ${URL}" \
+		) | tee "$FILENAME:r.txt"
+
+	elif (( $+commands[pandoc] ))
 	then
 			# pandoc is better than lynx or html2text
 			# but it also unnecessarily escapes ' and some other
@@ -286,7 +298,7 @@ then
 		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
 		curl -sfLS "$RELEASE_NOTES_URL" \
 		| pandoc --from html --to markdown --wrap=none \
-		tr -d '\\';
+		| tr -d '\\';
 		echo "\nSource: ${RELEASE_NOTES_URL}" ) | tee "$FILENAME:r.txt"
 
 	elif (( $+commands[html2text] ))
