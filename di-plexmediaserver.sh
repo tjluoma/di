@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: download and install the latest version of Plex Media Server
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -17,20 +17,46 @@ fi
 INSTALL_TO='/Applications/Plex Media Server.app'
 
 
-IFS=$'\n' INFO=($(curl -sfLS 'https://plex.tv/api/downloads/5.json' \
-| sed -e 's#.*"MacOS"##g' -e 's#},.*##g' -e 's#","#"\
-"#g' \
-| egrep '("version"|"items_added"|"items_fixed"|"url")' \
-| sed -e 's#.*,"version":"#"version":#g' \
-| sort \
-| sed -e 's#"items_added":"##g' -e 's#"items_fixed":"##g' -e 's#"url":"##g' -e 's#.*"version":##g' -e 's#"$##g'))
+zmodload zsh/datetime
 
+TIME=$(strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS")
 
-RELEASE_NOTES=$(echo "$INFO[1] $INFO[2]")
+	# define a temp file where we can store the json so we
+	# don't have to retrieve it multiple times from the web
+TEMPFILE="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.json"
 
-URL="$INFO[3]"
+	# make sure tempfile doesn't exist
+rm -f "$TEMPFILE"
 
-LATEST_VERSION=$(echo "$INFO[4]" | sed 's#-.*##g')
+	# save json to tempfile
+curl -sfLS 'https://plex.tv/api/downloads/5.json' > "$TEMPFILE"
+
+	# do some very rough 'parsing' of json with 'sed'
+	# this would be easier if we could assume `jq` is installed
+	# but we can't
+INFO=$(sed -e 's#.*"MacOS"##g' -e 's#},.*##g' -e 's#","#"\
+"#g' "$TEMPFILE")
+
+	# Extract URL from $INFO
+URL=$(echo "$INFO" | awk -F'"' '/^"url":/{print $4}')
+
+	# Extract Version from $INFO - note that the version number here
+	# has extra stuff that is not in the version number of the app
+	# which is terrible and no one should ever do that
+	# but they did that .
+LATEST_VERSION=$(echo "$INFO" | awk -F'"' '/"version":/{print $6}' | sed 's#-.*##g')
+
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"  >>/dev/stderr
+
+	exit 2
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -45,7 +71,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION / $LATEST_VERSION)"
 		exit 0
 	fi
 
@@ -66,20 +92,55 @@ else
 
 fi
 
-
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
-if [[ -e "$FILENAME:r.txt" ]]
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	cat "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
 
 else
 
-	echo "${RELEASE_NOTES}\nVersion : ${LATEST_VERSION}\nURL: $URL" | tee "$FILENAME:r.txt"
+		# we often require `lynx` for release notes even though it isn't installed
+		# by default, but this time we need `jq`
+
+	if (( $+commands[jq] ))
+	then
+
+		EXTRA_INFO=$(jq -r .computer.MacOS.extra_info "$TEMPFILE")
+
+		ADDED=$(jq -r .computer.MacOS.items_added "$TEMPFILE")
+
+		FIXED=$(jq -r .computer.MacOS.items_fixed "$TEMPFILE")
+
+		RELEASE_TIME_EPOCH=$(jq -r .computer.MacOS.release_date "$TEMPFILE")
+
+		RELEASE_TIME_READABLE=$(strftime "%Y/%m/%d at %H:%M:%S" ${RELEASE_TIME_EPOCH})
+
+		if [[ "${EXTRA_INFO}" != "" ]]
+		then
+			EXTRA_INFO="## Extra Info:\n\n${EXTRA_INFO}\n\n"
+		fi
+
+		if [[ "${ADDED}" != "" ]]
+		then
+			ADDED="## Added:\n\n${ADDED}\n\n"
+		fi
+
+		if [[ "${FIXED}" != "" ]]
+		then
+			FIXED="## Fixed:\n\n${FIXED}\n\n"
+		fi
+
+		RELEASE_NOTES=$(echo "# Plex Media Server\n\n${EXTRA_INFO}${ADDED}${FIXED}\n\nReleased Date: ${RELEASE_TIME_READABLE}")
+
+		echo "${RELEASE_NOTES}\n\nVersion: ${LATEST_VERSION}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
+	fi
 
 fi
-
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -105,7 +166,6 @@ then
 	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 fi
-
 
 TRASH="$HOME/.Trash"
 
