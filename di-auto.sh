@@ -17,6 +17,32 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
+VIA_MACUPDATER='no'
+
+for ARGS in "$@"
+do
+	case "$ARGS" in
+		--macupdater)
+				VIA_MACUPDATER='yes'
+				shift
+		;;
+
+# 		-|--)
+#
+# 				:
+# 				shift
+# 		;;
+
+		-*|--*)
+				echo "	$NAME [warning]: Don't know what to do with arg: $1"
+				shift
+		;;
+
+	esac
+
+done # for args
+
+
 
 PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
 
@@ -70,7 +96,7 @@ then
 
 	echo "$MSG" >>/dev/stderr
 
-	po.sh "$MSG"
+	[[ "$VIA_MACUPDATER" == "no" ]] && po.sh "$MSG"
 
 	exit 0
 fi
