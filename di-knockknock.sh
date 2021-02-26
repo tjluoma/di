@@ -24,26 +24,18 @@ else
 	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
-INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
-		| gunzip -f -c \
-		| tr -s '"|\047' '\012' \
-		| egrep '^http.*\.zip|sha-1:' \
-		| awk '{print $NF}' \
-		| head -2))
+INFO=$(curl -sfLS "https://objective-see.com/products/knockknock.html")
 
-URL="$INFO[1]"
-
-EXPECTED_SHA1="$INFO[2]"
+URL=$(echo "$INFO" | tr '"' '\012' | egrep -i '^https://github.com/objective-see/KnockKnock/releases/download/.*\.zip')
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	EXPECTED_SHA1: $EXPECTED_SHA1
 	"
 
 	exit 1
@@ -83,17 +75,31 @@ fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
-if [ "$OS_VER" -lt "8" ]
+if [ "$OS_VER" -lt "10" ]
 then
-	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.8 and higher (you are using 10.$OS_VER)."
+	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.10 and higher (you are using 10.$OS_VER)."
 	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
+if (( $+commands[lynx] ))
+then
 
-echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+	EXPECTED_SHA1=$(echo "$INFO" \
+		| fgrep -i 'sha-1' \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 \
+			-pseudo_inlines -stdin -nolist -nomargins -nonumbers \
+		| awk '{print $NF}')
+
+	SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
+
+	echo "$EXPECTED_SHA1  $FILENAME:t" >| "$SHA_FILE"
+
+else
+	EXPECTED_SHA1=''
+	SHA_FILE=''
+fi
 
 ## RELEASE_NOTES_URL - begin
 
@@ -117,22 +123,27 @@ EXIT="$?"
 
 ##
 
-echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
-
-cd "$FILENAME:h"
-
-shasum -c "$SHA_FILE"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
+if [[ "$SHA_FILE" != "" ]]
 then
-	echo "$NAME: SHA-1 verification passed"
 
-else
-	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+	echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
 
-	exit 1
+	cd "$FILENAME:h"
+
+	shasum -c "$SHA_FILE"
+
+	EXIT="$?"
+
+	if [ "$EXIT" = "0" ]
+	then
+		echo "$NAME: SHA-1 verification passed"
+
+	else
+		echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
 fi
 
 ##
