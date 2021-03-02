@@ -133,7 +133,7 @@ if (( $+commands[lynx] ))
 then
 
 	(lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;\
-	echo "\nURL: $URL") | tee "$FILENAME:r.txt"
+	echo "\nRelease Notes: $RELEASE_NOTES_URL\nURL: $URL") | tee "$FILENAME:r.txt"
 
 fi
 
