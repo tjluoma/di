@@ -3,7 +3,7 @@
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2019-09-02
+# Date:	2019-09-02; updated 2021-03-02
 
 NAME="$0:t:r"
 
@@ -20,26 +20,47 @@ INSTALL_TO='/Applications/DND Me.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
-curl -sfLS "$XML_FEED" > "$TEMPFILE"
+INFO=($(curl -sfLS "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| egrep -v '(\.delta)|:deltas' \
+		| egrep '<enclosure|<sparkle:releaseNotesLink>' \
+		| tr ' ' '\012' \
+		| sed -e 's#<enclosure##g' \
+			-e 's#.*<sparkle:releaseNotesLink>##g' \
+			-e 's#</sparkle:releaseNotesLink>##g' \
+			-e 's#/>##g' \
+			-e 's#"$##g' \
+		| egrep '^(https|url|sparkle:)' \
+		| sort \
+		| sed 's#.*"##g'))
 
-URL=$(tr '"' '\012' < "$TEMPFILE" | egrep -i '^http.*\.zip')
+RELEASE_NOTES_URL="$INFO[1]"
 
-LATEST_VERSION=$(tr ' ' '\012' < "$TEMPFILE" | egrep -i '^sparkle:shortVersionString=' | head -1 | tr -dc '[0-9]')
+LATEST_VERSION="$INFO[2]"
+
+LATEST_BUILD="$INFO[3]"
+
+URL="$INFO[4]"
 
 	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
 then
 	echo "$NAME: Error: bad data received:
+	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
-	"
+	"  >>/dev/stderr
+
 	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -47,33 +68,53 @@ then
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
+
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
 
 else
 
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
-RELEASE_NOTES_URL=$(tr '\012' ' ' < "$TEMPFILE" | sed -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>.*##g')
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
-if (( $+commands[lynx] ))
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	( lynx -assume_charset=UTF-8 -pseudo_inlines -nomargins -dump -width=10000 "$RELEASE_NOTES_URL" \
-		| egrep '.' \
-		| uniq \
-		| sed G ;
-	echo "URL: $URL\nRelease Notes: $RELEASE_NOTES_URL\n" ) | tee "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		( lynx -assume_charset=UTF-8 -pseudo_inlines -nomargins -dump -width=1000 "$RELEASE_NOTES_URL" \
+			| egrep '.' \
+			| uniq \
+			| sed G ;
+			echo "URL: $URL\nRelease Notes: $RELEASE_NOTES_URL\n" ) | tee "$FILENAME:r.txt"
+
+	fi
 
 fi
 
@@ -92,7 +133,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "Local sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
