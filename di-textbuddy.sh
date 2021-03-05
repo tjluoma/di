@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of TextBuddy.app
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
