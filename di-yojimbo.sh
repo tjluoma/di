@@ -89,7 +89,7 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
-RELEASE_NOTES_TXT="$FILENAME:r.txt"
+RELEASE_NOTES_TXT="$FILENAME:r.md"
 
 if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
@@ -98,19 +98,24 @@ then
 
 else
 
-	if (( $+commands[html2text.py] ))
+	if (( $+commands[wget] )) && (( $+commands[html2text.py] ))
 	then
 
-		RELEASE_NOTES=$(sed '/<\/data>/,$d' "$TEMPFILE" \
-				| sed -e '1,/<data>/d' -e 's#^\t*##g' \
-				| base64 --decode \
-				| textutil -convert html -stdin -stdout \
-				| html2text.py \
-				| sed 's#^ *##g' \
-				| uniq)
+		RELEASE_NOTES_URL="https://www.barebones.com/support/yojimbo/notes-$LATEST_VERSION.html"
 
-		echo "Yojimbo Version $LATEST_VERSION / ${LATEST_BUILD}\nURL: ${URL}\n\nRelease Notes:\n\n${RELEASE_NOTES}\n" \
+		TEMPFILE2="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.html"
+
+		wget --convert-links --quiet -O "$TEMPFILE2" "$RELEASE_NOTES_URL"
+
+		RELEASE_NOTES=$(sed 's#<h2>#START_CUT_HERE\
+<h2>#g' "$TEMPFILE2" \
+			| sed 	-e '1,/START_CUT_HERE/d; /<\/div>/,$d' \
+			| html2text.py \
+			| sed 's#^ *##g')
+
+		echo "Yojimbo Version $LATEST_VERSION / ${LATEST_BUILD}\nURL: ${URL}\nRelease Notes URL: ${RELEASE_NOTES_URL}\n\n${RELEASE_NOTES}\n" \
 		| tee "$RELEASE_NOTES_TXT"
+
 	fi
 
 fi
