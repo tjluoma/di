@@ -15,7 +15,9 @@ DOWNLOAD_PAGE="https://www.corecode.io/downloads/macupdater_latest.dmg"
 
 SUMMARY="MacUpdater can automatically track the latest updates of all applications installed on your Mac. "
 
-XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'
+# XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'  ## VERSION 1
+
+XML_FEED='https://www.corecode.io/macupdater/macupdater2.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -32,7 +34,8 @@ then
 	# 2019-12-07 IMPORTANT: As of MacUpdater version 1.5.0,
 	# the minimum system requirements have been raised to macOS 10.13
 
-	RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html'
+	# RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html' ## VERSION 1
+	RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history2.html'
 
 	INFO=($(curl -sfL "$XML_FEED" \
 			| egrep '(<enclosure.*url="https://.*\.dmg"|sparkle:version=|sparkle:shortVersionString=)' \
