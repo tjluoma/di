@@ -85,6 +85,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
+
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
 if [[ -e "$RELEASE_NOTES_TXT" ]]
@@ -109,8 +111,6 @@ else
 
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
-
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
@@ -128,12 +128,12 @@ egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
 
 EXIT="$?"
 
-if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+if [ "$EXIT" = "1" -o ! -e "$RELEASE_NOTES_TXT" ]
 then
 	(cd "$FILENAME:h" ; \
 	echo "\n\nLocal sha256:" ; \
 	shasum -a 256 "$FILENAME:t" \
-	)  >>| "$FILENAME:r.txt"
+	)  >>| "$RELEASE_NOTES_TXT"
 fi
 
 
