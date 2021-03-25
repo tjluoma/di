@@ -78,14 +78,37 @@ else
 	if (( $+commands[lynx] ))
 	then
 
+			# we are either going to use this once (if we also have 'html2text.py')
+			# or twice if we do not
+
+		alias lynx_dump='lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin'
+
+		if (( $+commands[html2text.py] ))
+		then
+
+			alias final_cmd='html2text.py'
+
+		else
+
+			alias final_cmd='lynx_dump'
+
+		fi
+
+			# Putting this tidy command in the RELEASE_NOTES section was just too ugly for me
+			# normally I would put this in a tidy config file, but I want this to be self-contained
+			# but having it separate allows it to be modified easier later on
+			# I tried to group all the 'no' and all of the 'yes' together
+			# with all of the other options in the first line
+		alias tidy_up_html='tidy --char-encoding utf8 --wrap 0 --show-errors 0 \
+				--tidy-mark no --input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no --uppercase-tags no \
+				--clean yes --force-output yes --join-classes yes --join-styles yes --indent yes --markup yes --output-xhtml yes \
+				--quiet yes --quote-ampersand yes --quote-marks yes'
+
 		RELEASE_NOTES=$(awk '/<description>/{i++}i==2' "$TEMPFILE" \
 			| sed -e '/<\/description>/,$d' -e 's#<description>##g' \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin \
-			| tidy 	--tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
-				--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
-				--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
-				--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin )
+			| lynx_dump \
+			| tidy_up_html \
+			| final_cmd )
 
 			echo "${RELEASE_NOTES}\n\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" \
 			| tee "$RELEASE_NOTES_TXT"
@@ -116,7 +139,7 @@ then
 	(cd "$FILENAME:h" ; \
 	echo "\n\nLocal sha256:" ; \
 	shasum -a 256 "$FILENAME:t" \
-	)  >>| "$FILENAME:r.txt"
+	) >>| "$FILENAME:r.txt"
 fi
 
 
