@@ -108,7 +108,17 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-(cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
 
 ## make sure that the .zip is valid before we proceed
