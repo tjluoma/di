@@ -20,7 +20,7 @@ INSTALL_TO='/Applications/Acorn.app'
 URL='https://flyingmeat.com/download/Acorn.zip'
 
 	## Only the most recent version is in feed
-XML_FEED="https://www.flyingmeat.com/download/acorn6update.xml"
+XML_FEED="https://www.flyingmeat.com/download/acorn7update.xml"
 
 	# save XML_FEED locally so we can refer to it without having to download it multiple times
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
@@ -67,19 +67,31 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
-if (( $+commands[lynx] ))
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	( awk '/<description>/{i++}i==2' "$TEMPFILE" \
-	| sed -e '/<\/description>/,$d' -e 's#<description>##g' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-	| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
-		--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
-		--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
-		--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
-	| awk '/<div class="release">/{i++}i==1' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ) \
-	| tee "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(awk '/<description>/{i++}i==2' "$TEMPFILE" \
+			| sed -e '/<\/description>/,$d' -e 's#<description>##g' \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin \
+			| tidy 	--tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
+				--input-xml no --output-xml no --quote-nbsp no --show-warnings no --uppercase-attributes no \
+				--uppercase-tags no --clean yes --force-output yes --join-classes yes --join-styles yes \
+				--markup yes --output-xhtml yes --quiet yes --quote-ampersand yes --quote-marks yes \
+			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin )
+
+			echo "${RELEASE_NOTES}\n\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" \
+			| tee "$RELEASE_NOTES_TXT"
+
+	fi
 
 fi
 
