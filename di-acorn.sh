@@ -16,9 +16,6 @@ fi
 
 INSTALL_TO='/Applications/Acorn.app'
 
-	# it's always this URL
-URL='https://flyingmeat.com/download/Acorn.zip'
-
 	## Only the most recent version is in feed
 XML_FEED="https://www.flyingmeat.com/download/acorn7update.xml"
 
@@ -27,11 +24,13 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
 curl -sfLS "$XML_FEED" > "$TEMPFILE"
 
-VERSION_INFO=($(awk '/<enclosure /{i++}i==1' "$TEMPFILE" | tr ' ' '\012' | egrep '^sparkle:(shortVersionString|version)="' | sort | tr '"' ' ' | awk '{print $NF}'))
+INFO=($(awk '/<enclosure /{i++}i==1' "$TEMPFILE" | tr ' ' '\012' | egrep '^(url|sparkle:(shortVersionString|version))="' | sort | tr '"' ' ' | awk '{print $NF}'))
 
-LATEST_VERSION="$VERSION_INFO[1]"
+LATEST_VERSION="$INFO[1]"
 
-LATEST_BUILD="$VERSION_INFO[2]"
+LATEST_BUILD="$INFO[2]"
+
+URL="$INFO[3]"
 
 if [[ -e "$INSTALL_TO" ]]
 then
