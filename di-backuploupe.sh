@@ -71,15 +71,27 @@ fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.tbz2"
 
-if (( $+commands[lynx] ))
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	(echo "$INSTALL_TO:t:r $LATEST_VERSION / $LATEST_BUILD";\
-		echo "${INFO}" \
-		| sed '1,/<description>/d; /<\/description>/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ;
-		echo "URL: $URL" \
-	) | tee "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(echo "${INFO}" \
+			| sed '1,/<description>/d; /<\/description>/,$d' \
+			| lynx -dump -nomargins -width='10000' \
+					-display_charset=UTF-8 -assume_charset=UTF-8 \
+					-pseudo_inlines -stdin)
+
+		echo "${RELEASE_NOTES}\n\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
+	fi
 
 fi
 
