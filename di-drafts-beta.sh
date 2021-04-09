@@ -42,7 +42,7 @@ then
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Beta version $LATEST_VERSION available (Installed version: $INSTALLED_VERSION)."
 
 	FIRST_INSTALL='no'
 
@@ -50,7 +50,7 @@ then
 	then
 
 		echo "\n\tWARNING! The version of Drafts found at '$INSTALL_TO' is from the Mac App Store.\n
-		$0 can only install or update the _beta_ version of Drafts.\n
+		'$0' can only install or update the _beta_ version of Drafts.\n
 		If you wish to use the beta, you must first remove the Drafts.app from the Mac App Store.\n
 		Please note that having _both_ versions installed is **HIGHLY DISCOURAGED**
 		and could cause **data loss or corruption**. \n\n\tPlease don't do that." >>/dev/stderr
