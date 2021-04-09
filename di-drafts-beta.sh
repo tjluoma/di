@@ -16,16 +16,12 @@ INSTALL_TO='/Applications/Drafts Beta.app'
 
 URL='https://s3-us-west-2.amazonaws.com/downloads.agiletortoise.com/Drafts.app.zip'
 
-BETA_URL='https://docs.getdrafts.com/beta/#download-the-drafts-mac-beta'
-
-LATEST_VERSION=$(curl -sfLS "$BETA_URL" \
-		| sed 	-e 's#.*Download Latest Mac Beta</a> </p> <ul> <li>Version ##g' \
-				-e 's#,.*##g' \
-		| tr -dc '[0-9]\.' )
+LATEST_VERSION=$(curl -sfLS "https://config.agiletortoise.com/drafts-mac/beta/build-status.json" \
+				| awk -F'"' '/latest-version/{print $4}')
 
 if [[ "$LATEST_VERSION" == "" ]]
 then
-	echo "$NAME: '\$LATEST_VERSION' is empty. Formatting of '$BETA_URL' may have changed." >>/dev/stderr
+	echo "$NAME: '\$LATEST_VERSION' is empty." >>/dev/stderr
 	exit 0
 fi
 
