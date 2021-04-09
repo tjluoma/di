@@ -12,7 +12,7 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Drafts Beta.app'
+INSTALL_TO='/Applications/Drafts.app'
 
 URL='https://s3-us-west-2.amazonaws.com/downloads.agiletortoise.com/Drafts.app.zip'
 
@@ -45,6 +45,18 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
+
+	if [[ -e "${INSTALL_TO}/Contents/_MASReceipt/receipt" ]]
+	then
+
+		echo "\n\tWARNING! The version of Drafts found at '$INSTALL_TO' is from the Mac App Store.\n
+		$0 can only install or update the _beta_ version of Drafts.\n
+		If you wish to use the beta, you must first remove the Drafts.app from the Mac App Store.\n
+		Please note that having _both_ versions installed is **HIGHLY DISCOURAGED**
+		and could cause **data loss or corruption**. \n\n\tPlease don't do that." >>/dev/stderr
+
+		exit 2
+	fi
 
 	if [[ ! -w "$INSTALL_TO" ]]
 	then
@@ -182,7 +194,7 @@ fi
 echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
 	# Move the file out of the folder
-mv -n "$UNZIP_TO/Drafts.app" "$INSTALL_TO"
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
