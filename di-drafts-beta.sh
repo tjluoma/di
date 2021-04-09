@@ -74,21 +74,20 @@ else
 
 		RELEASE_NOTES_URL='https://docs.getdrafts.com/beta/changelog-mac'
 
-		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
-		| tidy --tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
-			--input-xml no --output-xml no --quote-nbsp no --show-warnings no \
-			--uppercase-attributes no --uppercase-tags no --clean yes --force-output yes \
-			--join-classes yes --join-styles yes --markup yes --output-xhtml yes --quiet yes \
-			--quote-ampersand yes --quote-marks yes \
-		| awk '/<h3/{i++}i==1' \
-		| lynx 	-dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 \
+		RELEASE_NOTES=$(curl -sfLS "${RELEASE_NOTES_URL}" \
+			| tidy 	--tidy-mark no --char-encoding utf8 --wrap 0 --show-errors 0 --indent yes \
+					--input-xml no --output-xml no --quote-nbsp no --show-warnings no \
+					--uppercase-attributes no --uppercase-tags no --clean yes --force-output yes \
+					--join-classes yes --join-styles yes --markup yes --output-xhtml yes --quiet yes \
+					--quote-ampersand yes --quote-marks yes \
+			| awk '/<h3/{i++}i==1' \
+			| lynx 	-dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 \
 				-pseudo_inlines -stdin  -nomargins -nonumbers -nolist)
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" \
 		| tee "$RELEASE_NOTES_TXT"
 
 	fi
-
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
