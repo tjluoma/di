@@ -26,7 +26,7 @@ LATEST_VERSION=$(curl -sfLS "$BETA_URL" \
 if [[ "$LATEST_VERSION" == "" ]]
 then
 	echo "$NAME: '\$LATEST_VERSION' is empty. Formatting of '$BETA_URL' may have changed." >>/dev/stderr
-	exit 2
+	exit 0
 fi
 
 if [[ -e "$INSTALL_TO" ]]
