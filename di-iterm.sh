@@ -41,11 +41,9 @@ DOWNLOAD_PAGE="https://iterm2.com/downloads.html"
 
 SUMMARY="iTerm2 brings the terminal into the modern age with features you never knew you always wanted."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')

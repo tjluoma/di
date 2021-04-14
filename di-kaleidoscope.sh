@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.kaleidoscopeapp.com/download"
 
 SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compare different text files, images, and folders. Review and merge changes in a matter of seconds."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 ## 2020-08-04 - this seems to be no longer in use and the SSL certificate expired

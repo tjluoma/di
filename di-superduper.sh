@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.shirt-pocket.com/downloads/SuperDuper%21.dmg"
 
 SUMMARY="SuperDuper is the wildly acclaimed program that makes recovery painless, because it makes creating a fully bootable backup painless. Its incredibly clear, friendly interface is understandable, easy to use, and SuperDuper's built-in scheduler makes it trivial to back up automatically. It's the perfect complement to Time Machine, allowing you to store a bootable backup alongside your Time Machine volume—and it runs beautifully on your Mac!"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 zmodload zsh/datetime

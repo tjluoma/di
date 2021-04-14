@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.mothersruin.com/software/downloads/SuspiciousPackage.
 
 SUMMARY="An Application for Inspecting macOS Installer Packages."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)

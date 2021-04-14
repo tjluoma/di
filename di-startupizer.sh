@@ -18,8 +18,6 @@ SUMMARY="Startupizer is advanced yet simple to use login items handler. It great
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://updates.devmate.com/com.gentlebytes.Startupizer2.xml"

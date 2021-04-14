@@ -17,11 +17,9 @@ RELEASE_NOTES_URL='https://www.duetdisplay.com/help-center/mac-release-notes'
 
 SUMMARY="Turn your iPad into an extra display."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	## There are two ways of finding the current version.

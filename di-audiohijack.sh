@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://rogueamoeba.com/audiohijack/download.php"
 
 SUMMARY="Record any application’s audio, including VoIP calls from Skype, web streams from Safari, and much more. Save audio from hardware devices like microphones and mixers as well. You can even record all the audio heard on your Mac at once! If you can hear it, Audio Hijack can record it."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 zmodload zsh/datetime

@@ -18,11 +18,9 @@ SUMMARY="HandBrake is a tool for converting video from nearly any format to a se
 
 RELEASE_NOTES_URL='https://handbrake.fr/appcast/stable.html'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 UA='curl/7.54.0'

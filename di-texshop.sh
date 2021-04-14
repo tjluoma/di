@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://pages.uoregon.edu/koch/texshop/texshop-64/texshop.zip"
 
 SUMMARY="TeXShop is a TeX previewer for Mac OS X, written in Cocoa. Since pdf is a native file format on OS X, TeXShop uses 'pdftex' and 'pdflatex' rather than 'tex' and 'latex' to typeset in its default configuration; these programs in the standard TeX Live distribution of TeX produce pdf output instead of dvi output."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function die

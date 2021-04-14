@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="http://www.tastycocoabytes.com/cpa/"
 
 SUMMARY="Cocoa Packet Analyzer is a native Mac OS X implementation of a network protocol analyzer and packet sniffer. CPA supports the industry-standard PCAP packet capture format for reading, capturing and writing packet trace files."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`

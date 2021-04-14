@@ -28,8 +28,6 @@ RELEASE_NOTES_URL="https://update.evernote.com/public/ENMacSMD/releaseNotes-en.h
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 INFO=($(curl -sfL "${XML_FEED}" \

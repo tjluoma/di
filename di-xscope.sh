@@ -17,11 +17,9 @@ SUMMARY="xScope is a powerful set of tools that are ideal for measuring, inspect
 
 INSTALL_TO='/Applications/xScope.app'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

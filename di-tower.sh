@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://www.git-tower.com/download/mac"
 
 SUMMARY="Tower helps you master version control with Git. (NOTE: Version information is for v2 because v3 is subcription that I haven’t signed up for.)"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`

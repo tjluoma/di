@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://www.koingosw.com/products/macpilot/#download"
 
 SUMMARY="Scared of the terminal or can’t be bothered to remember those commands to customize your system the way you want? MacPilot is your digital savior. Easily enable and disable hidden features in Mac OS X."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)

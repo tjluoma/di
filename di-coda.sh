@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://www.panic.com/coda/"
 
 SUMMARY="You code for the web. You demand a fast, clean, and powerful text editor. Pixel-perfect preview. A built-in way to open and manage your local and remote files. And maybe a dash of SSH. Say hello, Coda."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`

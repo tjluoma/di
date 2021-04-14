@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.appzapper.com"
 
 SUMMARY="Everybody loves the drag and drop nature of OS X. Drag an app into your applications folder, and it's installed. You'd think it would be that easy to delete an app — just a matter of dragging it to the trash. It's not. Apps install support files that generate clutter. Introducing AppZapper. Simply drag one or more apps onto AppZapper. Then, watch as it finds the extra files and lets you delete them with one click. Zap!"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)

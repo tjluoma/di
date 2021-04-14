@@ -18,8 +18,6 @@ SUMMARY="aText accelerates your typing by replacing abbreviations with frequentl
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://www.trankynam.com/atext/aText-Appcast.xml"

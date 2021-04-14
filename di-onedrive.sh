@@ -22,8 +22,6 @@ RELEASE_NOTES_URL='https://support.office.com/en-us/article/onedrive-release-not
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 URL=$(curl -sSfL --head 'https://go.microsoft.com/fwlink/?LinkId=823060' | awk -F' |\r' '/^.ocation/{print $2}' | tail -1)

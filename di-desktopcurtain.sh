@@ -19,11 +19,9 @@ SUMMARY="Want to hide a cluttered desktop? Focus on one particular application, 
 
 RELEASE_NOTES_URL='https://manytricks.com/desktopcurtain/releasenotes/'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -A Safari -sfL "$XML_FEED" \

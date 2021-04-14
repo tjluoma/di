@@ -18,8 +18,6 @@ SUMMARY="Powerful script management utility. Instant access to your scripts, by 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://www.red-sweater.com/fastscripts/appcast2.php"

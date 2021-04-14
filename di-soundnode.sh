@@ -21,11 +21,9 @@ DOWNLOAD_PAGE='https://github.com/Soundnode/soundnode-app/releases/latest'
 
 SUMMARY="An opensource SoundCloud app for desktop."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	## Get URL of latest release which will include version number

@@ -18,8 +18,6 @@ SUMMARY="Version control as easy as Mail. One-click commit, push and pull. Uniqu
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 URL="http://d1oa71y4zxyi0a.cloudfront.net/gitbox-1.6.2.zip"

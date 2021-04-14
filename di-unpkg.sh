@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://github.com/timdoug/unpkg/releases"
 
 SUMMARY="a Mac OS X .[m]pkg unarchiver"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 CASK_FILE="/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/unpkg.rb"

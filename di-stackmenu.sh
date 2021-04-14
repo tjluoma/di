@@ -22,8 +22,6 @@ XML_FEED="https://shine.basilsalad.com/appcast.php?id=1"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function do_exit {

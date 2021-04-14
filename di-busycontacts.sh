@@ -17,11 +17,9 @@ SUMMARY="BusyContacts makes managing contacts faster and more efficient. Offerin
 
 RELEASE_NOTES_URL='https://www.busymac.com/busycontacts/releasenotes.html'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 function die

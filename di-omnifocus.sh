@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.omnigroup.com/download/latest/omnifocus/"
 
 SUMMARY="Live a productive, contextual life with OmniFocus. Keep work and play separated with contexts, perspectives, and Focus. Ignore the irrelevant, focus on what you can do now, and accomplish more. And do it all much faster than before."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 function use_v2 {

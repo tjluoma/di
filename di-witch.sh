@@ -34,11 +34,9 @@ DOWNLOAD_PAGE="https://manytricks.com/download/witch"
 
 SUMMARY="The built-in macOS app switcher is great if all you use are one-window applications. But you probably have many windows open in many apps, possibly with many tabs, and navigating them all is a pain. Enter Witch, with which you can switch everything.."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

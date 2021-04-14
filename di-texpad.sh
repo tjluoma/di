@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://www.texpad.com/osx"
 
 SUMMARY="Texpad is a LaTeX editor designed for fast navigation around projects of all sizes. Given a single LaTeX root file, it will read through the LaTeX source, and that of all included files to present you with an outline of your project. Similarly Texpad reads the LaTeX console output, finding errors, and presenting them in a table you can use to jump straight to the errors in the LaTeX source."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 # NOTE: This is a very unusual case. Rather than including the CFBundleShortVersionString in a 'sparkle:shortVersionString' field

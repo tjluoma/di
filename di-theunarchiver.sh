@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://dl.devmate.com/cx.c3.theunarchiver/TheUnarchiver.zip"
 
 SUMMARY="Unpack any archive, in no time. The Unarchiver is the world’s favorite RAR opener for Mac. Unlike Mac’s native tool it’s sleeker and supports all known archive types."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED="https://updates.devmate.com/com.macpaw.site.theunarchiver.xml"

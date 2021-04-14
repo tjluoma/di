@@ -17,11 +17,9 @@ SUMMARY="Strip DRM from purchased iTunes movies and TV shows."
 
 XML_FEED="http://www.m4vgear.com/feed-m4vgear.xml"
 
-if [ -e "/Users/luomat/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
-	source "/Users/luomat/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	source "$HOME/.path"
 fi
 
 INFO=($(curl -sfL "$XML_FEED" | tr -s ' ' '\012' | egrep "^url=|sparkle:version=" | awk -F'"' '//{print $2}'))

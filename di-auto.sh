@@ -10,11 +10,9 @@
 # See 'di-auto.txt' for details about significant changes to this script:
 # https://github.com/tjluoma/di/blob/master/di-auto.txt
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 VIA_MACUPDATER='no'

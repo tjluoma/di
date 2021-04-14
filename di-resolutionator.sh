@@ -19,11 +19,9 @@ DOWNLOAD_PAGE="https://manytricks.com/download/resolutionator"
 
 SUMMARY="Resolutionator makes it simple to use any of your display's available resolutions. "
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 ## sparkle:version exists in feed but does not seem important

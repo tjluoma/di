@@ -17,11 +17,9 @@ SUMMARY="f.lux makes the color of your computer's display adapt to the time of d
 
 XML_FEED='https://justgetflux.com/mac/macflux.xml'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 LAUNCH='no'

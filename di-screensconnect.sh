@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://edovia.com/screens-connect/"
 
 SUMMARY="Screens Connect is a free utility that lets you connect back to your Mac or Windows PC from anywhere in the world."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED="https://updates.edovia.com/com.edovia.screens.connect.mac/appcast.xml"

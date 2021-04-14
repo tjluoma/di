@@ -9,11 +9,9 @@ NAME="$0:t:r"
 
 INSTALL_TO='/Applications/Name Mangler.app'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED='https://manytricks.com/namemangler/appcast/?version=3'

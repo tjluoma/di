@@ -20,8 +20,6 @@ RELEASE_NOTES_URL='https://desktop.github.com/release-notes/'
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# note: this is very much _not_ a Sparkle feed

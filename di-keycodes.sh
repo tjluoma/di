@@ -17,11 +17,9 @@ SUMMARY="Key Codes is a little utility that displays the key code, unicode value
 
 RELEASE_NOTES_URL='https://manytricks.com/keycodes/releasenotes/'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://manytricks.com/keycodes/appcast.xml'

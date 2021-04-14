@@ -19,11 +19,9 @@ XML_FEED='https://manytricks.com/keymou/appcast.xml'
 
 RELEASE_NOTES_URL='https://manytricks.com/keymou/releasenotes/'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`

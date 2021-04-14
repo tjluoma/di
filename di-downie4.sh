@@ -17,11 +17,9 @@ SUMMARY="Ever wished you could save a video from the Internet? Search no more, D
 
 RELEASE_NOTES_URL='https://charliemonroesoftware.com/trial/downie/v4/rnotes.html'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####

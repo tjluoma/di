@@ -16,11 +16,9 @@ OLDER='https://www.noodlesoft.com/old-versions/'
 
 SUMMARY="Hazel watches whatever folders you tell it to, automatically organizing your files according to the rules you create. Have Hazel move files around based on name, date, type, what site it came from and much more. Automatically sort your movies or file your bills. Keep your files off the desktop and put them where they belong."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 ############################################################################################################

@@ -27,8 +27,6 @@ SUMMARY="Go ahead. Forget your passwords. 1Password remembers them all for you. 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 ###############################################################################################

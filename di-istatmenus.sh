@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="http://download.bjango.com/istatmenus/"
 
 SUMMARY="An advanced Mac system monitor for your menu bar."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 	# Default to iStat Menus 6 unless we're told to use v5

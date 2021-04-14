@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.spectacleapp.com"
 
 SUMMARY="Move and resize windows with ease. Window control with simple and customizable keyboard shortcuts."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://spectacleapp.com/updates/appcast.xml"

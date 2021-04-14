@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="http://www.soma-zone.com/download/"
 
 SUMMARY="LaunchControlCreate, manage and debug launchd(8) services. LaunchControl is a fully-featured launchd GUI allowing you to create, manage and debug system- and user services on your Mac."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 	##

@@ -20,8 +20,6 @@ RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes5.html"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# backup?  https://rink.hockeyapp.net/api/2/apps/46da69d75bfa2c801117f4f299061332

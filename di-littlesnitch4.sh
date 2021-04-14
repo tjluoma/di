@@ -29,11 +29,9 @@ else
 	HEAD_OR_TAIL='head'
 fi
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://sw-update.obdev.at/update-feeds/littlesnitch4.plist"

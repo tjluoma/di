@@ -23,8 +23,6 @@ RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookieapp/updates.htm"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# sparkle:version is the only version info in XML_FEED.

@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.tynsoe.org/v2/stm/"
 
 SUMMARY="SSH Tunnel Manager is a macOS application to manage your SSH tunnels. If you don't know what that is, quite honestly, maybe you don't need SSH Tunnel Manager, but if you appreciate the power of connecting together two networks using the SSH protocol, then STM is for you."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	## old URL, no longer seems to work 2019-06-09

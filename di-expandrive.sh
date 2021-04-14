@@ -20,11 +20,9 @@ DOWNLOAD_PAGE="https://www.expandrive.com/download-expandrive/"
 
 SUMMARY="Access files in the cloud from Finder or Explorer without having to sync or use disk space. ExpanDrive mounts OneDrive, Google Drive, Dropbox, Box, Sharepoint, Amazon S3, FTP, SFTP and more as a Network Drive."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 URL=$(curl -sfLS "$XML_FEED" | awk -F'"' '/url/{print $4}')

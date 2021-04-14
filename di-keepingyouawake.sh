@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://github.com/newmarcel/KeepingYouAwake/releases/"
 
 SUMMARY="KeepingYouAwake is a small menu bar utility for macOS (Version 10.10 and newer) that can prevent your Mac from entering sleep mode for a predefined duration or as long as it is activated."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://newmarcel.github.io/KeepingYouAwake/appcast.xml'

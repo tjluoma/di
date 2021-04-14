@@ -13,11 +13,9 @@ DOWNLOAD_PAGE="https://www.macbartender.com/Demo/Bartender%203.zip"
 
 SUMMARY="Bartender 3 lets you organize your menu bar icons, by hiding them, rearranging them, show hidden items with a click or keyboard shortcut and have icons show when they update."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 INSTALL_V1_TO="/Applications/Bartender.app"

@@ -19,11 +19,9 @@ SUMMARY="The calendar app you won’t be able to live without."
 
 RELEASE_NOTES_URL="$XML_FEED"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sSfL "${XML_FEED}" \

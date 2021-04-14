@@ -10,8 +10,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
 XML_FEED='https://www.dbklabs.com/clicker-for-netflix/appcast/appcast.xml'

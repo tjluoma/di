@@ -6,11 +6,9 @@
 # Date:	2015-11-09 ; 2019-11-14 update ; 2020-01-31 ne URL and method of downloading
 
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 NAME="$0:t:r"

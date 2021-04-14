@@ -21,8 +21,6 @@ XML_FEED='http://apps.shinynode.com/apps/delibar_appcast.xml'
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 URL="http://apps.shinynode.com/apps/update/delibar_1.6.zip"

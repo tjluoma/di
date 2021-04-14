@@ -12,8 +12,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INSTALL_TO='/Applications/TogglDesktop.app'

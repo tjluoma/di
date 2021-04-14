@@ -19,8 +19,6 @@ INSTALL_TO="/Applications/Changes.app"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://bitbq_changes.s3.amazonaws.com/changes-production.xml'

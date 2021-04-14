@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://imageoptim.com/ImageOptim.tbz2"
 
 SUMMARY="ImageOptim makes images load faster. Removes bloated metadata. Saves disk space & bandwidth by compressing images without losing quality."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 	# if you want to install beta releases

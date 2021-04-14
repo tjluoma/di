@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.arqbackup.com/download/Arq.dmg"
 
 SUMMARY="Arq automatically backs up all your Macs and Windows PCs. Your files are stored securely, readable only by you."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED="https://www.arqbackup.com/download/arq5.xml"

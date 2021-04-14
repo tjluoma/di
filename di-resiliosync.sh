@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://download-cdn.resilio.com/stable/osx/Resilio-Sync.dmg"
 
 SUMMARY="Sync any folder to all your devices. Sync photos, videos, music, PDFs, docs or any other file types to/from your mobile phone, laptop, or NAS."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 NAME="$0:t:r"

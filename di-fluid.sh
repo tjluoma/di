@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.fluidapp.com"
 
 SUMMARY="Turn any website into a real Mac app with Fluid."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 function use_v1 {

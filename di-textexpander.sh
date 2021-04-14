@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://textexpander.com/cgi-bin/redirect.pl?cmd=download&platfor
 
 SUMMARY="TextExpander lets you instantly insert snippets of text from a repository of emails, boilerplate and other content, as you type – using a quick search or abbreviation. Older versions at https://textexpander.com/textexpander-standalone-apps/"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function use_v5 {

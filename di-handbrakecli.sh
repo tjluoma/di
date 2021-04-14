@@ -10,8 +10,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
 # REMOTE_FILENAME=$(curl -sfLS 'https://handbrake.fr/downloads2.php' | tr '"|=' '\012' | egrep -i '^HandBrakeCLI-.*\.dmg$')

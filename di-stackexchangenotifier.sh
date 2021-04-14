@@ -20,8 +20,6 @@ XML_FEED='http://hewgill.com/senotifier/appcast.xml'
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# URL='https://hewgill.com/senotifier/stack-exchange-notifier-1.1.dmg'

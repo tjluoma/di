@@ -18,8 +18,6 @@ SUMMARY="Sidekick is an application that automatically updates your laptop setti
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# aka http://updates.oomphalot.com/appcast/sidekick.xml

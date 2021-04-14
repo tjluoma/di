@@ -16,11 +16,9 @@ DOWNLOAD_PAGE='http://richsomerfield.com/apps/textbar/'
 
 SUMMARY='TextBar is a tiny but powerful app that lets you add any text to your menu bar.'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 ## 2018-07-17 - this was the old XML_FEED that I was using

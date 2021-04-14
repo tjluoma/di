@@ -12,8 +12,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH="$HOME/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin"
 fi
 
 # URL='https://www.jibapps.com/ressources/displays/files/Displays.dmg'

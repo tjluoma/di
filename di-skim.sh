@@ -17,11 +17,9 @@ SUMMARY="Skim is a PDF reader and note-taker for OS X. It is designed to help yo
 
 XML_FEED="https://skim-app.sourceforge.io/skim.xml"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

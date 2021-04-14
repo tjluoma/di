@@ -18,11 +18,9 @@ SUMMARY="Slack brings all your communication together — a single place for mes
 
 RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# ".ocation" takes care of Location: or location:

@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.stclairsoft.com/cgi-bin/dl.cgi?DX"
 
 SUMMARY="Make your Open and Save dialogs work as quickly as you do."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# if you want to install beta releases

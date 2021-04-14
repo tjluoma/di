@@ -18,8 +18,6 @@ SUMMARY="The legendary Git GUI client for Windows, Mac and Linux."
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 # AKA https://release.axocdn.com/darwin/installGitKraken.dmg

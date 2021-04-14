@@ -18,8 +18,6 @@ SUMMARY="Enjoy free voice and video calls on Skype or discover some of the many 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 URL=$(curl -sfLS --head 'https://get.skype.com/go/getskype-skypeformac' \

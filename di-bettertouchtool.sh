@@ -5,11 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-01-19
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 autoload is-at-least

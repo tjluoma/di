@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="http://apps.apple.com/app/mousepose/id405904955?mt=12"
 
 SUMMARY="Mouseposé 3 is an essential tool for everyone doing presentations or demos. When turned on, it dims the screen and puts a spotlight on the area around the mouse pointer, easily guiding the audience‘s attention to an area of interest."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 	# 2018-07-17 $XML_FEED exists but does not provide any useful data

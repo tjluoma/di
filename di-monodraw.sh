@@ -20,11 +20,9 @@ DOWNLOAD_PAGE="https://updates.helftone.com/monodraw/downloads/monodraw-latest.d
 
 SUMMARY="Powerful ASCII art editor designed for the Mac."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

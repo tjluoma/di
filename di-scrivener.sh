@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://www.literatureandlatte.com/scrivener/download"
 
 SUMMARY="Typewriter. Ring-binder. Scrapbook. Scrivener combines all the tools you need to craft your first draft, from nascent notion to final full stop."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 

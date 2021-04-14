@@ -5,7 +5,7 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-10-15
 
-## @todo - failed to clean download 
+## @todo - failed to clean download
 
 
 # See note at EOF
@@ -17,8 +17,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INSTALL_TO='/Applications/BBEdit.app'

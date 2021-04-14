@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://transmissionbt.com/download/"
 
 SUMMARY="Transmission is a cross-platform BitTorrent client."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 # sparkle:version exists, but isn't what's used to determine a "new version"

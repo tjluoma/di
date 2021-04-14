@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.accordancebible.com/Accordance-Installers"
 
 SUMMARY="Go deep into Bible study with Accordance 12. Access ancient wisdom and modern insights through an ever growing library of titles. Illuminate your research and teaching using intelligent tools in an easy-to-use, lightning-fast interface."
 
-if [ -e "/Users/luomat/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
-	source "/Users/luomat/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	source "$HOME/.path"
 fi
 
 	# sparkle:version identical to sparkle:shortVersionString

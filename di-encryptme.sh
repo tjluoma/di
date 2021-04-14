@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://app.encrypt.me/transition/download/osx/latest/"
 
 SUMMARY="Encrypt.me (formerly “Cloak”) aims to provide people the tools they need to stay safe online. Through our simple, easy-to-use apps, encrypted connections are easy to achieve. Once you install Encrypt.me, it automatically detects unsafe networks and secures your web access."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://www.getcloak.com/updates/osx/public/'

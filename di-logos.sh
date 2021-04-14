@@ -20,11 +20,9 @@ DOWNLOAD_PAGE=$(curl -sfLS "$XML_FEED" \
 SUMMARY="Logos helps you discover, understand, and share more of the biblical insights you crave."
 
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

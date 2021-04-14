@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="http://www.neooffice.org/neojava/en/download.php#download"
 
 SUMMARY="NeoOffice is an office suite for Mac that is based on OpenOffice and LibreOffice. With NeoOffice, you can view, edit, and save OpenOffice documents, LibreOffice documents, and simple Microsoft Word, Excel, and PowerPoint documents."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function die

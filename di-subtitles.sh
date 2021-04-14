@@ -16,11 +16,9 @@ DOWNLOAD_PAGE="https://subtitlesapp.com/download/mac"
 
 SUMMARY="The easiest way to download subtitles."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED='https://subtitlesapp.com/updates.xml'

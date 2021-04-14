@@ -17,11 +17,9 @@ SUMMARY=" Malware and other applications may install persistent keyboard 'event 
 
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/ReiKey.txt'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \

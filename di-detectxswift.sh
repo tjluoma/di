@@ -17,11 +17,9 @@ SUMMARY="DetectX Swift is a lightweight, on-demand dedicated search and troubles
 
 RELEASE_NOTES_URL='https://s3.amazonaws.com/sqwarq.com/AppCasts/dtxswift_release_notes.html'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://s3.amazonaws.com/sqwarq.com/AppCasts/dtxswift.xml'

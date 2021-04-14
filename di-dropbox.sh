@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.dropbox.com/download?plat=mac&full=1"
 
 SUMMARY="It’s a folder that syncs. (See http://qr.ae/TUNeCr if you need more explanation.)"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 function msg {

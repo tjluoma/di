@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="http://www.clarify-it.com/download/mac"
 
 SUMMARY="Clarify 2 _was_ a Faster, Simpler Alternative to Screen Recording."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	## 2018-07-17 this feed seemed to be outdated

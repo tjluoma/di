@@ -18,11 +18,9 @@ SUMMARY="MailMate is an IMAP email client for macOS featuring extensive keyboard
 	# 2018-08-08 - This says that it's for betas, but I can't find a non-beta version at the moment
 RELEASE_NOTES_URL='https://updates.mailmate-app.com/beta_release_notes'
 
-if [ -e "/Users/luomat/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
-	source "/Users/luomat/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+	source "$HOME/.path"
 fi
 
 LAUNCH='no'

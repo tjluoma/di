@@ -17,11 +17,9 @@ SUMMARY="Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a 
 
 RELEASE_NOTES_URL='https://www.charlesproxy.com/documentation/version-history/'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function use_charles_v3 {

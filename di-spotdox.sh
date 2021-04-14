@@ -18,8 +18,6 @@ SUMMARY="Spotdox is the ultimate Dropbox companion application. By pairing Spotd
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://spotdox.herokuapp.com/downloads/appcast.xml'

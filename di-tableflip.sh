@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://tableflipapp.com/download"
 
 SUMMARY="_The_ Markdown table editor. (Requires at least macOS Yosemite and is ready for High Sierra.)"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

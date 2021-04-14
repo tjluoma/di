@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.tripmode.ch/thank-you-for-downloading-tripmode/"
 
 SUMMARY="Easily block unwanted apps from accessing the Internet the second you connect to a hotspot. Save data. Save money."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 # Found via cask

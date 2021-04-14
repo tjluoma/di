@@ -27,11 +27,9 @@ INSTALL_TO='/Applications/PhoneView.app'
 
 NAME="$0:t:r"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 	# this will only let you download the demo version of the app

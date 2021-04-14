@@ -17,11 +17,9 @@ SUMMARY="Dylib Hijack Scanner or DHS, is a simple utility that will scan your co
 
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/DHS.txt'
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \

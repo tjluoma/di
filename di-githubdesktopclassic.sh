@@ -20,11 +20,9 @@ SUMMARY="The older, non-Electron, version of GitHub Desktop (sometimes known as 
 # I've taken the liberty of renaming this to what GitHub seems to call it now.
 # See https://blog.github.com/2017-09-19-announcing-github-desktop-1-0/ for announcement of its replacement
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 URL="https://github-central.s3.amazonaws.com/mac/GitHub%20Desktop%20224.zip"

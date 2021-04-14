@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://download.panic.com/transmit/?C=M;O=D"
 
 SUMMARY="The gold standard of macOS file transfer apps just drove into the future. Upload, download, and manage files on tons of servers with an easy, familiar, and powerful UI. It’s quite good."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 if [[ -e "$INSTALL_TO" ]]

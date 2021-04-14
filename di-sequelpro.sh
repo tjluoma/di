@@ -19,11 +19,9 @@ SUMMARY="Sequel Pro is a fast, easy-to-use Mac database management application f
 
 XML_FEED="https://www.sequelpro.com/appcast/app-releases.xml"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

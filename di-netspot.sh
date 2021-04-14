@@ -22,11 +22,9 @@ RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| sed 's# *##g' \
 	| tr -d '[:cntrl:]')
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# CFBundleVersion and CFBundleShortVersionString are identical

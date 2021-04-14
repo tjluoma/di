@@ -10,8 +10,6 @@ NAME="$0:t:r"
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 # http://www.klieme.com/Downloads/ScreenSharingMenulet/appcast.xml exists, but the download URL is 404

@@ -18,8 +18,6 @@ SUMMARY="Dropzone is a productivity app for the Mac that makes it faster and eas
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 XML_FEED='https://aptonic.com/sparkle4/updates.xml'

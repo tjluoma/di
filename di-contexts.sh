@@ -18,8 +18,6 @@ SUMMARY="Switch between application windows effortlessly — with Fast Search, a
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# if you want to install beta releases

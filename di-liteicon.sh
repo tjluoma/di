@@ -19,11 +19,9 @@ SUMMARY="LiteIcon is a simple app which allows you to change your system icons q
 
 RELEASE_NOTES_URL="https://freemacsoft.net/liteicon/releasenotes.html"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sSfL "${XML_FEED}" \

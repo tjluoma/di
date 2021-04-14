@@ -20,8 +20,6 @@ SUMMARY='(Retina Display Menu) This is a tool that lets you use MacBook Pro Reti
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function die

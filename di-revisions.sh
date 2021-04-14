@@ -21,11 +21,9 @@ URL=$(curl -sfL https://www.revisionsapp.com | fgrep '.dmg' | sed "s#.*downloads
 
 FILENAME="$HOME/Downloads/$URL:t"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 # NOTE: "https://revisionsapp.com/releases" is not an XML_FEED

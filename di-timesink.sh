@@ -17,11 +17,9 @@ DOWNLOAD_PAGE="https://manytricks.com/download/timesink"
 
 SUMMARY="Have you ever wondered exactly where all your time goes while you're sitting there at your Mac? You sit down to work at 8am, and suddenly it's lunchtime…where did the time go? Wonder no longer: Time Sink tracks your activity, and reveals exactly what you've been working on—or not working on—throughout the day."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \

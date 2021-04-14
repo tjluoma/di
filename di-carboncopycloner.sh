@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://bombich.com/download"
 
 SUMMARY="The first bootable backup solution for the Mac is better than ever."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 autoload is-at-least

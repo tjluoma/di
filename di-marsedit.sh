@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://www.red-sweater.com/marsedit/MarsEditLatest.zip"
 
 SUMMARY="Write, preview, publish, and archive your blog from a Mac."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 function use_v3 {

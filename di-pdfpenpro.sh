@@ -18,11 +18,9 @@ DOWNLOAD_PAGE="https://dl.smilesoftware.com/com.smileonmymac.PDFpenPro/PDFpenPro
 
 SUMMARY="Powerful PDF Editing On Your Mac. Add signatures, text, and images. Make changes and correct typos. OCR scanned docs. Fill out and create forms. Export to Microsoft Word, Excel, PowerPoint."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED='https://smilesoftware.com/appcast/PDFpenPro12.xml'

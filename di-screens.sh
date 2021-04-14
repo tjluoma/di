@@ -13,11 +13,9 @@ DOWNLOAD_PAGE="https://dl.devmate.com/com.edovia.screens4.mac/Screens4.dmg"
 
 SUMMARY="Control any computer from your Mac from anywhere in the world."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 INSTALL_TO='/Applications/Screens 4.app'

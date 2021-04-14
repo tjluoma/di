@@ -15,11 +15,9 @@ DOWNLOAD_PAGE="https://coderunnerapp.com/download"
 
 SUMMARY="An advanced, highly flexible, and easy-to-use programming editor for your Mac. CodeRunner supports a large number of languages, and delivers big IDE features while remaining lightweight and clutter-free."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
 XML_FEED="https://coderunnerapp.com/appcast.xml"

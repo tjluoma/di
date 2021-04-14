@@ -29,8 +29,6 @@ SUMMARY="Call Recorder records Skype audio and video calls directly to your Mac.
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# Can't use "https://www.ecamm.com/appcasts/callrecorder.xml" for downloading because it's just the demo

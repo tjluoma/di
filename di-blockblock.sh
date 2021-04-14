@@ -1,104 +1,115 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of "BlockBlock"
+# Purpose:
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-09-13
+# Date:	2021-04-12
 
 NAME="$0:t:r"
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH=/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 fi
 
-echo "$NAME: This needs to be updated for version 1.0"
+INSTALL_TO='/Applications/BlockBlock Helper.app'
 
-exit 0
+	# this doesn't change but it redirects to the latest URL
+STATIC_RELEASE_URL='https://github.com/objective-see/BlockBlock/releases/latest'
 
-HOMEPAGE="https://objective-see.com/products/blockblock.html"
+	# this is the actual URL for the latest release
+	# such as 'https://github.com/objective-see/BlockBlock/releases/tag/v1.0.2'
+ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
 
-DOWNLOAD_PAGE="https://objective-see.com/products/blockblock.html"
+	# We can find the version number by looking at the end of the URL
+	# and throwing away everything except numbers and periods
+LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/BlockBlock.txt'
+DOWNLOAD_SUFFIX=$(curl -sfLS "$ACTUAL_RELEASE_URL" | tr '"' '\012' |  egrep -i '^/.*/releases/.*\.zip$')
 
-SUMMARY="Malware installs itself persistently, to ensure it's automatically re-executed at reboot. BlockBlock continually monitors common persistence locations and displays an alert whenever a persistent component is added to the OS."
+DOWNLOAD_PREFIX='https://github.com'
 
-INSTALL_TO='/Library/Objective-See/BlockBlock/BlockBlock.app'
-
-INFO=($(curl -H "Accept-Encoding: gzip,deflate" -sfLS "$HOMEPAGE" \
-		| gunzip -f -c \
-		| tr -s '"|\047' '\012' \
-		| egrep '^http.*\.zip|sha-1:' \
-		| awk '{print $NF}' \
-		| head -2))
-
-URL="$INFO[1]"
-
-EXPECTED_SHA1="$INFO[2]"
-
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+URL="${DOWNLOAD_PREFIX}${DOWNLOAD_SUFFIX}"
 
 	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$EXPECTED_SHA1" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	EXPECTED_SHA1: $EXPECTED_SHA1
-	"
+"
 
 	exit 1
 fi
 
+	# is the app already installed? if so we need to compare version numbers
 if [[ -e "$INSTALL_TO" ]]
 then
+		# if there's a version already, this isn't the first install
+	FIRST_INSTALL='no'
 
+		# this is the number to compare against the current version number
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
+		# zsh tool to compare version numbers
 	autoload is-at-least
 
+		# compare the numbers
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
+		# check the exit code
 	VERSION_COMPARE="$?"
 
+		# if exit code is zero, we have this version
 	if [ "$VERSION_COMPARE" = "0" ]
 	then
 		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
+		# if we get here, there is a newer version
 	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
-	FIRST_INSTALL='no'
+	# Normally we check for write access here, but the installer runs
+	# via `sudo` and will be able to write to it, even if we cannot
 
 else
 
+		# if we get here, there is no version installed
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+############################################################################################################
 
-SHA_FILE="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.sha1.txt"
+	# since there are different downloads for ARM and Intel, make sure we put $ARCH in filename
+FILENAME="$HOME/Downloads/BlockBlock-${${LATEST_VERSION}// /}.zip"
 
-echo "$EXPECTED_SHA1 ?$FILENAME:t" >| "$SHA_FILE"
+	# this is the file we will use to store the release notes, if we have lynx installed
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
-( curl -H "Accept-Encoding: gzip,deflate" -sfLS "$RELEASE_NOTES_URL" \
-	| gunzip -f -c) | tee "$FILENAME:r.txt"
-
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
-
-if [ "$OS_VER" -lt "9" ]
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
-	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.9 and higher (you are using 10.$OS_VER)."
-	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
+		# if we already have release notes, don't bother parsing them again, just show them
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(curl -sfLS "$ACTUAL_RELEASE_URL" | sed '1,/<div class="markdown-body">/d; /<details/,$d' \
+						| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+
+		echo "${RELEASE_NOTES}\n\n\nRelease Notes URL: ${RELEASE_NOTES_URL}\n\nSource: ${ACTUAL_RELEASE_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" \
+		| tee "$RELEASE_NOTES_TXT"
+
+	fi
+
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --progress-bar --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
@@ -109,29 +120,44 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-##
+egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
 
-echo "$NAME: Checking '$FILENAME' against '$SHA_FILE':"
+EXIT="$?"
 
-cd "$FILENAME:h"
+if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
+then
+	(cd "$FILENAME:h" ; \
+	echo "\n\nLocal sha256:" ; \
+	shasum -a 256 "$FILENAME:t" \
+	)  >>| "$FILENAME:r.txt"
+fi
 
-shasum -c "$SHA_FILE"
+############################################################################################################
+
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
 
 if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: SHA-1 verification passed"
+	echo "$NAME: '$FILENAME' is a valid zip file."
 
 else
-	echo "$NAME: SHA-1 verification failed (\$EXIT = $EXIT)"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
 
-	exit 1
+	mv -fv "$FILENAME" "$TEMPDIR/"
+
+	mv -fv "$FILENAME:r".* "$TEMPDIR/"
+
+	exit 0
+
 fi
 
-##
-
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TEMPDIR}/${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
@@ -149,13 +175,31 @@ else
 	exit 1
 fi
 
-INSTALLER="$UNZIP_TO/BlockBlock Installer.app"
+INSTALLER="$UNZIP_TO/BlockBlock Installer.app/Contents/MacOS/BlockBlock Installer"
 
-echo "$NAME: launching custom installer/updater: '$INSTALLER'"
+if [[ ! -e "$INSTALLER" ]]
+then
 
-	# launch the custom installer app
-open -a "$INSTALLER"
+	echo "$NAME: Failed to locate installer at '$INSTALLER'. Cannot continue." >>/dev/stderr
+	exit 2
 
-exit 0
-#
+fi
+
+sudo "${INSTALLER}" -install
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+
+	echo "$NAME: Installation successful!"
+	exit 0
+
+else
+
+	echo "$NAME: Installation failed (sudo \$EXIT = $EXIT)"
+	exit 1
+
+fi
+
 #EOF

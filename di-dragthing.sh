@@ -20,8 +20,6 @@ RELEASE_NOTES_URL='https://www.dragthing.com/english/history.html'
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 	# This is the last version of the app

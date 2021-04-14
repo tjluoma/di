@@ -19,11 +19,9 @@ DOWNLOAD_PAGE="https://manytricks.com/download/usher"
 
 SUMMARY="Wouldn’t it be great if there were a tool that could manage your videos and movies as well as Apple’s iTunes and iPhoto manage your music and your photographs? Now there is. Meet Usher, your personal movie assistant."
 
-if [ -e "$HOME/.path" ]
+if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
-else
-	PATH='/usr/local/scripts:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin'
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
