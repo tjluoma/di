@@ -18,7 +18,7 @@ INSTALL_TO='/Applications/Menuwhere.app'
 
 XML_FEED='https://manytricks.com/menuwhere/appcast/'
 
-INFO=$(curl -sfLS "$XML_FEED" | tr -s ' |\t|\r|\n' ' ')
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr -s ' |\t|\r|\n' ' ')
 
 URL=$(echo "$INFO" | sed -e 's#.*<enclosure url="##g' -e 's#".*##g')
 
