@@ -12,6 +12,8 @@ then
 	source "$HOME/.path"
 fi
 
+# @todo - verify this still works
+
 INSTALL_TO='/Applications/Kiwi for Gmail.app'
 
 XML_FEED='https://rink.hockeyapp.net/api/2/apps/865041dca0724e00accae3b90b66c63a'
