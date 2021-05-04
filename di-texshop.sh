@@ -94,25 +94,37 @@ fi
 
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
-if (( $+commands[lynx] ))
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
+	cat "$RELEASE_NOTES_TXT"
 
-	if [[ "$RELEASE_NOTES_URL" == "" ]]
+else
+
+	if (( $+commands[lynx] ))
 	then
 
-		echo "No Release Notes found" | tee "$FILENAME:r.txt"
+		RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
+				| tr -d '\012' \
+				| sed 	-e 's#.*<sparkle:releaseNotesLink>##g' \
+						-e 's#</sparkle:releaseNotesLink>.*##g')
 
-	else
+		if [[ "$RELEASE_NOTES_URL" == "" ]]
+		then
 
-		( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
-			curl -sfL $RELEASE_NOTES_URL \
-			| sed '1,/<h3>/d; /<h3>/,$d' \
-			| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-			echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+			echo "No Release Notes found" | tee "$FILENAME:r.txt"
+
+		else
+
+			( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION):\n" ;
+				lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL";
+				echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		fi
+
 	fi
+
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -127,6 +139,12 @@ EXIT="$?"
 [[ ! -e "$FILENAME" ]] && echo "$NAME: $FILENAME does not exist." && exit 0
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
+
+if [[ ! -w "$INSTALL_TO:h" ]]
+then
+	echo "\n$NAME: No write permission to '$INSTALL_TO:h/'. Cannot continue. Downloaded file is:\n$FILENAME" >>/dev/stderr
+	exit 2
+fi
 
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
