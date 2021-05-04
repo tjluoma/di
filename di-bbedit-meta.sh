@@ -102,6 +102,11 @@ then
 		## this is the feed wherein the latest information is made available from Barebones
 	 XML_FEED='https://versioncheck.barebones.com/BBEdit.xml'
 
+	URL=$(curl -sfLS "$XML_FEED" \
+			| egrep -i '<string>https://.*bbedit.*\.dmg</string>' \
+			| tail -1 \
+			| sed -e 's#.*<string>##g' -e 's#</string>##g')
+
 		## Beta Feed?
 			## this is where the file will be downloaded and what it will be named
 	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
