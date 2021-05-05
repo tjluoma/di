@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh -f
-#
 # Purpose: Download the direct (not Mac App Store) version of Slack from <https://slack.com>
 #
 # From:	Timothy J. Luoma
@@ -12,7 +11,7 @@ INSTALL_TO='/Applications/Slack.app'
 
 HOMEPAGE="https://slack.com/"
 
-DOWNLOAD_PAGE="https://slack.com/ssb/download-osx"
+DOWNLOAD_PAGE="https://slack.com/downloads/mac"
 
 SUMMARY="Slack brings all your communication together — a single place for messaging, tools and files — helping everyone save time and collaborate together."
 
@@ -24,7 +23,7 @@ then
 fi
 
 	# ".ocation" takes care of Location: or location:
-URL=$(curl -sfL --head "https://slack.com/ssb/download-osx" \
+URL=$(curl -sfL --head "https://slack.com/ssb/download-osx-universal" \
 		| awk -F' |\r' '/^.ocation: /{print $2}' \
 		| tail -1 )
 
