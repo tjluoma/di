@@ -31,23 +31,25 @@ PREFERS_BETAS_FILE="$HOME/.config/di/handbrake-prefer-betas.txt"
 
 if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
+
 		# This is for betas
 	NAME="$NAME (beta releases)"
 	BETA='yes'
 
-	URL=$(curl -A "$UA_CURL" -sfL "https://handbrake.fr/nightly.php" \
-	| fgrep -i '.dmg' \
-	| tr '"|\047' '\012' \
-	| awk -F'^' '/https/{print $1}' \
-	| fgrep -iv 'HandBrakeCLI')
+		## The format of the URL is currently (2021-05-04) this:
+		# https://handbrake.fr/nightly/HandBrake-20210504083558-2fd9617d7-master.dmg
 
-	# https://nightly.handbrake.fr/HandBrake-20180810154915-d667a3d-master.dmg
+	URL=$(curl -A "$UA" -sfL "https://handbrake.fr/nightly.php" \
+			| tr '"' '\012' \
+			| fgrep -i '.dmg' \
+			| egrep '^nightly/HandBrake-.*\.dmg' \
+			| sed 's#^#https://handbrake.fr/#g')
 
 	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#HandBrake-##g')
 
 	LATEST_BUILD=""
 
-	FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+	FILENAME="$HOME/Downloads/HandBrake-Nightly-${LATEST_VERSION}.dmg"
 
 else
 	BETA='no'
