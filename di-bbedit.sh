@@ -115,56 +115,61 @@ CHECKSUM_FILE="$FILENAME:r.sha256.txt"
 
 ############################################################################################################
 
-if (( $+commands[wget] ))
+if [[ "$RELEASE_NOTES_URL" != "" ]]
 then
 
-	if (( $+commands[html2text.py] ))
+	if (( $+commands[wget] ))
 	then
 
-		RELEASE_NOTES_FILE="$FILENAME:r.md"
-
-		if [[ -e "$RELEASE_NOTES_FILE" ]]
+		if (( $+commands[html2text.py] ))
 		then
 
-			cat "$RELEASE_NOTES_FILE"
+			RELEASE_NOTES_FILE="$FILENAME:r.md"
+
+			if [[ -e "$RELEASE_NOTES_FILE" ]]
+			then
+
+				cat "$RELEASE_NOTES_FILE"
+
+			else
+
+				TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.html"
+
+				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
+
+				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" \
+					| egrep -v '<p><a href=".*">back to top</a></p>' \
+					| fgrep -vi 'please make sure that you have updated to the latest available OS version' \
+					| html2text.py \
+					| egrep -v '^\* \* \*' \
+					| uniq \
+					| sed -e 's#^ *##g' \
+					| tee -a "$RELEASE_NOTES_FILE"
+
+			fi
 
 		else
 
-			TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.html"
+			RELEASE_NOTES_FILE="$FILENAME:r.html"
 
-			wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
+			if [[ -e "$RELEASE_NOTES_FILE" ]]
+			then
 
-			sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" \
-				| egrep -v '<p><a href=".*">back to top</a></p>' \
-				| fgrep -vi 'please make sure that you have updated to the latest available OS version' \
-				| html2text.py \
-				| egrep -v '^\* \* \*' \
-				| uniq \
-				| sed -e 's#^ *##g' \
-				| tee -a "$RELEASE_NOTES_FILE"
+				echo "$NAME: '$RELEASE_NOTES_FILE' already exists"
 
-		fi
+			else
 
-	else
+				echo "$NAME: saving Release Notes to '$RELEASE_NOTES_FILE'."
 
-		RELEASE_NOTES_FILE="$FILENAME:r.html"
+				wget --quiet --convert-links --output-document="$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
 
-		if [[ -e "$RELEASE_NOTES_FILE" ]]
-		then
+			fi
 
-			echo "$NAME: '$RELEASE_NOTES_FILE' already exists"
+		fi # if html2text.py
 
-		else
+	fi # if wget
 
-			echo "$NAME: saving Release Notes to '$RELEASE_NOTES_FILE'."
-
-			wget --quiet --convert-links --output-document="$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
-
-		fi
-
-	fi # if html2text.py
-
-fi # if wget
+fi # if RELEASE_NOTES_URL
 
 ############################################################################################################
 
@@ -188,7 +193,7 @@ EXIT="$?"
 if [ "$EXIT" = "1" -o ! -e "$CHECKSUM_FILE" ]
 then
 	(cd "$FILENAME:h" ; \
-	echo "\n\nLocal sha256:" ; \
+	echo "\nLocal sha256:" ; \
 	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$CHECKSUM_FILE"
 fi
