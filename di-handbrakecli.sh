@@ -12,6 +12,18 @@ then
 	source "$HOME/.path"
 fi
 
+if (( $+commands[di-handbrakecli-nightly.sh] ))
+then
+
+		# @todo - should integrate these two with a PREFERS_BETA or something
+
+	echo "$NAME: Found 'di-handbrakecli-nightly.sh'. Running that instead."
+	exec di-handbrakecli-nightly.sh
+	exit 0
+
+fi
+
+
 # REMOTE_FILENAME=$(curl -sfLS 'https://handbrake.fr/downloads2.php' | tr '"|=' '\012' | egrep -i '^HandBrakeCLI-.*\.dmg$')
 # 	LATEST_VERSION=$(echo "$REMOTE_FILENAME:r" | tr -dc '[0-9]\.')
 # 		RELEASE_NOTES_URL="https://github.com/HandBrake/HandBrake/releases/tag/$LATEST_VERSION"
