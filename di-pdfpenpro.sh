@@ -1,12 +1,9 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install PDFPenPro version 12 from <https://smilesoftware.com/pdfpenpro/>
+# Purpose: Download and install PDFPenPro version 13 from <https://smilesoftware.com/pdfpenpro/>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2018-08-21
-
-
-## @todo - feed is now at 'https://smilesoftware.com/cgi-bin/pdfpenpro_update.pl' as of 2020-11-30
+# Date:	2018-08-21; updated for v13 on 2021-05-07
 
 NAME="$0:t:r"
 
@@ -23,17 +20,18 @@ then
 	source "$HOME/.path"
 fi
 
-XML_FEED='https://smilesoftware.com/appcast/PDFpenPro12.xml'
+	# XML_FEED='https://smilesoftware.com/appcast/PDFpenPro12.xml' [stopped working]
+	# feed is now at 'https://smilesoftware.com/cgi-bin/pdfpenpro_update.pl' as of 2020-11-30
+	# XML_FEED='https://cgi.pdfpen.com/appcast/PDFpenPro12.xml' ??
+XML_FEED='https://cgi.pdfpen.com/appcast/PDFpenPro13.xml'
 
-INFO=$(curl -sfLS "$XML_FEED" | tr -d '\012' | tr -s ' ' ' ')
+INFO=$(curl -sfLS "$XML_FEED"  | awk '/<item>/{i++}i==1' | tr -d '\012' | tr -s ' ' ' ')
 
 LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:shortVersionString="##g' -e 's#".*##g')
 
 LATEST_BUILD=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#".*##g')
 
 URL=$(echo "$INFO" | sed -e 's#.*enclosure url="##g' -e 's#".*##g')
-
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
