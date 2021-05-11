@@ -1,14 +1,14 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of Feeder 3 from <https://reinventedsoftware.com/feeder/>
+# Purpose: Download and install latest version of Feeder 4 from <https://reinventedsoftware.com/feeder/>
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
-# Date:	2015-10-26
+# Date:	2015-10-26; 2021-05-11 updated for version 4
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Feeder 3.app'
+INSTALL_TO='/Applications/Feeder.app'
 
 HOMEPAGE="https://reinventedsoftware.com/feeder"
 
@@ -16,7 +16,7 @@ DOWNLOAD_PAGE="https://reinventedsoftware.com/feeder/downloads/"
 
 SUMMARY="Create edit and publish RSS and podcast feeds."
 
-XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder3.xml"
+XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder4.xml"
 
 RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
