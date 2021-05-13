@@ -5,6 +5,9 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-19
 
+# @todo - use wget for release notes to get working links
+
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Carbon Copy Cloner.app"
