@@ -16,28 +16,33 @@ XML_FEED='https://www.dbklabs.com/clicker-for-youtube/appcast/appcast.xml'
 
 INSTALL_TO='/Applications/Clicker for YouTube.app'
 
-INFO=($(curl -sfLS "$XML_FEED" \
+INFO=$(curl -sfLS "$XML_FEED" \
 		| tr -d '\n|\r|\t' \
-		| tr -s ' ' '\12' \
-		| egrep 'sparkle:releaseNotesLink|sparkle:shortVersionString|sparkle:version|url=' \
-		| sed -e 's#.*<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' -e 's#</sparkle:releaseNotesLink>#"#g' \
-		| sort \
-		| sed -e 's#"$##g' -e 's#.*"##'))
+		| tr -s '\12' ' ' \
+		| sed 's#> #>#g')
 
-RELEASE_NOTES_URL="$INFO[1]"
+RELEASE_NOTES_URL=$(echo "$INFO" \
+					| sed 	-e 's#.*<sparkle:releaseNotesLink>##g' \
+							-e 's#</sparkle:releaseNotesLink>.*##g')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" \
+					| sed 	-e 's#.*sparkle:shortVersionString="##g' \
+							-e 's#".*##g')
 
-	# this is in the feed but it's the same as the main version
-# LATEST_BUILD="$INFO[3]"
+LATEST_BUILD=$(echo "$INFO" \
+					| sed 	-e 's#.*sparkle:version="##g' \
+							-e 's#".*##g')
 
-URL="$INFO[4]"
-
+URL=$(echo "$INFO" \
+					| sed 	-e 's#.*url="##g' \
+							-e 's#".*##g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -45,13 +50,17 @@ then
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
 
@@ -67,7 +76,8 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
+
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
