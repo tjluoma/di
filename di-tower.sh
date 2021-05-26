@@ -142,8 +142,6 @@ fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-echo "$NAME: Downloading '$URL' to '$FILENAME':"
-
 curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
