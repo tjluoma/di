@@ -14,7 +14,7 @@ fi
 
 INSTALL_TO='/Applications/Loopback.app'
 
-URL="https://d2oxtzozd38ts8.cloudfront.net/loopback/download/Loopback.zip"
+URL="https://rogueamoeba.com/loopback/download/Loopback.zip"
 
 XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.loopback&system=10141&platform=osx&arch=x86_64&version=2008000"
 
