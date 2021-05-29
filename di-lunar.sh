@@ -153,6 +153,26 @@ fi
 
 ####################################################################################################
 
+echo "$NAME [INFO]: moving '$FILENAME' to '$HOME/.Trash/'..."
+
+	# we won't worry about potentially overwriting something in the Trash
+	# since, you know, it's in the Trash
+mv -vf "$FILENAME" "$HOME/.Trash/"
+
+EXIT="$?"
+
+if [[ "$EXIT" != "0" ]]
+then
+		# a non fatal error
+
+	echo "$NAME: failed to trash '$FILENAME' (mv \$EXIT = $EXIT)" >>/dev/stderr
+
+fi
+
+####################################################################################################
+
+echo "$NAME [INFO]: moving '$PKG' to '$FINAL_PKG_NAME'..."
+
 mv -vn "$PKG" "$FINAL_PKG_NAME"
 
 EXIT="$?"
@@ -164,6 +184,10 @@ then
 
 	exit 2
 fi
+
+####################################################################################################
+#
+# We now want '$FILENAME' to refer to the '$PKG'
 
 FILENAME="$FINAL_PKG_NAME"
 
@@ -182,6 +206,10 @@ then
 fi
 
 ####################################################################################################
+#
+#	Now we'll install the package
+#
+
 
 if (( $+commands[pkginstall.sh] ))
 then
