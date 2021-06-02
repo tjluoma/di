@@ -20,17 +20,15 @@ then
 	source "$HOME/.path"
 fi
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+	# I don't think there's ever going to be a 2.0.4 or later
+	# so I'm just hard-coding this in
+LATEST_VERSION='2.0.3'
+URL='https://iusethis.luo.ma/appzapper/AppZapper-2.0.3.zip'
 
-if [ "$OS_VER" -gt "11" ]
-then
-	URL='https://appzapper.com/downloads/appzapper202.zip'
-	LATEST_VERSION='2.0.2'
-else
-		# this version works back to 10.6.2
-	URL='https://appzapper.com/downloads/AppZapper2.0.1.zip'
-	LATEST_VERSION='2.0.1'
-fi
+		## if you need to use the app for
+ 		## Mac OS X versions 10.8, 10.7, or back to 10.6.2
+# 	URL='https://appzapper.com/downloads/AppZapper2.0.1.zip'
+# 	LATEST_VERSION='2.0.1'
 
 if [[ -e "$INSTALL_TO" ]]
 then
