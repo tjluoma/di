@@ -63,13 +63,6 @@ then
 
 	FIRST_INSTALL='no'
 
-	if [[ ! -w "$INSTALL_TO" ]]
-	then
-		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
-
-		exit 2
-	fi
-
 else
 
 	FIRST_INSTALL='yes'
