@@ -5,13 +5,27 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-19
 
+
+
 NAME="$0:t:r"
+
+echo "$NAME: quitting because Monterey"
+
+exit 0
+
+###############################################################
+##
+## To re-enable this I would have to implement a check for
+## 		<sparkle:minimumSystemVersion>12.0.0</sparkle:minimumSystemVersion>
+## to avoid getting Monterey-related builds.
+##
+###############################################################
 
 HOMEPAGE="https://www.macbartender.com"
 
-DOWNLOAD_PAGE="https://www.macbartender.com/Demo/Bartender%203.zip"
-
-SUMMARY="Bartender 3 lets you organize your menu bar icons, by hiding them, rearranging them, show hidden items with a click or keyboard shortcut and have icons show when they update."
+# DOWNLOAD_PAGE="https://www.macbartender.com/Demo/Bartender%203.zip"
+#
+# SUMMARY="Bartender 3 lets you organize your menu bar icons, by hiding them, rearranging them, show hidden items with a click or keyboard shortcut and have icons show when they update."
 
 if [[ -e "$HOME/.path" ]]
 then
