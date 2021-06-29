@@ -15,46 +15,64 @@ DOWNLOAD_PAGE="http://www.videolan.org/vlc/"
 
 SUMMARY="VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols."
 
-ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
-
-if [[ "$ARCH" == "ARM64" ]]
-then
-		# M1 / Apple Silicon / ARM
-	XML_FEED='https://update.videolan.org/vlc/sparkle/vlc-arm64.xml'
-	ARCH='arm64'
-
-elif [[ "$ARCH" == "X86" ]]
-then
-
-		# Intel Mac
-	XML_FEED='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
-	ARCH='intel'
-
-else
-
-	echo "$NAME: 'sysctl kern.version' returned unknown arch: '$ARCH'" >>/dev/stderr
-	exit 2
-
-fi
-
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 fi
 
-# NOTE: XML_FEED does not show 'sparkle:shortVersionString' (they're identical in the app)
+if (( $+commands[lynx] ))
+then
 
-INFO=($(curl -sfL "$XML_FEED" \
-	| tr ' ' '\012' \
-	| egrep '^(url|sparkle:version)=' \
-	| tail -2 \
-	| sort \
-	| awk -F'"' '//{print $2}'))
+	INFO='lynx'
 
-LATEST_VERSION="$INFO[1]"
+	BASE_URL=$(lynx -listonly -dump -nomargins -nonumbers "https://ftp.osuosl.org/pub/videolan/vlc/" | egrep '/vlc/[0-9]' | tail -1)
 
-URL="$INFO[2]"
+	LATEST_VERSION="$BASE_URL:t"
+
+	URL=$(lynx -listonly -dump -nomargins -nonumbers "${BASE_URL}/macosx/" | egrep '/vlc-.*-universal.dmg$' | tail -1)
+
+	FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-universal.dmg"
+
+else
+
+	ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
+
+	if [[ "$ARCH" == "ARM64" ]]
+	then
+			# M1 / Apple Silicon / ARM
+		XML_FEED='https://update.videolan.org/vlc/sparkle/vlc-arm64.xml'
+		ARCH='arm64'
+
+	elif [[ "$ARCH" == "X86" ]]
+	then
+
+			# Intel Mac
+		XML_FEED='http://update.videolan.org/vlc/sparkle/vlc-intel64.xml'
+		ARCH='intel'
+
+	else
+
+		echo "$NAME: 'sysctl kern.version' returned unknown arch: '$ARCH'" >>/dev/stderr
+		exit 2
+
+	fi
+
+	# NOTE: XML_FEED does not show 'sparkle:shortVersionString' (they're identical in the app)
+
+	INFO=($(curl -sfL "$XML_FEED" \
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:version)=' \
+		| tail -2 \
+		| sort \
+		| awk -F'"' '//{print $2}'))
+
+	LATEST_VERSION="$INFO[1]"
+
+	URL="$INFO[2]"
+
+	FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${ARCH}.dmg"
+
+fi # if lynx
 
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
@@ -92,7 +110,6 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}-${ARCH}.dmg"
 
 if (( $+commands[lynx] ))
 then
