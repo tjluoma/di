@@ -16,7 +16,7 @@ INSTALL_TO='/Applications/Lunar.app'
 
 HOMEPAGE='https://lunar.fyi'
 
-XML_FEED='https://lunar.fyi/appcast.xml'
+XML_FEED='https://static.lunar.fyi/appcast.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 		| sed 's#^ *##g' \
