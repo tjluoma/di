@@ -5,29 +5,35 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-10
 
-NAME="$0:t:r"
-
-INSTALL_TO="/Applications/VMware Fusion.app"
-
-## This file is an attractive nuisance, but not useful
-# XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'
-
-HOMEPAGE="https://www.vmware.com/products/fusion.html"
-
-DOWNLOAD_PAGE="https://www.vmware.com/go/getfusion"
-
-URL=$(curl -sfLS --head https://www.vmware.com/go/getfusion | awk -F' |\r' '/^.ocation:/{print $2}')
-
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#VMware-Fusion-##g ; s#-.*##g')
-
-LATEST_BUILD=$(echo "$URL:t:r" | sed 's#VMware-Fusion-.*-##g')
-
-SUMMARY="Fusion brings Mac virtualization to the next level with a simply powerful and powerfully simple desktop virtualization utility."
+	####################################################################################
+	## 		This file is an attractive nuisance, but not useful                       ##
+	##	 	XML_FEED='https://softwareupdate.vmware.com/cds/vmw-desktop/fusion.xml'   ##
+	####################################################################################
 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 fi
+
+NAME="$0:t:r"
+
+HOMEPAGE="https://www.vmware.com/products/fusion.html"
+
+DOWNLOAD_PAGE="https://www.vmware.com/go/getfusion"
+
+SUMMARY="Fusion brings Mac virtualization to the next level with a simply powerful and powerfully simple desktop virtualization utility."
+
+INSTALL_TO="/Applications/VMware Fusion.app"
+
+	## 2021-07-05 - not we get 403 errors if we don't use a UA although even 'Safari' will work
+	## so they are probably just blocking 'curl' as a UA
+UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15'
+
+URL=$(curl -A "$UA" -sfLS --head 'https://www.vmware.com/go/getfusion' | awk -F' |\r' '/^.ocation:/{print $2}')
+
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#VMware-Fusion-##g ; s#-.*##g')
+
+LATEST_BUILD=$(echo "$URL:t:r" | sed 's#VMware-Fusion-.*-##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -77,7 +83,7 @@ FILENAME="$HOME/Downloads/VMWareFusion-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl -A "$UA" --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
