@@ -15,6 +15,8 @@ HOMEPAGE="https://www.decisivetactics.com/products/printopia/"
 
 DOWNLOAD_PAGE="https://www.decisivetactics.com/products/printopia/"
 
+# Direct: https://www.decisivetactics.com/products/printopia/get
+
 SUMMARY="Wireless printing to any printer. Share any printer, old or new, with your iPad or iPhone."
 
 zmodload zsh/stat #needed for zstat
