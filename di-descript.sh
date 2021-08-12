@@ -18,7 +18,23 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Descript.app'
+SHORT_NAME='Descript.app'
+
+PRIMARY="/Applications/$SHORT_NAME"
+
+SECONDARY="/Volumes/Applications/$SHORT_NAME"
+
+if [[ -e "$SECONDARY" ]]
+then
+
+	INSTALL_TO="$SECONDARY"
+
+else
+
+	INSTALL_TO="$PRIMARY"
+
+fi
+
 
 # https://www.descript.com/download
 # https://electron.descript.com/Descript-3.6.0-master.20200527.18.dmg
