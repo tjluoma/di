@@ -74,8 +74,9 @@ then
 
 	else
 			# Stable releases update rarely but have no serious bugs.
-		XML_FEED='https://iterm2.com/appcasts/final_new.xml'
-		#XML_FEED='https://iterm2.com/appcasts/final.xml'
+		# XML_FEED='https://iterm2.com/appcasts/final.xml'
+		# XML_FEED='https://iterm2.com/appcasts/final_new.xml'
+		XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
 		PREFERS='[Stable]'
 	fi
 
