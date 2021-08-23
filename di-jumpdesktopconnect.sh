@@ -14,6 +14,7 @@ fi
 
 XML_FEED='https://s3.amazonaws.com/jumpdesktop.com/downloads/connect/connect-mac.xml'
 
+	# This is a .pkg installer so it cannot be changed
 INSTALL_TO='/Applications/Jump Desktop Connect.app'
 
 INFO=$(curl -sfLS "$XML_FEED" | tr -s '\t|\012' ' ')
