@@ -8,7 +8,38 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/HandBrake.app'
+APPNAME='HandBrake.app'
+
+INSTALL_DIR_EXTERNAL='/Volumes/Applications'
+
+INSTALL_DIR_INTERNAL='/Applications'
+
+INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
+
+INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
+
+if [[ -d "$INSTALL_TO_EXTERNAL" ]]
+then
+		# if already install on external
+	INSTALL_TO="$INSTALL_TO_EXTERNAL"
+
+elif [[ -d "$INSTALL_TO_INTERNAL" ]]
+then
+		# if already install on internal
+
+	INSTALL_TO="$INSTALL_TO_INTERNAL"
+
+elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
+then
+		# if external dir exists, prefer it
+
+	INSTALL_TO="$INSTALL_TO_EXTERNAL"
+
+else
+		# if nothing else available, use internal
+
+	INSTALL_TO="$INSTALL_TO_INTERNAL"
+fi
 
 HOMEPAGE="https://handbrake.fr"
 
@@ -36,14 +67,11 @@ then
 	NAME="$NAME (beta releases)"
 	BETA='yes'
 
-		## The format of the URL is currently (2021-05-04) this:
-		# https://handbrake.fr/nightly/HandBrake-20210504083558-2fd9617d7-master.dmg
-
-	URL=$(curl -A "$UA" -sfL "https://handbrake.fr/nightly.php" \
+	URL=$(curl -sfLS "https://github.com/HandBrake/handbrake-snapshots/releases/tag/mac" \
 			| tr '"' '\012' \
 			| fgrep -i '.dmg' \
-			| egrep '^nightly/HandBrake-.*\.dmg' \
-			| sed 's#^#https://handbrake.fr/#g')
+			| egrep '^/HandBrake/.*/mac/HandBrake-.*\.dmg' \
+			| sed 's#^#https://github.com#g')
 
 	LATEST_VERSION=$(echo "$URL:t:r" | sed 's#HandBrake-##g')
 
@@ -54,8 +82,16 @@ then
 else
 	BETA='no'
 
-		## This is for official, non-beta versions
-	XML_FEED="https://handbrake.fr/appcast.x86_64.xml"
+	ARCH=$(arch)
+
+	if [[ "$ARCH" == "arm64" ]]
+	then
+			## Apple Silicon / M1-based Macs
+		XML_FEED='https://handbrake.fr/appcast.arm64.xml'
+	else
+			## Intel-based Macs
+		XML_FEED="https://handbrake.fr/appcast.x86_64.xml"
+	fi
 
 	INFO=($(curl -A "$UA" -sfL "${XML_FEED}" \
 			| tr -s ' ' '\012' \
