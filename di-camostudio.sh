@@ -12,7 +12,38 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Camo Studio.app'
+APPNAME='Camo Studio.app'
+
+INSTALL_DIR_EXTERNAL='/Volumes/Applications'
+
+INSTALL_DIR_INTERNAL='/Applications'
+
+INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
+
+INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
+
+if [[ -d "$INSTALL_TO_EXTERNAL" ]]
+then
+		# if already install on external
+	INSTALL_TO="$INSTALL_TO_EXTERNAL"
+
+elif [[ -d "$INSTALL_TO_INTERNAL" ]]
+then
+		# if already install on internal
+
+	INSTALL_TO="$INSTALL_TO_INTERNAL"
+
+elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
+then
+		# if external dir exists, prefer it
+
+	INSTALL_TO="$INSTALL_TO_EXTERNAL"
+
+else
+		# if nothing else available, use internal
+
+	INSTALL_TO="$INSTALL_TO_INTERNAL"
+fi
 
 XML_FEED="https://uds.reincubate.com/release-notes/camo/?format=sparkle"
 
