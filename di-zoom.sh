@@ -15,6 +15,8 @@ then
 	source "$HOME/.path"
 fi
 
+	# this is a .pkg so installation location is required
+
 INSTALL_TO='/Applications/zoom.us.app'
 
 RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'
@@ -87,7 +89,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/Zoom-${LATEST_VERSION}.${ARCH}.pkg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/Zoom-${LATEST_VERSION}.${ARCH}.pkg"
 
 if (( $+commands[lynx] ))
 then
