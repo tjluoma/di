@@ -7,12 +7,11 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/BLEUnlock.app/'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/BLEUnlock.app"
 
 URL=$(curl -sfLS "https://api.github.com/repos/ts1/BLEUnlock/releases/latest" \
 		| awk -F'"' '/browser_download_url/{print $4}')
