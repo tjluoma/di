@@ -7,7 +7,11 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/CheatSheet.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/CheatSheet.app"
 
 XML_FEED='https://mediaatelier.com/CheatSheet/feed.php'
 
@@ -19,11 +23,6 @@ SUMMARY="Just hold the ⌘-Key a bit longer to get a list of all active short cu
 
 	# Feed is a mess and development is not very active. Not worrying about this for now.
 RELEASE_NOTES_URL='http://mediaatelier.com/CheatSheet/feedNotes.php'
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -96,7 +95,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
