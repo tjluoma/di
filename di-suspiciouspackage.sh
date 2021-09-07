@@ -7,7 +7,11 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Suspicious Package.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Suspicious Package.app"
 
 HOMEPAGE="https://www.mothersruin.com/software/SuspiciousPackage/"
 
@@ -79,20 +83,26 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/SuspiciousPackage-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
-if [[ "$RELEASE_NOTES_URL" != "" ]]
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
+
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
 	if (( $+commands[lynx] ))
 	then
 
-		( echo -n "$NAME: Release Notes for $INSTALL_TO:t:r Version " ;
-		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<tbody>/d; /<\/tr>/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin \
-		| sed G ;
-		echo "Source: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL")
+
+		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
 	fi
+
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
