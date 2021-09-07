@@ -8,7 +8,11 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/calibre.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/calibre.app"
 
 HOMEPAGE="https://calibre-ebook.com"
 
@@ -16,12 +20,7 @@ DOWNLOAD_PAGE="https://calibre-ebook.com/download_osx"
 
 SUMMARY="calibre is a powerful and easy to use e-book manager."
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-LATEST_VERSION=`curl -sfL 'http://status.calibre-ebook.com/latest'`
+LATEST_VERSION=$(curl -sfL 'http://status.calibre-ebook.com/latest')
 
 	# curent version is empty, something went wrong
 [[ "$LATEST_VERSION" = "" ]] && exit 1
