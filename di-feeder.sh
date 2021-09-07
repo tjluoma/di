@@ -8,39 +8,11 @@
 
 NAME="$0:t:r"
 
-APPNAME='Feeder.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_DIR_EXTERNAL='/Volumes/Applications'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_DIR_INTERNAL='/Applications'
-
-INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
-
-INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
-
-if [[ -d "$INSTALL_TO_EXTERNAL" ]]
-then
-		# if already install on external
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-elif [[ -d "$INSTALL_TO_INTERNAL" ]]
-then
-		# if already install on internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-
-elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
-then
-		# if external dir exists, prefer it
-
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-else
-		# if nothing else available, use internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-fi
-
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Feeder.app"
 
 HOMEPAGE="https://reinventedsoftware.com/feeder"
 
@@ -54,11 +26,6 @@ RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
 	| head -1 \
 	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' |>|<' '\012' \
