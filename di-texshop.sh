@@ -7,38 +7,11 @@
 
 NAME="$0:t:r"
 
-APPNAME='TeXShop.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_DIR_EXTERNAL='/Volumes/Applications/TeX'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_DIR_INTERNAL='/Applications/Tex'
-
-INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
-
-INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
-
-if [[ -d "$INSTALL_TO_EXTERNAL" ]]
-then
-		# if already install on external
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-elif [[ -d "$INSTALL_TO_INTERNAL" ]]
-then
-		# if already install on internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-
-elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
-then
-		# if external dir exists, prefer it
-
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-else
-		# if nothing else available, use internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-fi
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/TeXShop.app"
 
 XML_FEED="http://pages.uoregon.edu/koch/texshop/texshop-64/texshopappcast.xml"
 
@@ -47,11 +20,6 @@ HOMEPAGE="http://pages.uoregon.edu/koch/texshop/"
 DOWNLOAD_PAGE="https://pages.uoregon.edu/koch/texshop/texshop-64/texshop.zip"
 
 SUMMARY="TeXShop is a TeX previewer for Mac OS X, written in Cocoa. Since pdf is a native file format on OS X, TeXShop uses 'pdftex' and 'pdflatex' rather than 'tex' and 'latex' to typeset in its default configuration; these programs in the standard TeX Live distribution of TeX produce pdf output instead of dvi output."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 function die
 {
