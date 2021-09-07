@@ -9,13 +9,10 @@
 
 NAME="$0:t:r"
 
-echo "$NAME: quitting because Monterey"
-
-exit 0
 
 ###############################################################
 ##
-## To re-enable this I would have to implement a check for
+## @Todo: implement a check for
 ## 		<sparkle:minimumSystemVersion>12.0.0</sparkle:minimumSystemVersion>
 ## to avoid getting Monterey-related builds.
 ##
