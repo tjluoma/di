@@ -5,52 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-05-30
 
-
-#### WARNING: 	As of 2020-05-31, `curl` seems to think that the website's certificate is expired,
-####			but when I look using Safari, it appears fine. So I am using `--insecure` when I
-####			call `curl` which is potentially a security risk. As always, use at your own risk.
-
-
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-APPNAME='Descript.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_DIR_EXTERNAL='/Volumes/Applications'
-
-INSTALL_DIR_INTERNAL='/Applications'
-
-INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
-
-INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
-
-if [[ -d "$INSTALL_TO_EXTERNAL" ]]
-then
-		# if already install on external
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-elif [[ -d "$INSTALL_TO_INTERNAL" ]]
-then
-		# if already install on internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-
-elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
-then
-		# if external dir exists, prefer it
-
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-else
-		# if nothing else available, use internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-fi
-
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Descript.app"
 
 # https://www.descript.com/download
 # https://electron.descript.com/Descript-3.6.0-master.20200527.18.dmg
@@ -62,7 +23,7 @@ fi
 #	CFBundleShortVersionString: 3.6.0-master.20200527.18
 #	CFBundleVersion: 1
 
-URL=$(curl --silent --insecure --head --location 'https://web.descript.com/download?platform=mac' \
+URL=$(curl --silent --head --location 'https://web.descript.com/download?platform=mac' \
 	  | awk -F' |\r' '/^Location:/{print $2}')
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#Descript-##g')
@@ -102,10 +63,9 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
-curl --insecure --continue-at - --fail --location --output "$FILENAME" "$URL"
+curl --continue-at - --fail --location --output "$FILENAME" "$URL"
 
 EXIT="$?"
 
