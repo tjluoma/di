@@ -7,25 +7,11 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_PRIMARY='/Applications/MailMate.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_SECONDARY='/Volumes/Applications/MailMate.app'
-
-if [[ -e "$INSTALL_SECONDARY" ]]
-then
-
-	INSTALL_TO="$INSTALL_SECONDARY"
-
-else
-
-	INSTALL_TO="$INSTALL_PRIMARY"
-
-fi
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/MailMate.app"
 
 URL_TO_CHECK='https://updates.mailmate-app.com/arm64/11.5/test'
 
