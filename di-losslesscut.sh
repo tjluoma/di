@@ -7,43 +7,11 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-APPNAME='LosslessCut.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_DIR_EXTERNAL='/Volumes/Applications'
-
-INSTALL_DIR_INTERNAL='/Applications'
-
-INSTALL_TO_EXTERNAL="$INSTALL_DIR_EXTERNAL/$APPNAME"
-
-INSTALL_TO_INTERNAL="$INSTALL_DIR_INTERNAL/$APPNAME"
-
-if [[ -d "$INSTALL_TO_EXTERNAL" ]]
-then
-		# if already install on external
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-elif [[ -d "$INSTALL_TO_INTERNAL" ]]
-then
-		# if already install on internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-
-elif [ -w "$INSTALL_DIR_EXTERNAL" -a -w "$INSTALL_DIR_EXTERNAL" ]
-then
-		# if external dir exists, prefer it
-
-	INSTALL_TO="$INSTALL_TO_EXTERNAL"
-
-else
-		# if nothing else available, use internal
-
-	INSTALL_TO="$INSTALL_TO_INTERNAL"
-fi
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/LosslessCut.app"
 
 LC_ALL=C
 
@@ -89,7 +57,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
