@@ -7,12 +7,11 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/BBEdit.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/BBEdit.app"
 
 	# if this file exists (regardless of size or content, just exists)
 	# it will be assumed that the user wants to use beta versions of BBEdit
