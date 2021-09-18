@@ -7,20 +7,19 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-27
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/MacPilot.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/MacPilot.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.koingosw.com/products/macpilot/"
 
 DOWNLOAD_PAGE="https://www.koingosw.com/products/macpilot/#download"
 
 SUMMARY="Scared of the terminal or can’t be bothered to remember those commands to customize your system the way you want? MacPilot is your digital savior. Easily enable and disable hidden features in Mac OS X."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
 
