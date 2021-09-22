@@ -7,14 +7,13 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Mimestream.app"
 
 XML_FEED="https://mimestream.com/appcast.xml"
-
-INSTALL_TO='/Applications/Mimestream.app'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 		| awk '/<item>/{i++}i==1' \
