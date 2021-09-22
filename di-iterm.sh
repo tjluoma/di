@@ -30,21 +30,19 @@
 ## would be enough to indicate your preference.
 
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/iTerm.app"
 
 NAME="$0:t:r"
-
-INSTALL_TO="/Applications/iTerm.app"
 
 HOMEPAGE="https://iterm2.com/"
 
 DOWNLOAD_PAGE="https://iterm2.com/downloads.html"
 
 SUMMARY="iTerm2 brings the terminal into the modern age with features you never knew you always wanted."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
 
@@ -76,7 +74,10 @@ then
 			# Stable releases update rarely but have no serious bugs.
 		# XML_FEED='https://iterm2.com/appcasts/final.xml'
 		# XML_FEED='https://iterm2.com/appcasts/final_new.xml'
-		XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
+		# XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
+
+			# via brew cask
+		XML_FEED='https://raw.githubusercontent.com/gnachman/iterm2-website/master/source/appcasts/final_modern.xml'
 		PREFERS='[Stable]'
 	fi
 
