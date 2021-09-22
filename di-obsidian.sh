@@ -7,16 +7,15 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Obsidian.app"
 
 # "https://github.com/obsidianmd/obsidian-releases/releases/download/v#{version}/Obsidian-#{version}.dmg"
 
 ## XML_FEED='https://github.com/obsidianmd/obsidian-releases/releases.atom'
-
-INSTALL_TO='/Applications/Obsidian.app'
 
 	# this doesn't change but it redirects to the latest URL
 STATIC_RELEASE_URL='https://github.com/obsidianmd/obsidian-releases/releases/latest'
