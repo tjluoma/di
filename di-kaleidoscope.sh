@@ -5,20 +5,19 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-03-19
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Kaleidoscope.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Kaleidoscope.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.kaleidoscopeapp.com"
 
 DOWNLOAD_PAGE="https://www.kaleidoscopeapp.com/download"
 
 SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compare different text files, images, and folders. Review and merge changes in a matter of seconds."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 ## 2020-08-04 - this seems to be no longer in use and the SSL certificate expired
 # XML_FEED="https://updates.blackpixel.com/updates?app=ks"
