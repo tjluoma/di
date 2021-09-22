@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-10-24
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Acorn.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/Acorn.app'
 
 	## Only the most recent version is in feed
 XML_FEED="https://www.flyingmeat.com/download/acorn7update.xml"
