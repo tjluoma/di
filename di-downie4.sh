@@ -7,7 +7,11 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Downie 4.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Downie 4.app"
 
 HOMEPAGE="https://software.charliemonroe.net/downie.php"
 
@@ -16,11 +20,6 @@ DOWNLOAD_PAGE="https://trial.charliemonroe.net/downie/download.php"
 SUMMARY="Ever wished you could save a video from the Internet? Search no more, Downie is what you're looking for. Easily download videos from thousands of different sites."
 
 RELEASE_NOTES_URL='https://charliemonroesoftware.com/trial/downie/v4/rnotes.html'
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 ####|####|####|####|####|####|####|####|####|####|####|####|####|####|####
 
