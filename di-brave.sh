@@ -35,8 +35,6 @@ INFO=$(curl -sfLS "$XML_FEED" \
 | tail -1)
 
 
-XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/stable/appcast.xml'
-
 INFO=($(curl -sfLS "$XML_FEED" \
 | tr -s '\012' ' ' \
 | sed 's# <item> #\
