@@ -5,14 +5,14 @@
 # Mail:	luomat at gmail dot com
 # Date:	2021-02-03
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+	# this is installed via .pkg so will always end up in /Applications/
+INSTALL_TO="/Applications/Arq.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/Arq.app'
 
 JSON_FEED_URL='https://www.arqbackup.com/download/arqbackup/arq7_update.json'
 
@@ -67,7 +67,7 @@ fi
 
 ###############################################################################################
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.pkg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.pkg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
