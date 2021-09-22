@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-19
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/BetterZip.app"
 
 NAME="$0:t:r"
-
-INSTALL_TO='/Applications/BetterZip.app'
 
 HOMEPAGE="https://macitbetter.com/"
 
@@ -32,7 +31,7 @@ SUMMARY="
 ##
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
-alias curl='/usr/bin/curl --http1.1'
+# alias curl='/usr/bin/curl --http1.1'
 
 XML_FEED="https://macitbetter.com/BetterZip5.rss"
 
