@@ -7,7 +7,11 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Accordance.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Accordance.app"
 
 HOMEPAGE="https://www.accordancebible.com"
 
@@ -15,10 +19,6 @@ DOWNLOAD_PAGE="https://www.accordancebible.com/Accordance-Installers"
 
 SUMMARY="Go deep into Bible study with Accordance 12. Access ancient wisdom and modern insights through an ever growing library of titles. Illuminate your research and teaching using intelligent tools in an easy-to-use, lightning-fast interface."
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 	# sparkle:version identical to sparkle:shortVersionString
 INFO=($(curl -sfL 'https://accordancefiles1.com/xml/appcast_13.xml' \
