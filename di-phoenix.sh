@@ -5,15 +5,18 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-17
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Phoenix.app"
+
+
+# Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
+
 
 NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Phoenix.app'
-# Note: it appears in the Finder as 'Twitterrific.app' but if you look at it in Terminal or copy the filename in Finder, it's Phoenix.app
 
 HOMEPAGE="https://twitterrific.com/mac"
 
