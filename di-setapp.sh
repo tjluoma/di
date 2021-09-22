@@ -7,12 +7,12 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Setapp.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+	# as of 2021-09-21, Setapp does not work right if not in /Applications/
+INSTALL_TO="/Applications}/Setapp.app"
 
 XML_FEED='https://updates.devmate.com/com.setapp.DesktopClient.xml'
 
@@ -71,7 +71,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
