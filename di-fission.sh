@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-04 ; 2019-09-18 updated for older versions of macOS
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Fission.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Fission.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.rogueamoeba.com/fission/"
 
@@ -16,11 +20,6 @@ DOWNLOAD_PAGE="https://www.rogueamoeba.com/fission/download.php"
 SUMMARY="Fast & lossless audio editing With Fission, audio editing is no longer a chore. You can join files, crop and trim audio, and rapidly split up long files. Fission is streamlined for fast editing, and it works without the quality loss other audio editors cause. If you need to convert between audio formats, Fission can do that too. Rapidly export or batch convert files to the MP3, AAC, Apple Lossless, FLAC, AIFF, and WAV formats. Fission has all your audio needs covered. Finally, simple audio editing has arrived."
 
 RELEASE_NOTES_URL="https://www.rogueamoeba.com/fission/releasenotes.php"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 OS_MAJOR_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
 
