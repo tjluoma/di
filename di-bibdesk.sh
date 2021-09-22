@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-14
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/TeX/BibDesk.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO="/Applications/TeX/BibDesk.app"
 
 HOMEPAGE="https://bibdesk.sourceforge.io"
 
