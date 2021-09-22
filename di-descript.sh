@@ -28,7 +28,7 @@ URL=$(curl --silent --head --location 'https://web.descript.com/download?platfor
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#Descript-##g')
 
-FILENAME="$HOME/Downloads/$URL:t"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 if [[ -e "$INSTALL_TO" ]]
 then
