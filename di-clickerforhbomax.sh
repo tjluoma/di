@@ -5,16 +5,15 @@
 # Mail:	luomat at gmail dot com
 # Date:	2021-05-14
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Clicker for HBO Max.app"
+
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
 XML_FEED='https://www.dbklabs.com/clicker-for-hbo-max/appcast/appcast.xml'
-
-INSTALL_TO='/Applications/Clicker for HBO Max.app'
 
 INFO=($(curl -sfLS "$XML_FEED" \
 		| awk '/<item>/{i++}i==1' \
