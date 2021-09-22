@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-07-30
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Cardhop.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Cardhop.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://flexibits.com/cardhop"
 
@@ -16,11 +20,6 @@ DOWNLOAD_PAGE="https://flexibits.com/cardhop/download"
 SUMMARY="The contacts app you’ll actually want to use."
 
 XML_FEED='https://flexibits.com/cardhop/appcast.php'
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '<enclosure url="https.*\.zip' \
@@ -90,7 +89,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
