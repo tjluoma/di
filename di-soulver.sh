@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2016-01-19
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Soulver.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Soulver 3.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.acqualia.com/soulver/"
 
@@ -15,25 +19,25 @@ DOWNLOAD_PAGE="https://www.acqualia.com/soulver/download"
 
 SUMMARY="Soulver helps you work things out. It's quicker to use than a spreadsheet, and smarter and clearer than a traditional calculator. Use Soulver to play around with numbers, do 'back of the envelope' quick calculations, and solve day-to-day problems."
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-XML_FEED="https://www.acqualia.com/soulver/appcast/soulver2.xml"
+XML_FEED="https://soulver.app/mac/sparkle/appcast.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
-	| tr ' ' '\012' \
-	| egrep '^(sparkle:version|url|sparkle:shortVersionString)=' \
-	| tail -3 \
-	| sort \
-	| awk -F'"' '//{print $2}'))
+| fgrep -vi 'sparkle:delta' \
+| tr -s '\012' ' ' \
+| sed -e 's#.*<item>##g' -e 's#> <#>\
+<#g' -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' -e 's#</sparkle:releaseNotesLink>#"#g' \
+| tr ' ' '\012' \
+| egrep '^(sparkle:releaseNotesLink|sparkle:version|sparkle:shortVersionString|url)=' \
+| sort \
+| sed -e 's#"$##g' -e 's#.*"##g'))
 
-LATEST_VERSION="$INFO[1]"
+RELEASE_NOTES_URL="$INFO[1]"
 
-LATEST_BUILD="$INFO[2]"
+LATEST_VERSION="$INFO[2]"
 
-URL="$INFO[3]"
+LATEST_BUILD="$INFO[3]"
+
+URL="$INFO[4]"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -89,12 +93,10 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
+FILENAME="$HOME/Downloads/Soulver-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
-
-	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" | fgrep -A1 '<sparkle:releaseNotesLink>' | tail -1)
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
 		(curl -sfL "$RELEASE_NOTES_URL" | sed '1,/<body>/d; /<\/ul>/,$d' ; echo '</ul>') \
