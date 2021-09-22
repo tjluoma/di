@@ -5,16 +5,15 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-01-17
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Clicker for Netflix.app"
+
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
 XML_FEED='https://www.dbklabs.com/clicker-for-netflix/appcast/appcast.xml'
-
-INSTALL_TO='/Applications/Clicker for Netflix.app'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 	| sed 's#^[	 ]*##g' \
