@@ -7,20 +7,14 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-## ver 2:
-# INSTALL_TO="/Applications/Permute.app"
-INSTALL_TO="/Applications/Permute 3.app"
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-## ver 2:
-# XML_FEED='https://trial.charliemonroe.net/permute/updates.xml'
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Permute 3.app"
+
 XML_FEED='https://trial.charliemonroe.net/permute/updates_3.xml'
 
-# RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes.html'
 RELEASE_NOTES_URL='https://trial.charliemonroe.net/permute/rnotes_3.html'
 
 HOMEPAGE="https://software.charliemonroe.net/permute.php"
