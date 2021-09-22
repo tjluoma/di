@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-21
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Path Finder.app"
 
 NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Path Finder.app'
 
 HOMEPAGE="https://cocoatech.com/"
 
