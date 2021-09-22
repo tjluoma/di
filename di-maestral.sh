@@ -26,7 +26,8 @@ curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' >| "$TEMPFILE"
 
 
 
-
+# Note that version numbers are in a different location in this feed
+# https://github.com/SamSchott/maestral/issues/451
 
 
 
