@@ -7,18 +7,17 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/Dropbox.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Dropbox.app"
 
 HOMEPAGE="https://www.dropbox.com"
 
 DOWNLOAD_PAGE="https://www.dropbox.com/download?plat=mac&full=1"
 
 SUMMARY="It’s a folder that syncs. (See http://qr.ae/TUNeCr if you need more explanation.)"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 function msg {
 	echo "$NAME: $@"
