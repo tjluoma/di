@@ -7,18 +7,17 @@
 
 NAME="$0:t:r"
 
-INSTALL_TO='/Applications/MarsEdit.app'
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/MarsEdit.app"
 
 HOMEPAGE="https://www.red-sweater.com/marsedit/"
 
 DOWNLOAD_PAGE="https://www.red-sweater.com/marsedit/MarsEditLatest.zip"
 
 SUMMARY="Write, preview, publish, and archive your blog from a Mac."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 function use_v3 {
 	XML_FEED='https://www.red-sweater.com/marsedit/appcast3.php'
