@@ -7,10 +7,11 @@
 
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Alfred 4.app"
 
 	## Regular Releases
 # XML_FEED='https://www.alfredapp.com/app/update4/general.xml'
@@ -30,7 +31,6 @@ then
 	exit 1
 fi
 
-INSTALL_TO='/Applications/Alfred 4.app'
 
 RELEASE_NOTES=$(defaults read "${PLIST}" changelogdata | awk '/^## /{i++}i==1')
 
