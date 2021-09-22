@@ -6,9 +6,13 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-10-12
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Kindle.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Kindle.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.amazon.com/kindle-dbs/fd/kcp"
 
@@ -17,11 +21,6 @@ DOWNLOAD_PAGE="https://www.amazon.com/kindlemacdownload"
 SUMMARY="Read Kindle books on your Mac."
 
 # No RELEASE_NOTES_URL available
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 function die
 {
@@ -56,20 +55,30 @@ fi
 	#
 	# The 'awk' command will give us an URL such as
 	# 	https://s3.amazonaws.com/kindleformac/50131/KindleForMac-50131.dmg
+
+
+## 2021-09-14 the format of the URL is now
+## https://kindleformac.s3.amazonaws.com/62000/KindleForMac-1.33.62000.dmg
+## where '1.33' is the version number
+## and 6200 is the 'build'
+
 URL=$(curl --silent 'https://www.amazon.com/kindlemacdownload' | awk -F'"' '/https/{print $2}')
 
 [[ "$URL" == "" ]] && die "URL is empty."
 
-# LATEST_VERSION=`echo "$URL:t:r" | tr -dc '[0-9]'`
-
-LATEST_VERSION=$(echo "$URL" | awk -F'/' '/^https/{print $5}')
+LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
 [[ "$LATEST_VERSION" == "" ]] && die "LATEST_VERSION is empty."
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	SHORT_VERSION_STRING=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	BUNDLE_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
+		# since the URL has the combine version
+	INSTALLED_VERSION="${SHORT_VERSION_STRING}.${BUNDLE_VERSION}"
 
 	autoload is-at-least
 
@@ -117,17 +126,25 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 1
 
-egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+cd "$FILENAME:h"
 
-EXIT="$?"
-
-if [[ "$EXIT" == "1" ]]
+if [[ -e "$FILENAME:r.txt" ]]
 then
 
-	(cd "$FILENAME:h" ; \
-	echo "\n\nLocal sha256:" ; \
-	shasum -a 256 "$FILENAME:t" \
-	)  >>| "$FILENAME:r.txt"
+	egrep -q '^Local sha256:$' "$FILENAME:r.txt"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" == "1" ]]
+	then
+
+		(echo "\n\nLocal sha256:" ; shasum -a 256 "$FILENAME:t")  >>| "$FILENAME:r.txt"
+
+	fi
+
+else
+
+	(echo "\n\nLocal sha256:" ; shasum -a 256 "$FILENAME:t")  >>| "$FILENAME:r.txt"
 
 fi
 
