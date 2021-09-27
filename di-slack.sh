@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-17
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Slack.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Slack.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://slack.com/"
 
@@ -16,11 +20,6 @@ DOWNLOAD_PAGE="https://slack.com/downloads/mac"
 SUMMARY="Slack brings all your communication together — a single place for messaging, tools and files — helping everyone save time and collaborate together."
 
 RELEASE_NOTES_URL='https://slack.com/release-notes/mac'
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 	# ".ocation" takes care of Location: or location:
 URL=$(curl -sfL --head "https://slack.com/ssb/download-osx-universal" \
@@ -72,7 +71,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 	## Save full release notes to an HTML file
 curl -sfLS "$RELEASE_NOTES_URL" \
