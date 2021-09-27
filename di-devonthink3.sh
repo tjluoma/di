@@ -5,22 +5,20 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-01-24
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/DEVONthink 3.app"
+
 NAME="$0:t:r"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
 XML_FEED='https://www.devontechnologies.com/Sparkle/DEVONthink3.xml'
-
-INSTALL_TO="/Applications/DEVONthink 3.app"
 
 INFO=$(curl -sfLS "$XML_FEED" \
 	| sed 's#^[	 ]*##g' \
 	| tr -s '\012|\r| ' ' ' \
 	| sed -e 's#> <#><#g' -e 's#> #>#g' -e 's# <#<#g')
-
 
 LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
 
@@ -33,9 +31,9 @@ then
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
 	URL: $URL
-	"
+	" >>/dev/stderr
 
-	exit 1
+	exit 2
 fi
 
 if [[ -e "$INSTALL_TO" ]]
