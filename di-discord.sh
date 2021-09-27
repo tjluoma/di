@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-11-19
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Discord.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/Discord.app'
 
 XML_FEED="https://discordapp.com/api/stable/updates?platform=osx"
 
@@ -55,9 +54,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
-
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
