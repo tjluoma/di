@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2021-03-11
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Strongsync.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/Strongsync.app'
 
 XML_FEED='https://updates.expandrive.com/appcast/strongsync.xml'
 
@@ -70,7 +69,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
