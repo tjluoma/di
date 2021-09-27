@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-12-30 ; 2020-01-31 (v3)
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Fantastical.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Fantastical.app"
+
+NAME="$0:t:r"
 
 XML_FEED='https://dev.flexibits.com/fantastical/appcast3.xml'
 
@@ -18,11 +22,6 @@ DOWNLOAD_PAGE="https://flexibits.com/fantastical/download"
 SUMMARY="The calendar app you won’t be able to live without."
 
 RELEASE_NOTES_URL="$XML_FEED"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
