@@ -113,7 +113,8 @@ else
 fi
 
 	# This is where the latest version will be saved to
-FILENAME="$HOME/Downloads/MarsEdit-${LATEST_VERSION}.zip"
+
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
