@@ -12,7 +12,7 @@ NAME="$0:t:r"
 [[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
 	# as of 2021-09-21, Setapp does not work right if not in /Applications/
-INSTALL_TO="/Applications}/Setapp.app"
+INSTALL_TO="/Applications/Setapp.app"
 
 XML_FEED='https://updates.devmate.com/com.setapp.DesktopClient.xml'
 
