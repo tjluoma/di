@@ -6,20 +6,20 @@
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2015-01-20
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Audio Hijack.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Audio Hijack.app"
+
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.rogueamoeba.com/audiohijack/"
 
 DOWNLOAD_PAGE="https://rogueamoeba.com/audiohijack/download.php"
 
 SUMMARY="Record any application’s audio, including VoIP calls from Skype, web streams from Safari, and much more. Save audio from hardware devices like microphones and mixers as well. You can even record all the audio heard on your Mac at once! If you can hear it, Audio Hijack can record it."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 zmodload zsh/datetime
 
@@ -77,7 +77,7 @@ then
 	echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
 fi
 
-FILENAME="$HOME/Downloads/AudioHijack-${LATEST_VERSION}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
