@@ -14,12 +14,14 @@ fi
 
 INSTALL_TO='/Applications/Luna Display.app'
 
-XML_FEED='https://s3.lunadisplay.com/downloads/sparkle.xml'
+# XML_FEED='https://s3.lunadisplay.com/downloads/sparkle.xml'
+
+XML_FEED='https://downloads.astropad.com/luna/mac/sparkle.xml'
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| tail -3 \
+		| head -3 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
