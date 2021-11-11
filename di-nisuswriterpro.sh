@@ -5,21 +5,20 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-12-22
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Nisus Writer Pro.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/Nisus Writer Pro.app'
 
 	## This will give a .zip file.
 	## another option is a .pkg file
 #CANONICAL_URL='https://nisus.com/files/GetDownload.php?item=NisusWriterPro'
 #URL=$(curl --silent --head --location "$CANONICAL_URL" | awk -F' |\r' '/.ocation:/{print $2}')
 
-XML_FEED='https://nisus.com/update/sparkle/pro/stats/submit.php'
+XML_FEED='https://nisus.com/update/sparkle/pro/appcast-v3.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr -s ' |\t' '\012' \
 		| sed -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' -e 's#</sparkle:releaseNotesLink>#"#g' \
@@ -87,7 +86,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
