@@ -11,7 +11,7 @@ NAME="$0:t:r"
 
 [[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
-INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/TeXShop.app"
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/TeX/TeXShop.app"
 
 XML_FEED="http://pages.uoregon.edu/koch/texshop/texshop-64/texshopappcast.xml"
 
