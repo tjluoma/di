@@ -5,12 +5,16 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-20
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Logos.app"
+
 	# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
 XML_FEED='https://clientservices.logos.com/update/v1/feed/logos9-mac/stable.xml'
 
 NAME="$0:t:r"
-
-INSTALL_TO='/Applications/Logos.app'
 
 HOMEPAGE="https://www.logos.com"
 
@@ -18,12 +22,6 @@ DOWNLOAD_PAGE=$(curl -sfLS "$XML_FEED" \
 | sed 's#\.dmg.*#.dmg# ; s#.*https://downloads.logoscdn.com#https://downloads.logoscdn.com#g')
 
 SUMMARY="Logos helps you discover, understand, and share more of the biblical insights you crave."
-
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 INFO=($(curl -sfL "$XML_FEED" \
 | tidy \
