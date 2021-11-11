@@ -5,9 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2015-11-12, major update 2019-09-09
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-INSTALL_TO='/Applications/Duet.app'
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Duet.app"
+
+NAME="$0:t:r"
 
 HOMEPAGE="https://www.duetdisplay.com"
 
@@ -16,11 +20,6 @@ DOWNLOAD_PAGE="https://www.duetdisplay.com/#download"
 RELEASE_NOTES_URL='https://www.duetdisplay.com/help-center/mac-release-notes'
 
 SUMMARY="Turn your iPad into an extra display."
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
 
 	## There are two ways of finding the current version.
 	## Try them both and compare them to see which is higher
@@ -90,7 +89,7 @@ then
 
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
 then
