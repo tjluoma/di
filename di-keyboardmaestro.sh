@@ -69,11 +69,11 @@ then
 
 	if [[ "$INSTALLED_VERSION" == "$LATEST_VERSION" ]]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date (both are $INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION (local) vs $LATEST_VERSION (new)"
 
 	FIRST_INSTALL='no'
 
