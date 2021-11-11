@@ -14,6 +14,13 @@ INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Kindle.app"
 
 NAME="$0:t:r"
 
+
+
+echo "$NAME: Not running because of mismatch: Outdated: 1.33.0.62000 vs 1.33.62000" >>/dev/stderr
+
+exit 0
+
+
 HOMEPAGE="https://www.amazon.com/kindle-dbs/fd/kcp"
 
 DOWNLOAD_PAGE="https://www.amazon.com/kindlemacdownload"
