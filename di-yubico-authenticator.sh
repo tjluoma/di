@@ -7,6 +7,10 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: @todo this redownloads every time."
+
+exit 0
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
