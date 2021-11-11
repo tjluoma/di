@@ -7,6 +7,15 @@
 
 NAME="$0:t:r"
 
+
+echo "$NAME does not work properly."
+
+# @todo - http://updates.mailmate-app.com/archives/
+
+exit 1
+
+
+
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
 [[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
