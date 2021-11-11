@@ -12,6 +12,11 @@ then
 	source "$HOME/.path"
 fi
 
+echo "$NAME: URL stopped working 2021-10-26 @todo" >>/dev/stderr
+
+exit 2
+
+
 INSTALL_TO="/Library/PreferencePanes/BackblazeBackup.prefPane"
 
 # mac_version="5.4.0.246" mac_url="%DEST_HOST%/api/install_backblaze?file=bzinstall-mac-5.4.0.246.zip"
@@ -21,6 +26,8 @@ INFO=($(curl -sfLS 'https://secure.backblaze.com/api/clientversion.xml' | awk -F
 LATEST_VERSION="$INFO[1]"
 
 URL=$(echo "$INFO[2]" | sed 's#%DEST_HOST%#https://secure.backblaze.com#g')
+
+# URL='https://secure.backblaze.com/mac/install_backblaze.dmg'
 
 if [[ -e "$INSTALL_TO" ]]
 then
