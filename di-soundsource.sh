@@ -5,14 +5,13 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-03-27
 
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
+
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/SoundSource.app"
+
 NAME="$0:t:r"
-
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-INSTALL_TO='/Applications/SoundSource.app'
 
 ## Version 4
 # XML_FEED="https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.soundsource&system=10144&platform=osx&arch=x86_64&version=4008000"
