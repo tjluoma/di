@@ -5,17 +5,16 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-06-06
 
-NAME="$0:t:r"
+[[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+[[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/BackupLoupe.app"
+
+NAME="$0:t:r"
 
 	# https://www.soma-zone.com/BackupLoupe/a/appcast_update.xml
 XML_FEED='https://www.soma-zone.com/BackupLoupe/a/appcast-update-3.xml'
-
-INSTALL_TO='/Applications/BackupLoupe.app'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
 
