@@ -11,6 +11,12 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: does not work"
+
+exit 0
+
+
+
 	# It doesn't really matter which one we check, they both have the same version information
 	#INSTALL_TO="/Applications/Karabiner-EventViewer.app"
 INSTALL_TO="/Applications/Karabiner-Elements.app"
