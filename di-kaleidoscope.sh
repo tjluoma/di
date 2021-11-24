@@ -22,7 +22,7 @@ SUMMARY="Kaleidoscope is the world’s most powerful file comparison app. Compar
 ## 2020-08-04 - this seems to be no longer in use and the SSL certificate expired
 # XML_FEED="https://updates.blackpixel.com/updates?app=ks"
 
-XML_FEED='https://updates.kaleidoscope.app/v2/prod/appcast'
+XML_FEED='https://updates.kaleidoscope.app/v3/prod/appcast'
 
 INFO=($(curl -sSfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
