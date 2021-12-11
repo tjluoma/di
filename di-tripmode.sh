@@ -21,7 +21,7 @@ then
 fi
 
 # Found via cask
-XML_FEED='https://www.tripmode.ch/app/appcast.xml'
+XML_FEED="https://tripmode-updates.ch/app/appcast-v3.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
 	| tr ' ' '\012' \
@@ -81,13 +81,14 @@ then
 	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
 then
 
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-		| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d')
+		| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+		| sed -e 's#<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>##g')
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:" ;
 		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "${RELEASE_NOTES_URL}" ;
@@ -105,38 +106,90 @@ EXIT="$?"
 	## exit 22 means 'the file was already fully downloaded'
 [ "$EXIT" != "0" -a "$EXIT" != "22" ] && echo "$NAME: Download of $URL failed (EXIT = $EXIT)" && exit 0
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-			| fgrep -A 1 '<key>mount-point</key>' \
-			| tail -1 \
-			| sed 's#</string>.*##g ; s#.*<string>##g')
 
-if [[ "$MNTPNT" == "" ]]
+
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: MNTPNT is empty"
-	exit 0
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
 else
-	echo "$NAME: Mounted $FILENAME at $MNTPNT"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TEMPDIR/"
+
+	mv -fv "$FILENAME:r".* "$TEMPDIR/"
+
+	exit 0
+
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/TripMode.${INSTALLED_VERSION}-${INSTALLED_BUILD}.app"
-fi
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TEMPDIR}/${NAME}-XXXXXXXX")
 
-echo "$NAME:  Installing $MNTPNT/TripMode.app to $INSTALL_TO"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-ditto --noqtn "$MNTPNT/TripMode.app" "$INSTALL_TO"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Installation of $INSTALL_TO was successful."
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: Installation of $INSTALL_TO failed (\$EXIT = $EXIT)\nThe downloaded file can be found at $FILENAME."
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
-diskutil eject "$MNTPNT"
+if [[ -e "$INSTALL_TO" ]]
+then
+
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TEMPDIR/'."
+
+	mv -f "$INSTALL_TO" "$TEMPDIR/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TEMPDIR'."
+
+		exit 1
+	fi
+fi
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+else
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 
