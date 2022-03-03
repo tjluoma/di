@@ -19,7 +19,7 @@ fi
 
 INSTALL_TO='/Applications/zoom.us.app'
 
-RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-New-Updates-for-Mac-OS'
+RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-Release-notes-for-macOS'
 
 	## 2020-12-22 THIS IS A HACK to check to see if we are running on an ARM Mac or not
 	## the `arch` command cannot be trusted because the terminal emulator may be running
