@@ -7,6 +7,11 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: Does not work."
+
+exit 1
+
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
