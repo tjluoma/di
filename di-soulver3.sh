@@ -14,6 +14,10 @@ fi
 
 # @TODO - this was out of date 2020-03-20
 
+echo "$NAME: Does not work, format of XML_FEED changed"
+
+exit 1
+
 XML_FEED='https://soulver.app/mac/sparkle/appcast.xml'
 
 INSTALL_TO='/Applications/Soulver 3.app'
@@ -64,7 +68,7 @@ then
 
 	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD)"
 		exit 0
 	fi
 
