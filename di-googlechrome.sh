@@ -15,6 +15,14 @@ fi
 	# must be in /Applications/ for 1Password
 INSTALL_TO='/Applications/Google Chrome.app'
 
+STAGING_DIR="$INSTALL_TO:h/.staging"
+
+if [ -e "$STAGING_DIR" -a ! -w "$STAGING_DIR" ]
+then
+	echo "$NAME [FATAL] Staging dir '$STAGING_DIR' exists but is not writable." >>/dev/stderr
+	exit 2
+fi
+
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
 LATEST_VERSION=$(curl -sfLS 'https://omahaproxy.appspot.com/history?os=mac;channel=stable' \
 				| awk -F',' '/^mac/{print $3}' \
@@ -126,6 +134,24 @@ then
 fi
 
 
+
+###############################################################################################
+## Here is where we install from the DMG to the staging location
+
+echo "$NAME: Staging '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO'... "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$STAGING_DIR/$INSTALL_TO:t"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: ditto successfully staged"
+else
+	echo "$NAME: ditto failed" >>/dev/stderr
+	exit 1
+fi
+
 ###############################################################################################
 ## Here is where we move the old version (if it exists) to the trash
 
@@ -149,22 +175,24 @@ then
 	fi
 fi
 
-###############################################################################################
-## Here is where we install from the DMG to the desired location
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+echo "$NAME: Final stage 'mv' of '$STAGING_DIR/$INSTALL_TO:t' to '$INSTALL_TO'...."
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+mv -nv "$STAGING_DIR/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Successfully installed '$INSTALL_TO'."
+	echo "$NAME: SUCESS: 'mv' successfully exited."
+
 else
-	echo "$NAME: ditto failed"
+	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)" >>/dev/stderr
+
 	exit 1
 fi
+
+
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
