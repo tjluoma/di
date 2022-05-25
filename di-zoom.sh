@@ -1,12 +1,9 @@
 #!/usr/bin/env zsh -f
-# Purpose: get the latest version of Zoom
+# Purpose:
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
-# Date:	2019-06-21
-
-
-## m1 is separate download: https://zoom.us/client/latest/Zoom.pkg?archType=arm64
+# Date:	2022-03-24
 
 NAME="$0:t:r"
 
@@ -15,36 +12,27 @@ then
 	source "$HOME/.path"
 fi
 
-	# this is a .pkg so installation location is required
-
 INSTALL_TO='/Applications/zoom.us.app'
 
 RELEASE_NOTES_URL='https://support.zoom.us/hc/en-us/articles/201361963-Release-notes-for-macOS'
-
-	## 2020-12-22 THIS IS A HACK to check to see if we are running on an ARM Mac or not
-	## the `arch` command cannot be trusted because the terminal emulator may be running
-	## under Rosetta, especially since right now that is how `brew` must be configured
-	## to work right.
-	##
-	## I'm not 100% sure this will work under all circumstances, but it's the best
-	## I can figure out for now.
-	##
-	## Once brew works on ARM I will probably just use `arch`
-	## or maybe Zoom will eventually release universal installers
 
 ARCH=$(sysctl kern.version | awk -F'_' '/RELEASE/{print $2}')
 
 if [[ "$ARCH" == "ARM64" ]]
 then
+
 	PKG_URL='https://zoom.us/client/latest/Zoom.pkg?archType=arm64'
-	ARCH='arm64'
+
 elif [[ "$ARCH" == "X86" ]]
 then
+
 	PKG_URL='https://zoom.us/client/latest/Zoom.pkg'
-	ARCH='intel'
+
 else
-	echo "Unknown arch returned: '$ARCH'" >>/dev/stderr
+
+	echo "$NAME: 'sysctl kern.version' returned unknown arch: '$ARCH'" >>/dev/stderr
 	exit 2
+
 fi
 
 URL=$(curl -sfLS --head "$PKG_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
@@ -61,6 +49,12 @@ then
 
 	exit 1
 fi
+
+
+echo "
+$URL
+$LATEST_VERSION
+"
 
 
 if [[ -e "$INSTALL_TO" ]]
@@ -89,12 +83,12 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/Zoom-${LATEST_VERSION}.${ARCH}.pkg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/Zoom-${LATEST_VERSION}.$ARCH:l.pkg"
 
 if (( $+commands[lynx] ))
 then
 
-	(curl -sfLS "$RELEASE_NOTES_URL" \
+	(curl -A Safari -sfLS "$RELEASE_NOTES_URL" \
 		| sed '1,/<h2>Current Release<\/h2>/d; /<h2>Previous Releases<\/h2>/,$d' \
 		| fgrep -v '<hr class="style-two" />' \
 		| lynx -dump -nomargins -width='1000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
@@ -118,32 +112,78 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-if (( $+commands[pkginstall.sh] ))
+
+########
+
+TEMP_DIR="${TMPDIR-/tmp/}${NAME-$0:r}-$RANDOM"
+
+pkgutil --expand "$FILENAME" "$TEMP_DIR"
+
+PAYLOAD_FILE=$(find "${TEMP_DIR}/zoomus.pkg" -iname Payload -print)
+
+echo "PAYLOAD_FILE is >$PAYLOAD_FILE<"
+
+cd "$TEMP_DIR"
+
+echo "$NAME [INFO]: Uncompressing '$PAYLOAD_FILE' in '$TEMP_DIR'... "
+
+gunzip --force --stdout "$PAYLOAD_FILE" | cpio -i
+
+sudo xattr -r -d com.apple.quarantine "$INSTALL_TO:t" || false
+
+
+################################################################################################
+
+if [[ -e "$INSTALL_TO" ]]
 then
 
-	pkginstall.sh "$FILENAME"
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+	MOVE_TO="$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$MOVE_TO/'."
+
+	mv -f "$INSTALL_TO" "$MOVE_TO"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$MOVE_TO'." >>/dev/stderr
+
+		exit 2
+	fi
+fi
+
+################################################################################################
+
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$TEMP_DIR') to '$INSTALL_TO'."
+
+	# Move the file out of the folder
+mv -n "$TEMP_DIR/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" = "0" ]]
+then
+
+	echo "$NAME: Successfully installed '$TEMP_DIR/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 else
-		# fall back to either `sudo installer` or macOS's installer app
-	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en 2>&1 \
-	|| open -b com.apple.installer "$FILENAME"
+	echo "$NAME: Failed to move '$TEMP_DIR/$INSTALL_TO:t' to '$INSTALL_TO'."
 
+	exit 1
 fi
 
-	## the app will automatically start when installed/updated. I don't usually want that, so
-	## this will quit it. If you do want that, remove or comment-out the next line.
-osascript -e 'tell application "zoom.us" to quit' 2>/dev/null || true
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-LEFTOVER="$HOME/Downloads/MacRetinaRes.zip"
+exit 0
+#EOF
 
-if [[ -e "$LEFTOVER" ]]
-then
-	zmodload zsh/datetime
 
-	TIME=$(strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS")
-
-	mv -vn "$LEFTOVER" "$HOME/.Trash/MacRetinaRes.$TIME.zip"
-fi
 
 exit 0
 #EOF
