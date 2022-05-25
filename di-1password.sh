@@ -11,6 +11,10 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: update for 8"
+
+exit 0
+
 PREFLIGHT="$HOME/.config/di/preflight.sh"
 
 [[ -s "$PREFLIGHT" ]] && source "$PREFLIGHT"
