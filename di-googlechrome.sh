@@ -15,13 +15,15 @@ fi
 	# must be in /Applications/ for 1Password
 INSTALL_TO='/Applications/Google Chrome.app'
 
-STAGING_DIR="$INSTALL_TO:h/.staging"
+STAGING_DIR="$HOME/Downloads"
 
 if [ -e "$STAGING_DIR" -a ! -w "$STAGING_DIR" ]
 then
 	echo "$NAME [FATAL] Staging dir '$STAGING_DIR' exists but is not writable." >>/dev/stderr
 	exit 2
 fi
+
+	## @TODO - use 'https://chromiumdash.appspot.com' instead? Need to check into it and probably brew too
 
 	## Thanks to brew cask for finding this URL. Might not be official, but better than nothing
 LATEST_VERSION=$(curl -sfLS 'https://omahaproxy.appspot.com/history?os=mac;channel=stable' \
@@ -187,9 +189,9 @@ then
 	echo "$NAME: SUCESS: 'mv' successfully exited."
 
 else
-	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)" >>/dev/stderr
+ 	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)" >>/dev/stderr
 
-	exit 1
+ 	exit 1
 fi
 
 
@@ -198,13 +200,16 @@ fi
 
 echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
-if (( $+commands[delete-google-chrome-keystone-registration-framework.sh] ))
-then
-
-		# This is my shell script that disbles Chrome's auto-update "feature"
-	delete-google-chrome-keystone-registration-framework.sh
-
-fi
+# if (( $+commands[delete-google-chrome-keystone-registration-framework.sh] ))
+# then
+#
+# 		# This is my shell script that disbles Chrome's auto-update "feature"
+# 	delete-google-chrome-keystone-registration-framework.sh
+#
+# fi
+#
+# 	# reveal file so it can be manually moved to /Applications/ folder
+# open -R "$HOME/Downloads/Google Chrome.app"
 
 exit 0
 #EOF
