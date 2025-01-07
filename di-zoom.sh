@@ -129,7 +129,7 @@ echo "$NAME [INFO]: Uncompressing '$PAYLOAD_FILE' in '$TEMP_DIR'... "
 
 gunzip --force --stdout "$PAYLOAD_FILE" | cpio -i
 
-sudo xattr -r -d com.apple.quarantine "$INSTALL_TO:t" || false
+# sudo xattr -r -d com.apple.quarantine "$INSTALL_TO:t" || false
 
 
 ################################################################################################
