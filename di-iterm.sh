@@ -44,42 +44,15 @@ DOWNLOAD_PAGE="https://iterm2.com/downloads.html"
 
 SUMMARY="iTerm2 brings the terminal into the modern age with features you never knew you always wanted."
 
-PPID_NAME=$(/bin/ps -p $PPID | fgrep '/sbin/launchd' | awk '{print $NF}')
+		## For Nightly Builds
+		# XML_FEED='https://iterm2.com/appcasts/nightly_new.xml'
 
-if [ "$PPID_NAME" = "/sbin/launchd" ]
-then
-		# if this script was launched via launchd, we don't want to use 'exit 1'
-		# because that might prevent it from running again automatically
-	function die { exit 0 }
-else
-	function die { exit 1 }
-fi
+		## For Beta Builds
+		# XML_FEED='https://iterm2.com/appcasts/testing_new.xml'
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+		## For regular Builds
+XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
 
-if [ "$OS_VER" -ge "12" ]
-then
-
-	if [ -e "$HOME/.config/di/prefers/iterm-prefer-nightly.txt" -o -e "$HOME/.iterm-prefer-nightly.txt" ]
-	then
-		XML_FEED='https://iterm2.com/appcasts/nightly_new.xml'
-		PREFERS='[Nightly]'
-
-	elif [ -e "$HOME/.config/di/prefers/iterm-prefer-betas.txt"  -o -e "$HOME/.iterm-prefer-betas.txt" ]
-	then
-		XML_FEED='https://iterm2.com/appcasts/testing_new.xml'
-		PREFERS='[Beta]'
-
-	else
-			# Stable releases update rarely but have no serious bugs.
-		# XML_FEED='https://iterm2.com/appcasts/final.xml'
-		# XML_FEED='https://iterm2.com/appcasts/final_new.xml'
-		# XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
-
-			# via brew cask
-		XML_FEED='https://raw.githubusercontent.com/gnachman/iterm2-website/master/source/appcasts/final_modern.xml'
-		PREFERS='[Stable]'
-	fi
 
 ## Ok, so when I can't remember what this does, here are some bread crumbs :
 # Take the XML_FEED and replace all of the EOL and tabs with spaces (tr)
@@ -112,49 +85,24 @@ INFO=($(echo "$CURL" | fgrep '<item>' | tail -1 | sed -e 's#><#>\
 | sort \
 | awk -F'"' '//{print $2}'))
 
-	RELEASE_NOTES_URL="$INFO[1]"
-	LATEST_VERSION="$INFO[2]"
-	URL="$INFO[3]"
+RELEASE_NOTES_URL="$INFO[1]"
+LATEST_VERSION="$INFO[2]"
+URL="$INFO[3]"
 
-		# If any of these are blank, we cannot continue
-	if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
-	then
-		echo "$NAME: Error: bad data received:
-		INFO: $INFO
-		LATEST_VERSION: $LATEST_VERSION
-		URL: $URL
-
-		PREFERS: $PREFERS
-		XML_FEED: $XML_FEED \n"
-
-		exit 1
-	fi
-
-elif [ "$OS_VER" -ge "10" ]
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-		# if this is macOS 10.10 or later
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
 
-	# URL='https://iterm2.com/downloads/stable/iTerm2-3_1_7.zip'
-	# LATEST_VERSION='3.1.7'
-	# RELEASE_NOTES_URL='https://iterm2.com/appcasts/3.1.7.txt'
+	PREFERS: $PREFERS
+	XML_FEED: $XML_FEED \n"
 
-	LATEST_VERSION='3.1.6beta4'
-	URL='https://iterm2.com/misc/iTerm2-3.1.7-notmux.zip'
-	RELEASE_NOTES_URL='https://groups.google.com/forum/m/#!topic/iterm2-discuss/57k_AuLdQa4'
-
-elif [ "$OS_VER" -ge "8" ]
-then
-		# if this is macOS 10.8 or later
-	URL='https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip'
-	LATEST_VERSION='3.1.5'
-	RELEASE_NOTES_URL='https://iterm2.com/appcasts/30.txt'
-
-else
-		# this is for anything else, so… 10.7 and earlier?
-	URL='https://iterm2.com/downloads/stable/iTerm2-2_1_4.zip'
-	LATEST_VERSION='2.1.4'
-	RELEASE_NOTES_URL='https://iterm2.com/appcasts/2x.txt'
+	exit 1
 fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -241,7 +189,7 @@ else
 
 	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
 
-	die
+	exit 1
 
 fi
 
@@ -261,7 +209,7 @@ else
 		# failed
 	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
-	die
+	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -277,7 +225,7 @@ then
 	then
 		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
 
-		die
+		exit 1
 	fi
 fi
 
@@ -296,7 +244,7 @@ then
 else
 	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
-	die
+	exit 1
 fi
 
 exit 0
