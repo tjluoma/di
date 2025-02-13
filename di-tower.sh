@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Tower 2 or 3 (note that Tower 3 requires an annual subscription)
+# Purpose: 	Download and install Tower 2 or 3 (note that Tower 3 requires an annual subscription)
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2018-08-21
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2018-08-21
+# Verified:	2025-02-13
 
 NAME="$0:t:r"
 
@@ -14,54 +15,25 @@ HOMEPAGE="https://www.git-tower.com/mac"
 
 DOWNLOAD_PAGE="https://www.git-tower.com/download/mac"
 
-SUMMARY="Tower helps you master version control with Git. (NOTE: Version information is for v2 because v3 is subcription that I haven’t signed up for.)"
+SUMMARY="Tower helps you master version control with Git. "
 
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 fi
 
-OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`
 
-function use_v2 {
-	XML_FEED="https://updates.fournova.com/updates/tower2-mac/stable/?os_version=$OS_VER"
-	ASTERISK='(Note that version 3 is now available.)'
-}
+	# if you want to install beta releases
+	# create a file (empty, if you like) using this file name/path:
+PREFERS_BETAS_FILE="$HOME/.config/di/tower-prefer-betas.txt"
 
-function use_v3 {
-
-		# if you want to install beta releases
-		# create a file (empty, if you like) using this file name/path:
-	PREFERS_BETAS_FILE="$HOME/.config/di/tower-prefer-betas.txt"
-
-	if [[ -e "$PREFERS_BETAS_FILE" ]]
-	then
-		NAME="$NAME (beta releases)"
-		XML_FEED="https://updates.fournova.com/updates/tower3-mac/beta/?os_version=$OS_VER"
-	else
-		# This is for non-beta
-		XML_FEED="https://updates.fournova.com/updates/tower3-mac/stable/?os_version=$OS_VER"
-	fi
-}
-
-if [[ -e "$INSTALL_TO" ]]
+if [[ -e "$PREFERS_BETAS_FILE" ]]
 then
-		# if v2 is installed, check that. Otherwise, use v3
-	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
-
-	if [[ "$MAJOR_VERSION" == "2" ]]
-	then
-		use_v2
-	else
-		use_v3
-	fi
+	NAME="$NAME (beta releases)"
+	XML_FEED="https://updates.fournova.com/updates/tower3-mac/beta/?os_version=$OS_VER"
 else
-	if [ "$1" = "--use2" -o "$1" = "-2" ]
-	then
-		use_v2
-	else
-		use_v3
-	fi
+	# This is for non-beta
+	XML_FEED="https://updates.fournova.com/updates/tower3-mac/stable/?os_version=$OS_VER"
 fi
 
 INFO=($(curl -sSfL "${XML_FEED}" \
@@ -121,7 +93,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
 FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.zip"
 
 if (( $+commands[lynx] ))
@@ -156,7 +127,7 @@ EXIT="$?"
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
 
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
@@ -176,7 +147,7 @@ else
 
 fi
 
-## unzip to a temporary directory
+	## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
 
 echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
