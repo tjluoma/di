@@ -8,12 +8,13 @@
 
 
 # @TODO - find unmatched '"' after IS_AT_LEAST
+# @TODO - Update for 1Password v8
 
 NAME="$0:t:r"
 
 echo "$NAME: update for 8"
 
-exit 0
+exit 1
 
 PREFLIGHT="$HOME/.config/di/preflight.sh"
 
