@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: FastMail Mac client https://arievanboxel.fr/fmail/
+# Purpose: FastMail Mac client https://arievanboxel.fr/
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
