@@ -21,77 +21,42 @@ SUMMARY="Fast & lossless audio editing With Fission, audio editing is no longer 
 
 RELEASE_NOTES_URL="https://www.rogueamoeba.com/fission/releasenotes.php"
 
-OS_MAJOR_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
 
-if [[ "$OS_MAJOR_VER" -ge "12" ]]
+
+##############################################################################################################################
+# 2025-02-13 - this commented-out block has stopped working
+# 	basically we were lying and saying we have an older version and expecting that it will tell us what the real version is
+#
+#
+# OS_SMUSH='10157'
+#
+# curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
+# "https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
+##############################################################################################################################
+
+## 2025-02-13 - we're scraping a webpage to find data,
+## which is the lowest form of life,
+## but it's all we have right now. And by we, I mean me.
+
+LATEST_VERSION=$(curl -sfLS "https://www.rogueamoeba.com/support/releasenotes/?product=Fission" \
+				| fgrep 'ra-product="fission"' \
+				| head -1 \
+				| sed "s#.*div id='##g ; s#'.*##g")
+
+	# If this is blank, we should not continue
+if [[ "$LATEST_VERSION" == "" ]]
 then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	"
 
-	TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.xml"
-
-	OS_SMUSH=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -dc '[0-9]')
-
-	OS_SMUSH='10157'
-
-		# basically we're lying and saying we have an older version and expecting that it will tell us what the real version is
-	curl -sfLS -H "Accept: */*" -H "Accept-Language: en-us" -H "User-Agent: Fission/2.4.2 Sparkle/1.5" \
-	"https://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS_SMUSH}&platform=osx&arch=x86_64&version=2428000" > "$TEMPFILE"
-
-	LATEST_VERSION=$(awk -F'"' '/sparkle:version/{print $2}' "$TEMPFILE")
-
-		# If this is blank, we should not continue
-	if [[ "$LATEST_VERSION" == "" ]]
-	then
-		echo "$NAME: Error: bad data received:
-		LATEST_VERSION: $LATEST_VERSION
-		"
-
-		exit 1
-	fi
-
-		# Try to parse the download URL from the download page
-	URL=`curl -sfL 'http://www.rogueamoeba.com/fission/download.php' | tr '"' '\012' | egrep '\.(zip)$' | head -1`
-
-		# if we didn't get anything, fall back to this
-	[[ "$URL" == "" ]] && URL='http://rogueamoeba.com/fission/download/Fission.zip'
-
-
-elif [[ "$OS_MAJOR_VER" == "11" ]]
-then
-
-	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-245.zip'
-	LATEST_VERSION='2.4.5'
-
-elif [[ "$OS_MAJOR_VER" == "10" ]]
-then
-
-	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-243.zip'
-	LATEST_VERSION='2.4.3'
-
-
-elif [[ "$OS_MAJOR_VER" == "9" ]]
-then
-
-	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-231.zip'
-	LATEST_VERSION='2.3.1'
-
-elif [ "$OS_MAJOR_VER" = "8" -o "$OS_MAJOR_VER" = "7" ]
-then
-
-	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-224.zip'
-	LATEST_VERSION='2.2.4'
-
-elif [[ "$OS_MAJOR_VER" == "6" ]]
-then
-
-	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-213.zip'
-	LATEST_VERSION='2.1.3'
-
-else
-
-	echo "$NAME: Sorry, I don't know what to do for macOS version '10.$OS_MAJOR_VER'."
 	exit 1
 fi
 
+	# Don't guess, use the official URL
+	# https://rogueamoeba.com/fission/download/Fission.zip also works
+URL='https://cdn.rogueamoeba.com/fission/download/Fission.zip'
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -255,3 +220,36 @@ exit 0
 # 	curl -sfL 'https://rogueamoeba.com/fission/releasenotes.php' | egrep -i '<h1>.*</h1>' | head -1 | sed 's#.*<h1>Fission ##g; s#</h1>##g'
 #
 #EOF
+
+
+
+elif [[ "$OS_MAJOR_VER" == "11" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-245.zip'
+	LATEST_VERSION='2.4.5'
+
+elif [[ "$OS_MAJOR_VER" == "10" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-243.zip'
+	LATEST_VERSION='2.4.3'
+
+
+elif [[ "$OS_MAJOR_VER" == "9" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-231.zip'
+	LATEST_VERSION='2.3.1'
+
+elif [ "$OS_MAJOR_VER" = "8" -o "$OS_MAJOR_VER" = "7" ]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-224.zip'
+	LATEST_VERSION='2.2.4'
+
+elif [[ "$OS_MAJOR_VER" == "6" ]]
+then
+
+	URL='https://www.rogueamoeba.com/legacy/downloads/Fission-213.zip'
+	LATEST_VERSION='2.1.3'
