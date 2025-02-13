@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
 # Purpose: Download and install the latest version of IINA from iina.io
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-04-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-04-02
+# Verified:	2025-02-13
 
 NAME="$0:t:r"
 
@@ -12,29 +13,26 @@ then
 	source "$HOME/.path"
 fi
 
-
 INSTALL_TO='/Applications/IINA.app'
 
 XML_FEED='https://www.iina.io/appcast.xml'
 
-INFO=($(curl -sfLS "$XML_FEED" | fgrep '<enclosure url="' | tail -1 | tr '"' ' '))
+URL=$(curl -sfLS "$XML_FEED" \
+	| fgrep '<enclosure url="' \
+	| tail -1 \
+	| tr '"' '\012' \
+	| fgrep 'https://')
 
-URL=$(echo "$INFO[3]")
-
-LATEST_BUILD=$(echo "$INFO[5]")
-
-LATEST_VERSION=$(echo "$INFO[7]")
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#IINA.v##g')
 
 RELEASE_NOTES_URL="https://www.iina.io/release-note/$LATEST_VERSION.html"
 
 	# If any of these are blank, we cannot continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
+	LATEST_VERSION: $LATEST_VERSION
 	"
 
 	exit 1
@@ -45,25 +43,19 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
-
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
 
@@ -72,7 +64,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
