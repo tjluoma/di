@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install/update version 5 of Power Manager
+# Purpose: 	Download and install/update version 5 of Power Manager
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-13
+# Verified: 2025-02-13
 
 NAME="$0:t:r"
 
@@ -20,7 +21,11 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
 curl -sfLS "$XML_FEED" >| "$TEMPFILE"
 
-INFO=($(cat "$TEMPFILE" | tr ' ' '\012' | egrep '^(url|sparkle:shortVersionString|sparkle:version)=' | sort | awk -F'"' '//{print $2}'))
+INFO=($(cat "$TEMPFILE" \
+		| tr ' ' '\012' \
+		| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
+		| sort \
+		| awk -F'"' '//{print $2}'))
 
 LATEST_VERSION="$INFO[1]"
 
