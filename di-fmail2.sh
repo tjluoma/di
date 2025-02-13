@@ -79,6 +79,9 @@ else
 	FIRST_INSTALL='yes'
 fi
 
+##########################################################################################
+# Download section 
+
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if (( $+commands[lynx] ))
@@ -115,16 +118,8 @@ then
 	)  >>| "$FILENAME:r.txt"
 fi
 
-
-
-
-
-
-
-
-
-
-
+##########################################################################################
+# Unzip and install section 
 
 TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
 
@@ -209,10 +204,6 @@ fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-
-
-
-            
 exit 0
 #
 #EOF
