@@ -3,7 +3,9 @@
 #
 # Author:	Timothy J. Luoma
 # Email:	luomat at gmail dot com
-# Date:		2011-10-26, verified 2018-08-07
+# Date:		2011-10-26
+# Verified:	2025-02-13
+# Missing:	Release Notes
 
 NAME="$0:t"
 
@@ -110,24 +112,26 @@ then
 
 fi
 
-
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
-	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-	| tail -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
-
-	(echo "$NAME: Release Notes: " ;
-		(curl -sfL "${RELEASE_NOTES_URL}" \
-		 | sed '1,/<td valign="top">/d; /<\/ul>/,$d' \
-		 | sed  '1,/<td valign="top">/d;' \
-		 ; echo '</ul>') \
-		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
-
-fi
+##
+## We don't seem to have an XML Feed 
+##
+# if (( $+commands[lynx] ))
+# then
+# 
+# 	RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
+# 	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
+# 	| tail -1 \
+# 	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
+# 
+# 	(echo "$NAME: Release Notes: " ;
+# 		(curl -sfL "${RELEASE_NOTES_URL}" \
+# 		 | sed '1,/<td valign="top">/d; /<\/ul>/,$d' \
+# 		 | sed  '1,/<td valign="top">/d;' \
+# 		 ; echo '</ul>') \
+# 		| lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -pseudo_inlines -stdin ;
+# 	echo "\nSource: <${RELEASE_NOTES_URL}>" ) | tee "$FILENAME:r.txt"
+# 
+# fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
