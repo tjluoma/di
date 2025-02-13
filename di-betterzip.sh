@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of BetterZip (and its quicklook plugin)
+# Purpose: 	Download and install the latest version of BetterZip (and its quicklook plugin)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-19
+# Verified:	2025-02-13
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -18,7 +19,8 @@ HOMEPAGE="https://macitbetter.com/"
 DOWNLOAD_PAGE="https://macitbetter.com/BetterZip.zip"
 
 SUMMARY="
-* BetterZip can create archives with these formats: ZIP, TAR, TGZ, TBZ, TXZ, 7-ZIP, XAR, and — using the external commandline utility — RAR.
+* BetterZip can create archives with these formats: ZIP, TAR, TGZ, TBZ, TXZ, 7-ZIP, XAR, 
+* and — using the external commandline utility — RAR.
 * Add files to or delete files from archives. Move and rename files inside archives.
 * Compatibility: Have BetterZip remove Mac specific files from archives for archives that look and behave well on Windows.
 * Edit archived files in an external application and BetterZip can update your archive.
