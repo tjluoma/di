@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install FMail 2 from <https://fmail-app.fr>
+# Purpose: 	Download and install FMail 2 from <https://fmail-app.fr>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2025-02-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2025-02-13
+# Verified:	2025-02-13
 
 NAME="$0:t:r"
 
