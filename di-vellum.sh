@@ -35,7 +35,7 @@ LATEST_VERSION="$INFO[1]"
 
 LATEST_BUILD="$INFO[2]"
 
-URL=$(echo "$INFO[3]" | sed 's#https:/180g#https://180g#g' )
+URL=$(echo "$INFO[3]")
 
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
@@ -90,8 +90,6 @@ then
 		| fgrep '<sparkle:releaseNotesLink>' \
 		| tail -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
-	RELEASE_NOTES_URL=$(echo "$RELEASE_NOTES_URL" | sed 's#https:/180g#https://180g#g')
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r:\n" ;
 		lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL";
