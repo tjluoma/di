@@ -4,7 +4,7 @@
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
-# Date:	2015-09-24, verified 2018-08-07
+# Date:	2015-09-24, @TODO - check when not up-to-date
 
 NAME="$0:t:r"
 
@@ -24,9 +24,10 @@ then
 fi
 
 INFO=($(curl -sfL "$XML_FEED" \
+	| fgrep -v 'delta' \
 	| tr ' ' '\012' \
 	| egrep '^(url|sparkle:shortVersionString|sparkle:version)=' \
-	| head -3 \
+	| tail -3 \
 	| sort \
 	| awk -F'"' '//{print $2}'))
 
@@ -87,7 +88,7 @@ then
 
 	RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 		| fgrep '<sparkle:releaseNotesLink>' \
-		| head -1 \
+		| tail -1 \
 		| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
 
 	RELEASE_NOTES_URL=$(echo "$RELEASE_NOTES_URL" | sed 's#https:/180g#https://180g#g')
