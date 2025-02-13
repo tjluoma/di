@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
 # Purpose: download and install HandBrake
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2018-08-11
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2018-08-11
+# Verified:	2025-02-13 (non beta)
 
 NAME="$0:t:r"
 
