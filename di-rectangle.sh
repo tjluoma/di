@@ -5,6 +5,8 @@
 # Mail:	luomat at gmail dot com
 # Date:	2020-07-01
 
+# @TODO - needs updating
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
