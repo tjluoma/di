@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Desktop Curtain
+# Purpose: 	Download and install the latest version of Desktop Curtain
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-02-01
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-02-01
+# Verified: 2025-02-15
 
 NAME="$0:t:r"
 
