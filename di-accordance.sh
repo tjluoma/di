@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Accordance 13 from <https://www.accordancebible.com>
+# Purpose: 	Download and install the latest version of Accordance 13 from <https://www.accordancebible.com>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-02 (Last Verified: 2019-11-15)
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-02
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
