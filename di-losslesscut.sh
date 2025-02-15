@@ -1,9 +1,16 @@
 #!/usr/bin/env zsh -f
-# Purpose: Save space by quickly and losslessly trimming video and audio files
+# Purpose: 	Save space by quickly and losslessly trimming video and audio files
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-09
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-09
+# Verified:	2025-02-15
+
+
+
+# Note: Replace 'LosslessCut-mac-arm64.dmg' with 'LosslessCut-mac-x64.dmg' for Intel version
+
+
 
 NAME="$0:t:r"
 
@@ -17,14 +24,14 @@ LC_ALL=C
 
 LATEST_RELEASE_URL_RAW=$(curl -sfLS "https://github.com/mifi/lossless-cut/releases" \
 	| tr '"' '\012' \
-	| egrep '^/mifi/.*/LosslessCut-mac.dmg$' \
+	| egrep '^/mifi/.*/LosslessCut-mac-arm64.dmg$' \
 	| head -1)
 
 LATEST_RELEASE_URL=$(echo "https://github.com${LATEST_RELEASE_URL_RAW}")
 
 URL="$LATEST_RELEASE_URL"
 
-LATEST_VERSION=$(echo "${LATEST_RELEASE_URL}" | sed 's#/LosslessCut-mac.dmg##g; s#.*/v##g')
+LATEST_VERSION=$(echo "${LATEST_RELEASE_URL}" | sed 's#/LosslessCut-mac-arm64.dmg##g; s#.*/v##g')
 
 HOMEPAGE="https://github.com/mifi/lossless-cut"
 
