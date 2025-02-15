@@ -19,9 +19,12 @@ INSTALL_TO='/Applications/Hazel.app'
 STATIC_DOWNLOAD_URL='https://www.noodlesoft.com/Products/Hazel/download'
 
 	# find the actual URL from the STATIC_DOWNLOAD_URL
-URL=$(curl --head -sfLS "$STATIC_DOWNLOAD_URL" | egrep '^Location: ' | awk '{print $2}' | tr -d '\r')
+URL=$(curl --head -sfLS "$STATIC_DOWNLOAD_URL" \
+		| egrep '^Location: ' \
+		| awk '{print $2}' \
+		| tr -d '\r')
 
-	# This feed doesn't have the URL to the latest version in it, just the version number 
+	# This feed doesn't have the URL to the latest version in it, just the version number
 	# AKA
 	# https://www.noodlesoft.com/Products/Hazel/generate-appcast.php
 XML_FEED='https://www.noodlesoft.com/Products/Hazel/appcast.php'
@@ -100,7 +103,7 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-	# if there is already a local sha256 don't add another one 
+	# if there is already a local sha256 don't add another one
 egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
 
 EXIT="$?"
@@ -112,14 +115,6 @@ then
 		shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 fi
-
-
-
-
-
-
-
-
 
 echo "$NAME: Accepting license and Mounting $FILENAME:"
 
@@ -155,38 +150,38 @@ then
 	fi
 fi
 
-	# If I use the 'ditto' process below, macOS relentlessly claims that Hazel is damaged and 
+	# If I use the 'ditto' process below, macOS relentlessly claims that Hazel is damaged and
 	# cannot be opened, and should be moved to the trash. I assume this has something to do
-	# with Gatekeeper etc. If we open the app from the mounted DMG, the user can install 
-	# it themselves. But this is less than ideal, especially for updates, because it 
+	# with Gatekeeper etc. If we open the app from the mounted DMG, the user can install
+	# it themselves. But this is less than ideal, especially for updates, because it
 	# requires human intervention. However, until I can figure out an alternative, this is the
-	# best we can do. And by 'we' I mean 'me'. 
+	# best we can do. And by 'we' I mean 'me'.
 open "$MNTPNT/Hazel.app"
 
 
 ###################################################################################################
-# 
-# 
+#
+#
 # echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
-# 
+#
 # ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
-# 
+#
 # EXIT="$?"
-# 
+#
 # if [[ "$EXIT" == "0" ]]
 # then
 # 	echo "$NAME: Successfully installed $INSTALL_TO"
 # else
 # 	echo "$NAME: ditto failed"
-# 
+#
 # 	exit 1
 # fi
-# 
+#
 # [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-# 
+#
 # echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 #
 ###################################################################################################
 
 exit 0
-# EOF 
+# EOF
