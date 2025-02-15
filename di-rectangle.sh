@@ -1,11 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: Download and install the latest version of Rectangle.app from https://rectangleapp.com
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-07-01
-
-# @TODO - needs updating
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-07-01
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
@@ -24,14 +23,19 @@ INFO=$(curl -sfLS "$XML_FEED" \
 | sed -e 's#<item>#\
 <item>#g' \
 | fgrep '<item>' \
-| tail -1 \
+| head -1 \
 | sed -e 's#</item>.*##g'  )
 
-URL=$(echo "$INFO" | sed -e 's#.*url="##g' -e 's#" .*##g' )
+URL=$(echo "$INFO" \
+	| sed -e 's#.*url="##g' -e 's#" .*##g' )
 
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:shortVersionString="##g' -e 's#" .*##g' )
+LATEST_VERSION=$(echo "$INFO" \
+	| sed 	-e 's#.*<sparkle:shortVersionString>##g' \
+			-e 's#</sparkle:shortVersionString>.*##g' )
 
-LATEST_BUILD=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#" .*##g' )
+LATEST_BUILD=$(echo "$INFO" \
+	| sed 	-e 's#.*<sparkle:version>##g' \
+			-e 's#</sparkle:version>.*##g' )
 
 RELEASE_NOTES_HTML=$(echo "$INFO" | sed -e 's#\]\]\>.*##g' -e 's#.*\[CDATA\[##g')
 
