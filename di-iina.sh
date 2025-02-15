@@ -17,23 +17,35 @@ INSTALL_TO='/Applications/IINA.app'
 
 XML_FEED='https://www.iina.io/appcast.xml'
 
-URL=$(curl -sfLS "$XML_FEED" \
-	| fgrep '<enclosure url="' \
-	| tail -1 \
-	| tr '"' '\012' \
-	| fgrep 'https://')
+INFO=($(curl -sfLS "$XML_FEED" \
+	| awk '/<item>/{i++}i==1' \
+	| fgrep -v 'delta' \
+	| egrep '<sparkle:shortVersionString>|<sparkle:version>|<enclosure url|<sparkle:releaseNotesLink>' \
+	| tr '\n' ' '))
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#IINA.v##g')
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-RELEASE_NOTES_URL="https://www.iina.io/release-note/$LATEST_VERSION.html"
+LATEST_VERSION=$(echo "$INFO" \
+	| sed 	-e 's#.*<sparkle:shortVersionString>##g' \
+			-e 's#</sparkle:shortVersionString>.*##g')
 
-	# If any of these are blank, we cannot continue
-if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+LATEST_BUILD=$(echo "$INFO" \
+	| sed 	-e 's#.*<sparkle:version>##g' \
+			-e 's#</sparkle:version>.*##g')
+
+RELEASE_NOTES_URL=$(echo "$INFO" \
+	| sed 	-e 's#.*<sparkle:releaseNotesLink>##g' \
+			-e 's#</sparkle:releaseNotesLink>.*##g')
+
+# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	URL: $URL
+	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	"
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"  >>/dev/stderr
 
 	exit 1
 fi
