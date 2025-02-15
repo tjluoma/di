@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Stream Deck
+# Purpose: 	Download and install/update the latest version of Stream Deck
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-15
+# Verified: 2025-02-15
 
 NAME="$0:t:r"
 
@@ -12,9 +13,7 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Stream Deck.app'
-
-MIN_REQUIRED='10.12'
+INSTALL_TO='/Applications/Elgato Stream Deck.app'
 
 FEED="https://gc-updates.elgato.com/mac/sd-update/final/app-version-check.json"
 
@@ -129,8 +128,10 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.pkg"
 
 if (( $+commands[lynx] ))
 then
+		# can't use lynx directly or will get a 403 forbidden message
 
-	(lynx -dump -nomargins -width='100' -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL" ;\
+	(curl -sfLS "$RELEASE_NOTES_URL" \
+	| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin  -nomargins -nonumbers;\
 	echo "\nRelease Notes: $RELEASE_NOTES_URL\nURL: $URL") | tee "$FILENAME:r.txt"
 
 fi
@@ -149,23 +150,6 @@ EXIT="$?"
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
-
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
-
-autoload is-at-least
-
-is-at-least "$MIN_REQUIRED" "$OS_VER"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "1" ]]
-then
-
-	echo "$NAME: '$INSTALL_TO:t' requires '$MIN_REQUIRED' but this Mac is running '$OS_VER'. The file has been downloaded, but will not be installed:\n${FILENAME}\n"
-
-	exit 0
-
-fi
 
 sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log"
 
