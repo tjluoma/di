@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of FastScripts from https://red-sweater.com/fastscripts/
+# Purpose: 	Download and install the latest version of FastScripts from https://red-sweater.com/fastscripts/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-11
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
