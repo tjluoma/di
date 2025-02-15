@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install/update the latest version of Jump Desktop Connect
+# Purpose: 	Download and install/update the latest version of Jump Desktop Connect
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-06
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-06
+# Verified: 2025-02-15
 
 NAME="$0:t:r"
 
