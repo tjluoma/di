@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Fission
+# Purpose: 	Download and install the latest version of Fission
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-04 ; 2019-09-18 updated for older versions of macOS
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-04 ; 2019-09-18 updated for older versions of macOS
+# Verified: 2025-02-15
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
