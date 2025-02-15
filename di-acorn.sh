@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Acron
+# Purpose: Download and install/update the latest version of Acorn
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -80,16 +80,8 @@ else
 
 		alias lynx_dump='lynx -dump -nomargins -width=10000 -assume_charset=UTF-8 -display_charset=UTF-8 -pseudo_inlines -stdin'
 
-		if (( $+commands[html2text.py] ))
-		then
-
-			alias final_cmd='html2text.py'
-
-		else
 
 			alias final_cmd='lynx_dump'
-
-		fi
 
 			# Putting this tidy command in the RELEASE_NOTES section was just too ugly for me
 			# normally I would put this in a tidy config file, but I want this to be self-contained
