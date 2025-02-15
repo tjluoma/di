@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install PowerPhotos from https://www.fatcatsoftware.com/powerphotos/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2025-02-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2025-02-15
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
