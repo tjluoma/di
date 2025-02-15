@@ -25,8 +25,6 @@ fi
 
 autoload is-at-least
 
-USE_VERSION=''
-
 if [[ -e "$INSTALL_TO" ]]
 then
 	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | sed 's#\\u0192##g')
@@ -37,43 +35,12 @@ else
 	INSTALLED_VERSION='0'
 fi
 
+	## NOTE: If nothing is installed, we need to pretend we have at least version 8?
+	## The actual latest version is 7 but we need 8 here. I don't know why. There's probably a reason
+INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '8.0.0')
 
-OS_VER=$(sw_vers -productVersion)
-
-autoload is-at-least
-
-is-at-least "10.15" "$OS_VER"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "1" ]]
-then
-		# This is lower than the minimum
-	echo "$NAME: this Mac is running '$OS_VER' which is less than the minimum of 10.15." >>/dev/stderr
-	exit 2
-
-fi
-
-
-
-	# if you want to install beta releases
-	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/carboncopycloner-prefer-betas.txt"
-
-if [[ -e "$PREFERS_BETAS_FILE" ]]
-then
-	HEAD_OR_TAIL='tail'
-	NAME="$NAME (beta releases)"
-else
-		## This is for official, non-beta versions
-	HEAD_OR_TAIL='head'
-fi
-
-	## NOTE: If nothing is installed, we need to pretend we have at least version 5
-INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '6.0.0')
-
-	## NOTE: If nothing is installed, we need to pretend we have at least version 5000
-INSTALLED_BUILD=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '6000')
+	## NOTE: If nothing is installed, we need to pretend we have at least version 8000
+INSTALLED_BUILD=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '8000')
 
 VERSION=($(sw_vers -productVersion | tr '.' ' '))
 
@@ -87,7 +54,7 @@ XML_FEED="https://update.bombich.com/software/updates/ccc.php?os_major=${OS_MAJO
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '"(version|build|downloadURL)":' \
-		| ${HEAD_OR_TAIL} -3 \
+		| head -3 \
 		| tr -d ',|"' \
 		| sort ))
 
