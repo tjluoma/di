@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of Quitter
+# Purpose: 	Download and install latest version of Quitter
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-05-05
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-05-05
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
