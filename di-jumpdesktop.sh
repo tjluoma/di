@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: get the latest version of Jump Desktop
+# Purpose: 	Download and install/update the latest version of Jump Desktop
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-18
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-18
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
