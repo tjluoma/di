@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Dylib Hijack Scanner (DHS)
+# Purpose:	Download and install the latest version of Dylib Hijack Scanner (DHS)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-13
+# @TODO:	shasum is not working
 
 NAME="$0:t:r"
 
@@ -77,14 +78,6 @@ then
 else
 
 	FIRST_INSTALL='yes'
-fi
-
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
-
-if [ "$OS_VER" -lt "8" ]
-then
-	echo "$NAME: [WARNING] '$INSTALL_TO:t' is only compatible with macOS versions 10.8 and higher (you are using 10.$OS_VER)."
-	echo "$NAME: [WARNING] Will download, but the app might not install or function properly."
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
