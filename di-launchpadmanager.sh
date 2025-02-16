@@ -12,14 +12,19 @@ then
 	source "$HOME/.path"
 fi
 
-	## Note: the app wants to call itself 'Launchpad Manager Yosemite' but that's gross, so… no.
+	## Note: the app wants to call itself 'Launchpad Manager Yosemite'
+	## but that's gross, so… no.
 INSTALL_TO='/Applications/Launchpad Manager.app'
 
 XML_FEED='http://launchpadmanager.com/appyos/sparkle.rss'
 
 INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1')
 
-URL=$(echo "$INFO" | tr '"' '\012' | egrep '^http.*\.dmg')
+## 2025-02-15 - this URL is 404
+# URL=$(echo "$INFO" | tr '"' '\012' | egrep '^http.*\.dmg')
+
+	## 2025-02-15 This is the URL from the webpage as of today
+URL='https://launchpadmanager.com/download_yosemite.php'
 
 LATEST_VERSION=$(echo "$INFO" | tr -s ' |\t' '\012' | awk -F'"' '/^sparkle:version/{print $2}')
 
