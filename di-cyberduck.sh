@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Cyberduck
+# Purpose: 	Download and install the latest version of Cyberduck
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# @TODO: 	fix release notes (none are shown, although the URL is correct)
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
