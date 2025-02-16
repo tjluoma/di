@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install the latest version of BBEdit
+# Purpose: 	Download and install the latest version of BBEdit
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-05-04
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-05-04
+# Verified:	2025-02-16 (for clean install)
 
 NAME="$0:t:r"
 
