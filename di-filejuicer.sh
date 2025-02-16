@@ -23,13 +23,17 @@ SUMMARY="File Juicer doesn’t care what type file you drop onto it; it searches
 	## See notes at bottom for older methods of finding URL
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15'
 
-URL=$(curl -A "$UA" --head -sfLS "https://echoone.com/filejuicer/latestversion" | awk -F' |\r' '/^Location:/{print $2}' | tail -1)
 
 # PREFIX='https://echoone.com'
 #
 # URL="${PREFIX}${SUFFIX}"
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
+LATEST_VERSION=$(curl -A "$UA" --head -sfLS "https://echoone.com/filejuicer/latestversion" \
+		| egrep '^Content-Disposition:' | sed 's#.*FileJuicer-##g ; s#.zip".*##g')
+
+# echo "LATEST_VERSION: $LATEST_VERSION"
+
+URL="https://echoone.com/filejuicer/latestversion"
 
 if [[ -e "$INSTALL_TO" ]]
 then
