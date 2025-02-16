@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install / update the latest version of App Tamer
+# Purpose: 	Download and install / update the latest version of App Tamer
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-12-12
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-12-12
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
