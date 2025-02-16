@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update the latest version of Zoom
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2022-03-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2022-03-24
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
@@ -112,76 +113,29 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\n\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-
 ########
 
-TEMP_DIR="${TMPDIR-/tmp/}${NAME-$0:r}-$RANDOM"
+echo "$NAME: Preparing to install $FILENAME"
 
-pkgutil --expand "$FILENAME" "$TEMP_DIR"
-
-PAYLOAD_FILE=$(find "${TEMP_DIR}/zoomus.pkg" -iname Payload -print)
-
-echo "PAYLOAD_FILE is >$PAYLOAD_FILE<"
-
-cd "$TEMP_DIR"
-
-echo "$NAME [INFO]: Uncompressing '$PAYLOAD_FILE' in '$TEMP_DIR'... "
-
-gunzip --force --stdout "$PAYLOAD_FILE" | cpio -i
-
-# sudo xattr -r -d com.apple.quarantine "$INSTALL_TO:t" || false
-
-
-################################################################################################
-
-if [[ -e "$INSTALL_TO" ]]
+if (( $+commands[pkginstall.sh] ))
 then
 
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
-
-	MOVE_TO="$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$MOVE_TO/'."
-
-	mv -f "$INSTALL_TO" "$MOVE_TO"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$MOVE_TO'." >>/dev/stderr
-
-		exit 2
-	fi
-fi
-
-################################################################################################
-
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$TEMP_DIR') to '$INSTALL_TO'."
-
-	# Move the file out of the folder
-mv -n "$TEMP_DIR/$INSTALL_TO:t" "$INSTALL_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "0" ]]
-then
-
-	echo "$NAME: Successfully installed '$TEMP_DIR/$INSTALL_TO:t' to '$INSTALL_TO'."
+	pkginstall.sh "$FILENAME"
 
 else
-	echo "$NAME: Failed to move '$TEMP_DIR/$INSTALL_TO:t' to '$INSTALL_TO'."
 
-	exit 1
+	if [ "$EUID" = "0" ]
+	then
+
+		/usr/sbin/installer -pkg "$FILENAME" -target / -lang en
+
+	else
+			# Try sudo but if it fails, open pkg in Finder
+		sudo /usr/sbin/installer -pkg "$FILENAME" -dumplog -target / -lang en \
+		|| open -R "$FILENAME"
+
+	fi
 fi
-
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-exit 0
-#EOF
 
 
 
