@@ -12,6 +12,9 @@ then
 	source "$HOME/.path"
 fi
 
+# Found XML_FEED here but it is 404 not found
+# https://updates.devmate.com/com.cisdem.pdfconverterocr.xml
+
 INSTALL_TO='/Applications/Cisdem OCRWizard.app'
 
 # There's no feed for this AND the URL does not necessarily reflect the version number
