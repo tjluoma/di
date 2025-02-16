@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Dropbox
+# Purpose: 	Download and install the latest version of Dropbox
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-14
+# Verified:	2025-02-15 (for clean install at least)
 
 NAME="$0:t:r"
 
@@ -110,7 +111,6 @@ FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 echo "$NAME: Downloading $URL to $FILENAME:"
 
 curl --fail \
-   \
    --continue-at - \
    --location \
    --output "$FILENAME" \
