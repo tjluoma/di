@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of https://github.com/swiftbar/SwiftBar/
+# Purpose:	Download and install the latest version of https://github.com/swiftbar/SwiftBar/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-11-30
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-11-30
+# Verified:	2025-02-15 (with caveat below about hardcoding URL and LATEST_VERSION/LATEST_BUILD info)
 
 NAME="$0:t:r"
 
@@ -24,63 +25,71 @@ ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.
 
 	# We can find the version number by looking at the end of the URL
 	# and throwing away everything except numbers and periods
-LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
+#LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
 	# parse the ACTUAL_RELEASE_URL page to look for a link which has the path
 	# /swiftbar/SwiftBar/releases/download/
 	# and ends with '.zip'
 	# which is the URL we need to download the latest version of the compiled app
 	# not source code
-URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
-		| egrep '.*a href=.*/swiftbar/SwiftBar/releases/download/.*\.zip' \
-		| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
+#URL=$(curl -sfLS "${ACTUAL_RELEASE_URL}" \
+#		| egrep '.*a href=.*/swiftbar/SwiftBar/releases/download/.*\.zip' \
+#		| sed -e 's#" .*##g' -e 's#.*<a href="#https://github.com#g')
+
+
+## 2025-02-15 - this project hasn't been updated in over a year, so I'm hard-coding the values in for now
+# 				and if it comes back to life, I'll update it then.
+#				NOTE to future self: the URL= part above is not working. Can't seem to find the .zip in the
+#				HTML of the page. Not sure why.
+
+LATEST_VERSION='2.0.0'
+
+LATEST_BUILD='520'
+
+URL='https://github.com/swiftbar/SwiftBar/releases/download/v2.0.0/SwiftBar.v2.0.0.b520.zip'
 
 	# is the app already installed? if so we need to compare version numbers
 if [[ -e "$INSTALL_TO" ]]
 then
-		# if there's a version already, this isn't the first install
-	FIRST_INSTALL='no'
 
-		# this is the number to compare against the current version number
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-		# zsh tool to compare version numbers
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+
 	autoload is-at-least
 
-		# compare the numbers
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
-		# check the exit code
 	VERSION_COMPARE="$?"
 
-		# if exit code is zero, we have this version
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-		# if we get here, there is a newer version
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
-		# make sure that we can actually replace the version that is there
+	FIRST_INSTALL='no'
+
 	if [[ ! -w "$INSTALL_TO" ]]
 	then
-			# if we can't write to the app, tell the user
 		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
 
-			# and give up
 		exit 2
 	fi
 
 else
 
-		# if we get here, there is no version installed
 	FIRST_INSTALL='yes'
 fi
 
 	# this is where the new version will be downloaded to
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 	# this is the file we will use to store the release notes, if we have lynx installed
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
