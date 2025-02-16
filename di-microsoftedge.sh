@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: get the latest arm64 build of Microsoft Edge (but NOT Microsoft AutoUpdate)
+# Purpose: 	Get the latest arm64 build of Microsoft Edge (but NOT Microsoft AutoUpdate)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2022-03-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2022-03-15
+# Verified:	2025-02-15
 
 INSTALL_TO='/Applications/Microsoft Edge.app'
 
