@@ -21,23 +21,18 @@ SUMMARY="Soulver helps you work things out. It's quicker to use than a spreadshe
 
 XML_FEED="https://soulver.app/mac/sparkle/appcast.xml"
 
-INFO=($(curl -sfL "$XML_FEED" \
-| fgrep -vi 'sparkle:delta' \
-| tr -s '\012' ' ' \
-| sed -e 's#.*<item>##g' -e 's#> <#>\
-<#g' -e 's#<sparkle:releaseNotesLink>#sparkle:releaseNotesLink="#g' -e 's#</sparkle:releaseNotesLink>#"#g' \
-| tr ' ' '\012' \
-| egrep '^(sparkle:releaseNotesLink|sparkle:version|sparkle:shortVersionString|url)=' \
-| sort \
-| sed -e 's#"$##g' -e 's#.*"##g'))
+INFO=$(curl -sfL "$XML_FEED" \
+		| fgrep -vi 'sparkle:delta' \
+		| awk '/<item>/{i++}i==1' \
+		| tr -s '\012' ' ')
 
-RELEASE_NOTES_URL="$INFO[1]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-LATEST_VERSION="$INFO[2]"
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g')
 
-LATEST_BUILD="$INFO[3]"
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-URL="$INFO[4]"
+URL=$(echo "$INFO" | sed 's#.* <enclosure url="##g; s#" .*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
