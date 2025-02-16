@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update LaunchPad Manager
+# Purpose: 	Download and install/update LaunchPad Manager
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-11
+# Verified:	2025-02-15
 
 NAME="$0:t:r"
 
