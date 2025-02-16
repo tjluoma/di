@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of The Unarchiver
+# Purpose: 	Download and install the latest version of The Unarchiver
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-17
+# Verified:	2025-02-16
 
 NAME="$0:t:r"
 
