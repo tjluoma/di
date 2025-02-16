@@ -120,51 +120,20 @@ then
 	if (( $+commands[wget] ))
 	then
 
-		if (( $+commands[html2text.py] ))
+		RELEASE_NOTES_FILE="$FILENAME:r.html"
+
+		if [[ -e "$RELEASE_NOTES_FILE" ]]
 		then
 
-			RELEASE_NOTES_FILE="$FILENAME:r.md"
-
-			if [[ -e "$RELEASE_NOTES_FILE" ]]
-			then
-
-				cat "$RELEASE_NOTES_FILE"
-
-			else
-
-				TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.html"
-
-				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
-
-				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" \
-					| egrep -v '<p><a href=".*">back to top</a></p>' \
-					| fgrep -vi 'please make sure that you have updated to the latest available OS version' \
-					| html2text.py \
-					| egrep -v '^\* \* \*' \
-					| uniq \
-					| sed -e 's#^ *##g' \
-					| tee -a "$RELEASE_NOTES_FILE"
-
-			fi
+			echo "$NAME: '$RELEASE_NOTES_FILE' already exists"
 
 		else
 
-			RELEASE_NOTES_FILE="$FILENAME:r.html"
+			echo "$NAME: saving Release Notes to '$RELEASE_NOTES_FILE' (this may take a moment)."
 
-			if [[ -e "$RELEASE_NOTES_FILE" ]]
-			then
+			wget --quiet --convert-links --output-document="$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
 
-				echo "$NAME: '$RELEASE_NOTES_FILE' already exists"
-
-			else
-
-				echo "$NAME: saving Release Notes to '$RELEASE_NOTES_FILE'."
-
-				wget --quiet --convert-links --output-document="$RELEASE_NOTES_FILE" "$RELEASE_NOTES_URL"
-
-			fi
-
-		fi # if html2text.py
+		fi
 
 	fi # if wget
 
