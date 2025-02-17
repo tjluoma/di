@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: MiniUsage displays various data like CPU usage, amount of network flow, battery status and process names which uses much CPU time in a menubar.
+# Purpose: 	MiniUsage displays various data like CPU usage, amount of network flow, battery status and process names which uses much CPU time in a menubar.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-09-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-09-28
+# Verified:	2025-02-17
 
 NAME="$0:t:r"
 
