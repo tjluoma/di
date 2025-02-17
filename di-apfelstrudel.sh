@@ -14,6 +14,8 @@ fi
 
 INSTALL_TO='/Applications/Apfelstrudel.app'
 
+HOMEPAGE='https://eclecticlight.co/text-utilities-nalaprop-dystextia-and-others/'
+
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
 curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
