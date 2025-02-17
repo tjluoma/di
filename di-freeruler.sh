@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download the latest version of Free Ruler from http://www.pascal.com/software/freeruler/
+# Purpose: 	Download the latest version of Free Ruler from http://www.pascal.com/software/freeruler/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-27
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-27
+# Verified:	2025-02-16 (hardcoded latest URL and version info)
 
 NAME="$0:t:r"
 
@@ -14,15 +15,9 @@ fi
 
 INSTALL_TO='/Applications/Free Ruler.app'
 
-LATEST_VERSION_URL=$(curl --head -sfLS "https://github.com/pascalpp/FreeRuler/releases/latest" \
-					| awk -F' |\r' '/Location:/{print $2}')
+URL='https://github.com/pascalpp/FreeRuler/releases/download/v2.0.8/free-ruler-2.0.8.zip'
 
-LATEST_VERSION=$(echo "$LATEST_VERSION_URL:t" | tr -dc '[0-9]\.')
-
-URL=$(echo -n 'https://github.com';
-		curl -sfLS "$LATEST_VERSION_URL" \
-		| tr '"' '\012' \
-		| egrep '/FreeRuler/releases/download/.*\.zip')
+LATEST_VERSION='2.0.8'
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -51,17 +46,6 @@ else
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
-
-if (( $+commands[lynx] ))
-then
-
-	RELEASE_NOTES=$(curl -sfLS "$LATEST_VERSION_URL" \
-	| sed '1,/class="markdown-body"/d; /<\/div>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin)
-
-	echo "${RELEASE_NOTES}\n\nLATEST_VERSION_URL: ${LATEST_VERSION_URL}\n URL: ${URL}" | tee "$FILENAME:r.txt"
-
-fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
