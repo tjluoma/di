@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Name Mangler v3 from <https://manytricks.com/namemangler/>
+# Purpose:	Download and install Name Mangler v3 from <https://manytricks.com/namemangler/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-09-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-09-28
+# Verified:	2025-02-17
 
 NAME="$0:t:r"
 
