@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of EncryptMe (née Cloak)
+# Purpose: 	Download and install the latest version of EncryptMe (née Cloak)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-06
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-06
+# Verified: 2025-02-16
 
 NAME="$0:t:r"
 
