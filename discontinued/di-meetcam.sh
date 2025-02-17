@@ -37,22 +37,6 @@ LATEST_VERSION="$INFO[3]"
 LATEST_BUILD="$INFO[4]"
 URL="$INFO[5]"
 
-OS_VER=$(sw_vers -productVersion)
-
-autoload is-at-least
-
-is-at-least "$MINVERSION" "$OS_VER"
-
-EXIT="$?"
-
-if [[ "$EXIT" != "0" ]]
-then
-
-	echo "$NAME: $MINVERSION is required and you are running $OS_VER." >>/dev/stderr
-
-	exit 2
-fi
-
 if [[ -e "$INSTALL_TO" ]]
 then
 
