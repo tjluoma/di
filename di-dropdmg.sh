@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download the latest version of DropDMG from https://c-command.com/dropdmg/
+# Purpose: 	Download the latest version of DropDMG from https://c-command.com/dropdmg/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-17
+# Verified:	2025-02-18
 
 NAME="$0:t:r"
 
