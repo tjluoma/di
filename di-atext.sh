@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of aText from <https://www.trankynam.com/atext/>
+# Purpose: 	Download and install the latest version of aText from <https://www.trankynam.com/atext/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-04
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-04
+# @TODO: 	Needs to be updated for version 3
 
 NAME="$0:t:r"
 
