@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of AudioBook Builder from http://www.splasm.com/audiobookbuilder/
+# Purpose: 	Download and install latest version of AudioBook Builder from http://www.splasm.com/audiobookbuilder/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-12-09
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-12-09
+# Verified:	2025-02-18
 
 NAME="$0:t:r"
 
@@ -174,57 +175,3 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
-
-
-
-
-## 2020-12-18 old code below
-
-# if [[ "$LATEST_VERSION" == "" ]]
-# then
-# 		## if we didn't get a version string that way, try another way to check if maybe the XML/RSS feed is different
-# 		## This should work for the beta feed, but untested
-# 	LATEST_VERSION=`curl --connect-timeout 10 -sfL -A "$UA" "$XML_FEED" \
-# 	| tr -s ' ' '\012' \
-# 	| egrep '^sparkle:shortVersionString' \
-# 	| head -1 \
-# 	| tr -dc '[0-9].' `
-#
-# fi
-#
-# if [[ "$LATEST_VERSION" == "" ]]
-# then
-#
-# 		## if neither of those two worked, make an incredibly clumsy attempt to check raw HTML of update page
-# 		## this is extremely fragile and should never be used.
-#
-# 	LATEST_VERSION=`curl --connect-timeout 10 -A Safari -sfL http://www.splasm.com/audiobookbuilder/update.html \
-# 			| fgrep -A1 'id="productdesc"' \
-# 			| sed 's#<br>##g; s#.*>##g' \
-# 			| tr -dc '[0-9].'`
-# fi
-
-	## If none of that worked, give up
-if [ "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
-then
-	echo "$NAME: Failed to find LATEST_VERSION or LATEST_BUILD from $XML_FEED ($LATEST_VERSION/$LATEST_BUILD)"
-	exit 0
-fi
-
-	# If we get here, we got at least _something_ for LATEST_VERSION
-	# so compare that against installed version
-if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" -a "$LATEST_BUILD" = "$INSTALLED_BUILD" ]
-then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
-	exit 0
-fi
-
-# autoload is-at-least
-#
-# is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-#
-# if [ "$?" = "0" ]
-# then
-# 	echo "$NAME: Installed version ($INSTALLED_VERSION) is ahead of official version $LATEST_VERSION"
-# 	exit 0
-# fi
