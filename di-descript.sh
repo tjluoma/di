@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install (and possibly update) the latest version of Descript
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-05-30
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-05-30
+# Verified:	2025-02-18
 
 NAME="$0:t:r"
 
@@ -14,21 +15,16 @@ NAME="$0:t:r"
 INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Descript.app"
 
 # https://www.descript.com/download
-# https://electron.descript.com/Descript-3.6.0-master.20200527.18.dmg
-# https://web.descript.com/download?platform=mac
-# curl --insecure --head --location 'https://web.descript.com/download?platform=mac'
-# Location: https://electron.descript.com/Descript-3.6.0-master.20200527.18.dmg
-#
-# /Applications/Descript.app:
-#	CFBundleShortVersionString: 3.6.0-master.20200527.18
-#	CFBundleVersion: 1
 
-URL=$(curl --silent --head --location 'https://web.descript.com/download?platform=mac' \
-	  | awk -F' |\r' '/^Location:/{print $2}')
+URL=$(curl --silent --head --location 'https://web.descript.com/download?v2=true&platform=mac' \
+	  | awk -F' |\r' '/^location:/{print $2}')
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#Descript-##g')
+	# NOTE: This version can be behind the actual version of the actual app
+	#		so this script will not be reliable for *updating* the app in a
+	#		timely fashion. It will work fine for a new install, however.
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#Descript\%20Installer\%20v##g')
 
-FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -88,61 +84,52 @@ then
 	)  >>| "$FILENAME:r.txt"
 fi
 
-echo "$NAME: Mounting $FILENAME:"
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
-if [[ "$MNTPNT" == "" ]]
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: MNTPNT is empty"
-	exit 1
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
 else
-	echo "$NAME: MNTPNT is $MNTPNT"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TEMPDIR/"
+
+	mv -fv "$FILENAME:r".* "$TEMPDIR/"
+
+	exit 0
+
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-		# Quit app, if running
-	pgrep -xq "$INSTALL_TO:t:r" \
-	&& LAUNCH='yes' \
-	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TEMPDIR}/${NAME}-XXXXXXXX")
 
-		# move installed version to trash
-	echo "$NAME: moving old installed version to '$HOME/.Trash'..."
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
 
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move '$INSTALL_TO' to '$HOME/.Trash'. ('mv' \$EXIT = $EXIT)"
-
-		exit 1
-	fi
-fi
-
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
-
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
+	echo "$NAME: Unzip successful"
 else
-	echo "$NAME: ditto failed"
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
 
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+	# Open the installer that we just unzipped
+INSTALLER_APP=$(find "$UNZIP_TO" -iname 'Descript Installer*' -maxdepth 2 -print)
 
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+	# The installer will download and install the app automatically once opened
+open -a "${INSTALLER_APP}"
 
 exit 0
 #EOF
