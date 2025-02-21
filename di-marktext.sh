@@ -12,23 +12,18 @@ then
 	source "$HOME/.path"
 fi
 
-HOMEPAGE='https://marktext.app'
+INSTALL_TO='/Applications/MarkText.app'
 
-LATEST_RELEASE_URL='https://github.com/marktext/marktext/releases/latest'
+HOMEPAGE='https://www.marktext.cc'
 
-INSTALL_TO='/Applications/Mark Text.app'
+RELEASE_URL='https://github.com/marktext/marktext/releases/latest'
 
-RELEASE_NOTES_URL=$(curl -sfLS --head 'https://github.com/marktext/marktext/releases/latest' | awk -F' |\r' '/Location:/{print $2}')
+# LATEST_RELEASE_URL=$(curl --head -sfLS "$RELEASE_URL" | awk -F' |\r' '/^location:/{print $2}' | tail -1)
+# LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.]')
 
-LATEST_VERSION=$(echo "$RELEASE_NOTES_URL:t" | tr -dc '[0-9]\.]')
-
-	# This gives us everything except the domain name
-URL_SUFFIX=$(curl -sfLS "https://github.com/marktext/marktext/releases/latest" \
-			| tr '"' '\012' \
-			| egrep '^/.*\.dmg$')
-
-	# so we add the domain name
-URL=$(echo "https://github.com${URL_SUFFIX}")
+	# hasn't been updated since 2022
+LATEST_VERSION=0.17.1
+URL='https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-arm64-mac.zip'
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -56,18 +51,18 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
 
-if (( $+commands[lynx] ))
-then
-
-	( echo "Home:\t${HOMEPAGE}\nURL:\t${URL}\nNotes:\t${RELEASE_NOTES_URL}\nVer:\t${LATEST_VERSION}\n" ;
-	curl -sfLS "$RELEASE_NOTES_URL" \
-	| sed '1,/<div class="markdown-body">/d; /<details/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
-	) | tee "$FILENAME:r.txt"
-
-fi
+# if (( $+commands[lynx] ))
+# then
+#
+# 	( echo "Home:\t${HOMEPAGE}\nURL:\t${URL}\nNotes:\t${LATEST_RELEASE_URL}\nVer:\t${LATEST_VERSION}\n" ;
+# 	curl -sfLS "$LATEST_RELEASE_URL" \
+# 	| sed '1,/<div class="markdown-body">/d; /<details/,$d' \
+# 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin \
+# 	) | tee "$FILENAME:r.txt"
+#
+# fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -84,61 +79,88 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-echo "$NAME: Mounting $FILENAME:"
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
 
-MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
-if [[ "$MNTPNT" == "" ]]
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: MNTPNT is empty"
-	exit 1
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
 else
-	echo "$NAME: MNTPNT is $MNTPNT"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TEMPDIR/"
+
+	mv -fv "$FILENAME:r".* "$TEMPDIR/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TEMPDIR}/${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-		# Quit app, if running
+
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TEMPDIR/'."
+
+	mv -f "$INSTALL_TO" "$TEMPDIR/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TEMPDIR'."
 
 		exit 1
 	fi
-
 fi
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+	# Move the file out of the folder
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
+if [[ "$EXIT" = "0" ]]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
 else
-	echo "$NAME: ditto failed"
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
