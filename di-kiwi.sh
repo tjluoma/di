@@ -16,6 +16,10 @@ fi
 
 INSTALL_TO='/Applications/Kiwi for Gmail.app'
 
+## 2025-02-21 new download URL from webpage https://www.kiwiforgmail.com/download
+## the XML_FEED no longer seems to work
+# https://downloads.kiwiforgmail.com/kiwi/release/consumer/Kiwi+for+Gmail+Setup.dmg
+
 XML_FEED='https://rink.hockeyapp.net/api/2/apps/865041dca0724e00accae3b90b66c63a'
 
 INFO=($(curl -sfLS "$XML_FEED" \
