@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: 	Download and install latest version of ImageAlpha
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-25
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-25
+# Verified:	2025-02-21
 
 NAME="$0:t:r"
 

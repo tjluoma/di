@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Scrivener 2 or 3
+# Purpose: 	Download and install the latest version of Scrivener 2 or 3
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-09-24
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-09-24
+# Verified:	2025-02-21
 
 NAME="$0:t:r"
 
