@@ -96,7 +96,7 @@ then
 
 else
 
-	if (( $+commands[wget] )) && (( $+commands[html2text.py] ))
+	if (( $+commands[wget] )) && (( $+commands[html2text] ))
 	then
 
 		RELEASE_NOTES_URL="https://www.barebones.com/support/yojimbo/notes-$LATEST_VERSION.html"
@@ -108,7 +108,7 @@ else
 		RELEASE_NOTES=$(sed 's#<h2>#START_CUT_HERE\
 <h2>#g' "$TEMPFILE2" \
 			| sed 	-e '1,/START_CUT_HERE/d; /<\/div>/,$d' \
-			| html2text.py \
+			| html2text \
 			| sed 's#^ *##g')
 
 		echo "Yojimbo Version $LATEST_VERSION / ${LATEST_BUILD}\nURL: ${URL}\nRelease Notes URL: ${RELEASE_NOTES_URL}\n\n${RELEASE_NOTES}\n" \

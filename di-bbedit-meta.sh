@@ -179,13 +179,13 @@ then
 		if (( $+commands[wget] ))
 		then
 
-			if (( $+commands[html2text.py] ))
+			if (( $+commands[html2text] ))
 			then
 				TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.html"
 
 				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
-				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text.py | tee -a "$RELEASE_NOTES_FILE"
+				sed '1,/<p class="title">/d; /<p><em>fin<\/em><\/p>/,$d' "$TEMPFILE" | html2text | tee -a "$RELEASE_NOTES_FILE"
 
 			else
 
@@ -195,7 +195,7 @@ then
 
 				wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
-			fi # if html2text.py
+			fi # if html2text
 
 		fi # if wget
 

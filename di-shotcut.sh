@@ -67,10 +67,10 @@ FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 function mycurl { curl -sfLS "${LATEST_URL}" | sed '1,/<div class="markdown-body">/d; /<summary>/,$d' }
 
-if (( $+commands[html2text.py] ))
+if (( $+commands[html2text] ))
 then
 
-	(mycurl | html2text.py) | tee "$FILENAME:r.txt"
+	(mycurl | html2text) | tee "$FILENAME:r.txt"
 
 elif (( $+commands[lynx] ))
 then

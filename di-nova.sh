@@ -95,14 +95,14 @@ then
 
 else
 
-	if (( $+commands[wget] )) && (( $+commands[html2text.py] ))
+	if (( $+commands[wget] )) && (( $+commands[html2text] ))
 	then
 
 		TEMPFILE="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.html"
 
 		wget --quiet --convert-links --output-document="$TEMPFILE" "$RELEASE_NOTES_URL"
 
-		RELEASE_NOTES=$(awk '/<div class="release"/{i++}i==1' "$TEMPFILE" | html2text.py | sed 's#^ *##g')
+		RELEASE_NOTES=$(awk '/<div class="release"/{i++}i==1' "$TEMPFILE" | html2text | sed 's#^ *##g')
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
 

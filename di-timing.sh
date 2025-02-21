@@ -98,11 +98,11 @@ else
 
 	RELEASE_NOTES_HTML=$(echo "$INFO" | sed '1,/CDATA/d; /\]\]/,$d')
 
-	if (( $+commands[html2text.py] ))
+	if (( $+commands[html2text] ))
 	then
 
-			# html2text.py deals better with image URLs
-		RELEASE_NOTES=$(echo "$INFO" | sed '1,/CDATA/d; /\]\]/,$d' | html2text.py)
+			# html2text deals better with image URLs
+		RELEASE_NOTES=$(echo "$INFO" | sed '1,/CDATA/d; /\]\]/,$d' | html2text)
 
 		echo "${RELEASE_NOTES}\n\nPubDate: ${PUB_DATE}\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
 	else
