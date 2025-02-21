@@ -43,11 +43,7 @@ LATEST_RELEASE_URL=$(curl -sfLS --head "$DOWNLOAD_PAGE" \
 
 LATEST_VERSION=$(echo "$LATEST_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-URL=$(curl -sfLS https://github.com/JohnCoates/Aerial/releases/latest \
-		| tr '"' '\012' \
-		| egrep '\.zip$' \
-		| head -1 \
-		| awk '{print "https://github.com"$1}')
+URL='https://github.com/glouel/AerialCompanion/releases/latest/download/Aerial.Companion.zip'
 
 if [[ -e "$INSTALL_TO" ]]
 then
