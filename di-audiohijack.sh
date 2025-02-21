@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: 	Download and install Audio Hijack 3
+# Purpose: 	Download and install Audio Hijack 4
 #
 # From:		Tj Luo.ma
 # Mail:		luomat at gmail dot com
