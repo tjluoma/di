@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Catch from <http://giorgiocalderolla.com/catch.html>
+# Purpose: Download and install the latest version of Catch from <https://kaylees.site/catch.html>
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
@@ -16,7 +16,7 @@ INSTALL_TO="/Applications/Catch.app"
 
 XML_FEED="https://raw.github.com/mipstian/catch/master/update/appcast.xml"
 
-HOMEPAGE="http://giorgiocalderolla.com/catch.html"
+HOMEPAGE="https://kaylees.site/catch.html"
 
 DOWNLOAD_PAGE="https://github.com/mipstian/catch/releases/latest"
 
