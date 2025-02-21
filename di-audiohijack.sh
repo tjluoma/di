@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Audio Hijack 3
+# Purpose: 	Download and install Audio Hijack 3
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-01-20
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-01-20
+# Verified:	2025-02-21
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -43,11 +44,10 @@ then
 fi
 
 	# If any of these are blank, we should not continue
-if [ "$LATEST_VERSION" = "" -o "$XML_FEED" = "" ]
+if [ "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
-	XML_FEED: $XML_FEED
 	"
 
 	exit 1
