@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install CodeRunner from <https://coderunnerapp.com/>
+# Purpose: 	Download and install CodeRunner from <https://coderunnerapp.com/>
 #
-# Date:		2014-12-13
 # From:	  	Timothy J. Luoma
 # Mail:		luomat at gmail dot com
+# Date:		2014-12-13
+# Verified:	2025-02-21
 
 NAME="$0:t:r"
 
