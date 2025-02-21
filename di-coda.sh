@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install Coda (2.5)
+# Purpose:	Download and install Coda (2.5)
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-02-02
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-02-02
+# Verified:	2025-02-21
 
 NAME="$0:t:r"
 
