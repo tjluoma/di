@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Ubar from <https://brawersoftware.com/products/ubar>
+# Purpose: 	Download and install the latest version of Ubar from <https://brawersoftware.com/products/ubar>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-14
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -23,16 +24,16 @@ fi
 XML_FEED="https://brawersoftware.com/appcasts/feeds/ubar/ubar4.xml"
 
 	# FYI - build version is same as LV just without the .
-INFO=($(curl -sfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+INFO=$(curl -sfL "${XML_FEED}" \
+		| awk '/<item>/{i++}i==1' \
+		| tr '\012' ' ')
 
 	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[3]"
+LATEST_VERSION=$(echo "$INFO" \
+	| sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+URL=$(echo "$INFO" \
+	| sed 's#.*<enclosure url="##g ; s#".*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
