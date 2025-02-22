@@ -1,15 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Yubico Authenticator
+# Purpose: 	Download and install/update the latest version of Yubico Authenticator
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-09-25
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-09-25
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
-
-echo "$NAME: @todo this redownloads every time."
-
-exit 0
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -18,16 +15,19 @@ fi
 
 INSTALL_TO='/Applications/Yubico Authenticator.app'
 
-ROOT_URL='https://developers.yubico.com/yubioath-desktop/Releases'
+ROOT_URL='https://developers.yubico.com/yubioath-flutter/Releases'
 
 RELEASE_NOTES_URL='https://developers.yubico.com/yubioath-desktop/Release_Notes.html'
 
 LATEST_FILE=$(curl -sfLS "$ROOT_URL" \
 		| tr '"|>|<' '\012' \
-		| egrep '\.pkg$' \
+		| egrep '\.dmg$' \
 		| head -1)
 
 URL="$ROOT_URL/$LATEST_FILE"
+
+# https://developers.yubico.com/yubioath-flutter/Releases//yubico-authenticator-7.1.1-mac.dmg
+# https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-7.1.1-mac.dmg
 
 LATEST_VERSION=$(echo "$LATEST_FILE:t:r" | tr -dc '[0-9]\.')
 
@@ -68,7 +68,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.pkg"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -95,15 +95,63 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-if (( $+commands[pkginstall.sh] ))
+echo "$NAME: Mounting $FILENAME:"
+
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
 then
-
-	pkginstall.sh "$FILENAME"
-
+	echo "$NAME: MNTPNT is empty"
+	exit 1
 else
-
-	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en | tee -a "$FILENAME:r.install.log" || open -R "$FILENAME"
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
+
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Successfully installed $INSTALL_TO"
+else
+	echo "$NAME: ditto failed"
+
+	exit 1
+fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
