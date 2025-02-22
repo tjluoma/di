@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: 	Download and install the latest version of Typinator
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-02-23
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-02-23
+# Verified:	2025-02-22 [@todo - RELEASE_NOTES don't work]
 
 NAME="$0:t:r"
 
@@ -16,7 +17,7 @@ INSTALL_TO="/Applications/Typinator.app"
 
 XML_FEED='https://update.ergonis.com/vck/typinator.xml'
 
-RELEASE_NOTES_URL='https://www.ergonis.com/products/typinator/history.html'
+RELEASE_NOTES_URL='https://ergonis.com/typinator/download'
 
 # for version 8.3 the download URL is
 # 	https://www.ergonis.com/downloads/products/typinator/Typinator83-Install.dmg
@@ -26,7 +27,8 @@ RELEASE_NOTES_URL='https://www.ergonis.com/products/typinator/history.html'
 
 URL="https://www.ergonis.com/downloads/typinator-install.dmg"
 
-LATEST_VERSION=$(curl -A "Safari" -sfLS "$XML_FEED" | awk -F'>|<' '/Program_Version/{print $3}')
+LATEST_VERSION=$(curl -A "Safari" -sfLS "$XML_FEED" \
+				| awk -F'>|<' '/Program_Version/{print $3}')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -72,10 +74,12 @@ then
 
 elif (( $+commands[lynx] ))
 then
-
+		# @todo - this does not work anymore.
+		# https://ergonis.com/typinator/download is the URL for release notes but it's ugly HTML
 	RELEASE_NOTES_TEXT=$(curl -A "Safari" -sfLS "$RELEASE_NOTES_URL" \
 						| awk '/<h1>/{i++}i==1' \
-						| lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin \
+						| lynx 	-dump -nomargins -width='10000' \
+								-display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin \
 						| grep '.' \
 						| sed -e 's#^    *##g' \
 						| sed G)
