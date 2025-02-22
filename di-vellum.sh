@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Vellum
+# Purpose: 	Download and install the latest version of Vellum
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-09-24, @TODO - check when not up-to-date
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-09-24, @TODO - check when not up-to-date
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 

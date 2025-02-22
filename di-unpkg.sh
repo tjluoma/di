@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of unpkg
-# Source: https://www.timdoug.com/unpkg/
+# Purpose: 	Download and install the latest version of unpkg
+# Source: 	https://www.timdoug.com/unpkg/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-20, verified 2018-08-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-20
+# Verified:	2025-02-22 [but I don't like it. No real XML_FEED.]
 
 NAME="$0:t:r"
 
@@ -33,7 +34,7 @@ then
 		# If we didn't find anything in the $CASK_FILE, then use '4.5 as a known version
 	[[ "$LATEST_VERSION" == "" ]] && LATEST_VERSION="4.5"
 else
-	LATEST_VERSION="4.5"
+	LATEST_VERSION="4.8"
 fi
 
 URL="https://www.timdoug.com/unpkg/unpkg-${LATEST_VERSION}.zip"

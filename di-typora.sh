@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: 	Download and install latest version of Typora from http://typora.io
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-12-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-12-11
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 

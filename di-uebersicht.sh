@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Übersicht from <https://github.com/felixhageloh/uebersicht>
+# Purpose: 	Download and install the latest version of Übersicht from <https://github.com/felixhageloh/uebersicht>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19, updated and verified 2018-08
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19, updated and verified 2018-08
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Übersicht.app"
