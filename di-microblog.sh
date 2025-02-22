@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of the Micro.Blog app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-10-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-10-15
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
