@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: 	Download and install Tower 2 or 3 (note that Tower 3 requires an annual subscription)
+# Purpose: 	Download and install Tower
 #
 # From:		Tj Luo.ma
 # Mail:		luomat at gmail dot com
@@ -22,6 +22,7 @@ then
 	source "$HOME/.path"
 fi
 
+OS_VER=$(sw_vers -productVersion)
 
 	# if you want to install beta releases
 	# create a file (empty, if you like) using this file name/path:
@@ -32,7 +33,7 @@ then
 	NAME="$NAME (beta releases)"
 	XML_FEED="https://updates.fournova.com/updates/tower3-mac/beta/?os_version=$OS_VER"
 else
-	# This is for non-beta
+		# This is for non-beta
 	XML_FEED="https://updates.fournova.com/updates/tower3-mac/stable/?os_version=$OS_VER"
 fi
 
