@@ -26,9 +26,6 @@ LATEST_FILE=$(curl -sfLS "$ROOT_URL" \
 
 URL="$ROOT_URL/$LATEST_FILE"
 
-# https://developers.yubico.com/yubioath-flutter/Releases//yubico-authenticator-7.1.1-mac.dmg
-# https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-7.1.1-mac.dmg
-
 LATEST_VERSION=$(echo "$LATEST_FILE:t:r" | tr -dc '[0-9]\.')
 
 	# If any of these are blank, we cannot continue
