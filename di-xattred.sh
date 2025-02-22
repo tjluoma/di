@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update latest version of xattred.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-05
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-05
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -12,15 +13,31 @@ then
 	source "$HOME/.path"
 fi
 
+HOMEPAGE='https://eclecticlight.co/xattred-sandstrip-xattr-tools/'
+
 INSTALL_TO='/Applications/xattred.app'
 
-TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
+LATEST_VERSION=$(curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" \
+				| egrep -B5 'xattred.*\.zip' \
+				| fgrep -A1 '<key>Version</key>' \
+				| fgrep '<string>' \
+				| sed 's#.*<string>##g ; s#</string>##g')
 
-curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" > "$TEMPFILE" || exit 1
+URL=$(curl -sfLS "https://raw.githubusercontent.com/hoakleyelc/updates/master/eclecticapps.plist" \
+		| egrep 'xattred.*\.zip' \
+		| sed 's#.*<string>##g ; s#</string>##g')
 
-LATEST_VERSION=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -B1 -i ' xattred$' | awk '{print $NF}' | head -1)
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"  >>/dev/stderr
 
-URL=$(/usr/libexec/PlistBuddy -c print "$TEMPFILE" | egrep -A1 -i ' xattred$' | awk '{print $NF}' | tail -1)
+	exit 1
+fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
