@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update the latest version of Trickster
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-13
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -24,16 +25,19 @@ then
 	source "$HOME/.path"
 fi
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| tr -s ' ' '\012' \
-		| egrep -i '^(url|sparkle:version|sparkle:shortVersionString)=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '//{print $2}'))
+INFO=$(curl -sfL "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| fgrep -v 'delta' )
 
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+LATEST_BUILD=$(echo "$INFO" | fgrep '<sparkle:version>' \
+				| sed 's#.*<sparkle:version>##g ; s#</sparkle:version>##g')
+
+LATEST_VERSION=$(echo "$INFO" | fgrep '<sparkle:shortVersionString>' \
+				| sed 	-e 's#.*<sparkle:shortVersionString>##g' \
+						-e 's#</sparkle:shortVersionString>##g')
+
+URL=$(echo "$INFO" | fgrep 'enclosure url=' \
+		| sed 's#.*enclosure url="##g ; s#".*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -95,10 +99,12 @@ if (( $+commands[lynx] ))
 then
 
 	( echo "$NAME: Release Notes for $INSTALL_TO:t:r ($LATEST_VERSION/$LATEST_BUILD):\n" ;
-		curl -sfL "$RELEASE_NOTES_URL" \
-		| sed '1,/<h1>/d; /<h1>/,$d' \
-		| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -stdin ;
-		echo "\nSource: <$RELEASE_NOTES_URL>" ) | tee "$FILENAME:r.txt"
+		echo "$INFO" | awk '/<description>/{i++}i==1' \
+		| sed 's#<description><\!\[CDATA##g' \
+		| sed '/<\/description>/,$d' \
+		| lynx 	-dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 \
+				-pseudo_inlines -stdin -nolist -nomargins -nonumbers ;
+		echo "\nSource: <$XML_FEED>" ) | tee "$FILENAME:r.txt"
 fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
