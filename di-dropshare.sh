@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest Dropshare
+# Purpose: 	Download and install/update the latest Dropshare
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-10-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-10-11
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -12,18 +13,16 @@ then
 	source "$HOME/.path"
 fi
 
-### XML_FEED='https://getdropsha.re/sparkle/Dropshare5.xml'
-## 2018-12-15 - SSL certificate not valid for 'getdropsha.re'
+	## 2025-02-22 - updated for version 6
+XML_FEED='https://dropshare.app/sparkle/Dropshare6.xml'
 
-XML_FEED='https://dropshare.app/sparkle/Dropshare5.xml'
+INSTALL_TO='/Applications/Dropshare 6.app'
 
 HOMEPAGE="https://dropshare.app"
 
 DOWNLOAD_PAGE="https://dropshare.app/download"
 
 SUMMARY="Upload Screen Shots, Screen Recordings, files, literally anything to you favorite hosting provider and share it immediately with anyone."
-
-INSTALL_TO='/Applications/Dropshare 5.app'
 
 INFO=($(curl -sfLS $XML_FEED \
 		| egrep '<sparkle:releaseNotesLink>|<enclosure url' \
