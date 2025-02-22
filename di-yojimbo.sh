@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update the latest version of Yojimbo
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-01-27
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-01-27
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -40,9 +41,6 @@ LATEST_VERSION=$(defaults read "$TEMPFILE" SUFeedEntryShortVersionString)
 LATEST_BUILD=$(defaults read "$TEMPFILE" SUFeedEntryVersion)
 
 MIN_VERSION=$(defaults read "$TEMPFILE" SUFeedEntryMinimumSystemVersion)
-
-OS_VER=$(sw_vers -productVersion)
-
 
 URL=$(defaults read "$TEMPFILE" SUFeedEntryDownloadURL)
 

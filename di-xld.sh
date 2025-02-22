@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of XLD from <https://sourceforge.net/projects/xld/>
+# Purpose: 	Download and install the latest version of XLD from <https://sourceforge.net/projects/xld/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-11
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 

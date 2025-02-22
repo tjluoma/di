@@ -1,12 +1,14 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install (or update) Xquartz
+# Purpose: 	Download and install (or update) Xquartz
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2014-06-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2014-06-10
+# Verified:	2025-02-22
 #
-# Updated 2018-07-17 - updated some of the code, removed the 'cache' feature since it is no longer needed,
-# and update the XML_FEED to new URL thanks to the Homebrew Cask folks.
+# Updated 2018-07-17 - updated some of the code, removed the 'cache' feature since
+# it is no longer needed, and update the XML_FEED to new URL thanks to the
+# Homebrew Cask folks.
 
 NAME="$0:t:r"
 

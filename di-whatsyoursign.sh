@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of "What's Your Sign?"
+# Purpose: 	Download and install/update the latest version of "What's Your Sign?"
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-13
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 

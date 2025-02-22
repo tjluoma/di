@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of xScope 4
+# Purpose: 	Download and install the latest version of xScope 4
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-23
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-23
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
