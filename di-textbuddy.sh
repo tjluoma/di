@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of TextBuddy.app
+# Purpose: 	Download and install the latest version of TextBuddy.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-03-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-03-02
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -14,7 +15,11 @@ fi
 
 INSTALL_TO='/Applications/TextBuddy.app'
 
-XML_FEED='https://shine.clickontyler.com/appcast.php?id=58'
+## 2025-02-22 - this seems to be an old URL, which still redirects, but we'll
+## 				deprecate it anyway.
+# XML_FEED='https://shine.clickontyler.com/appcast.php?id=58'
+
+XML_FEED='https://dash.retina.studio/appcast.php?id=58'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 | tr '\r' '\n' \
