@@ -1,17 +1,20 @@
 #!/usr/bin/env zsh -f
-# Purpose: https://aptonic.com/dropzone4/latest
+# Purpose: 	https://aptonic.com/dropzone4/latest
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-30
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-30
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Dropzone 4.app"
 
-HOMEPAGE="https://aptonic.com"
-
 DOWNLOAD_PAGE="https://aptonic.com/dropzone4/latest"
+
+XML_FEED='https://aptonic.com/sparkle4/updates.xml'
+
+HOMEPAGE="https://aptonic.com"
 
 SUMMARY="Dropzone is a productivity app for the Mac that makes it faster and easier to move and copy files, launch applications, upload to many different services, and more."
 
@@ -19,8 +22,6 @@ if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 fi
-
-XML_FEED='https://aptonic.com/sparkle4/updates.xml'
 
 INFO=($(curl -sSfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
