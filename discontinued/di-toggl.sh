@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of TogglDesktop.
+# Purpose:	Download and install/update the latest version of Toggl Track.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-05-22
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-05-22
+# Verified:	2025-02-22
 
 ## See notes at the bottom of the script regarding beta/non-beta releases
 
@@ -14,16 +15,32 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/TogglDesktop.app'
+INSTALL_TO='/Applications/Toggl Track.app'
 
 RELEASE_NOTES_URL='https://toggl.github.io/toggldesktop/'
 
-INFO=$(curl -sfLS "https://toggl.github.io/toggldesktop/" | awk '/<h3>/{i++}i==1')
+		# app is unchanged for 4 years, let's risk it and hard-code values
+# INFO=$(curl -sfLS "https://toggl.github.io/toggldesktop/" | awk '/<h3>/{i++}i==1')
+# URL=$(echo "$INFO" | tr '"' '\012' | egrep '^https.*\.dmg')
+	## CFBundleShortVersionString and CFBundleVersion are identical
+# LATEST_VERSION=$(echo "$URL:h:t" | tr -dc '[0-9]\.')
 
-URL=$(echo "$INFO" | tr '"' '\012' | egrep '^https.*\.dmg')
+URL='https://github.com/toggl-open-source/toggldesktop/releases/download/v7.5.441/TogglDesktop-7_5_441.dmg'
 
-	# CFBundleShortVersionString and CFBundleVersion are identical
-LATEST_VERSION=$(echo "$URL:h:t" | tr -dc '[0-9]\.')
+LATEST_VERSION='7.5.441'
+
+	# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"  >>/dev/stderr
+
+	exit 1
+fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
