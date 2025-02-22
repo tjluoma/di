@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of VPN Unlimited
+# Purpose: 	Download and install the latest version of VPN Unlimited
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-03; updated 2019-10-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-03; updated 2019-10-24
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
