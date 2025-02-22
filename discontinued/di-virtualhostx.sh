@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of VirtualHostX
+# Purpose: 	Download and install the latest version of VirtualHostX
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-07
+# Verified:	2025-02-22
 
 if [[ -e "$HOME/.path" ]]
 then
