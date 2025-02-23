@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install the latest version of Timing app (v2)
+# Purpose: 	Download and install the latest version of Timing app (v2)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-06-01
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-06-01
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -35,9 +36,11 @@ PUB_DATE=$(echo "$INFO" | fgrep -i '<pubDate>' | awk '{print $2" "$3" "$4}')
 	# 2021-06-01 - is a DMG
 URL=$(echo "$INFO" | fgrep '<enclosure ' | tr ' ' '\012' | awk -F'"' '/url/{print $2}')
 
-LATEST_VERSION=$(echo "$INFO" | fgrep '<enclosure ' | tr ' ' '\012' | awk -F'"' '/sparkle:shortVersionString/{print $2}')
+LATEST_VERSION=$(echo "$INFO" | fgrep '<enclosure ' | tr ' ' '\012' \
+				| awk -F'"' '/sparkle:shortVersionString/{print $2}')
 
-LATEST_BUILD=$(echo "$INFO" | fgrep '<enclosure ' | tr ' ' '\012' | awk -F'"' '/sparkle:version/{print $2}')
+LATEST_BUILD=$(echo "$INFO" | fgrep '<enclosure ' | tr ' ' '\012' \
+				| awk -F'"' '/sparkle:version/{print $2}')
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -105,8 +108,9 @@ else
 		RELEASE_NOTES=$(echo "$INFO" | sed '1,/CDATA/d; /\]\]/,$d' | html2text)
 
 		echo "${RELEASE_NOTES}\n\nPubDate: ${PUB_DATE}\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
 	else
-		echo "$RELEASE_NOTES_HTML" >>| "$RELEASE_NOTES_HTML"
+		echo "$RELEASE_NOTES_HTML" >>| "$RELEASE_NOTES_TXT"
 	fi
 
 fi

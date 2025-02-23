@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of iMazing
+# Purpose: 	Download and install the latest version of iMazing
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-01-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-01-02
+# Verified:	2025-02-22 [@TODO - release notes don't work]
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 

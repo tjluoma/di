@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Time Machine Editor
+# Purpose: 	Download and install the latest version of Time Machine Editor
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-11-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-11-13
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -22,7 +23,7 @@ TEMPFILE="${TMPDIR-/tmp}/${NAME}.$$.$RANDOM.plist"
 
 curl -sfLS -o "$TEMPFILE" "$FEED"
 
-INFO=($(defaults read "$TEMPFILE" | egrep -i ' (HumanVersion|Version|URL) =' | sort | awk '{print $NF}' | tr -d '"|;'))
+INFO=($(defaults read "$TEMPFILE" | egrep -i ' (HumanVersion|Version|URL) =' | head -3 | sort | awk '{print $NF}' | tr -d '"|;'))
 
 LATEST_VERSION="$INFO[1]"
 URL="$INFO[2]"
