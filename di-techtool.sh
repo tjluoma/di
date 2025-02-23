@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update the latest version of TechTool Pro
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-03-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-03-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
@@ -12,23 +13,21 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/TechTool Pro 13.app'
+HOMEPAGE='https://www.micromat.com/products/techtool-pro/'
 
-XML_FEED='https://micromat.com/updates/pro_13/appcast.xml'
+INSTALL_TO='/Applications/TechTool Pro 20.app'
 
-IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
-		| sed -e 's#^ *##g' -e 's#</sparkle:releaseNotesLink>#"#g' -e 's#<sparkle:releaseNotesLink xml:lang="en">#sparkle:releaseNotesLink="#g' \
-		| sort \
-		| egrep '^(sparkle:(version|releaseNotesLink|shortVersionString)|url)=' \
-		| awk -F'"' '{print $2}'))
+XML_FEED='https://micromat.com/updates/pro_20/appcast.xml'
 
-RELEASE_NOTES_URL="$INFO[1]"
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ')
 
-LATEST_VERSION="$INFO[2]"
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink xml:lang="en">##g ; s#</sparkle:releaseNotesLink>.*##g' )
 
-LATEST_BUILD="$INFO[3]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g' )
 
-URL="$INFO[4]"
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
+
+URL=$(echo "$INFO" | sed 's#.*<enclosure url="##g ; s#" .*##g' )
 
 # If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
