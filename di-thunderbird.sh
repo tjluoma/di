@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Thunderbird
+# Purpose: 	Download and install the latest version of Thunderbird
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-11-16
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-11-16
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
@@ -14,26 +15,25 @@ fi
 
 INSTALL_TO='/Applications/Thunderbird.app'
 
-	# LATEST_BUILD is identical to LATEST_VERSION
-LATEST_VERSION=$(curl -sfLS 'https://www.thunderbird.net/en-US/thunderbird/releases/' \
-				| egrep -i 'en-US/thunderbird/.*/releasenotes/' \
-				| fgrep -vi 'beta' \
-				| sed 's#.*/releasenotes/">##g' \
-				| tr -dc '[0-9]\.\n' \
-				| sort -n \
-				| tail -1)
+	## This will 'always' redirect to the latest version for macOS
+STATIC_URL='https://download.mozilla.org/?product=thunderbird-latest&os=osx&lang=en-US'
+
+	## 2025-02-22 - as of today's writing, this will download a DMG
+URL=$(curl -sfLS --head "$STATIC_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+
+LATEST_VERSION=$(echo "$URL" \
+	| sed 's#.*/pub/thunderbird/releases/##g ; s#/mac/en-US/.*##')
 
 	# If any of these are blank, we cannot continue
-if [ "$LATEST_VERSION" = "" ]
+if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
 	"
 
 	exit 1
 fi
-
-URL="https://ftp.mozilla.org/pub/thunderbird/releases/${LATEST_VERSION}/mac/en-US/Thunderbird%20${LATEST_VERSION}.dmg"
 
 if [[ -e "$INSTALL_TO" ]]
 then
