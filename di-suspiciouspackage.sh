@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Suspicious Package from <http://www.mothersruin.com/software/SuspiciousPackage/>
+# Purpose: 	Download and install the latest version of Suspicious Package from <http://www.mothersruin.com/software/SuspiciousPackage/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
@@ -19,38 +20,17 @@ DOWNLOAD_PAGE="https://www.mothersruin.com/software/downloads/SuspiciousPackage.
 
 SUMMARY="An Application for Inspecting macOS Installer Packages."
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+	# Note the URL is a plist not your ususal RSS/XML file for Sparkle
+INFO=$(curl -sfL "http://www.mothersruin.com/software/SuspiciousPackage/data/SuspiciousPackageVersionInfo.plist")
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+LATEST_VERSION=$(echo "$INFO" | fgrep -A1 "<key>CFBundleShortVersionString</key>" | tr -dc '[0-9]\.')
 
-if [ "$OS_VER" = "11" -o "$OS_VER" = "12"  ]
-then
-		# For macOS 10.12 (Sierra) or OS X 10.11 (El Capitan), use Version 3.4.1.
-	URL='https://www.mothersruin.com/software/downloads/SuspiciousPackage-3.4.1.dmg'
+LATEST_BUILD=$(echo "$INFO" | fgrep -A1 "<key>CFBundleVersion</key>" | tr -dc '[0-9]\.')
 
-	LATEST_VERSION='3.4.1'
+	# $INFO does not contain any download URLs
+URL='http://www.mothersruin.com/software/downloads/SuspiciousPackage.dmg'
 
-	LATEST_BUILD='395'
-
-	RELEASE_NOTES_URL=""
-
-else
-		# Note the URL is a plist not your ususal RSS/XML file for Sparkle
-	INFO=$(curl -sfL "http://www.mothersruin.com/software/SuspiciousPackage/data/SuspiciousPackageVersionInfo.plist")
-
-	LATEST_VERSION=$(echo "$INFO" | fgrep -A1 "<key>CFBundleShortVersionString</key>" | tr -dc '[0-9]\.')
-
-	LATEST_BUILD=$(echo "$INFO" | fgrep -A1 "<key>CFBundleVersion</key>" | tr -dc '[0-9]\.')
-
-		# $INFO does not contain any download URLs
-	URL='http://www.mothersruin.com/software/downloads/SuspiciousPackage.dmg'
-
-	RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
-
-fi
+RELEASE_NOTES_URL="https://www.mothersruin.com/software/SuspiciousPackage/relnotes.html"
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -97,7 +77,11 @@ else
 	if (( $+commands[lynx] ))
 	then
 
-		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL")
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+						| awk '/<td class="vnotes">/{i++}i==1' \
+						| sed '/<tr>/,$d' \
+						| lynx 	-dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 \
+								-pseudo_inlines -stdin  -nomargins -nonumbers)
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
 
