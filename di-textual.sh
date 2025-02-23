@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of the Textual IRC client from <https://www.codeux.com/textual/>
+# Purpose: 	Download/install the latest version of the Textual IRC client from <https://www.codeux.com/textual/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-15
+# Verified:	2025-02-22
 
 NAME="$0:t:r"
 
