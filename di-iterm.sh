@@ -1,34 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of iTerm
+# Purpose: 	Download and install the latest version of iTerm
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Original Date:	2016-01-19
-# Updated As Of:	2019-08-01 - added support for older versions of macOS and improved support for nightly / beta builds
-
-## NOTE:
-## By default, this script assumes that you want to check for 'Stable' releases of iTerm.app.
-## However, there are two other options: "Nightly" builds and "Test" (aka "Beta") builds.
-##
-## A nightly build is made at midnight Pacific time on days where a change was committed.
-## The change log may be seen on Github. Nightly builds sometimes have serious bugs.
-##
-## Test/Beta releases update many times a year and are occasionally unstable.
-##
-## If you want this script to download and install "Nightly" builds, create a file
-## at "$HOME/.iterm-prefer-nightly.txt"
-##
-## If you want this script to download and install "Test/Beta" builds, create a file
-## at "$HOME/.iterm-prefer-betas.txt"
-##
-## (If both files exist, it will be assumed that the user wants 'nightly' builds.)
-##
-## The contents of the file are ignored. The file only has to exist, so
-##
-##		touch "$HOME/.iterm-prefer-betas.txt"
-##
-## would be enough to indicate your preference.
-
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Original:	2016-01-19
+# Verified:	2025-02-22
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -44,13 +20,13 @@ DOWNLOAD_PAGE="https://iterm2.com/downloads.html"
 
 SUMMARY="iTerm2 brings the terminal into the modern age with features you never knew you always wanted."
 
-		## For Nightly Builds
-		# XML_FEED='https://iterm2.com/appcasts/nightly_new.xml'
+	## For Nightly Builds
+# XML_FEED='https://iterm2.com/appcasts/nightly_new.xml'
 
-		## For Beta Builds
-		# XML_FEED='https://iterm2.com/appcasts/testing_new.xml'
+	## For Beta Builds
+# XML_FEED='https://iterm2.com/appcasts/testing_new.xml'
 
-		## For regular Builds
+	## For regular Builds
 XML_FEED='https://iterm2.com/appcasts/final_modern.xml'
 
 
