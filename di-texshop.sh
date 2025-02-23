@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of TeXShop from http://pages.uoregon.edu/koch/texshop/
+# Purpose: 	Download and install the latest version of TeXShop from http://pages.uoregon.edu/koch/texshop/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
