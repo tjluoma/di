@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of TableFlip
+# Purpose: 	Download and install the latest version of TableFlip
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
@@ -15,7 +16,7 @@ HOMEPAGE="https://tableflipapp.com"
 
 DOWNLOAD_PAGE="https://tableflipapp.com/download"
 
-SUMMARY="_The_ Markdown table editor. (Requires at least macOS Yosemite and is ready for High Sierra.)"
+SUMMARY="_The_ Markdown table editor."
 
 if [[ -e "$HOME/.path" ]]
 then

@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Tap Forms 5
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
