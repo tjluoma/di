@@ -1,19 +1,20 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Texpad
+# Purpose: 	Download and install the latest version of Texifier (formerly Texpad)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/Texpad.app"
+INSTALL_TO="/Applications/Texifier.app"
 
-XML_FEED="https://www.texpadapp.com/static-collected/upgrades/texpadappcast.xml"
+XML_FEED="https://www.texifier.com/apps/updates/texifier/appcast-stable.xml"
 
-HOMEPAGE="https://www.texpadapp.com"
+HOMEPAGE="https://www.texifier.com/mac"
 
-DOWNLOAD_PAGE="https://www.texpad.com/osx"
+DOWNLOAD_PAGE="https://www.texifier.com/mac"
 
 SUMMARY="Texpad is a LaTeX editor designed for fast navigation around projects of all sizes. Given a single LaTeX root file, it will read through the LaTeX source, and that of all included files to present you with an outline of your project. Similarly Texpad reads the LaTeX console output, finding errors, and presenting them in a table you can use to jump straight to the errors in the LaTeX source."
 
@@ -27,12 +28,7 @@ fi
 # AND we need to skip the _first_ '<title>' because it is the <title> of the feed itself, whereas we want the
 # <title> of the first _entry_ in the feed
 
-IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
-		| fgrep -vi '<title>Texpad</title>' \
-		| egrep '<title>.*</title>|sparkle:version=|url=' \
-		| head -3 \
-		| sed 's#^[ 	]*##g' \
-		| sort ))
+INFO=$(curl -sfLS "$XML_FEED"| awk '/<item>/{i++}i==1')
 
 ## We end up with 3 lines, which should look something like this:
 # <enclosure url="https://download.texpadapp.com/apps/osx/updates/Texpad_1_8_5__404__f8f30e5.dmg"
@@ -42,12 +38,11 @@ IFS=$'\n' INFO=($(curl -sfL "$XML_FEED" \
 ## remove that from the LATEST_VERSION information, and _then_ we can get the LATEST_VERSION
 ## info by removing everything except digits and any literal '.'
 
-URL=`echo "$INFO[1]" | sed 's#<enclosure url="##g ; s#"##g;'`
+URL=$(echo "$INFO" | fgrep '<enclosure url=' | sed 's#.*<enclosure url="##g ; s#"##g;')
 
-LATEST_BUILD=`echo "$INFO[3]" | tr -dc '[0-9]'`
+LATEST_BUILD=$(echo "$INFO" | fgrep "sparkle:version=" | sed 's#.*sparkle:version="##g ; s#"##g')
 
-	# Make sure we get LATEST_BUILD _before_ we try to get this
-LATEST_VERSION=`echo "$INFO[2]" | sed "s#\(${LATEST_BUILD}\)##g;" | tr -dc '[0-9]\.'`
+LATEST_VERSION=$(echo "$INFO" | fgrep "<title>" | sed "s#.*Texifier ##g; s# ($LATEST_BUILD).*##g" )
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
