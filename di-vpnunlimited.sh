@@ -5,6 +5,12 @@
 # Mail:		luomat at gmail dot com
 # Date:		2018-08-03; updated 2019-10-24
 # Verified:	2025-02-22
+#
+#
+# 2018-08-09 - 	RELEASE_NOTES_URL ☹️ cannot find a change log or release notes page anywhere.
+#
+# 2025-02-22 - 	The Mac App Store version is at 9.1 even though the "direct" version is at 8.7
+# 				https://apps.apple.com/us/app/vpn-unlimited-for-mac/id727593140?mt=12
 
 NAME="$0:t:r"
 
@@ -16,18 +22,14 @@ DOWNLOAD_PAGE="https://www.vpnunlimitedapp.com/en/downloads/mac"
 
 SUMMARY="VPN Unlimited allows you to protect your privacy and get unlimited access to your favorite Web sites worldwide."
 
-## 2018-08-09 - RELEASE_NOTES_URL ☹️ cannot find a change log or release notes page anywhere.
-
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
 fi
 
-UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15'
+URL="https://www.vpnunlimited.com/api/keepsolid/vpn-download?platform=mac"
 
-URL='https://www.vpnunlimitedapp.com/download/mac'
-
-REMOTE_FILENAME=$(curl -sS --head --location "$URL" | awk -F'"' '/^content-disposition/{print $2}')
+REMOTE_FILENAME=$(curl -sS --head --location "$URL" | awk -F' |\r' '/^.ocation:/{print $2}')
 
 LATEST_VERSION=$(echo "$REMOTE_FILENAME:t:r" | tr -dc '[0-9]\.')
 
