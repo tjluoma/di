@@ -5,10 +5,6 @@
 # Mail:		luomat at gmail dot com
 # Date:		2014-06-10
 # Verified:	2025-02-22
-#
-# Updated 2018-07-17 - updated some of the code, removed the 'cache' feature since
-# it is no longer needed, and update the XML_FEED to new URL thanks to the
-# Homebrew Cask folks.
 
 NAME="$0:t:r"
 
@@ -30,19 +26,17 @@ zmodload zsh/datetime
 function timestamp { strftime "%Y-%m-%d--%H.%M.%S" "$EPOCHSECONDS" }
 
 ########################################################################################################################
+#
+#	There are at least 4 XML_FEEDs available
+# 	These 3 are from https://www.xquartz.org/releases/index.html
+#
+# defaults write org.xquartz.X11 SUFeedURL https://www.xquartz.org/releases/sparkle-r1/alpha.xml
+# defaults write org.xquartz.X11 SUFeedURL https://www.xquartz.org/releases/sparkle-r1/beta.xml
+# defaults write org.xquartz.X11 SUFeedURL https://www.xquartz.org/releases/sparkle-r1/rc.xml
 
-	# if you want to install beta releases
-	# create a file (empty, if you like) using this file name/path:
-PREFERS_BETAS_FILE="$HOME/.config/di/xquartz-prefer-betas.txt"
-
-if [[ -e "$PREFERS_BETAS_FILE" ]]
-then
-	XML_FEED='https://www.xquartz.org/releases/sparkle/beta.xml'
-	NAME="$NAME (beta releases)"
-else
 	# This is for non-beta
-	XML_FEED='https://www.xquartz.org/releases/sparkle/release.xml'
-fi
+XML_FEED='https://www.xquartz.org/releases/sparkle-r1/release.xml'
+
 
 # sparkle:shortVersionString exists in the feed, but sparkle:version/CFBundleVersion is the important number to check
 
@@ -138,7 +132,7 @@ fi
 
 ########################################################################################################################
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-$LATEST_VERSION.pkg"
 
 if (( $+commands[lynx] ))
 then
@@ -170,50 +164,13 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-MNTPNT=$(echo -n "Y" \
-	| hdid -plist "$FILENAME" 2>/dev/null \
-	| fgrep -A 1 '<key>mount-point</key>' \
-	| tail -1 \
-	| sed 's#</string>.*##g ; s#.*<string>##g')
-
-if [ "$MNTPNT" = "" ]
-then
-	msgs "MNTPNT is empty"
-	exit 0
-fi
-
-PKG=`find "$MNTPNT" -maxdepth 1 -iname \*.pkg`
-
-if [ "$PKG" = "" ]
-then
-	msgs "PKG is empty"
-	exit 0
-fi
-
-msgs "Installing $PKG (this may take awhile...)"
-
 if (( $+commands[pkginstall.sh] ))
 then
-	pkginstall.sh "$PKG"
+	pkginstall.sh "$FILENAME"
 else
-	sudo /usr/sbin/installer -verbose -pkg "$PKG" -target / -lang en 2>&1 | tee -a "$LOG"
+	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en 2>&1
 fi
 
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-
-	msg "Successfully installed XQuartz.app version $LATEST_VERSION"
-
-	diskutil eject "$MNTPNT"
-
-else
-	msg "FAILED to install XQuartz.app version $LATEST_VERSION (exit = $EXIT)"
-
-	exit 1
-fi
-
-exit
+exit 0
 #
 #EOF
