@@ -7,6 +7,10 @@
 
 NAME="$0:t:r"
 
+echo "$NAME: New repo home at https://github.com/dena-sohrabi/There"
+
+exit 1
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
