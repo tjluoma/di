@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update Backblaze
+# Purpose: 	Download and install (but not update) Backblaze
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-10-06
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-10-06
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -12,52 +13,31 @@ then
 	source "$HOME/.path"
 fi
 
-echo "$NAME: URL stopped working 2021-10-26 @todo" >>/dev/stderr
-
-exit 2
-
-
-INSTALL_TO="/Library/PreferencePanes/BackblazeBackup.prefPane"
-
+########################################################################################################
+#
+# 		this section is old/outdated but I didn't want to get rid of it for future reference.
+#
 # mac_version="5.4.0.246" mac_url="%DEST_HOST%/api/install_backblaze?file=bzinstall-mac-5.4.0.246.zip"
+#
+# INFO=($(curl -sfLS 'https://secure.backblaze.com/api/clientversion.xml' | awk -F'"' '/mac_version/{print $2" "$4}'))
+#
+# LATEST_VERSION="$INFO[1]"
+#
+# URL=$(echo "$INFO[2]" | sed 's#%DEST_HOST%#https://secure.backblaze.com#g')
 
-INFO=($(curl -sfLS 'https://secure.backblaze.com/api/clientversion.xml' | awk -F'"' '/mac_version/{print $2" "$4}'))
+INSTALL_TO="/Applications/Backblaze.app"
 
-LATEST_VERSION="$INFO[1]"
-
-URL=$(echo "$INFO[2]" | sed 's#%DEST_HOST%#https://secure.backblaze.com#g')
-
-# URL='https://secure.backblaze.com/mac/install_backblaze.dmg'
+URL='https://secure.backblaze.com/mac/install_backblaze.dmg'
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString)
-
-	autoload is-at-least
-
-	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
-
-	VERSION_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" ]
-	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-		exit 0
-	fi
-
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
-
-	FIRST_INSTALL='no'
-	ACTION_WORD='upgrade'
-
-else
-
-	FIRST_INSTALL='yes'
-	ACTION_WORD='installation'
+	echo "$NAME: This script will install, but not update, Backblaze."
+	echo "	Found '$INSTALL_TO'. Exiting."
+	exit 0
 fi
 
-FILENAME="$HOME/Downloads/Backblaze-${LATEST_VERSION}.zip"
+FILENAME="$HOME/Downloads/Backblaze.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -72,41 +52,24 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-	# if there is already an instance of 'bzdoinstall' running, don't start another, just quit
-pgrep -x -q bzdoinstall \
-&& echo "$NAME: 'bzdoinstall' is already running." \
-&& exit 0
+echo "$NAME: Mounting $FILENAME:"
 
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: Unzip successful to '$UNZIP_TO':"
+	echo "$NAME: MNTPNT is empty"
+	exit 1
 else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
-	exit 1
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
-TARGET="$UNZIP_TO/bzdoinstall.app"
+echo "$NAME: Opening '$MNTPNT/Backblaze Installer.app' ..."
 
-if [[ ! -d "$TARGET" ]]
-then
-	echo "$NAME: Nothing found at '$TARGET'!"
-	exit 1
-fi
-
-	# The app will install / update an existing installation, so all we need to do it launch it
-echo "$NAME: Launching '$TARGET'. User action required to finish $ACTION_WORD of Backblaze."
-
-open "$TARGET"
+open -a "$MNTPNT/Backblaze Installer.app"
 
 exit 0
 #EOF
