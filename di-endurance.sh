@@ -26,7 +26,7 @@ fi
 INFO=($(curl -sfL "${XML_FEED}" \
 		| tr -s ' ' '\012' \
 		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
+		| tail -3 \
 		| sort \
 		| awk -F'"' '/^/{print $2}'))
 
