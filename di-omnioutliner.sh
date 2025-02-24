@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install OmniOutliner 4 or 5
+# Purpose: 	Download and install OmniOutliner 4 or 5
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-21
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
