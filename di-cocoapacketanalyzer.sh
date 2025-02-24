@@ -23,53 +23,70 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
+	# OLD
+	# XML_FEED='http://www.tastycocoabytes.com/cpa/updates/appcast.xml'
 
-# OLD (but identical?)
-# XML_FEED="http://www.tastycocoabytes.com/cpa/updates/appcasting.php"
+XML_FEED='https://www.tastycocoabytes.com/cpa/updates/appcast2.xml'
 
-XML_FEED='http://www.tastycocoabytes.com/cpa/updates/appcast.xml'
+INFO=$(curl -sfLS "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| tr -s '\012' ' ')
 
-INFO=($(curl -sfL "$XML_FEED" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version=|url=' \
-		| tail -2 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g')
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g; s#</sparkle:shortVersionString>.*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g; s#</sparkle:version>.*##g')
+
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g; s#" .*##g')
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = ""  -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	INFO: $INFO
-	LATEST_VERSION: $LATEST_VERSION
-	URL: $URL
+	INFO: 			$INFO
+	LATEST_VERSION:	$LATEST_VERSION
+	LATEST_BUILD: 	$LATEST_BUILD
+	URL: 			$URL
 	"
 
 	exit 1
 fi
 
-if [[ "$LATEST_VERSION" == "$INSTALLED_VERSION" ]]
+
+if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
-	exit 0
-fi
 
-autoload is-at-least
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
-if [ "$?" = "0" ]
-then
-	echo "$NAME: Up-To-Date (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
-	exit 0
-fi
+	autoload is-at-least
 
-echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSION)"
+	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
+
+	VERSION_COMPARE="$?"
+
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	then
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		exit 0
+	fi
+
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+
+	FIRST_INSTALL='no'
+
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
 
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
@@ -80,17 +97,31 @@ echo "$NAME: Outdated (Installed = $INSTALLED_VERSION vs Latest = $LATEST_VERSIO
 		exit 0
 	fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+else
 
-if (( $+commands[lynx] ))
+	FIRST_INSTALL='yes'
+fi
+
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
+
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
 then
 
-	(curl -sfLS 'http://www.tastycocoabytes.com/cpa/history.php' \
-	| awk '/<ul>/{i++}i==1' \
-	| sed '$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ; \
-		echo "\nURL: $URL\nSource: http://www.tastycocoabytes.com/cpa/history.php\n" \
-	 ) | tee "$FILENAME:r.txt"
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin  -nomargins -nonumbers)
+
+		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
+	fi
 
 fi
 
@@ -109,88 +140,63 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-## make sure that the .zip is valid before we proceed
-(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+echo "$NAME: Mounting $FILENAME:"
 
-EXIT="$?"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-if [ "$EXIT" = "0" ]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: '$FILENAME' is a valid zip file."
-
-else
-	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-	mv -fv "$FILENAME" "$HOME/.Trash/"
-
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
-	exit 0
-
-fi
-
-## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
-then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
+
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-	# Move the file out of the folder
-	# Note the extra "$INSTALL_TO:t:r" which is not usually necessary
-mv -vn "$UNZIP_TO/$INSTALL_TO:t:r/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #EOF
