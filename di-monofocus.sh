@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: a Mac menu bar app that reminds you what to work on right now.
+# Purpose: 	a Mac menu bar app that reminds you what to work on right now.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-11-06
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-11-06
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
