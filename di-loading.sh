@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Loading - Simple network activity monitor for OS X
+# Purpose: 	Loading - Simple network activity monitor for OS X
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-07-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-07-03
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
