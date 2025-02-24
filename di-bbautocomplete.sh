@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download the latest version of BBAutoComplete from https://c-command.com/bbautocomplete/
+# Purpose: 	Download the latest version of BBAutoComplete from https://c-command.com/bbautocomplete/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-17
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 

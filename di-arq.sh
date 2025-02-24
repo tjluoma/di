@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install Arq 7
+# Purpose: 	Download and install Arq 7
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-02-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-02-03
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 

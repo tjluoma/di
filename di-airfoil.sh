@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Airfoil (and Airfoil Satellite)
+# Purpose: 	Download and install the latest version of Airfoil (and Airfoil Satellite)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-28
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
