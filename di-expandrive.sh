@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and Install the latest version of ExpanDrive for Mac from <http://www.expandrive.com>
+# Purpose: 	Download and Install the latest version of ExpanDrive for Mac from <http://www.expandrive.com>
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-07-30
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-07-30
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
