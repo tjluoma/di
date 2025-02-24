@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of EasyFind
+# Purpose: 	Download and install/update the latest version of EasyFind
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-21
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
