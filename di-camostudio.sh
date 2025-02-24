@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Camo Studio
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-07-25
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-07-25
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
