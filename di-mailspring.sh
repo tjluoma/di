@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: get the latest version of Mailspring from https://getmailspring.com
+# Purpose: 	get the latest version of Mailspring from https://getmailspring.com
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-20
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
