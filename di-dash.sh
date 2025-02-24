@@ -1,11 +1,13 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Dash (3, 4, or 5)
+# Purpose: 	Download and install the latest version of Dash (3, 4, or 5)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-20
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
+
 INSTALL_TO='/Applications/Dash.app'
 
 HOMEPAGE="https://kapeli.com/dash"
