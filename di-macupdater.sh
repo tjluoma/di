@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of MacUpdater
+# Purpose: 	Download and install the latest version of MacUpdater
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-27; 2019-11-07 switched to DMG instead of zip
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-27; 2019-11-07 switched to DMG instead of zip
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -17,7 +18,7 @@ SUMMARY="MacUpdater can automatically track the latest updates of all applicatio
 
 # XML_FEED='https://www.corecode.io/macupdater/macupdater.xml'  ## VERSION 1
 
-XML_FEED='https://www.corecode.io/macupdater/macupdater2.xml'
+XML_FEED='https://www.corecode.io/macupdater/macupdater3.xml'
 
 if [[ -e "$HOME/.path" ]]
 then
