@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Soulver from <http://www.acqualia.com/soulver/>
+# Purpose: 	Download and install the latest version of Soulver from <http://www.acqualia.com/soulver/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-23
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
