@@ -4,7 +4,7 @@
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-10
-# @TODO - rework completely
+# Was replaced by <https://github.com/matryer/xbar>
 
 if [[ -e "$HOME/.path" ]]
 then
