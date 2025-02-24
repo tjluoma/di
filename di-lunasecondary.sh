@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install/update Luna Secondary
+# Purpose: 	Download and install/update Luna Secondary
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-19
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
