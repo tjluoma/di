@@ -1,19 +1,20 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest BitTorrent Sync (aka Resilio Sync)
+# Purpose: Download and install latest version of Resilio Sync
 #
 # From:	Tj Luo.ma
 # Mail:	luomat at gmail dot com
 # Web: 	http://RhymesWithDiploma.com
 # Date:	2014-10-11
-
-	# 2018-08-02 - this is what the newest version available calls itself
-#INSTALL_TO='/Applications/BitTorrent Sync.app'
+# @TODO - not sure this works anymore for a clean install or an update
 
 INSTALL_TO='/Applications/Resilio Sync.app'
 
 HOMEPAGE="https://www.resilio.com"
 
-DOWNLOAD_PAGE="https://download-cdn.resilio.com/stable/osx/Resilio-Sync.dmg"
+	# 2025-02-23 - this link is now 404
+# DOWNLOAD_PAGE="https://download-cdn.resilio.com/stable/osx/Resilio-Sync.dmg"
+
+DOWNLOAD_PAGE='https://download-cdn.resilio.com/stable/mac/osx/0/Resilio-Sync.dmg'
 
 SUMMARY="Sync any folder to all your devices. Sync photos, videos, music, PDFs, docs or any other file types to/from your mobile phone, laptop, or NAS."
 
