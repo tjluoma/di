@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Script Debugger
+# Purpose: Download and install the latest version of Script Debugger 7
 #
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
