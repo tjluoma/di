@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Catch from <https://kaylees.site/catch.html>
+# Purpose: 	Download and install the latest version of Catch from <https://kaylees.site/catch.html>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-18
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-18
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
