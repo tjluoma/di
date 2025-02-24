@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install/update latest version of NetNewsWire
+# Purpose: 	Download and install/update latest version of NetNewsWire
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-13
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -16,9 +17,6 @@ INSTALL_TO='/Applications/NetNewsWire.app'
 
 	# I assume there will be a non-beta URL soon, but maybe the beta URL will live on?
 XML_FEED='https://ranchero.com/downloads/netnewswire-beta.xml'
-
-	# requires Mojave
-MIN_REQUIRED='10.14.4'
 
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM.xml"
 
@@ -127,28 +125,6 @@ else
 	exit 0
 
 fi
-
-## Check version is new enough
-
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
-
-autoload is-at-least
-
-is-at-least "$MIN_REQUIRED"  "$OS_VER"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "1" ]]
-then
-
-	echo "$NAME: NetNewsWire requires '$MIN_REQUIRED' but this Mac is running '$OS_VER'. The file has been downloaded, but will not be installed:\n${FILENAME}\n"
-
-	exit 0
-
-fi
-
-# If we get this far, we can install
-
 
 ## unzip to a temporary directory
 UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
