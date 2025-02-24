@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Screens 4
+# Purpose: 	Download and install Screens 4
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-21 ; 2019-11-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-21 ; 2019-11-15
+# Verified:	2025-02-23 [version 5 is Mac App Store only and a subscription]
 
 NAME="$0:t:r"
 

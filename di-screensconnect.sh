@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Screens Connect
+# Purpose: 	Download and install the latest version of Screens Connect
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-17
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

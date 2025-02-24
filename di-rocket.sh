@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Rocket from <https://matthewpalmer.net/rocket/>
+# Purpose: 	Download and install the latest version of Rocket from <https://matthewpalmer.net/rocket/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-09; major update 2019-09-25
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-09; major update 2019-09-25
+# Verified:	2025-02-23
 
 
 ## 2019-09-25 there are two of these. They both seem current. The former has 1 release missing from the latter.
