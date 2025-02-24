@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: get the beta of Drafts for Mac
+# Purpose: 	get the beta of Drafts for Mac
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-04-09
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-04-09
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
