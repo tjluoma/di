@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Downie
+# Purpose: 	Download and install the latest version of Downie
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-02-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-02-21
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
