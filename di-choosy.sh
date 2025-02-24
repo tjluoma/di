@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download Choosy v2
+# Purpose: 	Download and install/update Choosy v2
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-11-01
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-11-01
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
