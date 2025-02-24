@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of DevonThink 3
+# Purpose: 	Download and install/update the latest version of DevonThink 3
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-01-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-01-24
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
