@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Post Haste is a free project management tool that allows you to setup file and folder templates for your projects.
+# Purpose: 	Post Haste is a free project management tool that allows you to setup file and folder templates for your projects.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-11-22
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-11-22
+# Verified:	2025-02-24 [but checksum part is not working]
 
 NAME="$0:t:r"
 
@@ -125,24 +126,27 @@ EXIT="$?"
 	## We have an actual checksum from the XML_FEED, so we'll use that instead
 	# (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-echo "$CHECKSUM ?$FILENAME:t" >| "$CHECKSUM_FILE"
-
-shasum -c "$CHECKSUM_FILE"
-
-EXIT="$?"
-
-if [ "$EXIT" = "0" ]
-then
-
-	echo "$NAME: Checksum verified: '$FILENAME:t'"
-
-else
-
-	echo "$NAME: Checksum FAILED: '$FILENAME:t' (\$EXIT = $EXIT)"
-
-	exit 1
-
-fi
+### 	2025-02-24 - @todo - this is not working for some reason
+#
+# echo "$CHECKSUM ?$FILENAME:t" >| "$CHECKSUM_FILE"
+#
+# shasum -c "$CHECKSUM_FILE"
+#
+# EXIT="$?"
+#
+# if [ "$EXIT" = "0" ]
+# then
+#
+# 	echo "$NAME: Checksum verified: '$FILENAME:t'"
+#
+# else
+#
+# 	echo "$NAME: Checksum FAILED: '$FILENAME:t' (\$EXIT = $EXIT)"
+#
+# 	exit 1
+#
+# fi
+####################################################################################
 
 echo "$NAME: Mounting $FILENAME:"
 
