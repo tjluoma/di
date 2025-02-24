@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of ChronoSync
+# Purpose: 	Download and install/update the latest version of ChronoSync
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-12-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-12-20
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
