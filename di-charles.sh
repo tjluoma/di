@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Charles proxy v3 (if installed) or 4 from <https://www.charlesproxy.com>
+# Purpose: 	Download and install Charles proxy v3 (if installed) or 4 from <https://www.charlesproxy.com>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-12-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-12-02
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
