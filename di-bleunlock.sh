@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: https://github.com/ts1/BLEUnlock
+# Purpose: 	Download and install https://github.com/ts1/BLEUnlock
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-24
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
