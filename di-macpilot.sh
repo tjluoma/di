@@ -1,9 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Version 13
+# Purpose: 	Download and install/update the latest version of MacPilot
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-09-18
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-09-18
+# @TODO:	RELEASE_NOTES needs updating
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -27,7 +29,7 @@ fi
 	# The feed only has one entry in it
 XML_FEED='https://www.koingosw.com/postback/versioncheck.php?appname=macpilot&type=sparkle'
 
-LATEST_VERSION=$(curl -sfLS "$XML_FEED" | tr -s ' |\t' '\12' | awk -F'"' '/sparkle:version/{print $2}')
+LATEST_VERSION=$(curl -sfLS "$XML_FEED" | fgrep '<version>' | sed 's#</version##g ; s#.*<version>##g')
 
 	# does not change
 URL="https://www.koingosw.com/products/getmirrorfile.php?path=%2Fproducts%2Fmacpilot%2Fdownload%2Fmacpilot.dmg"
