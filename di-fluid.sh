@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Fluid (1 or 2, depending on which, if either, is installed)
+# Purpose: 	Download and install the latest version of Fluid (1 or 2, depending on which, if either, is installed)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-20
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
