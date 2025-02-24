@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of OmniPlan (3)
+# Purpose: 	Download and install the latest version of OmniPlan (4)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-05-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-05-10
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -24,7 +25,7 @@ LAUNCH='no'
 
 ## Note: Downloads are available in tbz2 and dmg but dmg has EULA so I use tbz2
 
-XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniPlan3"
+XML_FEED="http://update.omnigroup.com/appcast/com.omnigroup.OmniPlan4"
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tidy --input-xml yes --output-xml yes --show-warnings no --force-output yes --quiet yes --wrap 0  \
