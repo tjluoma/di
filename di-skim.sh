@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Skim from <https://skim-app.sourceforge.io>
+# Purpose: 	Download and install the latest version of Skim from <https://skim-app.sourceforge.io>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-06-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-06-02
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

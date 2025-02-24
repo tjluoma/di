@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Sharpshooter
+# Purpose: 	Download and install the latest version of Sharpshooter
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-10
+# Verified:	2025-02-23 [no longer sold or supported, but still downloads]
 
 NAME="$0:t:r"
 

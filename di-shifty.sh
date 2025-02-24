@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Shifty from <https://shifty.natethompson.io/en/>
+# Purpose: 	Download and install the latest version of Shifty from <https://shifty.natethompson.io/en/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-05
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-05
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

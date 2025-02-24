@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: http://www.dejal.com/simon
+# Purpose: 	Download and install the latest version of http://www.dejal.com/simon
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-14
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

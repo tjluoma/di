@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Eject volumes from the menu bar
+# Purpose: 	Eject volumes from the menu bar
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-01
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-01
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

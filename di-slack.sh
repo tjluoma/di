@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download the direct (not Mac App Store) version of Slack from <https://slack.com>
+# Purpose: 	Download the direct (not Mac App Store) version of Slack from <https://slack.com>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-12-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-12-17
+# Verified:	2025-02-23
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 

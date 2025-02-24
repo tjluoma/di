@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Sloth (GUI for lsof) from <http://sveinbjorn.org/sloth>
+# Purpose: 	Download and install the latest version of Sloth (GUI for lsof) from <http://sveinbjorn.org/sloth>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-18
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-18
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
