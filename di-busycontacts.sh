@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Busy Contacts
+# Purpose: 	Download and install the latest version of Busy Contacts
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-10
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -119,30 +120,7 @@ mv -f "$FILENAME" "$HOME/.Trash/"
 
 mv -vf "BusyContacts Installer.pkg" "$PKG" || die "Rename of $PKG failed"
 
-if (( $+commands[unpkg.py] ))
-then
-	# Get unpkg.py from https://github.com/tjluoma/unpkg/blob/master/unpkg.py
-
-	echo "$NAME: running 'unpkg.py' on '$PKG':"
-
-	UNPKG=`unpkg.py "$PKG" 2>&1`
-
-	[[ "$UNPKG" == "" ]] && die "unpkg.py failed"
-
-	EXTRACTED_TO=$(echo "$UNPKG" | egrep '^Extracted to ' | sed 's#Extracted to "##g ; s#".##g')
-
-	[[ "$EXTRACTED_TO" == "" ]] && die "unpkg.py failed (EXTRACTED_TO empty)"
-
-	if [[ -e "$INSTALL_TO" ]]
-	then
-			# If there's an existing installation, move it to the trash
-		echo "$NAME: moving '$INSTALL_TO' to Trash..."
-		mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}.app"
-	fi
-
-	mv -vf "$EXTRACTED_TO" "$INSTALL_TO" || die 'move failed'
-
-elif (( $+commands[pkginstall.sh] ))
+if (( $+commands[pkginstall.sh] ))
 then
 
 	pkginstall.sh "$PKG" || die "pkginstall.sh failed"
