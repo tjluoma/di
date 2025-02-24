@@ -15,7 +15,9 @@ fi
 
 INSTALL_TO='/Applications/Luna Secondary.app'
 
-XML_FEED='https://s3.lunadisplay.com/downloads/luna-secondary-sparkle.xml'
+# XML_FEED='https://s3.lunadisplay.com/downloads/luna-secondary-sparkle.xml'
+
+XML_FEED='https://downloads.astropad.com/luna-secondary/mac/sparkle.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 | tr -s '\t|\012' ' ' \
