@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install iStat Menus 5 or 6 from <https://bjango.com/mac/istatmenus/>
+# Purpose: 	Download and install iStat Menus 5 or 6 from <https://bjango.com/mac/istatmenus/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-20
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
