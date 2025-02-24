@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Simple and Elegant Markdown Editor - Focused on speed and usability.
+# Purpose: 	Simple and Elegant Markdown Editor - Focused on speed and usability.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-11-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-11-10
+# Verified:	2025-02-24 [hardcoded URL and LATEST_VERSION]
 
 NAME="$0:t:r"
 
