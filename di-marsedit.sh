@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and Install latest version of MarsEdit 3 or 4 depending on what is installed or requested.
+# Purpose: 	Download and Install latest version of MarsEdit 3 or 4 depending on what is installed or requested.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-21
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
