@@ -20,34 +20,9 @@ DOWNLOAD_PAGE="https://www.red-sweater.com/marsedit/MarsEditLatest.zip"
 
 SUMMARY="Write, preview, publish, and archive your blog from a Mac."
 
-function use_v3 {
-	XML_FEED='https://www.red-sweater.com/marsedit/appcast3.php'
-	ASTERISK='(Note that version 4 is now available.)'
-}
-
-function use_v4 { XML_FEED='https://www.red-sweater.com/marsedit/appcast4.php' }
+XML_FEED='https://www.red-sweater.com/marsedit/appcast5.php'
 
 RELEASE_NOTES_URL="$XML_FEED"
-
-if [[ -e "$INSTALL_TO" ]]
-then
-		# if v3 is installed, check that. Otherwise, use v4
-	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
-
-	if [[ "$MAJOR_VERSION" == "3" ]]
-	then
-		use_v3
-	else
-		use_v4
-	fi
-else
-	if [ "$1" = "--use3" -o "$1" = "-3" ]
-	then
-		use_v3
-	else
-		use_v4
-	fi
-fi
 
 	# Should the app be launched after install?
 	# set to 'yes' if that is what you prefer
