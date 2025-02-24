@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of PDF Expert
+# Purpose: 	Download and install the latest version of PDF Expert
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-11-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-11-14
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 

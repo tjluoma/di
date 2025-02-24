@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Permute
+# Purpose: 	Download and install the latest version of Permute
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-10-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-10-02
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 

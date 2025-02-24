@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:  Download and install/update the latest version of 'Paparazzi!' from <https://derailer.org/paparazzi/>
+# Purpose:	Download and install/update the latest version of 'Paparazzi!' from <https://derailer.org/paparazzi/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-25
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-25
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -93,7 +94,7 @@ then
 	(echo -n "$NAME: Release Notes for $INSTALL_TO:t:r " ;
 	curl -sfLS "$RELEASE_NOTES_URL" \
 	| awk '/<h2 /{i++}i==1' \
-	| html2text -style pretty \
+	| html2text \
 	| sed '/./,/^$/!d' ;
 	echo "\nSource: <$RELEASE_NOTES_URL>" )  | tee "$FILENAME:r.txt"
 
