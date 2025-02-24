@@ -1,9 +1,14 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of the Aerial screen saver for Mac
+# Purpose: 	Download and install the latest version of the Aerial screen saver
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-05
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-05
+# Verified:	2025-02-24
+
+# This is an odd one, because the best way to install the screensaver is
+# to install a companion app. So we need to check one thing, and install
+# another. Which seems like it's bound to have issues. But we'll try it.
 
 NAME="$0:t:r"
 
@@ -26,8 +31,6 @@ else
 	INSTALL_TO="$HOME/Library/Screen Savers/Aerial.saver"
 
 fi
-
-## @TODO - potential bug? What happens if is installed _both_ places? What _should_ happen?
 
 XML_FEED='https://github.com/JohnCoates/Aerial/releases.atom'
 
@@ -71,7 +74,17 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.zip"
+	# if the companion app is already there, launch it
+if [[ -e "/Applications/Aerial Companion.app" ]]
+then
+	echo "$NAME: Launching '/Applications/Aerial Companion.app'..."
+	exit 0
+fi
+
+
+	# If the companion app is not found, download and install it
+
+FILENAME="$HOME/Downloads/Aerial.Companion.zip"
 
 if (( $+commands[lynx] ))
 then
@@ -119,45 +132,24 @@ else
 	exit 1
 fi
 
-if [[ -e "$INSTALL_TO" ]]
-then
-
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" != "0" ]]
-	then
-
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
-
-		exit 1
-	fi
-fi
-
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
-
-	# Move the file out of the folder
-mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+	# Move the Companion app to the Applications folder
+mv -vn "$UNZIP_TO/Aerial Companion.app" "/Applications/Aerial Companion.app"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
 
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: Successfully moved '$UNZIP_TO/Aerial Companion.app' to '/Applications/Aerial Companion.app'..."
 
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
+	echo "$NAME: 'mv' failed (\$EXIT = $EXIT)"
 
 	exit 1
 fi
 
-[[ "$LAUNCH" = "yes" ]] && open "$INSTALL_TO"
-
-[[ "$FIRST_INSTALL" = "yes" ]] && open "$INSTALL_TO"
+open -a "/Applications/Aerial Companion.app"
 
 exit 0
 #EOF
