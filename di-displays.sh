@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Manage your monitors and more
+# Purpose: 	Manage your monitors and more
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-01-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-01-02
+# Verified:	2025-02-24
 
 INSTALL_TO='/Applications/Displays.app'
 
