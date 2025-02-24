@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Bunch
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-07-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-07-03
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
