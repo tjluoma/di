@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: 	Download and install the latest version of Nisus Writer Pro
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-12-22
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-12-22
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
