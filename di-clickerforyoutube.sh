@@ -1,9 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install latest version of clicker-for-youtube
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-11-20
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-11-20
+# Verified:	2025-02-24
+
+# @TODO - version number not correct, but download still works (ugly-like).
 
 NAME="$0:t:r"
 

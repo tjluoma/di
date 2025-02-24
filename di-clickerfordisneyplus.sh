@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update Clicker for Disney+
+# Purpose: 	Download and install/update Clicker for Disney+
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-11-27
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-11-27
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
