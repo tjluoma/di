@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: The Missing Bluetooth Manager
+# Purpose: 	Download and install Juice - The Missing Bluetooth Manager
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-04-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-04-24
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
