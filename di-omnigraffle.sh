@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of OmniGraffle 6 or 7
+# Purpose: 	Download and install the latest version of OmniGraffle 6 or 7
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-05-10
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-05-10
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
