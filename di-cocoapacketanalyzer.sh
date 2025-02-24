@@ -1,9 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of CocaPacketAnalyzer
+# Purpose: 	Download and install the latest version of CocaPacketAnalyzer
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-03-19; 2019-07-31
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-03-19; 2019-07-31
+# Verified:	2025-02-24
+
+# @TODO - release notes do not work
 
 NAME="$0:t:r"
 
