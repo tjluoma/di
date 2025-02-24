@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Sublime Text <https://www.sublimetext.com>
+# Purpose: 	Download and install the latest version of Sublime Text 3 <https://www.sublimetext.com>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-04
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-04
+# Verified:	2025-02-23 [but version 4 is now out]
 
 NAME="$0:t:r"
 
