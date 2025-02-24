@@ -1,13 +1,14 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of NetSpot
+# Purpose: 	Download and install the latest version of NetSpot
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-12-23
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-12-23
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
-XML_FEED='https://www.netspotapp.com/updates/netspot2-appcast.xml'
+XML_FEED='https://www.netspotapp.com/updates/netspot3-appcast.xml'
 
 INSTALL_TO='/Applications/NetSpot.app'
 
