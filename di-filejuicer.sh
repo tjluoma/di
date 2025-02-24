@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install File Juicer
+# Purpose: 	Download and install File Juicer
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-20 ; 2019-12-07 - new method for URL
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-20 ; 2019-12-07 - new method for URL
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
