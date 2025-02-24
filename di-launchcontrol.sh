@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest LaunchControl
+# Purpose: 	Download and install latest LaunchControl
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-05-26
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-05-26
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -13,7 +14,7 @@ HOMEPAGE="http://www.soma-zone.com/LaunchControl/"
 
 DOWNLOAD_PAGE="http://www.soma-zone.com/download/"
 
-SUMMARY="LaunchControlCreate, manage and debug launchd(8) services. LaunchControl is a fully-featured launchd GUI allowing you to create, manage and debug system- and user services on your Mac."
+SUMMARY="LaunchControl: Create, manage and debug launchd(8) services. LaunchControl is a fully-featured launchd GUI allowing you to create, manage and debug system- and user services on your Mac."
 
 if [[ -e "$HOME/.path" ]]
 then
