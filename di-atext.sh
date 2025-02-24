@@ -5,6 +5,7 @@
 # Mail:		luomat at gmail dot com
 # Date:		2018-08-04
 # @TODO: 	Needs to be updated for version 3
+# Verified:	2025-02-24 [for version 2 but 3 is out]
 
 NAME="$0:t:r"
 
