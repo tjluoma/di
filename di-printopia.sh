@@ -4,6 +4,7 @@
 # From: Timothy J. Luoma
 # Mail: luomat at gmail dot com
 # Date: 2018-08-26
+# @TODO - figure out why shasum doesn't work anymore
 
 NAME="$0:t:r"
 
