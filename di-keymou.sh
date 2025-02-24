@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Keymou
+# Purpose: 	Download and install the latest version of Keymou
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-05-22
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-05-22
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
