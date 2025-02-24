@@ -5,6 +5,7 @@
 # Mail:		luomat at gmail dot com
 # Date:		2016-01-19
 # @TODO: 	fix release notes (none are shown, although the URL is correct)
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 INSTALL_TO="/Applications/Cyberduck.app"
