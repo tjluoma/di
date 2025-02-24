@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the Stack Exchange Notifier
+# Purpose: 	Download and install the Stack Exchange Notifier
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-31
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-31
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 

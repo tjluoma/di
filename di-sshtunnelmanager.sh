@@ -1,17 +1,18 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of SSH Tunnel Manager
+# Purpose: 	Download and install the latest version of SSH Tunnel Manager
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-15
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
 INSTALL_TO='/Applications/SSH Tunnel Manager.app'
 
-HOMEPAGE="https://www.tynsoe.org/v2/stm/"
+HOMEPAGE="https://www.tynsoe.org/stm/"
 
-DOWNLOAD_PAGE="https://www.tynsoe.org/v2/stm/"
+DOWNLOAD_PAGE="https://www.tynsoe.org/stm/"
 
 SUMMARY="SSH Tunnel Manager is a macOS application to manage your SSH tunnels. If you don't know what that is, quite honestly, maybe you don't need SSH Tunnel Manager, but if you appreciate the power of connecting together two networks using the SSH protocol, then STM is for you."
 
