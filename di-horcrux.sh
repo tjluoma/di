@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Horcrux (email backup program)
+# Purpose: 	Download and install the latest version of Horcrux (email backup program)
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-04-24
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-04-24
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
