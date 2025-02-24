@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of HoudahSpot from <https://www.houdah.com/houdahSpot/>
+# Purpose: 	Download and install the latest version of HoudahSpot from <https://www.houdah.com/houdahSpot/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-11
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
