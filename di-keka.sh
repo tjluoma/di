@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update latest version of Keka
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-11-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-11-19
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -14,6 +15,8 @@ NAME="$0:t:r"
 INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Keka.app"
 
 XML_FEED="https://u.keka.io"
+
+SUMMARY='the macOS file archiver - Store more, share with privacy'
 
 INFO=($(curl -sfLS "$XML_FEED" \
 | awk '/<item>/{i++}i==1' \
