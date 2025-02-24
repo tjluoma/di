@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of AppZapper
+# Purpose: 	Download and install the latest version of AppZapper
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-07-17
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-07-17
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -23,7 +24,7 @@ fi
 	# I don't think there's ever going to be a 2.0.4 or later
 	# so I'm just hard-coding this in
 LATEST_VERSION='2.0.3'
-URL='https://iusethis.luo.ma/appzapper/AppZapper-2.0.3.zip'
+URL='https://appzapper.com/download.php?file=appzapper203.zip'
 
 		## if you need to use the app for
  		## Mac OS X versions 10.8, 10.7, or back to 10.6.2
