@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Fine Reader Pro
+# Purpose: 	Download and install the latest version of Fine Reader Pro
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-09 ; 2019-11-14 update ; 2020-01-31 ne URL and method of downloading
-
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-09 ; 2019-11-14 update ; 2020-01-31 ne URL and method of downloading
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
