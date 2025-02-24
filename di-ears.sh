@@ -1,16 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Ears.app
+# Purpose: 	Download and install the latest version of Ears.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-03-04
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-03-04
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
-
-echo "$NAME: Does not work."
-
-exit 1
-
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -19,7 +15,9 @@ fi
 
 INSTALL_TO='/Applications/Ears.app'
 
-XML_FEED='https://shine.clickontyler.com/appcast.php?id=50'
+# XML_FEED='https://shine.clickontyler.com/appcast.php?id=50'
+
+XML_FEED='https://dash.retina.studio/appcast.php?id=50'
 
 INFO=$(curl -sfLS "$XML_FEED" \
 | tr '\r' '\n' \
