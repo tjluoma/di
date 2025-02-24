@@ -1,17 +1,12 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Beyond Compare
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-11-19
-# @TODO - needs some fixing
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-11-19
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
-
-echo "$NAME: Does not work"
-
-exit 1
-
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -20,19 +15,22 @@ fi
 
 INSTALL_TO='/Applications/Beyond Compare.app'
 
-XML_FEED="https://www.scootersoftware.com/checkupdates.php?product=bc4&edition=pro&cpuarch=x86_64&platform=osx&lang=silent"
+XML_FEED="https://www.scootersoftware.com/checkupdates.php?product=bc5&edition=pro&cpuarch=arm_64&platform=osx&lang=silent"
 
 INFO=$(curl -sfLS "$XML_FEED")
 
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*latestversion="##g' -e 's# build #.#g' -e 's#"/>##g')
+URL=$(echo "$INFO" | sed 's#.*download="##g ; s#.zip".*#.zip#g')
 
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*latestbuild="##g ; s#".*##g')
 
-URL=$(echo "$INFO" | sed -e 's#.*download="##g' -e 's#" .*##g')
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*latestversion="##g ; s# .*##g')
 
 if [[ -e "$INSTALL_TO" ]]
 then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
+
+	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
 
 	autoload is-at-least
 
@@ -40,13 +38,17 @@ then
 
 	VERSION_COMPARE="$?"
 
-	if [ "$VERSION_COMPARE" = "0" ]
+	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
+
+	BUILD_COMPARE="$?"
+
+	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
+	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
 
 	FIRST_INSTALL='no'
 
@@ -60,11 +62,9 @@ then
 else
 
 	FIRST_INSTALL='yes'
-
 fi
 
-
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -90,7 +90,6 @@ then
 	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 fi
-
 
 TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
 
