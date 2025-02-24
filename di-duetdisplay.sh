@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Duet Display
+# Purpose: 	Download and install the latest version of Duet Display
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-12, major update 2019-09-09
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-12, major update 2019-09-09
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -50,9 +51,9 @@ SUMMARY="Turn your iPad into an extra display."
 # 		URL="$URL2"
 # 	fi
 
-URL=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^Location/{print $2}')
+URL=$(curl -sfLS --head "https://updates.duetdisplay.com/latestMac" | awk -F' |\r' '/^.ocation/{print $2}' | tail -1)
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-##g; s#-#.#g')
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#duet-dd-##g; s#-#.#g')
 
 if [ "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
@@ -89,7 +90,7 @@ then
 
 fi
 
-FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -122,90 +123,67 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-## make sure that the .zip is valid before we proceed
-(command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
-EXIT="$?"
+echo "$NAME: Mounting $FILENAME:"
 
-if [ "$EXIT" = "0" ]
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
+
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: '$FILENAME' is a valid zip file."
-
-else
-	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-	mv -fv "$FILENAME" "$HOME/.Trash/"
-
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
-	exit 0
-
-fi
-
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
-then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
 		# Quit app, if running
-		# Note that '-i' to pgrep (ignore case)
-	pgrep -ixq "Duet" \
+	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
-	&& osascript -e 'tell application "duet" to quit'
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
+
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+
 exit 0
-#EOF
 
 ##	2019-11-26 - verified that this is still showing _very_ old information
 ##
@@ -247,3 +225,4 @@ exit 0
 ##
 ## 2019-09-09 - this URL "https://www.duetdisplay.com/mac/" now redirects to 'https://help.duetdisplay.com/updates'
 
+#EOF
