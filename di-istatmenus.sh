@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh -f
-# Purpose: 	Download and install iStat Menus 5 or 6 from <https://bjango.com/mac/istatmenus/>
+# Purpose: 	Download and install iStat Menus 7 from <https://bjango.com/mac/istatmenus/>
 #
 # From:		Timothy J. Luoma
 # Mail:		luomat at gmail dot com
@@ -21,41 +21,11 @@ then
 	source "$HOME/.path"
 fi
 
-	# Default to iStat Menus 6 unless we're told to use v5
-USE_VERSION='6'
+	# https://download.bjango.com/istatmenus/updater/ also redirects the latest version
 
-# https://download.bjango.com/istatmenus/updater/ also redirects the latest version
-
-URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus6/ \
+URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus7/ \
 		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
 		| tail -1)
-
-function use_istat_v5 {
-
-	USE_VERSION='5'
-
-	URL=$(curl --silent --location --fail --head http://download.bjango.com/istatmenus5/ \
-		| awk -F' |\r' '/Location.*\.zip/{print $2}' \
-		| tail -1)
-
-	ASTERISK='(Note that version 6 is now available.)'
-}
-
-if [[ -e "$INSTALL_TO" ]]
-then
-		# if v5 is installed, check that. Otherwise, use v6
-	MAJOR_VERSION=$(defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString | cut -d. -f1)
-
-	if [[ "$MAJOR_VERSION" == "5" ]]
-	then
-		use_istat_v5
-	fi
-else
-	if [ "$1" = "--use5" -o "$1" = "-5" ]
-	then
-		use_istat_v5
-	fi
-fi
 
 LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]\.')
 
@@ -83,8 +53,8 @@ then
 	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
 	then
 		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "	See <https://apps.apple.com/us/app/istat-menus/id1319778037?mt=12> or"
-		echo "	<macappstore://apps.apple.com/us/app/istat-menus/id1319778037>"
+		echo "	See <https://apps.apple.com/us/app/istat-menus-7/id6499559693?mt=12> or"
+		echo "	<macappstore://apps.apple.com/us/app/istat-menus-7/id6499559693>"
 		echo "	Please use the App Store app to update it: <macappstore://showUpdatesPage?scan=true>"
 		exit 0
 	fi
