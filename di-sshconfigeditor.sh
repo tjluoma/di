@@ -1,13 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update latest version of https://hejki.org/ssheditor/
+# Purpose: 	Download and install/update latest version of https://hejki.org/ssheditor/
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-02-21
-
-
-## Note: previous version was DMG not ZIP
-
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-02-21
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
@@ -87,7 +84,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 if (( $+commands[lynx] ))
 then
@@ -128,83 +125,61 @@ then
 	)  >>| "$FILENAME:r.txt"
 fi
 
-	## make sure that the .zip is valid before we proceed
-(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+echo "$NAME: Mounting $FILENAME:"
 
-EXIT="$?"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-if [ "$EXIT" = "0" ]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: '$FILENAME' is a valid zip file."
-
-else
-	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-	mv -fv "$FILENAME" "$HOME/.Trash/"
-
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
-	exit 0
-fi
-
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "$HOME/.Trash/${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
-then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -f "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing '$INSTALL_TO' to '$HOME/.Trash'."
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
+
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
 
-	# Move the file out of the folder
-mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" = "0" ]]
+if [[ "$EXIT" == "0" ]]
 then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+	echo "$NAME: ditto failed"
 
 	exit 1
 fi
+
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
