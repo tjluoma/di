@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Marked 2
+# Purpose: 	Download and install the latest version of Marked 2
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-03-30; 2020-02-27 dmg -> zip
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-03-30; 2020-02-27 dmg -> zip
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
