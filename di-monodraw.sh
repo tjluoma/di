@@ -1,15 +1,17 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Monodraw
+# Purpose: 	Download and install the latest version of Monodraw
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Monodraw.app"
 
-XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"        # There does not seem to be a non-beta appcast URL
+	# There does not seem to be a non-beta appcast URL
+XML_FEED="http://updates.helftone.com/monodraw/appcast-beta.xml"
 
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| sed '1,/<sparkle:releaseNotesLink>/d; /<\/sparkle:releaseNotesLink>/,$d ; s#.*http#http#g')
