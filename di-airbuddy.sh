@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Download and install the latest version of AirBuddy
+# Purpose:	Download and install the latest version of AirBuddy
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-02-15
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-02-15
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -20,26 +21,19 @@ INSTALL_TO='/Applications/AirBuddy.app'
 ## This was for version 1
 # XML_FEED='https://su.airbuddy.app/appcast_shelby.xml'
 
-
-# @TODO - needs release notes support
-# <sparkle:releaseNotesLink>https://su.airbuddy.app/kCRSAmcjBc/kEYpQtkjyB-AirBuddy_v2.1-245.html</sparkle:releaseNotesLink>
-
-
 XML_FEED='https://su.airbuddy.app/kCRSAmcjBc/appcast_hyeon.xml'
 
-INFO=($(curl -sfLS "$XML_FEED" \
-		| egrep -i '<enclosure url=".*\.dmg' \
-		| tail -1 \
-		| tr ' ' '\012' \
-		| egrep '^(url|sparkle:version|sparkle:shortVersionString)=' \
-		| sort \
-		| sed 's#"$##g; s#.*"##g'))
+INFO=$(curl -sfLS "$XML_FEED" \
+		| sed '/<sparkle:deltas>/,$d' \
+		| tr '\012' ' ')
 
-LATEST_VERSION="$INFO[1]"
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g')
 
-LATEST_BUILD="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-URL="$INFO[3]"
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g')
+
+URL=$(echo "$INFO" | sed 's#.*<enclosure url="##g ; s#" .*##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -87,6 +81,27 @@ else
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+
+RELEASE_NOTES_TXT="$FILENAME:r.txt"
+
+if [[ -e "$RELEASE_NOTES_TXT" ]]
+then
+
+	cat "$RELEASE_NOTES_TXT"
+
+else
+
+	if (( $+commands[lynx] ))
+	then
+
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin  -nomargins -nonumbers)
+
+		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+
+	fi
+
+fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
