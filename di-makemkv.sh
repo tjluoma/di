@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of MakeMKV.app
+# Purpose: 	Download and install latest version of MakeMKV.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-12-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-12-21
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
