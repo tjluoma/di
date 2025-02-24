@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install the latest version of Plex Media Server
+# Purpose: 	Download and install the latest version of Plex Media Server
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-06-05
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-06-05
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
