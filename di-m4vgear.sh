@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of m4vgear
+# Purpose: 	Download and install the latest version of m4vgear
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-10-29
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-10-29
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
