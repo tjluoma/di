@@ -16,7 +16,7 @@ DOWNLOAD_PAGE="https://www.houdah.com/houdahSpot/download.html"
 
 SUMMARY="Use HoudahSpot to find important documents, mail messages, photos, image files and more."
 
-RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes5.html"
+RELEASE_NOTES_URL="https://www.houdah.com/houdahSpot/releaseNotes6.html"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -25,20 +25,19 @@ fi
 
 	# backup?  https://rink.hockeyapp.net/api/2/apps/46da69d75bfa2c801117f4f299061332
 	# XML_FEED="https://www.houdah.com/houdahSpot/updates/cast4.xml"
-XML_FEED="https://www.houdah.com/houdahSpot/updates/cast5.xml"
+XML_FEED="https://www.houdah.com/houdahSpot/updates/cast6.xml"
 
-INFO=($(curl -H "Accept-Encoding: gzip,deflate" -SsfL "${XML_FEED}" \
-		| gunzip \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+INFO=$(curl -sfLS "$XML_FEED" \
+	| awk '/<item>/{i++}i==1' \
+	| tr '\012' ' ')
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL=$(echo "$INFO" | sed 's#.*<enclosure url="##g ; s#".*##g')
+
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
