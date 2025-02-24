@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: https://www.postbox-inc.com
+# Purpose: 	https://www.postbox-inc.com
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-13
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-13
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -16,7 +17,8 @@ INSTALL_TO='/Applications/Postbox.app'
 
 RELEASE_NOTES_URL='https://www.postbox-inc.com/product/releasenotes'
 
-URL=$(curl -sfLS "https://www.postbox-inc.com/download/success-mac" | tr '"' '\012' | egrep -i '^https://.*\.dmg' | head -1)
+	# The app is EOL so this is probably safe to hardcode
+URL='https://d3nx85trn0lqsg.cloudfront.net/mac/postbox-7.0.65-mac64.dmg'
 
 LATEST_VERSION=$(echo "$URL:t:r" | sed 's#postbox-##g; s#-mac64##g')
 
