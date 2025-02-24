@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of BetterTouchTool
+# Purpose: 	Download and install the latest version of BetterTouchTool
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2016-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2016-01-19
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
