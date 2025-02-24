@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Loopback
+# Purpose: 	Download and install the latest version of Loopback
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-01-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-01-19
+# Verified:	2025-02-24
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
