@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Endurance from http://enduranceapp.com
+# Purpose: 	Download and install the latest version of Endurance from http://enduranceapp.com
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-21, verified 2018-08-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-21
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
