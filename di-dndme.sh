@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: DND Me https://runtimesharks.com/projects/dnd-me
+# Purpose: 	DND Me https://runtimesharks.com/projects/dnd-me
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-09-02; updated 2021-03-02
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-09-02; updated 2021-03-02
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
