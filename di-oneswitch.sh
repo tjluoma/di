@@ -4,7 +4,7 @@
 # From:		Timothy J. Luoma
 # Mail:		luomat at gmail dot com
 # Date:		2019-11-12
-# Verified:	2025-02-24
+# Verified:	2025-02-24 [but XML_FEED does not have latest version - @TODO]
 
 NAME="$0:t:r"
 
