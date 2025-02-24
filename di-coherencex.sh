@@ -15,7 +15,9 @@ fi
 
 INSTALL_TO='/Applications/Coherence X.app'
 
-XML_FEED='https://bzgdownloads.s3.amazonaws.com/Coherence/App+Cast/appcast.xml'
+# XML_FEED='https://bzgdownloads.s3.amazonaws.com/Coherence/App+Cast/appcast.xml'
+
+XML_FEED='https://bzgdownloads.s3.amazonaws.com/Coherence/App+Cast/appcast4.xml'
 
 INFO=($(curl -sfLS "$XML_FEED" \
 		| awk '/<item>/{i++}i==1' \
