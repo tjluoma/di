@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Submarine - Dive in and find subtitles online
+# Purpose: 	Submarine - Dive in and find subtitles online
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-14
+# Verified:	2025-02-23
 
 NAME="$0:t:r"
 
