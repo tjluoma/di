@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Jettison
+# Purpose: 	Download and install the latest version of Jettison
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-10-26
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-10-26
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
