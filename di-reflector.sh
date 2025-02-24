@@ -4,6 +4,7 @@
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2018-10-11
+# @TODO - version 4 is now out
 
 NAME="$0:t:r"
 
