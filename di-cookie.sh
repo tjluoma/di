@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Cookie version 6
+# Purpose: 	Download and install the latest version of Cookie version 7
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-19; updated for version 6 on 2019-08-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-19; updated for version 6 on 2019-08-28, v7 on 2025-02-24
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -16,9 +17,12 @@ DOWNLOAD_PAGE="https://sweetpproductions.com/products/cookieapp/Cookie.dmg"
 
 SUMMARY="Tired of targeted ads that mysteriously know what products you’ve been shopping for online? Protect your privacy with Cookie."
 
-XML_FEED="https://sweetpproductions.com/products/cookieapp/appcast.xml"
+## This was for version 5
+# XML_FEED="https://sweetpproductions.com/products/cookieapp/appcast.xml"
 
-RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookieapp/updates.htm"
+XML_FEED="https://sweetpproductions.com/products/cookie7/appcast.xml"
+
+RELEASE_NOTES_URL="https://sweetpproductions.com/products/cookie7/updates.htm"
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -28,15 +32,12 @@ fi
 	# sparkle:version is the only version info in XML_FEED.
 	# Both version strings are identical in the app, when installed
 INFO=($(curl -sSfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version|url=' \
-		| head -2 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+		| tr -s ' ' '\012' ))
 
 	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g')
+
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
