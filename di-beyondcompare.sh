@@ -4,8 +4,14 @@
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2020-11-19
+# @TODO - needs some fixing
 
 NAME="$0:t:r"
+
+echo "$NAME: Does not work"
+
+exit 1
+
 
 if [[ -e "$HOME/.path" ]]
 then
