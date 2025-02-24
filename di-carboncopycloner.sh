@@ -1,11 +1,13 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download/Install/Upgrade Carbon Copy Cloner version 3, 4, or 5, depending on OS and what's installed.
+# Purpose:	Download/Install/Upgrade Carbon Copy Cloner version 3, 4, or 5, depending on OS and what's installed.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-19
+# Verified:	2025-02-24
 
 # @todo - use wget for release notes to get working links
+# @TODO - release notes still don't work
 
 
 NAME="$0:t:r"
