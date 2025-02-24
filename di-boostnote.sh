@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: https://boostnote.io
+# Purpose: 	Download and install/update Boostnote from https://boostnote.io
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-07
+# Verified:	2025-02-24
 
 # An open source markdown editor for Mac, Windows and Linux app.
 #
