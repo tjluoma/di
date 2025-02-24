@@ -4,13 +4,17 @@
 # From:	Timothy J. Luoma
 # Mail:	luomat at gmail dot com
 # Date:	2020-07-01
+# @TODO:	does not work, need to fix parsing appcast.xml
+
+NAME="$0:t:r"
+
+echo "$NAME: does not work"
+exit 1
 
 	# must be in /Applications/ for 1Password
 INSTALL_TO='/Applications/Brave Browser Nightly.app'
 
 XML_FEED='https://updates.bravesoftware.com/sparkle/Brave-Browser/nightly/appcast.xml'
-
-NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
 then
