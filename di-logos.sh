@@ -12,7 +12,9 @@
 INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Logos.app"
 
 	# No RELEASE_NOTES_URL available in XML_FEED or elsewhere, as far as I can find
-XML_FEED='https://clientservices.logos.com/update/v1/feed/logos9-mac/stable.xml'
+# XML_FEED='https://clientservices.logos.com/update/v1/feed/logos9-mac/stable.xml'
+
+XML_FEED='https://clientservices.logos.com/update/v1/feed/logos10-mac/stable.xml'
 
 NAME="$0:t:r"
 
