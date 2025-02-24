@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of StrongSync
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-03-11
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-03-11
+# Verified:	2025-02-23
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -17,7 +18,7 @@ XML_FEED='https://updates.expandrive.com/appcast/strongsync.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" | sed 's#^ *##g' | egrep '.' | tr '\012' ' ')
 
-RELEASE_NOTES_URL=$(echo "$INFO" | sed -e 's#.*<sparkle:releaseNotesLink>##g' -e 's# </sparkle:releaseNotesLink>.*##g')
+RELEASE_NOTES_URL=$(echo "$INFO" | sed -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>.*##g')
 
 LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#".*##g')
 
@@ -34,7 +35,6 @@ then
 
 	exit 1
 fi
-
 
 if [[ -e "$INSTALL_TO" ]]
 then
