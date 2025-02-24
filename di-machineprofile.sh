@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install latest version of MachineProfile <https://www.micromat.com/products/machineprofile>
+# Purpose: 	Download and install latest version of MachineProfile <https://www.micromat.com/products/machineprofile>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-16
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-16
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
