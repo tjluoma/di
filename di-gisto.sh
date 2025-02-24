@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: { Gisto } is a code snippet manager that runs on GitHub Gists and adds additional features such as searching, tagging and sharing gists while including a rich code editor.
+# Purpose: 	{ Gisto } is a code snippet manager that runs on GitHub Gists and adds additional features such as searching, tagging and sharing gists while including a rich code editor.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-07
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
