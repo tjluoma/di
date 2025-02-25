@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install/update the latest version of ForkLift
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-21
 
 NAME="$0:t:r"
 
@@ -12,6 +12,7 @@ then
 	source "$HOME/.path"
 fi
 
+	# NOTE: This URL seems to be used for version 4 also
 XML_FEED="https://updates.binarynights.com/ForkLift3/update.xml"
 
 INSTALL_TO="/Applications/ForkLift.app"
@@ -36,8 +37,12 @@ INFO=($(curl -sSfL "${XML_FEED}" \
 
 	# "Sparkle" will always come before "url" because of "sort"
 LATEST_VERSION="$INFO[1]"
+
 LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+
+	# The URL does NOT appear in the XML_FEED for some reason
+	# but this is the static download URL from the website.
+URL='https://download.binarynights.com/ForkLift/ForkLift4.zip'
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
