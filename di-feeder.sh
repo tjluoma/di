@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of Feeder 4 from <https://reinventedsoftware.com/feeder/>
+# Purpose: 	Download and install latest version of Feeder 4 from <https://reinventedsoftware.com/feeder/>
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-10-26; 2021-05-11 updated for version 4
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-10-26; 2021-05-11 updated for version 4
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -22,21 +23,15 @@ SUMMARY="Create edit and publish RSS and podcast feeds."
 
 XML_FEED="https://reinventedsoftware.com/feeder/downloads/Feeder4.xml"
 
-RELEASE_NOTES_URL=`curl -sfL "$XML_FEED" \
-	| egrep '<sparkle:releaseNotesLink>.*</sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g; s#</sparkle:releaseNotesLink>.*##g;' `
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr '\012' ' ' | tr -s ' |\t')
 
-INFO=($(curl -sfL "$XML_FEED" \
-	| tr ' |>|<' '\012' \
-	| egrep '^url="|^sparkle:version|^sparkle:shortVersionString' \
-	| head -3 \
-	| sort \
-	| awk -F'"' '//{print $2}'))
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+URL=$(echo "$INFO" | sed 's#.*<enclosure url="##g ; s#" .*##g')
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -87,8 +82,7 @@ then
 
 fi
 
-	# Note that we include 'Feeder' because we don't want 'Feeder 3'
-FILENAME="$HOME/Downloads/Feeder-${LATEST_VERSION}-${LATEST_BUILD}.dmg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 if (( $+commands[lynx] ))
 then
