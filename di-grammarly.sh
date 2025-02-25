@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Grammarly
+# Purpose: 	Download and install the latest version of Grammarly Desktop
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-03
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -12,15 +13,15 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Grammarly.app'
+INSTALL_TO='/Applications/Grammarly Desktop.app'
 
-	## URL outputs: something like this:
-	# {"pub_date":"2019-08-02T16:37:14+00:00","url":"https://download-editor.grammarly.com/osx/Grammarly1.5.52-osx.zip","version":"1.5.52"}
-IFS=$'\n' INFO=($(curl -sfLS "https://update.grammarly.com/desktop-editor/osx" | tr ',' '\012'))
+XML_FEED='https://download-mac.grammarly.com/appcast.xml'
 
-URL=$(echo "$INFO" | awk -F'"' '/url/{print $4}')
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ')
 
-LATEST_VERSION=$(echo "$INFO" | awk -F'"' '/version/{print $4}')
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:shortVersionString="##g ; s#" .*##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -37,7 +38,7 @@ fi
 if [[ -e "$INSTALL_TO" ]]
 then
 
-	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
+	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
 	autoload is-at-least
 
@@ -55,15 +56,19 @@ then
 
 	FIRST_INSTALL='no'
 
+	if [[ ! -w "$INSTALL_TO" ]]
+	then
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
+	fi
+
 else
 
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.zip"
-
-	# might as well save this, I guess?
-echo "$INFO\n" | tee "$FILENAME:r.txt"
+FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
@@ -80,86 +85,48 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-	## make sure that the .zip is valid before we proceed
-(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+echo "$NAME: Mounting $FILENAME:"
 
-EXIT="$?"
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-if [ "$EXIT" = "0" ]
+if [[ "$MNTPNT" == "" ]]
 then
-	echo "$NAME: '$FILENAME' is a valid zip file."
-
-else
-	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
-
-	mv -fv "$FILENAME" "$HOME/.Trash/"
-
-	mv -fv "$FILENAME:r".* "$HOME/.Trash/"
-
-	exit 0
-
-fi
-
-	## unzip to a temporary directory
-UNZIP_TO=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
-
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
-
-ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
-then
-	echo "$NAME: Unzip successful"
-else
-		# failed
-	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
-
+	echo "$NAME: MNTPNT is empty"
 	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-
+		# Quit app, if running
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$HOME/.Trash/'."
-
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move existing $INSTALL_TO to $HOME/.Trash/"
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
 
 		exit 1
 	fi
+
 fi
 
-echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
+echo "$NAME: Launching '$MNTPNT/Grammarly Installer.app... "
 
-	# Move the file out of the folder
-mv -vn "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
-
-EXIT="$?"
-
-if [[ "$EXIT" = "0" ]]
-then
-
-	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
-else
-	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
-
-	exit 1
-fi
-
-[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
+	# Can't do anything more than this
+	# opening it will install the app and prompt for accessibility permissions
+open "$MNTPNT/Grammarly Installer.app"
 
 exit 0
 #EOF
