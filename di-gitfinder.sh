@@ -14,20 +14,21 @@ fi
 
 INSTALL_TO='/Applications/GitFinder.app'
 
+HOMEPAGE='https://gitfinder.com'
+
 XML_FEED='https://zigz.ag/GitFinder/updates/stablecast.xml'
 
 INFO=$(curl -sfLS "$XML_FEED" \
-		| tr ' ' '\012' \
-		| egrep '<sparkle:releaseNotesLink>|url=|sparkle:version=|sparkle:shortVersionString=' \
-		| head -4)
+		| fgrep -v 'delta' \
+		| tr '\012' ' ')
 
-RELEASE_NOTES_URL=$(echo "$INFO" | awk -F'>|<' '/sparkle:releaseNotesLink/{print $3}')
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-URL=$(echo "$INFO" | awk -F'"' '/url=/{print $2}')
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-LATEST_VERSION=$(echo "$INFO" | awk -F'"' '/sparkle:shortVersionString=/{print $2}')
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-LATEST_BUILD=$(echo "$INFO" | awk -F'"' '/sparkle:version=/{print $2}')
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -93,8 +94,7 @@ then
 
 	else
 
-		RELEASE_NOTES=$(curl -sfLS "https://zigz.ag/GitFinder/updates/release_notes.php" \
-						| sed -e 's#</li></ul>.*##g' -e 's#<center>##g' -e 's#</center>##g' \
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
 						| lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin)
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion : ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: $URL" | tee "$FILENAME:r.txt"
@@ -128,7 +128,6 @@ then
 fi
 
 echo "$NAME: Accepting the EULA and mounting '$FILENAME':"
-
 
 MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
