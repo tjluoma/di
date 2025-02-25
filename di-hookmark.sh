@@ -12,7 +12,7 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Hook.app'
+INSTALL_TO='/Applications/Hookmark.app'
 
 # XML_FEED='https://updates.devmate.com/com.cogsciapps.hook.xml'
 #
@@ -36,15 +36,13 @@ INSTALL_TO='/Applications/Hook.app'
 XML_FEED="https://api.appcenter.ms/v0.1/public/sparkle/apps/a77a1a87-7d69-435d-90ea-7365b2f7bddb"
 
 INFO=$(curl -sfLS "$XML_FEED" \
-	| sed 's#^[	 ]*##g' \
-	| tr -s '\012|\r| ' ' ' \
-	| sed -e 's#> <#><#g' -e 's#> #>#g' -e 's# <#<#g')
+	| tr -s '\012|\r| ' ' ')
 
-LATEST_BUILD=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
+LATEST_BUILD=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#" .*##g')
 
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e 's#" .*##g')
+LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:shortVersionString="##g' -e 's#" .*##g')
 
-URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
+URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g' -e 's#\&amp\;#\&#g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -136,58 +134,90 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-echo "$NAME: Accepting EULA and mounting $FILENAME (sorry if this opens a Finder window. It's not my fault!)"
 
-MNTPNT=$(echo -n "Y" | hdid -plist "$FILENAME" 2>/dev/null | fgrep '/Volumes/' | sed 's#</string>##g ; s#.*<string>##g')
 
-if [[ "$MNTPNT" == "" ]]
+TEMPDIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME-$0:r}-XXXXXXXX")
+
+	## make sure that the .zip is valid before we proceed
+(command unzip -l "$FILENAME" 2>&1 )>/dev/null
+
+EXIT="$?"
+
+if [ "$EXIT" = "0" ]
 then
-	echo "$NAME: MNTPNT is empty"
-	exit 1
+	echo "$NAME: '$FILENAME' is a valid zip file."
+
 else
-	echo "$NAME: MNTPNT is $MNTPNT"
+	echo "$NAME: '$FILENAME' is an invalid zip file (\$EXIT = $EXIT)"
+
+	mv -fv "$FILENAME" "$TEMPDIR/"
+
+	mv -fv "$FILENAME:r".* "$TEMPDIR/"
+
+	exit 0
+
+fi
+
+	## unzip to a temporary directory
+UNZIP_TO=$(mktemp -d "${TEMPDIR}/${NAME}-XXXXXXXX")
+
+echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_TO':"
+
+ditto -xk --noqtn "$FILENAME" "$UNZIP_TO"
+
+EXIT="$?"
+
+if [[ "$EXIT" == "0" ]]
+then
+	echo "$NAME: Unzip successful"
+else
+		# failed
+	echo "$NAME failed (ditto -xkv '$FILENAME' '$UNZIP_TO')"
+
+	exit 1
 fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
-		# Quit app, if running
+
 	pgrep -xq "$INSTALL_TO:t:r" \
 	&& LAUNCH='yes' \
 	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
 
-		# move installed version to trash
-	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+	echo "$NAME: Moving existing (old) '$INSTALL_TO' to '$TEMPDIR/'."
+
+	mv -f "$INSTALL_TO" "$TEMPDIR/$INSTALL_TO:t:r.$INSTALLED_VERSION.app"
 
 	EXIT="$?"
 
 	if [[ "$EXIT" != "0" ]]
 	then
 
-		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+		echo "$NAME: failed to move existing '$INSTALL_TO' to '$TEMPDIR'."
 
 		exit 1
 	fi
-
 fi
 
-echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+echo "$NAME: Moving new version of '$INSTALL_TO:t' (from '$UNZIP_TO') to '$INSTALL_TO'."
 
-ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
+	# Move the file out of the folder
+mv -n "$UNZIP_TO/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
-if [[ "$EXIT" == "0" ]]
+if [[ "$EXIT" = "0" ]]
 then
-	echo "$NAME: Successfully installed $INSTALL_TO"
+
+	echo "$NAME: Successfully installed '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
+
 else
-	echo "$NAME: ditto failed"
+	echo "$NAME: Failed to move '$UNZIP_TO/$INSTALL_TO:t' to '$INSTALL_TO'."
 
 	exit 1
 fi
 
 [[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
-
-echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
