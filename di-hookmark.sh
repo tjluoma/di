@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Hook from <https://hookproductivity.com/>
+# Purpose: 	Download and install/update the latest version of Hook from <https://hookproductivity.com/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-10-12
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-10-12
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
