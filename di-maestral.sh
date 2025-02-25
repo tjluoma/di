@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Maestral.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2021-09-06
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2021-09-06
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -20,29 +21,21 @@ INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Maestral.app"
 
 XML_FEED='https://maestral.app/appcast.xml'
 
-TEMPFILE="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.txt"
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ' )
 
-curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' >| "$TEMPFILE"
+URL=$(echo "$INFO" | sed 's#.*enclosure.*url="##g ; s#" .*##g')
 
-# echo "$TEMPFILE"
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-LATEST_VERSION=$(egrep '<sparkle:shortVersionString>.*</sparkle:shortVersionString>' "$TEMPFILE" \
-				| sed -e 's#.*<sparkle:shortVersionString>##g' -e 's#</sparkle:shortVersionString>.*##g')
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-LATEST_BUILD=$(egrep '<sparkle:version>.*</sparkle:version>' "$TEMPFILE" \
-				| sed -e 's#.*<sparkle:version>##g' -e 's#</sparkle:version>.*##g')
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
-MIN_VERSION=$(egrep '<sparkle:minimumSystemVersion>.*</sparkle:minimumSystemVersion>' "$TEMPFILE" \
-				| sed -e 's#.*<sparkle:minimumSystemVersion>##g' -e 's#</sparkle:minimumSystemVersion>.*##g')
-
-URL=$(fgrep 'url="https://github.com/SamSchott/maestral/releases/download/' "$TEMPFILE" \
-				| sed -e 's#.*url="##g' -e 's#"##g')
 
 	# If any of these are blank, we cannot continue
-if [ "$MIN_VERSION" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
 then
 	echo "$NAME: Error: bad data received:
-	MIN_VERSION: $MIN_VERSION
 	LATEST_VERSION: $LATEST_VERSION
 	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL"  >>/dev/stderr
