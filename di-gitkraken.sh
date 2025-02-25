@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: gitkraken.com
+# Purpose: 	Download and install the latest version of GitKraken.com
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-26
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-26
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -25,7 +26,11 @@ URL="https://release.gitkraken.com/darwin/installGitKraken.dmg"
 
 RELEASE_NOTES_URL='https://support.gitkraken.com/release-notes/current'
 
-LATEST_VERSION=$(curl -sfLS "$RELEASE_NOTES_URL" | fgrep '<h2 id="version' | head -1 | sed 's#<br.*##g ; s#<h2.*>##g ; s#Version ##g')
+LATEST_VERSION=$(curl -sfLS "https://support.gitkraken.com/release-notes/current" \
+				| awk '/<h2>/{i++}i==1' \
+				| tr '\012' ' ' \
+				| sed 's/<h2><a href="#version-//g; s#" .*##g' \
+				| tr '-' '.')
 
 	# If either of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
