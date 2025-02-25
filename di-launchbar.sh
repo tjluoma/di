@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: download and install/update the latest version of LaunchBar
+# Purpose: 	Download and install/update the latest version of LaunchBar
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-05-19
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-05-19
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -36,7 +37,9 @@ LATEST_BUILD=$(defaults read "$TEMPFILE" BundleVersion)
 
 LATEST_VERSION=$(defaults read "$TEMPFILE" BundleShortVersionString)
 
-URL=$(defaults read "$TEMPFILE" DownloadURL)
+URL=$(curl -sfLS "https://obdev.at/launchbar/download.html" \
+	| fgrep .dmg \
+	| sed 's#.*https#https#g ; s#.dmg.*#.dmg#g')
 
 RELEASE_NOTES_URL=$(defaults read "$TEMPFILE" ReleaseNotesURL)
 
