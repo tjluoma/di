@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Luna Display
+# Purpose: 	Download and install the latest version of Luna Display
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-01-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-01-03
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -18,17 +19,15 @@ INSTALL_TO='/Applications/Luna Display.app'
 
 XML_FEED='https://downloads.astropad.com/luna/mac/sparkle.xml'
 
-INFO=($(curl -sSfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==2' | fgrep -v delta | tr -s '\012' ' ')
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
+
+RELEASE_NOTES=$(echo "$INFO" | sed 's#.*CDATA\[##g ; s#\]\].*##g')
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -83,9 +82,7 @@ FILENAME="$HOME/Downloads/LunaDisplay-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
 if (( $+commands[lynx] ))
 then
 
-	(curl -sfLS "$XML_FEED" \
-	| tr -d '\n|\t' \
-	| sed 's#.*CDATA\[##g ; s#\]\].*##g' \
+	(echo "$RELEASE_NOTES" \
 	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin) \
 	| tee "$FILENAME:r.txt"
 
