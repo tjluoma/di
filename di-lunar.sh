@@ -18,23 +18,15 @@ HOMEPAGE='https://lunar.fyi'
 
 XML_FEED='https://static.lunar.fyi/appcast.xml'
 
-INFO=$(curl -sfLS "$XML_FEED" \
-		| sed 's#^ *##g' \
-		| tr -d '\012' \
-		| sed 	-e 's#.*<item>#<item>#g' \
-				-e 's#</item>.*##g' \
-		| sed 's#<#\
-<#g' \
-		| fgrep -iv 'sparkle:delta' \
-		| fgrep -iv 'signature>' \
-		| sed 's#" #"\
-#g')
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ')
 
-URL=$(echo "$INFO" | awk -F'"' '/^url/{print $2}')
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-LATEST_BUILD=$(echo "$INFO" | awk -F'"' '/^sparkle:version/{print $2}')
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-LATEST_VERSION=$(echo "$INFO" | awk -F'"' '/^sparkle:shortVersionString/{print $2}')
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
 if [[ -e "$INSTALL_TO" ]]
 then
@@ -71,15 +63,13 @@ fi
 if [[ "$LATEST_VERSION" == "$LATEST_BUILD" ]]
 then
 
-	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.zip"
+	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.dmg"
 
 else
 
-	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.zip"
+	FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 fi
-
-FINAL_PKG_NAME="$FILENAME:r.pkg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
@@ -93,11 +83,11 @@ else
 	if (( $+commands[lynx] ))
 	then
 
-		RELEASE_NOTES=$(echo "$INFO" \
-						| sed '1,/CDATA/d; /\]\]/,$d' \
-						| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
+		RELEASE_NOTES=$(curl -sfLS "$RELEASE_NOTES_URL" \
+		| lynx -dump -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins)
 
-		echo "${RELEASE_NOTES}\n\nSource: ${XML_FEED}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" | tee "$RELEASE_NOTES_TXT"
+		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: ${URL}" \
+		| tee "$RELEASE_NOTES_TXT"
 
 	fi
 
@@ -116,107 +106,63 @@ EXIT="$?"
 
 [[ ! -s "$FILENAME" ]] && echo "$NAME: $FILENAME is zero bytes." && rm -f "$FILENAME" && exit 0
 
-###### First we need to unzip and then install a pkg
+echo "$NAME: Mounting $FILENAME:"
 
-UNZIP_DIR=$(mktemp -d "${TMPDIR-/tmp/}${NAME}-XXXXXXXX")
+MNTPNT=$(hdiutil attach -nobrowse -plist "$FILENAME" 2>/dev/null \
+	| fgrep -A 1 '<key>mount-point</key>' \
+	| tail -1 \
+	| sed 's#</string>.*##g ; s#.*<string>##g')
 
-echo "$NAME: Unzipping '$FILENAME' to '$UNZIP_DIR':"
+if [[ "$MNTPNT" == "" ]]
+then
+	echo "$NAME: MNTPNT is empty"
+	exit 1
+else
+	echo "$NAME: MNTPNT is $MNTPNT"
+fi
 
-ditto -xk --noqtn "$FILENAME" "$UNZIP_DIR"
+if [[ -e "$INSTALL_TO" ]]
+then
+		# Quit app, if running
+	pgrep -xq "$INSTALL_TO:t:r" \
+	&& LAUNCH='yes' \
+	&& osascript -e "tell application \"$INSTALL_TO:t:r\" to quit"
+
+		# move installed version to trash
+	mv -vf "$INSTALL_TO" "$HOME/.Trash/$INSTALL_TO:t:r.${INSTALLED_VERSION}_${INSTALLED_BUILD}.app"
+
+	EXIT="$?"
+
+	if [[ "$EXIT" != "0" ]]
+	then
+
+		echo "$NAME: failed to move '$INSTALL_TO' to Trash. ('mv' \$EXIT = $EXIT)"
+
+		exit 1
+	fi
+
+fi
+
+echo "$NAME: Installing '$MNTPNT/$INSTALL_TO:t' to '$INSTALL_TO': "
+
+ditto --noqtn -v "$MNTPNT/$INSTALL_TO:t" "$INSTALL_TO"
 
 EXIT="$?"
 
 if [[ "$EXIT" == "0" ]]
 then
-	PKG=$(find ${UNZIP_DIR}/ -iname '*.pkg' -print)
-	echo "$NAME: Unzip successful to \$UNZIP_DIR: $UNZIP_DIR.\n\$PKG is '$PKG'."
+	echo "$NAME: Successfully installed $INSTALL_TO"
 else
-	echo "$NAME failed (ditto -xk '$FILENAME' '$UNZIP_DIR')" >>/dev/stderr
-	exit 2
+	echo "$NAME: ditto failed"
+
+	exit 1
 fi
 
-########## We now have a pkg in a variable named '$PKG'
-########## Which should be renamed to '$FINAL_PKG_NAME'
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
-if [[ -e "$FINAL_PKG_NAME" ]]
-then
-	echo "$NAME: 'FINAL_PKG_NAME' already exists at '$FINAL_PKG_NAME'." >>/dev/stderr
-	exit 2
-fi
+echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
-####################################################################################################
-
-echo "$NAME [INFO]: moving '$FILENAME' to '$HOME/.Trash/'..."
-
-	# we won't worry about potentially overwriting something in the Trash
-	# since, you know, it's in the Trash
-mv -vf "$FILENAME" "$HOME/.Trash/"
-
-EXIT="$?"
-
-if [[ "$EXIT" != "0" ]]
-then
-		# a non fatal error
-
-	echo "$NAME: failed to trash '$FILENAME' (mv \$EXIT = $EXIT)" >>/dev/stderr
-
-fi
-
-####################################################################################################
-
-echo "$NAME [INFO]: moving '$PKG' to '$FINAL_PKG_NAME'..."
-
-mv -vn "$PKG" "$FINAL_PKG_NAME"
-
-EXIT="$?"
-
-if [[ "$EXIT" != "0" ]]
-then
-
-	echo "$NAME: Failed to rename '$PKG' to '$FINAL_PKG_NAME' (\$EXIT = $EXIT)" >>/dev/stderr
-
-	exit 2
-fi
-
-####################################################################################################
-#
-# We now want '$FILENAME' to refer to the '$PKG'
-
-FILENAME="$FINAL_PKG_NAME"
-
-####################################################################################################
-
-egrep -q '^Local sha256:$' "$FILENAME:r.txt" 2>/dev/null
-
-EXIT="$?"
-
-if [ "$EXIT" = "1" -o ! -e "$FILENAME:r.txt" ]
-then
-	(cd "$FILENAME:h" ; \
-	echo "\n\nLocal sha256:" ; \
-	shasum -a 256 "$FILENAME:t" \
-	)  >>| "$FILENAME:r.txt"
-fi
-
-####################################################################################################
-#
-#	Now we'll install the package
-#
-
-
-if (( $+commands[pkginstall.sh] ))
-then
-
-	pkginstall.sh "$FILENAME"
-
-else
-		# fall back to either `sudo installer` or macOS's installer app
-	sudo /usr/sbin/installer -verbose -pkg "$FILENAME" -dumplog -target / -lang en 2>&1 \
-	|| open -b com.apple.installer "$FILENAME"
-
-fi
-
-####################################################################################################
+[[ "$LAUNCH" = "yes" ]] && open -a "$INSTALL_TO"
 
 exit 0
 #
