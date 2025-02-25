@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose: 	Download and install the latest version of Kiwi for Gmail
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-02-16
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-02-16
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -12,35 +13,27 @@ then
 	source "$HOME/.path"
 fi
 
-# @todo - verify this still works
-
 INSTALL_TO='/Applications/Kiwi for Gmail.app'
 
-## 2025-02-21 new download URL from webpage https://www.kiwiforgmail.com/download
-## the XML_FEED no longer seems to work
-# https://downloads.kiwiforgmail.com/kiwi/release/consumer/Kiwi+for+Gmail+Setup.dmg
+	# This is NOT XML!
+FEED='https://downloads.kiwiforgmail.com/kiwi/release/consumer/latest-mac.yml'
 
-XML_FEED='https://rink.hockeyapp.net/api/2/apps/865041dca0724e00accae3b90b66c63a'
+IFS=$'\n' INFO=($(curl -sfLS "$FEED" | egrep '^version|url: Kiwi for Gmail.*zip' | sed 's#  - url: ##g ; s#version: ##g'))
 
-INFO=($(curl -sfLS "$XML_FEED" \
-		| egrep '<enclosure.* url=.*' \
-		| tr ' ' '\012' \
-		| egrep '^(sparkle:|url=)' \
-		| head -3 \
-		| sort \
-		| sed 's#"$##g ; s#.*"##g ; s#\&amp\;#\&#g'))
+LATEST_VERSION=$(echo "$INFO[1]")
 
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+DOWNLOAD_FILENAME=$(echo "$INFO[2]")
+
+DOWNLOAD_PREFIX="https://downloads.kiwiforgmail.com/kiwi/release/consumer"
+
+URL=$(echo "$DOWNLOAD_PREFIX/$DOWNLOAD_FILENAME" | sed 's# #%20#g')
 
 	# If any of these are blank, we cannot continue
-if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
 	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
 	"
 
@@ -80,19 +73,6 @@ else
 fi
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}_${LATEST_BUILD}.zip"
-
-if (( $+commands[lynx] ))
-then
-
-	(curl -sfLS "$XML_FEED" \
-	| awk '/<description>/{i++}i==1' \
-	| sed '/<pubDate>/,$d' \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin  \
-	| lynx -dump -nomargins -width='10000' -assume_charset=UTF-8 -pseudo_inlines -nonumbers -nolist -stdin ; \
-	  echo "\n\nURL:\t${URL}\n\nLATEST_VERSION:\t${LATEST_VERSION}\nLATEST_BUILD:\t${LATEST_BUILD}" ) \
-	| tee "$FILENAME:r.txt"
-
-fi
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
 
