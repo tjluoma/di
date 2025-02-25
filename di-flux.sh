@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install Flux
+# Purpose: 	Download and install Flux
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-10-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-10-28
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
