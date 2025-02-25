@@ -5,6 +5,11 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-08-23
 
+if [[ -e "$HOME/.path" ]]
+then
+	source "$HOME/.path"
+fi
+
 NAME="$0:t:r"
 
 INSTALL_TO="/Applications/Keep It.app"
@@ -15,32 +20,22 @@ DOWNLOAD_PAGE="https://reinventedsoftware.com/keepit/downloads/"
 
 SUMMARY="Keep It is a notebook, scrapbook and organizer, ideal for writing notes, keeping web links, storing documents, images or any kind of file, and finding them again. Available on Mac, and as a separate app for iPhone and iPad, Keep It is the destination for all those things you want to put somewhere, confident you will find them again later."
 
-XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
+##	This was for version 1
+# XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit.xml'
+
+XML_FEED='https://reinventedsoftware.com/keepit/downloads/keepit2.xml'
 
 ITUNES_URL='apps.apple.com/us/app/keep-it/id1272768911'
 
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr -s '\012' ' ')
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-## 2018-09-17 - remove 'sparkle:version' because Mac App Store and direct versions might differ in that
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-INFO=($(curl -sSfL "${XML_FEED}" \
-		| tr -s ' ' '\012' \
-		| egrep 'sparkle:shortVersionString|url=' \
-		| head -2 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-URL="$INFO[2]"
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
