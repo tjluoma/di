@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of MailMate
+# Purpose: 	Download and install the latest version of MailMate
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2015-11-01
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2015-11-01
+# Verified:	2025-02-24 [installing bleeding edge betas because that's the going thing right now.]
 
 NAME="$0:t:r"
 
