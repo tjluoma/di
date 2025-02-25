@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install latest version of Keep It from <https://reinventedsoftware.com/keepit/>
+# Purpose: 	Download and install latest version of Keep It from <https://reinventedsoftware.com/keepit/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-23
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-23
+# Verified:	2025-02-24
 
 if [[ -e "$HOME/.path" ]]
 then
