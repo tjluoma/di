@@ -21,6 +21,10 @@ DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
 
 XML_FEED='https://www.realmacsoftware.com/sparkle-updates/com.realmacsoftware.rapidweaver8.xml'
 
+# Version 9 feed can be found here, somehow:
+# XML_FEED="https://update.devant.io/v1/feed/3c53887f-427a-4af7-9144-ee16178c62f4"
+
+
 RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
 	| fgrep '<sparkle:releaseNotesLink>' \
 	| head -1 \
