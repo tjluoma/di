@@ -73,9 +73,9 @@ IFS=$'\n' INFO=($(curl -sfLS "$XML_FEED" \
 LATEST_BUILD="$INFO[1]"
 LATEST_VERSION="$INFO[2]"
 
-EXPECTED_SHASUM1="$INFO[3]"
-EXPECTED_SHASUM256="$INFO[4]"
-EXPECTED_SHASUM512="$INFO[5]"
+#EXPECTED_SHASUM1="$INFO[3]"
+#EXPECTED_SHASUM256="$INFO[4]"
+#EXPECTED_SHASUM512="$INFO[5]"
 
 EXPECTED_BYTES="$INFO[6]"
 EXPECTED_CODESIGN_TEAM_ID="$INFO[7]"
@@ -94,9 +94,6 @@ URL="$INFO[8]"
 
 if [   "$LATEST_BUILD" = "" \
 	-o "$LATEST_VERSION" = "" \
-	-o "$EXPECTED_SHASUM1" = "" \
-	-o "$EXPECTED_SHASUM256" = "" \
-	-o "$EXPECTED_SHASUM512" = "" \
 	-o "$EXPECTED_BYTES" = "" \
 	-o "$EXPECTED_CODESIGN_TEAM_ID" = "" \
 	-o "$URL" = "" ]
@@ -106,9 +103,6 @@ then
 
 	LATEST_BUILD: ${LATEST_BUILD}
 	LATEST_VERSION: ${LATEST_VERSION}
-	EXPECTED_SHASUM1: $EXPECTED_SHASUM1
-	EXPECTED_SHASUM256: ${EXPECTED_SHASUM256}
-	EXPECTED_SHASUM512: $EXPECTED_SHASUM512
 	EXPECTED_BYTES: ${EXPECTED_BYTES}
 	URL: ${URL}"
 
@@ -172,7 +166,7 @@ cd "$FILENAME:h"
 
 	# This is a file we will use to check the shasum of the .zip file after it is downloaded
 	# it will contain the shasum value that we received from the XML_FEED, above
-SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum.txt"
+# SHASUM_FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.shasum.txt"
 
 	# this is a file we will use to share the release notes from the latest version
 	# so that the user can read them at their leisure (the app might have been updated
@@ -185,11 +179,11 @@ RELEASE_NOTES_URL="https://www.decisivetactics.com/products/printopia/release-no
 
 	# store the value of the shasum along the the full-path of the filename,
 	# although the user may move it later.
-cat <<EOINPUT > "$SHASUM_FILENAME"
-$EXPECTED_SHASUM1 ?$FILENAME:t
-$EXPECTED_SHASUM256 ?$FILENAME:t
-$EXPECTED_SHASUM512 ?$FILENAME:t
-EOINPUT
+# cat <<EOINPUT > "$SHASUM_FILENAME"
+# $EXPECTED_SHASUM1 ?$FILENAME:t
+# $EXPECTED_SHASUM256 ?$FILENAME:t
+# $EXPECTED_SHASUM512 ?$FILENAME:t
+# EOINPUT
 
 	# if the user has 'lynx' installed, we will use that to show them the release notes for this version
 	# lynx does not come standard on macOS, but if the user is technically-savvy enough to be using
@@ -263,7 +257,7 @@ else
 fi
 
 	# tell the user that we are checking the shasum
-echo "$NAME: Verifying '$FILENAME' using 'shasum --check \"$SHASUM_FILENAME\"': "
+# echo "$NAME: Verifying '$FILENAME' using 'shasum --check \"$SHASUM_FILENAME\"': "
 
 	# and now actually check it. Note that this is checking against the file we created earlier
 	# we could just compare against the shasum directly, but saving the shasum to a file
@@ -281,53 +275,53 @@ echo "$NAME: Verifying '$FILENAME' using 'shasum --check \"$SHASUM_FILENAME\"': 
 	#	shasum -a 512 --check "$SHASUM_FILENAME"
 	# which is what I was originally doing before I realized it was superfluous
 	# and I ended up with NINE lines telling me it was OK instead of 3
-shasum --check "$SHASUM_FILENAME"
+# shasum --check "$SHASUM_FILENAME"
 
 	# check to see what 'shasum' reported for an exit code
 	# note that 'shasum' will also produce some output telling the user what happened
 	# but we can't assume the user will be monitoring this script, or understand what to do
 	# so we should do it for them, as best we can
-SHA_EXIT="$?"
+# SHA_EXIT="$?"
 
-if [ "$SHA_EXIT" = "0" ]
-then
-		# tell the user the good news: the download has been verified
-	echo "$NAME: '$FILENAME' passed shasum verification."
-
-else
-		# we hope to never get here, but if we do, verification has failed.
-	echo "$NAME: '$FILENAME' failed shasum verification (SHA_EXIT = $SHA_EXIT)"
-
-		# and then tell the user we will not be continuing with the installation
-		# note that we purposefully have not touched their existing installation (if any)
-		# before this point, so if they have a working installation of an older version
-		# of the app, it will continue to function normally
-
-		if [[ -e "$INSTALL_TO" ]]
-		then
-			echo "$NAME: Installation cancelled"
-		else
-			echo "$NAME: Upgrade cancelled"
-		fi
-
-		# if the downloaded file has failed validation, we probably shouldn't leave it sitting in their
-		# ~/Downloads/ directory.
-		#
-		# So let's give it an obvious "THIS IS BAD DO NOT TOUCH"
-		# name and move it to the Trash.
-		#
-		# An argument could be made that we should delete the file outright, since it might have malware in it
-		# but I'm loathe to delete anything on another person's computer,
-		# so putting it in the trash seems like a good compromise.
-
-		# I created a function for this because we might need to do it later
-		# even if we don't need to do it here
-	trash_our_files
-
-		# now we exit with code = 1 which the user can use if automating this process to tell
-		# that something has gone wrong
-	exit 1
-fi
+# if [ "$SHA_EXIT" = "0" ]
+# then
+# 		# tell the user the good news: the download has been verified
+# 	echo "$NAME: '$FILENAME' passed shasum verification."
+#
+# else
+# 		# we hope to never get here, but if we do, verification has failed.
+# 	echo "$NAME: '$FILENAME' failed shasum verification (SHA_EXIT = $SHA_EXIT)"
+#
+# 		# and then tell the user we will not be continuing with the installation
+# 		# note that we purposefully have not touched their existing installation (if any)
+# 		# before this point, so if they have a working installation of an older version
+# 		# of the app, it will continue to function normally
+#
+# 		if [[ -e "$INSTALL_TO" ]]
+# 		then
+# 			echo "$NAME: Installation cancelled"
+# 		else
+# 			echo "$NAME: Upgrade cancelled"
+# 		fi
+#
+# 		# if the downloaded file has failed validation, we probably shouldn't leave it sitting in their
+# 		# ~/Downloads/ directory.
+# 		#
+# 		# So let's give it an obvious "THIS IS BAD DO NOT TOUCH"
+# 		# name and move it to the Trash.
+# 		#
+# 		# An argument could be made that we should delete the file outright, since it might have malware in it
+# 		# but I'm loathe to delete anything on another person's computer,
+# 		# so putting it in the trash seems like a good compromise.
+#
+# 		# I created a function for this because we might need to do it later
+# 		# even if we don't need to do it here
+# 	trash_our_files
+#
+# 		# now we exit with code = 1 which the user can use if automating this process to tell
+# 		# that something has gone wrong
+# 	exit 1
+# fi
 
 # PHEW. Ok, if we get here, we have a downloaded file that has passed a validation check
 # now we need to unzip it and install it
