@@ -7,6 +7,27 @@
 # Date:	2014-10-11
 # @TODO - not sure this works anymore for a clean install or an update
 
+
+#### On 2025-02-26 I captured this via Proxyman doing a manual check for updates.
+##
+## curl -sfLS "https://update.resilio.com/cfu.php?forced=1&arch=arm64&b=sync&cc=0&cid=JqgmmEU5PGFq9GEV&lang=en&lpnum=8&lponline=4&lpv_1=34013187&lpv_1_n=1&lpv_2=50331650&lpv_2_n=4&pl=mac&rn=10&support_id=o-V3GStR&sysver=15.3.1&tbd=3287742400&tbu=2354291046&v=50331650&wsu=0"
+#
+## Which gave me this response. But will it work in a day/week/month?
+#
+# <?xml version="1.0" encoding="utf-8"?>
+# <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+#   <channel>
+#     <title>Resilio Sync</title>
+#     <description>No update available.</description>
+#     <language>en</language>
+#     <item>
+#         <title>Resilio Sync 3.0.2</title>
+# 		<link>https://resilio.com</link>
+#         <sparkle:version>3.0.2</sparkle:version>
+#     </item>
+#   </channel>
+#  </rss>
+
 INSTALL_TO='/Applications/Resilio Sync.app'
 
 HOMEPAGE="https://www.resilio.com"
