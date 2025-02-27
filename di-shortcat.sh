@@ -1,16 +1,19 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Shortcat from <https://shortcatapp.com>
+# Purpose: 	Download and install the latest version of Shortcat from <https://shortcatapp.com>
 #
-# From:	Tj Luo.ma
-# Mail:	luomat at gmail dot com
-# Web: 	http://RhymesWithDiploma.com
-# Date:	2015-06-01
+# From:		Tj Luo.ma
+# Mail:		luomat at gmail dot com
+# Web: 		http://RhymesWithDiploma.com
+# Date:		2015-06-01
+# Verified:	2025-02-27
 
 NAME="$0:t:r"
 
 	# 2018-07-17 - alt feed:
 	# https://rink.hockeyapp.net/api/2/apps/df3146d3d4af7a00d9f298d67a1e93a9
-XML_FEED='https://shortcatapp.com/updates/appcast.xml'
+# XML_FEED='https://shortcatapp.com/updates/appcast.xml'
+
+XML_FEED='https://updates.shortcat.app/appcast.xml'
 
 INSTALL_TO='/Applications/Shortcat.app'
 
@@ -41,10 +44,12 @@ LATEST_VERSION="$INFO[1]"
 
 LATEST_BUILD="$INFO[2]"
 
-URL_RAW=`echo "$INFO[3]" | sed 's#&amp\;#\&#g' `
+# URL_RAW=`echo "$INFO[3]" | sed 's#&amp\;#\&#g' `
 
 	# 2018-07-10 - changed Location to location (case change)
-URL=`curl -sfL --head "$URL_RAW" | awk -F' |\r' '/^.ocation:/{print $2}'`
+# URL=`curl -sfL --head "$URL_RAW" | awk -F' |\r' '/^.ocation:/{print $2}'`
+
+URL="$INFO[3]"
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
