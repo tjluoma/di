@@ -1,9 +1,13 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install latest version of Smart Sleep
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-09-30
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-09-30
+# Verified:	2025-02-27
+
+# Note: this app hasn't been updated since 2013, it may not be a good idea to use it.
+#		I don't think it will harm anything but 12+ years is a long time.
 
 NAME="$0:t:r"
 
