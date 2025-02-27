@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of PathFinder 10 from <https://cocoatech.com/>
+# Purpose: 	Download and install the latest version of PathFinder 10 from <https://cocoatech.com/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-21
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-21
+# Verified:	2025-02-27
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -15,24 +16,35 @@ NAME="$0:t:r"
 
 HOMEPAGE="https://cocoatech.com/"
 
-DOWNLOAD_PAGE="https://get.cocoatech.com/PF10.dmg"
+DOWNLOAD_PAGE='https://get.cocoatech.com/PathFinder.dmg'
 
 SUMMARY="File manager for macOS."
 
 	## 2021-02-05 verified feed URL for v10
 XML_FEED="https://get.cocoatech.com/releasecast.xml"
 
-INFO=($(curl -sfLS "$XML_FEED" \
-		| tr ' ' '\012' \
-		| egrep '^(url|sparkle:version|sparkle:shortVersionString)' \
-		| sort \
-		| awk -F'"' '{print $2}'))
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ')
 
-LATEST_VERSION="$INFO[1]"
+URL='https://get.cocoatech.com/PathFinder.dmg'
 
-LATEST_BUILD="$INFO[2]"
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
-URL="$INFO[3]"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
+
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"  >>/dev/stderr
+
+	exit 1
+fi
 
 if [[ -e "$INSTALL_TO" ]]
 then
