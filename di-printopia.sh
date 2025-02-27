@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Printopia v3
+# Purpose: 	Download and install/update the latest version of Printopia v3
 #
-# From: Timothy J. Luoma
-# Mail: luomat at gmail dot com
-# Date: 2018-08-26
+# From: 	Timothy J. Luoma
+# Mail: 	luomat at gmail dot com
+# Date: 	2018-08-26
+# Verified:	2025-02-27
 # @TODO - figure out why shasum doesn't work anymore
 
 NAME="$0:t:r"
