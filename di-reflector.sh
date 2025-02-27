@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of Reflector
+# Purpose: 	Download and install/update the latest version of Reflector 4
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-10-11
-# @TODO - version 4 is now out
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-10-11
+# Verified:	2025-02-27
 
 NAME="$0:t:r"
 
@@ -13,7 +13,7 @@ then
 	source "$HOME/.path"
 fi
 
-INSTALL_TO='/Applications/Reflector 3.app'
+INSTALL_TO='/Applications/Reflector 4.app'
 
 HOMEPAGE="http://www.airsquirrels.com/reflector/"
 
@@ -21,23 +21,17 @@ DOWNLOAD_PAGE="http://www.airsquirrels.com/reflector/download/"
 
 SUMMARY="Mirror your phone, tablet or computer to the big screen without wires or complicated setups. Present, teach or entertain from the palm of your hand. Reflector makes it easier than ever to share your device screen."
 
-INFO=($(curl -sfLS "https://updates.airsquirrels.com/Reflector3/Mac/updateCheck/" \
-   -X POST \
-   -H "Content-Type: application/x-www-form-urlencoded" \
-   -H "Accept: application/json,*/*;q=0.1" \
-   -H "User-Agent: Reflector 3/3.1.1 Sparkle/1.9.0" \
-   -H "Accept-Language: en-us" \
-   --data-raw "{\"appVersion\":\"3101\",\"lang\":\"en-US\",\"appName\":\"Reflector 3\",\"osVersion\":\"10.13.6\",\"cpusubtype\":\"Intel Core 2\",\"model\":\"MacBook8,1\",\"ncpu\":4,\"cpu64bit\":true,\"cputype\":7}" \
-   | tr -s '[:blank:]' '\012' \
-   | egrep '(http.*\.(html|dmg)|sparkle:(version|shortVersionString))' \
-   | sort \
-   | tr '"' ' ' \
-   | awk '{print $NF}'))
+XML_FEED='https://updates-prod.airsquirrels.com/Reflector4/Mac/updateCheck/'
 
-RELEASE_NOTES_URL="$INFO[1]"
-LATEST_VERSION="$INFO[2]"
-LATEST_BUILD="$INFO[3]"
-URL="$INFO[4]"
+INFO=$(curl -sfLS "$XML_FEED" | tr '\012' ' ')
+
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
+
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:shortVersionString="##g ; s#".*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*sparkle:version="##g ; s#".*##g' )
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -156,5 +150,3 @@ echo -n "$NAME: Unmounting $MNTPNT: " && diskutil eject "$MNTPNT"
 
 exit 0
 #EOF
-
-
