@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of RapidWeaver 8 from <https://www.realmacsoftware.com>
+# Purpose: 	Download and install the latest version of RapidWeaver 9 from <https://www.realmacsoftware.com>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-15
-# @TODO - update for version 9
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-15
+# Verified:	2025-02-27
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -13,38 +13,29 @@ fi
 
 NAME="$0:t:r"
 
-INSTALL_TO="/Applications/RapidWeaver 8.app"
+INSTALL_TO="/Applications/RapidWeaver.app"
 
 HOMEPAGE="https://www.realmacsoftware.com/rapidweaver/"
 
-DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
-
-XML_FEED='https://www.realmacsoftware.com/sparkle-updates/com.realmacsoftware.rapidweaver8.xml'
-
-# Version 9 feed can be found here, somehow:
-# XML_FEED="https://update.devant.io/v1/feed/3c53887f-427a-4af7-9144-ee16178c62f4"
-
-
-RELEASE_NOTES_URL=$(curl -sfL "$XML_FEED" \
-	| fgrep '<sparkle:releaseNotesLink>' \
-	| head -1 \
-	| sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>##g')
-
 SUMMARY="RapidWeaver for Mac is a powerful and easy to use web design app that puts you back in control. Build your own beautiful, responsive, websites without having to write a line of code."
 
-INFO=($(curl -sfLS "$XML_FEED" \
-		| tidy --input-xml yes --output-xml yes --wrap 0 2>/dev/null \
-		| fgrep -v 'delta' \
-		| tr ' ' '\012' \
-		| egrep 'sparkle:version|sparkle:shortVersionString|url=' \
-		| head -3 \
-		| sort \
-		| awk -F'"' '/^/{print $2}'))
+DOWNLOAD_PAGE="https://www.realmacsoftware.com/rapidweaver/"
 
-	# "Sparkle" will always come before "url" because of "sort"
-LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+	# Version 9 feed can be found here, somehow:
+XML_FEED="https://update.devant.io/v1/feed/3c53887f-427a-4af7-9144-ee16178c62f4"
+
+INFO=$(curl -sfLS "$XML_FEED" \
+		| awk '/<item>/{i++}i==1' \
+		| fgrep -iv delta \
+		| tr '\012' ' ')
+
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
+
+RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
+
+LATEST_VERSION=$(echo "$INFO" | sed 's#.* sparkle:shortVersionString="##g ; s#".*##g')
+
+LATEST_BUILD=$(echo "$INFO" | sed 's#.* sparkle:version="##g ; s#".*##g' )
 
 	# If any of these are blank, we should not continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
