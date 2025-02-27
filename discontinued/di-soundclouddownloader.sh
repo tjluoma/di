@@ -5,7 +5,7 @@
 # Mail:	luomat at gmail dot com
 # Date:	2019-05-21
 
-# 2025-02-27 - https://birdicode.com/app/SCD2/ is gone
+# 2025-02-27 - https://birdicode.com/app is gone
 
 NAME="$0:t:r"
 
