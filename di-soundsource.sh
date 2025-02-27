@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Version 5
+# Purpose: 	Download and install the latest version of SoundSource from Rogue Amoeba
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-03-27
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-03-27
+# Verified:	2025-02-27 [but release notes don't work]
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
