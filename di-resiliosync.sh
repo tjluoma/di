@@ -7,6 +7,16 @@
 # Date:	2014-10-11
 # @TODO - not sure this works anymore for a clean install or an update
 
+if [[ -e "$HOME/.path" ]]
+then
+	source "$HOME/.path"
+fi
+
+NAME="$0:t:r"
+
+echo "$NAME: need to check this once an update is available"
+
+exit 1
 
 #### On 2025-02-26 I captured this via Proxyman doing a manual check for updates.
 ##
@@ -32,19 +42,10 @@ INSTALL_TO='/Applications/Resilio Sync.app'
 
 HOMEPAGE="https://www.resilio.com"
 
-	# 2025-02-23 - this link is now 404
-# DOWNLOAD_PAGE="https://download-cdn.resilio.com/stable/osx/Resilio-Sync.dmg"
-
 DOWNLOAD_PAGE='https://download-cdn.resilio.com/stable/mac/osx/0/Resilio-Sync.dmg'
 
 SUMMARY="Sync any folder to all your devices. Sync photos, videos, music, PDFs, docs or any other file types to/from your mobile phone, laptop, or NAS."
 
-if [[ -e "$HOME/.path" ]]
-then
-	source "$HOME/.path"
-fi
-
-NAME="$0:t:r"
 
 zmodload zsh/datetime
 
@@ -60,22 +61,28 @@ function log { echo "$NAME [`timestamp`]: $@" | tee -a "$LOG" }
 TEMPFILE="${TMPDIR-/tmp}/${NAME}.${TIME}.$$.$RANDOM"
 
 	# 2020-05-09 new update!
-XML_FEED='https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=81&sysver=10.15.4&v=33957721'
+	# 2025-02-27 - this feed shows 2.x not 3.x updates
+# XML_FEED='https://update.resilio.com/cfu.php?forced=1&b=sync&lang=en&pl=mac&rn=81&sysver=10.15.4&v=33957721'
+#
+# 	# both Sparkle versions are identical
+# INFO=($(curl -sfLS \
+# 	-H "Accept: application/rss+xml,*/*;q=0.1" \
+# 	-H "Accept-Language: en-us" \
+# 	-H "User-Agent: Resilio Sync/2.6.10073 Sparkle/1.16.0" \
+# 	"${XML_FEED}" \
+# 	| egrep -i 'releasenoteslink>|url=|sparkle:version=' \
+# 	| sort \
+# 	| tr -d '\r' \
+# 	| sed -e 's#.*="##g' -e 's#"$##g' -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>##g' -e 's#amp\;##g'))
+#
+##################################################
 
-	# both Sparkle versions are identical
-INFO=($(curl -sfLS \
-	-H "Accept: application/rss+xml,*/*;q=0.1" \
-	-H "Accept-Language: en-us" \
-	-H "User-Agent: Resilio Sync/2.6.10073 Sparkle/1.16.0" \
-	"${XML_FEED}" \
-	| egrep -i 'releasenoteslink>|url=|sparkle:version=' \
-	| sort \
-	| tr -d '\r' \
-	| sed -e 's#.*="##g' -e 's#"$##g' -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>##g' -e 's#amp\;##g'))
 
 LATEST_VERSION="$INFO[1]"
 
-URL="$INFO[2]"
+# URL="$INFO[2]"
+
+URL='https://download-cdn.resilio.com/stable/mac/osx/0/Resilio-Sync.dmg'
 
 RELEASE_NOTES_URL="$INFO[3]"
 
