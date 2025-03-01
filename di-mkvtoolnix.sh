@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install latest version of MKVToolNix.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-23
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-23
+# Verified:	2025-03-01
 
 NAME="$0:t:r"
 
@@ -14,15 +15,16 @@ fi
 
 INSTALL_TO='/Applications/MKVToolNix.app'
 
-	# This URL isn't a real URL. We just need it for the version number
-	# but we can't use the end-result, because the fosshub.com website is
-	# so terrible
-URL=$(curl -sfLS "https://www.fosshub.com/MKVToolNix.html" | tr '"' '\012' | egrep '^http.*\.dmg')
+REMOTE_FILENAME=$(curl -sfLS "https://mkvtoolnix.download/macos/" \
+| sed 's#><#>\
+<#g' \
+| fgrep .dmg \
+| tail -1 \
+| sed 's#.*">##g ; s#</a>##g')
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#MKVToolNix.html?dwl=MKVToolNix-##g')
+URL="https://mkvtoolnix.download/macos/$REMOTE_FILENAME"
 
-	# We can actually download from this URL
-URL="https://mkvtoolnix.download/macos/MKVToolNix-${LATEST_VERSION}.dmg"
+LATEST_VERSION=$(echo "$REMOTE_FILENAME:t:r" | tr -dc '[0-9]\.')
 
 FILENAME="$HOME/Downloads/${${INSTALL_TO:t:r}// /}-${LATEST_VERSION}.dmg"
 
