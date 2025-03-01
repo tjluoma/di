@@ -13,6 +13,12 @@ NAME="$0:t:r"
 
 echo "$NAME: does not work"
 
+# XML_FEED='https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml'
+
+XML_FEED='https://appcast.pqrs.org/karabiner-elements-appcast.xml'
+
+# curl -sfLS "$XML_FEED"
+
 exit 0
 
 
