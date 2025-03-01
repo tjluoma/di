@@ -78,16 +78,7 @@ EXIT="$?"
 
 (cd "$FILENAME:h" ; echo "\nLocal sha256:" ; shasum -a 256 "$FILENAME:t" ) >>| "$FILENAME:r.txt"
 
-	# needs at least 10.12 to work
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
-
-if [[ "$OS_VER" -lt "12" ]]
-then
-	echo "\n$NAME: SwiftDefaultApps.prefPane requires at least macOS 10.12. This is 10.$OS_VER.\n"
-	exit 1
-fi
-
-## make sure that the .zip is valid before we proceed
+	## make sure that the .zip is valid before we proceed
 (command unzip -l "$FILENAME" 2>&1 )>/dev/null
 
 EXIT="$?"
