@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: A network monitor, allows one to explore all network sockets and connections, either via an interactive UI, or from the commandline
+# Purpose: 	A network monitor, allows one to explore all network sockets and connections, either via an interactive UI, or from the commandline
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-08-26
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-08-26
+# Verified:	2025-03-01
 
 NAME="$0:t:r"
 
