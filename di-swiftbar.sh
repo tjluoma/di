@@ -42,11 +42,11 @@ ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.
 #				NOTE to future self: the URL= part above is not working. Can't seem to find the .zip in the
 #				HTML of the page. Not sure why.
 
-LATEST_VERSION='2.0.0'
+LATEST_VERSION='2.0.1'
 
-LATEST_BUILD='520'
+LATEST_BUILD='536'
 
-URL='https://github.com/swiftbar/SwiftBar/releases/download/v2.0.0/SwiftBar.v2.0.0.b520.zip'
+URL='https://github.com/swiftbar/SwiftBar/releases/download/v2.0.1/SwiftBar.v2.0.1.b536.zip'
 
 	# is the app already installed? if so we need to compare version numbers
 if [[ -e "$INSTALL_TO" ]]
