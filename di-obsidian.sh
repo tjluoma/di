@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the latest version of Obsidian
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2020-12-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2020-12-07
+# Verified:	2025-03-01
 
 NAME="$0:t:r"
 
@@ -12,8 +13,6 @@ NAME="$0:t:r"
 [[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
 
 INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Obsidian.app"
-
-# "https://github.com/obsidianmd/obsidian-releases/releases/download/v#{version}/Obsidian-#{version}.dmg"
 
 ## XML_FEED='https://github.com/obsidianmd/obsidian-releases/releases.atom'
 
@@ -28,15 +27,10 @@ ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.
 	# and throwing away everything except numbers and periods
 LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
 
-	# 2021-01-21 - DMG is now a universal binary
-DOWNLOAD_SUFFIX=$(curl -sfLS "$ACTUAL_RELEASE_URL" | tr '"' '\012' |  egrep -i '^/.*\.dmg$')
-
-DOWNLOAD_PREFIX='https://github.com'
-
-URL="${DOWNLOAD_PREFIX}${DOWNLOAD_SUFFIX}"
-
+URL="https://github.com/obsidianmd/obsidian-releases/releases/download/v${LATEST_VERSION}/Obsidian-${LATEST_VERSION}.dmg"
 
 ## Debugging info, if needed
+#
 # echo "
 # ACTUAL_RELEASE_URL
 # >$ACTUAL_RELEASE_URL<
@@ -47,6 +41,9 @@ URL="${DOWNLOAD_PREFIX}${DOWNLOAD_SUFFIX}"
 # URL
 # >$URL<
 # "
+#
+# exit 0
+
 
 	# If any of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
