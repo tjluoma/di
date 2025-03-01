@@ -6,6 +6,9 @@
 # Date:		2019-06-09
 # Verified:	2025-02-24
 
+# NOTE to self: This is GitHub and it works. Maybe that can help me figure out other github-hosted apps.
+
+
 NAME="$0:t:r"
 
 if [[ -e "$HOME/.path" ]]
