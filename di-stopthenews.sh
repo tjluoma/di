@@ -14,11 +14,13 @@ fi
 
 INSTALL_TO='/Applications/StopTheNews.app'
 
-URL=$(curl -sfLS "https://github.com/lapcat/StopTheNews/releases/latest" \
-		| egrep '<a href="/lapcat/StopTheNews/releases/download/.*\.zip' \
-		| sed 's#.*/lapcat/#https://github.com/lapcat/#g ; s#.zip".*#.zip#g')
+STATIC_RELEASE_URL="https://github.com/lapcat/StopTheNews/releases/latest"
 
-LATEST_VERSION=$(echo "$URL:t:r" | sed 's#StopTheNews##g')
+ACTUAL_RELEASE_URL=$(curl --head -sfLS "$STATIC_RELEASE_URL" | awk -F' |\r' '/^.ocation:/{print $2}' | tail -1)
+
+LATEST_VERSION=$(echo "$ACTUAL_RELEASE_URL:t" | tr -dc '[0-9]\.')
+
+URL="https://github.com/lapcat/StopTheNews/releases/download/v${LATEST_VERSION}/StopTheNews${LATEST_VERSION}.zip"
 
 if [[ -e "$INSTALL_TO" ]]
 then
