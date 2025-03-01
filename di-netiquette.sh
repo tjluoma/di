@@ -16,7 +16,7 @@ INSTALL_TO='/Applications/Netiquette.app'
 
 ## NOTE: "https://objective-see.com/products.json" is often outdated
 
-URL=$(curl -sfLS "https://objective-see.com/products/netiquette.html" | tr '"' '\012' | egrep -i "^http.*netiquette.*\.zip" | head -1)
+URL=$(curl -sfLS "https://objective-see.com/products/netiquette.html" | tr "'" '\012' | fgrep .zip | head -1)
 
 	# This is a plain text file. At some point we might want to limit how much we fetch but for now we'll just take the whole thing
 RELEASE_NOTES_URL='https://objective-see.com/products/changelogs/Netiquette.txt'
