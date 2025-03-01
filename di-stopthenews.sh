@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Get the latest version of Stop The News
+# Purpose: 	Get the latest version of Stop The News
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-07
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-07
+# Verified:	2025-03-01
 
 NAME="$0:t:r"
 
