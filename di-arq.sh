@@ -4,7 +4,7 @@
 # From:		Timothy J. Luoma
 # Mail:		luomat at gmail dot com
 # Date:		2021-02-03
-# Verified:	2025-02-24
+# Verified:	2025-03-02
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
@@ -15,16 +15,23 @@ INSTALL_TO="/Applications/Arq.app"
 
 NAME="$0:t:r"
 
-JSON_FEED_URL='https://www.arqbackup.com/download/arqbackup/arq7_update.json'
+	## this has the filename and version of the latest updates - @TODO
+	# https://www.arqbackup.com/download/arqbackup/arq7_release_notes.html
+	## possibly this URL format:
+	#https://www.arqbackup.com/download/arqbackup/ArqUpdate7.16.pkg
 
-INFO=($(curl -sfLS "${JSON_FEED_URL}" \
-		| egrep '"(url|version)"' \
-		| sort \
-		| awk -F'"' '//{print $4}'))
+	## 2025-03-02 - this is outdated and apparently not used anymore.
+	## This says 7.16 from 2022 when we're on 7.35 and many updates since in 2025
 
-URL="$INFO[1]"
+RELEASE_NOTES_URL='https://www.arqbackup.com/download/arqbackup/arq7_release_notes.html'
 
-LATEST_VERSION="$INFO[2]"
+INFO=($(curl -sfLS "$RELEASE_NOTES_URL" \
+		|awk '/<h1>/{i++}i==1'))
+
+LATEST_VERSION=$(echo "$INFO" | fgrep '.pkg' | sed 's#.*(Arq##g ; s#.pkg).*##g')
+
+	# static URL from https://www.arqbackup.com/download/ 2025-03-02
+URL="https://www.arqbackup.com/download/arqbackup/Arq7.pkg"
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
@@ -68,7 +75,7 @@ fi
 
 ###############################################################################################
 
-FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.pkg"
+FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}.pkg"
 
 RELEASE_NOTES_TXT="$FILENAME:r.txt"
 
@@ -84,21 +91,9 @@ else
 	if (( $+commands[lynx] ))
 	then
 
-			# has full history of v7 updates
-		RELEASE_NOTES_URL='https://www.arqbackup.com/download/arqbackup/arq7_release_notes.html'
-
-		TEMPFILE="${TMPDIR-/tmp/}${NAME}.${TIME}.$$.$RANDOM.txt"
-
-		curl -sfLS "${RELEASE_NOTES_URL}" > "$RELEASE_NOTES_HTML"
-
-		fgrep '<h1>' "${RELEASE_NOTES_HTML}" | cat -n > "${TEMPFILE}"
-
-		AWK_NUMBER=$(fgrep "${LATEST_VERSION}" "${TEMPFILE}" | awk '{print $1}')
-
-		RELEASE_NOTES=$(awk "/<h1>/{i++}i==$AWK_NUMBER" "${RELEASE_NOTES_HTML}" \
+		RELEASE_NOTES=$(echo "$INFO" \
 				| lynx 	-dump -width='10000' -display_charset=UTF-8 \
-						-assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins \
-				| sed 's#^[ 	]*##g' )
+						-assume_charset=UTF-8 -pseudo_inlines -stdin -nomargins )
 
 		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion: ${LATEST_VERSION}\nURL: ${URL}" \
 		| tee "${RELEASE_NOTES_TXT}"
