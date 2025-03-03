@@ -4,8 +4,7 @@
 # From:		Timothy J. Luoma
 # Mail:		luomat at gmail dot com
 # Date:		2018-08-04
-# @TODO: 	Needs to be updated for version 3
-# Verified:	2025-02-24 [for version 2 but 3 is out]
+# Verified:	2025-02-24
 
 NAME="$0:t:r"
 
@@ -22,8 +21,11 @@ then
 	source "$HOME/.path"
 fi
 
-# New? @todo "https://www.trankynam.com/atext/appcast.mac.xml"
-XML_FEED="https://www.trankynam.com/atext/aText-Appcast.xml"
+# OLD FEED for version 2 for Mac
+#XML_FEED="https://www.trankynam.com/atext/aText-Appcast.xml"
+
+	# New feed for version 3
+XML_FEED='https://www.trankynam.com/atext/appcast.mac.xml'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
@@ -33,13 +35,12 @@ INFO=($(curl -sfL "$XML_FEED" \
 		| awk -F'"' '/^/{print $2}'))
 
 LATEST_VERSION="$INFO[1]"
-LATEST_BUILD="$INFO[2]"
-URL="$INFO[3]"
+URL="$INFO[2]"
 
 	# If any of these are blank, we should not continue
-if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" ]
+if [ "$INFO" = "" -o "$LATEST_VERSION" = "" -o "$URL" = "" ]
 then
-	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nLATEST_BUILD: $LATEST_BUILD\nURL: $URL"
+	echo "$NAME: Error: bad data received:\nINFO: $INFO\nLATEST_VERSION: $LATEST_VERSION\nURL: $URL"
 	exit 1
 fi
 
@@ -48,33 +49,27 @@ then
 
 	INSTALLED_VERSION=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleShortVersionString)
 
-	INSTALLED_BUILD=$(defaults read "${INSTALL_TO}/Contents/Info" CFBundleVersion)
-
 	autoload is-at-least
 
 	is-at-least "$LATEST_VERSION" "$INSTALLED_VERSION"
 
 	VERSION_COMPARE="$?"
 
-	is-at-least "$LATEST_BUILD" "$INSTALLED_BUILD"
-
-	BUILD_COMPARE="$?"
-
-	if [ "$VERSION_COMPARE" = "0" -a "$BUILD_COMPARE" = "0" ]
+	if [ "$VERSION_COMPARE" = "0" ]
 	then
-		echo "$NAME: Up-To-Date ($INSTALLED_VERSION/$INSTALLED_BUILD)"
+		echo "$NAME: Up-To-Date ($INSTALLED_VERSION)"
 		exit 0
 	fi
 
-	echo "$NAME: Outdated: $INSTALLED_VERSION/$INSTALLED_BUILD vs $LATEST_VERSION/$LATEST_BUILD"
+	echo "$NAME: Outdated: $INSTALLED_VERSION vs $LATEST_VERSION"
 
 	FIRST_INSTALL='no'
 
-	if [[ -e "$INSTALL_TO/Contents/_MASReceipt/receipt" ]]
+	if [[ ! -w "$INSTALL_TO" ]]
 	then
-		echo "$NAME: $INSTALL_TO was installed from the Mac App Store and cannot be updated by this script."
-		echo "Please see <http://www.trankynam.com/atext/doc/index.html#line2> for more information."
-		exit 0
+		echo "$NAME: '$INSTALL_TO' exists, but you do not have 'write' access to it, therefore you cannot update it." >>/dev/stderr
+
+		exit 2
 	fi
 
 else
@@ -82,7 +77,7 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}_${LATEST_BUILD}.dmg"
+FILENAME="$HOME/Downloads/$INSTALL_TO:t:r-${LATEST_VERSION}.dmg"
 
 if (( $+commands[lynx] ))
 then
