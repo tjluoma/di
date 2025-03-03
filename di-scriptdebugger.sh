@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Script Debugger 7
+# Purpose: 	Download and install the latest version of Script Debugger 8
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-03
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-03
+# Verified:	2025-03-03
 
 NAME="$0:t:r"
 
@@ -11,7 +12,7 @@ INSTALL_TO='/Applications/Script Debugger.app'
 
 HOMEPAGE="http://latenightsw.com/"
 
-DOWNLOAD_PAGE="http://latenightsw.com/sd7/download/"
+DOWNLOAD_PAGE="https://latenightsw.com/sd8/download/"
 
 SUMMARY="You want your computer systems to be simple, reliable and automatic. Script Debugger is the integrated development environment that makes that happen by making your AppleScript coding easier, faster, and more transparent. And now, for the first time, it is available in a free “lite” mode that offers you a taste of the full power of Script Debugger."
 
@@ -20,7 +21,7 @@ then
 	source "$HOME/.path"
 fi
 
-XML_FEED='https://www.latenightsw.com/versions/com.latenightsw.ScriptDebugger7.php'
+XML_FEED='https://www.latenightsw.com/versions/com.latenightsw.ScriptDebugger8.php'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| tr -s ' ' '\012' \
