@@ -7,7 +7,7 @@
 
 NAME="$0:t:r"
 
-## DO NOT USE THIS
+## DO NOT USE THIS - now 404 - page seems to be taken over by AI
 # DOWNLOAD_PAGE="http://www.soundnodeapp.com/downloads/mac/Soundnode.zip"
 #
 ## USE THIS
