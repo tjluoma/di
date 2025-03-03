@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: https://www.shotcut.org - Shotcut is a free, open source, cross-platform video editor.
+# Purpose: 	https://www.shotcut.org - Shotcut is a free, open source, cross-platform video editor.
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2019-06-14
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2019-06-14
+# Verified:	2025-03-03
 
 NAME="$0:t:r"
 
@@ -15,16 +16,14 @@ fi
 INSTALL_TO='/Applications/Shotcut.app'
 
 LATEST_URL=$(curl --head -sfLS "https://github.com/mltframework/shotcut/releases/latest" \
-	| awk -F' ' '/^Location:/{print $NF}' \
-	| tr -d '\r')
+| awk -F' |\r' '/^.ocation:/{print $2}' )
 
 LATEST_VERSION=$(echo "$LATEST_URL:t" | tr -dc '[0-9]\.')
 
-	# 2019-08-05 attempt to more reliably get the URL of the download
-URL=$(curl -sfLS "https://github.com/mltframework/shotcut/releases/latest" \
-		| tr '"' '\012' \
-		| egrep '/mltframework/shotcut/releases/download/.*-signed-.*\.dmg' \
-		| sed 's#^#https://github.com#g')
+LATEST_VERSION_NO_DOTS=$(echo "$LATEST_URL:t" | tr -dc '[0-9]')
+
+URL="https://github.com/mltframework/shotcut/releases/download/v$LATEST_VERSION/shotcut-macos-$LATEST_VERSION_NO_DOTS.dmg"
+
 
 	# If any of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
