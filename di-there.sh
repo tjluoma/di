@@ -11,6 +11,9 @@ echo "$NAME: New repo home at https://github.com/dena-sohrabi/There"
 
 exit 1
 
+# https://github.com/dena-sohrabi/There/releases/latest
+# https://github.com/dena-sohrabi/There/releases/download/v2.0.0/There.zip
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
