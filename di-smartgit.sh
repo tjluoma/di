@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install/update the latest version of SmartGit from <https://www.syntevo.com/smartgit/>
+# Purpose: 	Download and install/update the latest version of SmartGit from <https://www.syntevo.com/smartgit/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-26
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-26
+# Verified:	2025-03-03
 
 NAME="$0:t:r"
 
@@ -22,15 +23,12 @@ then
 	source "$HOME/.path"
 fi
 
-## This is another way of doing it:
-# 	LATEST_VERSION=$(curl -sfLS "${RELEASE_NOTES_URL}" | egrep '^SmartGit [0-9]' | head -1 | awk '{print $2}')
-# 	LV_FOR_URL=$(echo "$LATEST_VERSION" | tr '\.' '_')
-# 	URL="https://www.syntevo.com/downloads/smartgit/smartgit-macosx-${LV_FOR_URL}.dmg"
-
 URL=$(curl -sfLS "https://www.syntevo.com/smartgit/download/" \
-	| awk -F'"' '/\/downloads\/smartgit.*\.dmg/{print "https://www.syntevo.com"$2}')
+	| egrep 'https://downloads.syntevo.com/downloads/smartgit/smartgit-aarch64-.*\.dmg' \
+	| tr '"' '\012' \
+	| egrep '^http.*\.dmg$')
 
-LATEST_VERSION=$(echo "$URL:t:r" | tr -dc '[0-9]_' | tr '_' '.')
+LATEST_VERSION=$(echo "$URL:t:r" | sed 's#smartgit-aarch64##g' | tr -dc '[0-9]_' | tr '_' '.')
 
 if [[ -e "$INSTALL_TO" ]]
 then
