@@ -16,7 +16,24 @@ INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/Raycast.app"
 
 URL='https://api.raycast.app/v2/download'
 
-LATEST_VERSION=$(curl --head -sfLS "$URL" | egrep -i '^Location: ' | tail -1 | sed -e 's#\.dmg.*##g' -e 's#.*/##g' | tr -dc '[0-9]\.')
+LATEST_VERSION=$(curl --head -sfLS "$URL" 2>/dev/null \
+	| egrep -i '^location: ' \
+	| tail -1 \
+	| sed -e 's#.*Raycast_v##g' -e 's#_.*##g')
+
+# If any of these are blank, we cannot continue
+if [ "$URL" = "" -o "$LATEST_VERSION" = "" ]
+then
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	LATEST_BUILD: $LATEST_BUILD
+	URL: $URL
+	"  >>/dev/stderr
+	
+	exit 1
+fi
+
 
 if [[ -e "$INSTALL_TO" ]]
 then
