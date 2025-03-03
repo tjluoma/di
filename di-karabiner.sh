@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh -f
-# Purpose: Download and install the latest version of Karabiner-Elements from <https://pqrs.org/osx/karabiner/>
+# Purpose: 	Download and install the latest version of Karabiner-Elements from <https://pqrs.org/osx/karabiner/>
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2018-08-11
-
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2018-08-11
+# Verified:	2025-03-03
 
 NAME="$0:t:r"
 
