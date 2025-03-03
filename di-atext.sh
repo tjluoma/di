@@ -22,6 +22,7 @@ then
 	source "$HOME/.path"
 fi
 
+# New? @todo "https://www.trankynam.com/atext/appcast.mac.xml"
 XML_FEED="https://www.trankynam.com/atext/aText-Appcast.xml"
 
 INFO=($(curl -sfL "$XML_FEED" \
