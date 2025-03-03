@@ -6,24 +6,10 @@
 # Date:	2018-08-11
 
 
-## @todo - Dec 8 - download failed / URL incorrect
-
-
 NAME="$0:t:r"
 
-echo "$NAME: does not work"
-
-# XML_FEED='https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml'
-
-XML_FEED='https://appcast.pqrs.org/karabiner-elements-appcast.xml'
-
-# curl -sfLS "$XML_FEED"
-
-exit 0
-
-
-
-	# It doesn't really matter which one we check, they both have the same version information
+	# It doesn't really matter which one we check,
+	# they both have the same version information
 	#INSTALL_TO="/Applications/Karabiner-EventViewer.app"
 INSTALL_TO="/Applications/Karabiner-Elements.app"
 
@@ -38,49 +24,25 @@ then
 	source "$HOME/.path"
 fi
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion)
+XML_FEED='https://appcast.pqrs.org/karabiner-elements-appcast.xml'
 
-autoload is-at-least
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr '\012' ' ')
 
-is-at-least "10.15" "$OS_VER"
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-EXIT="$?"
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*sparkle:version="##g ; s#".*##g')
 
-if [[ "$EXIT" == "0" ]]
+	# If any of these are blank, we cannot continue
+if [ "$INFO" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
-	# This is Catalina
-	LOOKFOR='10.15.0'
-else
+	echo "$NAME: Error: bad data received:
+	INFO: $INFO
+	LATEST_VERSION: $LATEST_VERSION
+	URL: $URL
+	"  >>/dev/stderr
 
-	is-at-least "10.12" "$OS_VER"
-
-	EXIT="$?"
-
-	if [[ "$EXIT" == "0" ]]
-	then
-		LOOKFOR='10.12.0'
-	else
-		echo "$NAME: Cannot use '$0' with $OS_VER. Needs to be at least version 10.12"
-		echo "Mac OS X 10.11 can use Karabiner version 11.6.0"
-		echo "https://karabiner-elements.pqrs.org/docs/releasenotes/#karabiner-elements-1160"
-		echo "https://github.com/pqrs-org/Karabiner-Elements/releases/download/v11.6.0/Karabiner-Elements-11.6.0.dmg"
-		exit 1
-	fi
+	exit 1
 fi
-
-XML_FEED='https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml'
-
-INFO=($(curl -sfLS "$XML_FEED" \
-| tr -s '\012' ' ' \
-| sed -e 's#<item>#\
-<item>#g' -e 's#</item>#<item>\
-#g' \
-| fgrep "<sparkle:minimumSystemVersion>$LOOKFOR</sparkle:minimumSystemVersion>"))
-
-
-URL=$(echo "$INFO" | sed -e 's#.dmg.*#.dmg#g' -e 's#.*http#http#g')
-
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.*sparkle:version="##g' -e 's#" .*##g')
 
 PUB_DATE=$(echo "$INFO" | sed -e 's#.*<pubDate>##g' -e 's#</pubDate>.*##g')
 
