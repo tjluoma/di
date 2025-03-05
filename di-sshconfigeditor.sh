@@ -4,7 +4,7 @@
 # From:		Timothy J. Luoma
 # Mail:		luomat at gmail dot com
 # Date:		2020-02-21
-# Verified:	2025-02-23
+# Verified:	2025-03-04
 
 NAME="$0:t:r"
 
@@ -15,28 +15,24 @@ fi
 
 INSTALL_TO='/Applications/SSH Config Editor.app'
 
-XML_FEED='https://hejki.org/download/ssheditor/appcast.xml'
+XML_FEED='https://hejki.org/download/ssheditor/appcast2.xml'
 
-INFO=$(curl -sfLS "$XML_FEED" \
-	| egrep -iv '(:deltas|\.delta)' \
-	| sed 's#^[	 ]*##g' \
-	| tr -s '\012|\r| ' ' ' \
-	| sed -e 's#> <#><#g' -e 's#> #>#g' -e 's# <#<#g' -e 's#.*<item>##g')
+INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | fgrep -v 'delta' | tr '\012' ' ')
 
-RELEASE_NOTES_URL=$(echo "$INFO" | sed -e 's#.*<sparkle:releaseNotesLink>##g' -e 's#</sparkle:releaseNotesLink>.*##')
+URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
 
-LATEST_BUILD=$(echo "$INFO" | sed -e 's#.* sparkle:version="##g' -e 's#" .*##g')
+RELEASE_NOTES_HTML=$(echo "$INFO" | sed 's#.*<description>##g ; s#</description>.*##g ; s#<\!\[CDATA\[##g ; s#\]\]>##g')
 
-LATEST_VERSION=$(echo "$INFO" | sed -e 's#.* sparkle:shortVersionString="##g' -e 's#" .*##g')
+LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
-URL=$(echo "$INFO" | sed -e 's#.* url="##g' -e 's#" .*##g')
+LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
 	# If any of these are blank, we cannot continue
 if [ "$INFO" = "" -o "$LATEST_BUILD" = "" -o "$URL" = "" -o "$LATEST_VERSION" = "" ]
 then
 	echo "$NAME: Error: bad data received:
 	INFO: $INFO
-	RELEASE_NOTES_URL: $RELEASE_NOTES_URL
+	RELEASE_NOTES_HTML: $RELEASE_NOTES_HTML
 	LATEST_VERSION: $LATEST_VERSION
 	LATEST_BUILD: $LATEST_BUILD
 	URL: $URL
@@ -94,9 +90,10 @@ then
 		cat "$FILENAME:r.txt"
 
 	else
-		RELEASE_NOTES=$(lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines "$RELEASE_NOTES_URL")
+		RELEASE_NOTES=$(echo "$RELEASE_NOTES_HTML" \
+		| lynx -dump -nomargins -width='10000' -display_charset=UTF-8 -assume_charset=UTF-8 -pseudo_inlines -stdin)
 
-		echo "${RELEASE_NOTES}\n\nSource: ${RELEASE_NOTES_URL}\nVersion : ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: $URL" | tee "$FILENAME:r.txt"
+		echo "${RELEASE_NOTES}\n\nSource: ${XML_FEED}\nVersion : ${LATEST_VERSION} / ${LATEST_BUILD}\nURL: $URL" | tee "$FILENAME:r.txt"
 	fi
 fi
 
