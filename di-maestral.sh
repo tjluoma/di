@@ -31,7 +31,6 @@ LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</s
 
 LATEST_BUILD=$(echo "$INFO" | sed 's#.*<sparkle:version>##g ; s#</sparkle:version>.*##g' )
 
-
 	# If any of these are blank, we cannot continue
 if [ "$URL" = "" -o "$LATEST_VERSION" = "" -o "$LATEST_BUILD" = "" ]
 then
@@ -41,34 +40,6 @@ then
 	URL: $URL"  >>/dev/stderr
 
 	exit 2
-fi
-
-OS_VER=$(sw_vers -productVersion)
-
-autoload is-at-least
-
-is-at-least "$MIN_VERSION" "$OS_VER"
-
-EXIT="$?"
-
-if [[ "$EXIT" == "0" ]]
-then
-		# This is at least the minimum (or later)
-	echo "$NAME: OS version '$OS_VER' is at least '$MIN_VERSION'."
-
-elif [[ "$EXIT" == "1" ]]
-then
-		# This is lower than the minimum
-	echo "$NAME: OS version '$OS_VER' does not meet minimum requirement of '$MIN_VERSION'."
-
-	echo "
-	MIN_VERSION: $MIN_VERSION
-	LATEST_VERSION: $LATEST_VERSION
-	LATEST_BUILD: $LATEST_BUILD
-	URL: $URL" >>/dev/stderr
-
-	exit 2
-
 fi
 
 if [[ -e "$INSTALL_TO" ]]
@@ -110,8 +81,6 @@ else
 	FIRST_INSTALL='yes'
 fi
 
-
-
 FILENAME="${DOWNLOAD_DIR_ALTERNATE-$HOME/Downloads}/${${INSTALL_TO:t:r}// /}-${${LATEST_VERSION}// /}_${${LATEST_BUILD}// /}.dmg"
 
 echo "$NAME: Downloading '$URL' to '$FILENAME':"
@@ -138,7 +107,6 @@ then
 	shasum -a 256 "$FILENAME:t" \
 	)  >>| "$FILENAME:r.txt"
 fi
-
 
 echo "$NAME: Mounting $FILENAME:"
 
