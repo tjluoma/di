@@ -25,12 +25,8 @@ then
 	source "$HOME/.path"
 fi
 
-
-	# 2019-12-07 IMPORTANT: As of MacUpdater version 1.5.0,
-	# the minimum system requirements have been raised to macOS 10.13
-
 	# RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history.html' ## VERSION 1
-RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history2.html'
+RELEASE_NOTES_URL='https://www.corecode.io/macupdater/history3.html'
 
 INFO=($(curl -sfL "$XML_FEED" \
 		| egrep '(<enclosure.*url="https://.*\.dmg"|sparkle:version=|sparkle:shortVersionString=)' \
