@@ -210,7 +210,7 @@ exit 0
 
 # INSTALLED_VERSION_RAW=`echo "$INSTALLED_VERSION" | tr -dc '[0-9]'`
 #
-# OS=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | tr -dc '[0-9]'`
+# OS=`sw_vers -productVersion | tr -dc '[0-9]'`
 #
 # XML="http://rogueamoeba.net/ping/versionCheck.cgi?format=sparkle&bundleid=com.rogueamoeba.Fission&system=${OS}&platform=osx&arch=x86_64&version=${INSTALLED_VERSION_RAW}8000"
 #

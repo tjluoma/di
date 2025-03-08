@@ -32,9 +32,9 @@ then
 
 	INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleVersion 2>/dev/null || echo '0'`
 
-	OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`
+	OS_VER=`sw_vers -productVersion`
 
-	OS_BUILD=`SYSTEM_VERSION_COMPAT=1 sw_vers -buildVersion`
+	OS_BUILD=`sw_vers -buildVersion`
 
 	# Example:
 	# http://versioncheck.blacey.com/superduper/Version.xml?VSN=96,10.11.1(15B42)

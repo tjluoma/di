@@ -20,7 +20,7 @@ SUMMARY="Cocktail is a general purpose utility for macOS that lets you clean, re
 
 INSTALL_TO="/Applications/Cocktail.app"
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f1,2)
+OS_VER=$(sw_vers -productVersion | cut -d. -f1,2)
 
 if [ "$OS_VER" = "10.8" ]
 then

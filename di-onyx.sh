@@ -5,7 +5,12 @@
 # Mail:	luomat at gmail dot com
 # Date:	2018-09-13
 
+
 NAME="$0:t:r"
+
+echo "$NAME: needs reworking"
+
+exit 1
 
 if [[ -e "$HOME/.path" ]]
 then
@@ -20,7 +25,7 @@ DOWNLOAD_PAGE="https://www.titanium-software.fr/en/onyx.html"
 
 SUMMARY="OnyX is a multifunction utility that you can use to verify the structure of the system files, to run miscellaneous maintenance and cleaning tasks, to configure parameters in the Finder, Dock, Safari, and some of Apple's applications, to delete caches, to remove certain problematic folders and files, to rebuild various databases and indexes, and more."
 
-OS_VER=$(SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion | cut -d. -f2)
+OS_VER=$(sw_vers -productVersion | cut -d. -f2)
 
 	# this should work back to 10.4
 URL="https://www.titanium-software.fr/download/10${OS_VER}/OnyX.dmg"

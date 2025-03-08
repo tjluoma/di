@@ -22,7 +22,7 @@ then
 	source "$HOME/.path"
 fi
 
-OS_VER=`SYSTEM_VERSION_COMPAT=1 sw_vers -productVersion`
+OS_VER=`sw_vers -productVersion`
 
 INSTALLED_VERSION=`defaults read "$INSTALL_TO/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo '0'`
 
