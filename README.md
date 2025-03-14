@@ -30,7 +30,7 @@ Yes, there are lots of other ways to do this:
 
 [MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem. Also: although I have been working on these scripts for a long time, and I still use MacUpdate, there was a very troubling “experiment” which seemed to happen recently where MacUpdate was bundling additional software with downloads *and claiming it was a feature.* (See [Has MacUpdate fallen to the adware plague?](https://blog.malwarebytes.org/news/2015/11/has-macupdate-fallen-to-the-adware-plague/)) Every one of my scripts so far (and for the foreseeable future) downloads directly from the official website.
 
-[Homebrew Cask](http://caskroom.io/) does the same thing that [Homebrew](http://mxcl.github.com/homebrew/) does, except for regular apps. Cask solves the automation problem, in that you can schedule it to run whenever you want, but the whole system is built around the idea that someone else (other than you) will notice when an update to an app is available, and then submit it to the maintainers. That might make sense if an app doesn’t have its own update system, but for those that do, why not use them directly? (n.b. Cask is now part of Homebrew itself, and it appears they are trying to do app _updates_ not just _installs_, so that’s definitely an improvement. But I still like my scripts better.)
+[Homebrew Cask](https://github.com/Homebrew/homebrew-cask) does the same thing that [Homebrew](https://github.com/Homebrew/brew) does, except for regular apps. Cask solves the automation problem, in that you can schedule it to run whenever you want, but the whole system is built around the idea that someone else (other than you) will notice when an update to an app is available, and then submit it to the maintainers. That might make sense if an app doesn’t have its own update system, but for those that do, why not use them directly? (n.b. Cask is now part of Homebrew itself, and it appears they are trying to do app _updates_ not just _installs_, so that’s definitely an improvement. But I still like my scripts better.)
 
 [AutoPkg](https://github.com/autopkg/autopkg) is a super-powerful system that can probably do far more than my system can. But it’s also a lot more complicated.
 
@@ -78,6 +78,11 @@ However, a few of them are more likely than others.
 Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date.
 
 For BusyCal and BusyContacts, I took some time to examine them with [unpkg](https://www.timdoug.com/unpkg/) and realized that by using a (very slightly modified) version of the [unpkg.py](https://github.com/tjluoma/unpkg/blob/master/unpkg.py) script that powers `unpkg`, I can install the apps directly _without_ using their installers. So far, it hasn’t seemed to cause any problems for me, so checkout `unpkg.py` if you want to avoid that weird “Installer.app opens for no real purpose” bug when updating those two apps.
+
+
+## Update 2025-03-13
+
+I've gone through and verified almost all of the scripts here to make sure they work, and update the ones that don't. There are now 280 verified scripts available. I think there are 3-4 that still need to be updated. If you find a script that doesn't work, please [open an issue](https://github.com/tjluoma/di/issues) to let me know.
 
 ## Renaming Apps
 
@@ -156,14 +161,6 @@ Some documentation has been moved to the wiki, including:
 * [Installation and Usage Guide](https://github.com/tjluoma/di/wiki/Installation-and-Usage)
 * [A wishlist](https://github.com/tjluoma/di/wiki/Wishlist)
 * [Developer information](https://github.com/tjluoma/di/wiki/Dear-Mac-Developers)
-
-## Status Update — 2018-08-02
-
-Hey, guess what? I’m not actually dead, although it may have seemed it. There are now _160_ scripts to update apps. Ok, sure, Homebrew Cask has like 4,000+ (seriously, did you know there were that many Mac apps out there? Because I don’t think I did.) but still… 160! That’s nothing to sneeze at. Please. Cover your mouth.
-
-Anyway, I posted a bunch of updates today, and if you notice anything that doesn’t work, [please let me know](https://github.com/tjluoma/di/issues).
-
-Thanks!
 
 ## Mac App Store Clarification
 
