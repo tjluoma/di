@@ -85,10 +85,15 @@ However, a few of them are more likely than others.
 
 ### Update To Disclaimers (2018-08-02)
 
-Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date.
+Dropbox checking is much improved, although it now does a very good job at self-updating, so it’s hardly a concern. Once you have it installed, it _will_ keep itself up-to-date, almost whether you want it to or not!
 
 For BusyCal and BusyContacts, I took some time to examine them with [unpkg](https://www.timdoug.com/unpkg/) and realized that by using a (very slightly modified) version of the [unpkg.py](https://github.com/tjluoma/unpkg/blob/master/unpkg.py) script that powers `unpkg`, I can install the apps directly _without_ using their installers. So far, it hasn’t seemed to cause any problems for me, so checkout `unpkg.py` if you want to avoid that weird “Installer.app opens for no real purpose” bug when updating those two apps.
 
+### Update To Disclaimers (2025-03-13)
+
+A few apps simply have no good way to check for new versions. These include apps like 1Password and Google Chrome. The good news is that these apps have robust self-updating features. In the absence of any better way to proceed, I have made a few of these scripts "install only" so if you try to run them and it sees the app is not installed, it will install the latest version, but if it _is already installed_ then it will print an error message and quit.
+
+If you know of a reliable way to find the latest versions of one of these apps, please [open an issue](https://github.com/tjluoma/di/issues) to let me know. I'd love to have 100% of the apps to be both installable and updatable.
 
 ## Update 2025-03-13
 
