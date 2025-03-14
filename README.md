@@ -22,13 +22,21 @@ That’s what these scripts allow you to do.
 
 (Note: _Technically_ these scripts do three things: Download, Install, and _Update_; but I didn’t want to prefix them with [dui](https://en.wikipedia.org/wiki/Driving_under_the_influence) and `diu` seemed awkward to type, so I went with a `di` prefix.)
 
+## These scripts use macOS' built-in `zsh` shell with no required third-party software to function
+
+One of the goals of this project is that you should be able to sit down at a new install of macOS, run one of these scripts immediately, and have it work. [Zsh](https://www.zsh.org) has been pre-installed as `/bin/zsh` on macOS since at least [El Capitan](https://en.wikipedia.org/wiki/OS_X_El_Capitan) and probably earlier but I'm not sure when it was added.
+
+There are no "dependencies" or other programs you need to have installed. The scripts use the classic Unix-y tools that macOS has pre-installed such as `sed`, `awk`, `grep`, etc.
+
+(If you have [lynx](https://lynx.invisible-island.net/current/) installed then you can _usually_ expect to get release notes for the app, if they are available, but if `lynx` is not installed, that step will simply be skipped. Because I'm not crazy or foolish enough to try to write an HTML parser using shell commands when `lynx` exists.)
+
 ## “But what about…?”
 
 Yes, there are lots of other ways to do this:
 
-[MacUpdater](https://www.corecode.io/macupdater/) seems like a better alternative to MacUpdate Desktop (one-time-fee versus subscription, and it seems to do better at finding apps which need to be updated).
+[MacUpdater](https://www.corecode.io/macupdater/) is a better alternative to MacUpdate Desktop (one-time-fee versus subscription, and it seems to do better at finding apps which need to be updated).
 
-[MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem. Also: although I have been working on these scripts for a long time, and I still use MacUpdate, there was a very troubling “experiment” which seemed to happen recently where MacUpdate was bundling additional software with downloads *and claiming it was a feature.* (See [Has MacUpdate fallen to the adware plague?](https://blog.malwarebytes.org/news/2015/11/has-macupdate-fallen-to-the-adware-plague/)) Every one of my scripts so far (and for the foreseeable future) downloads directly from the official website.
+[MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem.
 
 [Homebrew Cask](https://github.com/Homebrew/homebrew-cask) does the same thing that [Homebrew](https://github.com/Homebrew/brew) does, except for regular apps. Cask solves the automation problem, in that you can schedule it to run whenever you want, but the whole system is built around the idea that someone else (other than you) will notice when an update to an app is available, and then submit it to the maintainers. That might make sense if an app doesn’t have its own update system, but for those that do, why not use them directly? (n.b. Cask is now part of Homebrew itself, and it appears they are trying to do app _updates_ not just _installs_, so that’s definitely an improvement. But I still like my scripts better.)
 
@@ -43,6 +51,8 @@ _Most_ third-party Mac apps use [Sparkle](http://sparkle-project.org/) to check 
 Sparkle uses a standardized XML-based RSS feed that includes all of the information that I need to check to see if I have the latest version of an app, or a quick way to install the latest version of an app if it isn’t installed.
 
 I can check the Sparkle feed for the latest version of the app and compare it to the locally installed version using Unix tools which come standard with every Mac. In almost all cases, you should be able to take one of these `di` scripts and run it on a freshly-installed Mac and it will download & install the latest version for you.
+
+The downloads come directly from the official source of the app, the same as if you had clicked "Check for Updates" within the app itself.
 
 ## Multiple Macs?
 
