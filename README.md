@@ -36,7 +36,7 @@ Yes, there are lots of other ways to do this:
 
 [MacUpdater](https://www.corecode.io/macupdater/) is a better alternative to MacUpdate Desktop (one-time-fee versus subscription, and it seems to do better at finding apps which need to be updated).
 
-[MacUpdate Desktop](http://www.macupdate.com/desktop) might be the easiest to use, but it’s $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem.
+[MacUpdate Desktop](http://www.macupdate.com/desktop) might have been easier to use, but it was $40/year, and seems to miss some apps that I use. Also, there’s no good way to tell it when to run, so it doesn’t solve the interruption problem. And then it was discontinued entirely.
 
 [Homebrew Cask](https://github.com/Homebrew/homebrew-cask) does the same thing that [Homebrew](https://github.com/Homebrew/brew) does, except for regular apps. Cask solves the automation problem, in that you can schedule it to run whenever you want, but the whole system is built around the idea that someone else (other than you) will notice when an update to an app is available, and then submit it to the maintainers. That might make sense if an app doesn’t have its own update system, but for those that do, why not use them directly? (n.b. Cask is now part of Homebrew itself, and it appears they are trying to do app _updates_ not just _installs_, so that’s definitely an improvement. But I still like my scripts better.)
 
