@@ -6,6 +6,11 @@
 # Date:		2015-11-09 ; 2019-11-14 update ; 2020-01-31 ne URL and method of downloading
 # Verified:	2025-02-24
 
+
+# Chcek for Updates opens this page
+# https://pdf.abbyy.com/checkforupdates/?Product=FineReaderMac&Distributive=Retail&Revision=FSRR15000007037407926727&Language=en&PartNumber=1402.19&Target=CheckUpdate&Version=15.2&Revision=14&Build=1093332
+#######################################################################################
+
 if [[ -e "$HOME/.path" ]]
 then
 	source "$HOME/.path"
@@ -17,7 +22,7 @@ INSTALL_TO='/Applications/ABBYY FineReader PDF.app'
 
 if [[ -e "$INSTALL_TO" ]]
 then
-	echo "$NAME Fatal error: '$INSTALL_TO' already exists. I can only install, not update."
+	echo "$NAME Fatal error: '$INSTALL_TO' already exists.\n\tI can only install, not update."
 	exit 0
 fi
 
