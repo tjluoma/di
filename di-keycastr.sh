@@ -1,15 +1,18 @@
 #!/usr/bin/env zsh -f
-# Purpose:
+# Purpose:	Download and install the lasted version of KeyCastr.app
 #
-# From:	Timothy J. Luoma
-# Mail:	luomat at gmail dot com
-# Date:	2025-03-28
+# From:		Timothy J. Luoma
+# Mail:		luomat at gmail dot com
+# Date:		2025-03-28
+# Verified:	2025-03-28
 
 NAME="$0:t:r"
 
 [[ -e "$HOME/.path" ]] && source "$HOME/.path"
 
 [[ -e "$HOME/.config/di/defaults.sh" ]] && source "$HOME/.config/di/defaults.sh"
+
+HOMEPAGE='https://github.com/keycastr/keycastr'
 
 INSTALL_TO="${INSTALL_DIR_ALTERNATE-/Applications}/KeyCastr.app"
 
@@ -18,8 +21,6 @@ XML_FEED='https://keycastr.github.io/appcast.xml'
 INFO=$(curl -sfLS "$XML_FEED" | awk '/<item>/{i++}i==1' | tr '\012' ' ')
 
 URL=$(echo "$INFO" | sed 's#.*enclosure url="##g ; s#" .*##g')
-
-RELEASE_NOTES_URL=$(echo "$INFO" | sed 's#.*<sparkle:releaseNotesLink>##g ; s#</sparkle:releaseNotesLink>.*##g')
 
 LATEST_VERSION=$(echo "$INFO" | sed 's#.*<sparkle:shortVersionString>##g ; s#</sparkle:shortVersionString>.*##g')
 
